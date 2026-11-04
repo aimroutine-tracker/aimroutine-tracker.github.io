@@ -227,3 +227,11 @@ footer { background:rgba(4,12,23,.5); padding-top:30px; border-top:1px solid rgb
 @media(prefers-reduced-motion:reduce){
  .app-window,.feature-tile,.btn,.p-tile,.p-card,.p-step{transition:none!important;transform:none!important;animation:none!important}
 }
+
+/* Keyboard accessibility and intermediate-width layout. */
+.skip-link { position:fixed; z-index:1000; left:14px; top:-100px; padding:11px 15px; border:2px solid #74f4e7; border-radius:12px; background:#0a253a; color:#efffff; text-decoration:none; font-weight:800; }
+.skip-link:focus { top:10px; }
+.feature-tile:focus-within,.compat-cell:focus-within { outline:2px solid #69e8de; outline-offset:3px; }
+@media(max-width:960px){
+ .site-nav a[href="#features"],.site-nav a[href="#approach"],.site-nav a[href="#riot"] { display:none; }
+}
