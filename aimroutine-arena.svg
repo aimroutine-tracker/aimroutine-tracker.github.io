@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 430" role="img" aria-labelledby="title desc" preserveAspectRatio="xMidYMid slice">
+<title id="title">Original AimRoutine training illustration</title><desc id="desc">Angular red and teal arena skyline with a fictional futuristic sharpshooter wearing a dark hood and a luminous visor</desc>
+<defs>
+ <linearGradient id="night" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0a1421"/><stop offset=".5" stop-color="#182638"/><stop offset="1" stop-color="#233746"/></linearGradient>
+ <linearGradient id="ruby" x1="0" y1="0" x2=".8" y2=".8"><stop stop-color="#ff5264"/><stop offset=".58" stop-color="#a7354a"/><stop offset="1" stop-color="#5c2f42"/></linearGradient>
+ <linearGradient id="sky" x1=".1" y1=".1" x2=".9" y2="1"><stop stop-color="#deb59a"/><stop offset=".45" stop-color="#9a8a94"/><stop offset="1" stop-color="#294651"/></linearGradient>
+ <linearGradient id="coat" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#32455a"/><stop offset=".5" stop-color="#111d2d"/><stop offset="1" stop-color="#06131f"/></linearGradient>
+ <linearGradient id="face" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f0bd98"/><stop offset="1" stop-color="#966d6b"/></linearGradient>
+ <linearGradient id="fade" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#0c1825"/><stop offset=".48" stop-color="#0c1825" stop-opacity=".92"/><stop offset=".72" stop-color="#0c1825" stop-opacity=".12"/><stop offset="1" stop-color="#0c1825" stop-opacity="0"/></linearGradient>
+ <filter id="glow"><feGaussianBlur stdDeviation="8"/></filter>
+ <pattern id="lines" patternUnits="userSpaceOnUse" width="34" height="34"><path d="M34 0L0 34" stroke="#b9e2e4" stroke-opacity=".025" stroke-width="1"/></pattern>
+</defs>
+<rect width="1440" height="430" fill="url(#night)"/>
+<path d="M820 0H1440V430H530Z" fill="url(#sky)"/>
+<path d="M1060 -30L790 315L1247 0Z" fill="#ff6a72" opacity=".85"/>
+<path d="M961 0L717 296L681 430L1261 0Z" fill="url(#ruby)" opacity=".86"/>
+<path d="M1200 -10L1065 175L1440 80V0Z" fill="#fd8c81" opacity=".47"/>
+<path d="M520 430L1020 35L754 430Z" fill="#392b3d" opacity=".8"/>
+<path d="M806 233L910 163L952 201L1004 147L1064 195L1121 139L1192 205L1264 131L1370 202L1440 166V390H760Z" fill="#253847" opacity=".7"/>
+<path d="M720 311L843 260L913 271L956 227L994 259L1074 235L1125 276L1195 247L1254 282L1359 237L1440 268V430H720Z" fill="#314453"/>
+<path d="M715 333L886 253L1031 317L1197 247L1440 306V430H625Z" fill="#26303c"/>
+<path d="M807 289L906 242L1005 291L1075 280L1178 239L1230 271L1440 259" stroke="#dca68a" stroke-width="6" opacity=".5" fill="none"/>
+<path d="M934 125L954 34L968 121M962 42L1012 42M1150 167L1160 48L1191 167" stroke="#4a6270" stroke-width="13" opacity=".65"/>
+<path d="M922 167L965 167L952 120ZM1135 176L1182 176L1160 135Z" fill="#87968e" opacity=".58"/>
+<path d="M0 0H1440V430H0Z" fill="url(#lines)"/>
+<!-- Original faceted sci-fi athlete; no existing gaming character is represented. -->
+<g transform="translate(1015,9)">
+  <!-- back coat and shoulder -->
+  <path d="M94 352Q69 311 88 244L145 214L241 219Q320 247 357 317L434 422H68Z" fill="url(#coat)" stroke="#58727a" stroke-width="3"/>
+  <path d="M89 251L141 233L106 347L52 413L-8 422Z" fill="#42657a"/>
+  <path d="M78 288L117 273L102 338L71 375Z" fill="#65a4a6"/>
+  <path d="M294 278L336 294L387 422H302Z" fill="#274f61"/>
+  <path d="M338 308L375 345L423 422H355Z" fill="#122638"/>
+  <path d="M135 247Q198 286 265 247L304 269L281 322Q197 358 122 309Z" fill="#142532" stroke="#456f77" stroke-width="4"/>
+  <path d="M149 260L198 288L270 256" stroke="#b5c4bf" stroke-width="6" opacity=".7" fill="none"/>
+  <!-- neck -->
+  <path d="M159 230L179 164L237 180L226 241L196 267Z" fill="#bc8880"/>
+  <path d="M178 221L224 212L217 240L194 253Z" fill="#e2aa90"/>
+  <!-- Hair silhouette -->
+  <path d="M150 90Q143 38 210 24Q270 16 293 57Q333 93 297 158L267 214L247 201L183 199L151 160Z" fill="#18222c" stroke="#50646f" stroke-width="3"/>
+  <path d="M172 65Q210 15 264 44L292 67L257 83L214 77L166 104Z" fill="#3d4c58"/>
+  <path d="M238 33Q307 30 329 72L305 94L293 124L270 84Z" fill="#293e4b"/>
+  <path d="M301 70L341 54L329 107L290 131Z" fill="#516b76"/>
+  <!-- face + facial structure -->
+  <path d="M176 96Q203 72 251 89L282 117L272 181Q255 223 210 222Q179 218 160 180L159 122Z" fill="url(#face)"/>
+  <path d="M159 124L180 103L183 151L163 174Z" fill="#c18d83"/>
+  <path d="M252 100Q279 110 282 140L273 181Q262 203 244 212L243 180Z" fill="#b97b79"/>
+  <path d="M203 179L229 184L221 189L208 189Z" fill="#88545d"/>
+  <path d="M225 200L239 194L222 208Z" fill="#a46c73"/>
+  <path d="M188 153L209 143L218 150L209 156L192 158Z" fill="#263943"/>
+  <path d="M245 150L263 141L268 149L247 156Z" fill="#263943"/>
+  <!-- Cyan visor -->
+  <path d="M164 126L212 116L284 120L300 132L265 151L207 147L172 150Z" fill="#143848" opacity=".92" stroke="#4d8994" stroke-width="4"/>
+  <path d="M177 132L264 127" stroke="#8ff5df" stroke-width="5" opacity=".95"/>
+  <path d="M183 141L254 139" stroke="#4bdac4" stroke-width="3" opacity=".8"/>
+  <path d="M182 131L263 128" stroke="#8dfbe8" stroke-width="15" opacity=".32" filter="url(#glow)"/>
+  <!-- Ear and hood -->
+  <path d="M273 153L300 140L286 193L261 206Z" fill="#2a3846"/>
+  <path d="M170 74L190 65L170 135L155 161L147 117Z" fill="#243441"/>
+  <!-- Front coat and shoulder -->
+  <path d="M123 263L183 246L220 279L286 239L334 264L350 309L283 334L234 318L173 336L110 305Z" fill="#172b3b" stroke="#5b7985" stroke-width="3"/>
+  <path d="M189 261L227 291L271 260" stroke="#68d9cf" stroke-opacity=".55" stroke-width="7" fill="none"/>
+  <path d="M231 294L262 311L250 351L214 346Z" fill="#3f6472"/>
+  <path d="M199 307L224 300L227 343L202 350Z" fill="#a1d8d1" opacity=".85"/>
+  <path d="M122 281L97 332L124 364L173 328Z" fill="#3d6270"/>
+  <path d="M89 340L155 368L137 422H72Z" fill="#0a1d2c"/>
+  <!-- Hand / training marker -->
+  <path d="M42 335L76 300L100 317L83 351L71 398L52 393Z" fill="#c99a8a"/>
+  <path d="M62 312L88 257L101 261L81 330Z" fill="#d6ac98"/>
+  <path d="M60 324L68 292L77 299L73 332Z" fill="#f0c2aa"/>
+  <path d="M70 255L95 228L109 254L95 291L69 290Z" fill="#4e8793" stroke="#91eadc" stroke-width="3"/>
+  <path d="M80 247L98 245L91 261Z" fill="#b9fff0"/>
+</g>
+<!-- red panel lighting and horizon -->
+<path d="M750 430L1050 0H980L680 430Z" fill="#ff4f65" opacity=".19"/>
+<path d="M840 324L1093 183" stroke="#ff8d88" stroke-width="3" opacity=".35"/>
+<path d="M1130 306L1420 214" stroke="#83ced0" stroke-width="7" opacity=".30"/>
+<rect width="1440" height="430" fill="url(#fade)"/>
+<path d="M0 429H1440" stroke="#445765" stroke-width="2"/>
+</svg>
