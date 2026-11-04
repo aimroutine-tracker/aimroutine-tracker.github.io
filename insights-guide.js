@@ -285,7 +285,7 @@
   const sidebar=root.querySelector('.ti-aside');
   if(sidebar)sidebar.removeAttribute('aria-hidden');
   clickable(root.querySelector('.ti-profile'),'profile');
-  root.querySelectorAll('.ti-aside .ti-navitem').forEach((node,i)=>clickable(node,i===4?'riot':'nav'));
+  root.querySelectorAll('.ti-aside .ti-navitem').forEach(node=>clickable(node,node.dataset.tiNav==='riot'?'riot':'nav'));
   root.querySelectorAll('.ti-top-pill').forEach(node=>clickable(node,node.classList.contains('neutral')?'privacy':'intro'));
   const f=dashboard.querySelector('.ti-footnote');
   if(f){
