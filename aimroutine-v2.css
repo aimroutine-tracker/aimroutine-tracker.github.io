@@ -236,3 +236,17 @@ body.v8-app .v8-sidebar .v8-side-links a{width:100%}
 @media(max-width:680px){
  body.v8-app .v8-main .v8-hero-card .v8-hero-body{padding-top:23px;padding-bottom:19px}
 }
+
+
+/* Narrow-phone header stays within the viewport. */
+@media(max-width:500px){
+ body.v8-app .v8-topbar .v8-local-chip{display:none}
+ body.v8-app .v8-topbar-right{margin-left:auto}
+ body.v8-app .v8-topbar .v8-demo-chip{display:block}
+ body.v8-app .v8-breadcrumb{min-width:0;overflow:hidden}
+ body.v8-app .v8-breadcrumb strong{overflow:hidden;text-overflow:ellipsis}
+}
+@media(max-width:350px){
+ body.v8-app .v8-topbar .v8-demo-chip{display:none}
+ body.v8-app .v8-hero-footer{font-size:7px}
+}
