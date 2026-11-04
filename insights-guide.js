@@ -351,20 +351,24 @@
     activateTab(s.tab);
     glow();
     let target=document.querySelector('#ti-panel-'+s.tab+' '+s.selector)||root.querySelector(s.selector);
-    if(target&&getComputedStyle(target).display==='none'&&s.mobile)target=root.querySelector(s.mobile);
+    if(target&&target.getClientRects().length===0&&s.mobile)target=root.querySelector(s.mobile);
     if(target)target.classList.add('ti-learning-active');
     renderHelp(s.help);
     const mobile=window.matchMedia('(max-width: 680px)').matches;
     if(!mobile && target)target.scrollIntoView({behavior:'smooth',block:'center'});
     else if(!mobile)dock.scrollIntoView({behavior:'smooth',block:'nearest'});
   }
-  box.querySelector('#ti-start-tour').addEventListener('click',()=>{tourStep=0;runTour()});
+  root.querySelectorAll('.ti-tab').forEach(tab=>tab.addEventListener('click',()=>{
+    if(!tourMode)show(tab.id.replace('ti-tab-','')+'-intro',root.querySelector('.ti-tabs'));
+  }));
+    box.querySelector('#ti-start-tour').addEventListener('click',()=>{tourStep=0;runTour()});
   dock.querySelector('#ti-tour-next').addEventListener('click',()=>{if(tourStep===steps.length-1){tourMode=false;glow();dock.hidden=true}else{tourStep++;runTour()}});
   dock.querySelector('#ti-tour-prev').addEventListener('click',()=>{if(tourStep>0){tourStep--;runTour()}});
   dock.querySelector('#ti-help-close').addEventListener('click',()=>{tourMode=false;glow();dock.hidden=true});
   box.querySelector('#ti-example-profile').addEventListener('change',e=>{
     if(!profiles[e.target.value])return;
     profile=e.target.value;updateSample();
+    if(!tourMode)show('profile',box.querySelector('#ti-example-profile'));
   });
   box.querySelector('#ti-reset-demo').addEventListener('click',()=>{
     profile='balanced';box.querySelector('#ti-example-profile').value=profile;
