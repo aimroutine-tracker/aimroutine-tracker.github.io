@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080f1e">
+<meta name="description" content="Explore AimRoutine Tracker, an independent Windows VALORANT aim-training companion: routines from Iron to Radiant, Aim Lab, KovaaK's, Oblivity, local progress analytics, and planned Riot RSO integration.">
+<title>Detailed product presentation | AimRoutine Tracker</title>
+<link rel="stylesheet" href="styles.css">
+<script src="site.js" defer></script>
+<style>
+.product-hero{padding:76px 0 48px;position:relative}
+.product-hero h1{font-size:clamp(39px,5.6vw,68px);max-width:950px}
+.product-hero .lead{max-width:850px}
+.product-tags{display:flex;gap:9px;flex-wrap:wrap;margin-top:27px}
+.product-tags span{border:1px solid #33536b;background:#13263d;color:#c1dce9;border-radius:100px;padding:6px 12px;font-size:12px}
+.p-section{padding:46px 0 60px}
+.p-section+.p-section{border-top:1px solid rgba(148,196,222,.12)}
+.p-kicker{display:block;color:#58e9e5;font-weight:800;font-size:12px;letter-spacing:.15em;text-transform:uppercase}
+.p-section h2{max-width:850px}
+.p-lead{font-size:16px;color:#b6c9d8;max-width:880px}
+.p-nav{display:flex;flex-wrap:wrap;gap:10px;margin:26px 0}
+.p-nav a{font-size:12px;color:#c2e1e9;text-decoration:none;border:1px solid #355568;border-radius:9px;padding:7px 11px;background:#122439}
+.p-nav a:hover{border-color:#59dddd;color:#e1fffa}
+.p-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
+.p-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
+.p-tile{padding:22px;background:linear-gradient(150deg,#122740,#0d1a2e);border:1px solid #294a60;border-radius:17px}
+.p-tile h3{font-size:18px;line-height:1.3;margin:10px 0}
+.p-tile p{font-size:14px;color:#b1c5d5;margin:8px 0}
+.p-index{color:#50e9e4;font-size:12px;letter-spacing:.11em;font-weight:900}
+.p-label{display:inline-block;font-size:11px;border-radius:8px;padding:3px 9px;border:1px solid #457489;color:#afe3ed;background:#153349}
+.p-label.plan{color:#ffdb9f;border-color:#715934;background:#33291a}
+.p-label.now{color:#acffdf;border-color:#35775f;background:#13382f}
+.p-status{border:1px solid #41617a;background:linear-gradient(115deg,#14283e,#0d1a2e);border-radius:19px;padding:19px 23px;margin-top:26px}
+.p-status strong{display:block;font-size:17px}
+.p-status p{margin:5px 0;color:#bad1df;font-size:14px}
+.p-list{margin:10px 0;padding:0;list-style:none}
+.p-list li{padding:9px 0 9px 22px;border-bottom:1px solid rgba(148,196,222,.09);position:relative;color:#bcd3e0;font-size:14px}
+.p-list li:before{content:"›";position:absolute;left:2px;color:#56e8dd;font-size:18px;top:6px}
+.p-list li:last-child{border:0}
+.p-table-wrap{overflow-x:auto;border:1px solid #294860;border-radius:16px;margin:22px 0}
+.p-table{border-collapse:collapse;width:100%;min-width:650px}
+.p-table th{background:#182e46;color:#d7f6fb;text-align:left;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:15px 16px;white-space:nowrap}
+.p-table td{color:#bdcfdd;padding:14px 16px;font-size:14px;vertical-align:top;border-top:1px solid rgba(143,192,209,.13)}
+.p-table tr:nth-child(2n) td{background:rgba(30,57,78,.13)}
+.p-table strong{color:#ecfbff}
+.p-timeline{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:22px 0}
+.p-step{padding:20px 17px;border:1px solid #385772;background:#102239;border-radius:15px}
+.p-step .number{color:#49eddf;font-weight:900;font-size:24px}
+.p-step h3{margin:8px 0;font-size:16px;line-height:1.3}
+.p-step p{margin:0;color:#b9ccdb;font-size:13px}
+.p-compare{background:linear-gradient(135deg,rgba(27,94,121,.18),rgba(8,22,39,.2));border:1px solid #2d6075;border-radius:20px;padding:25px;margin:22px 0}
+.p-compare h3{margin-top:0}
+.p-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.p-card{background:#0c192d;border:1px solid #2a5169;border-radius:14px;padding:19px}
+.p-card strong{display:block;font-size:18px;margin-top:10px;color:#f4ffff}
+.p-card small{color:#adc7d5}
+.p-note{border-left:3px solid #58e8df;background:rgba(30,172,183,.065);padding:16px 20px;margin:24px 0;border-radius:0 12px 12px 0;color:#c7dfe6;font-size:14px}
+.p-faq details{border:1px solid #31516b;background:#102238;border-radius:12px;margin:10px 0;padding:16px 18px}
+.p-faq summary{cursor:pointer;font-size:16px;font-weight:700;list-style:none;display:flex;justify-content:space-between;gap:14px;align-items:center}
+.p-faq summary:after{content:"+";color:#55efdc;font-size:20px}
+.p-faq details[open] summary:after{content:"−"}
+.p-faq p{color:#b5cede;font-size:14px;margin:13px 0 0}
+.p-footer-cta{border-radius:22px;padding:28px;border:1px solid #2a7b83;background:radial-gradient(circle at right top,rgba(21,164,174,.21),transparent 50%),#0f2438}
+.p-footer-cta h2{margin-top:8px}
+.p-footer-cta .actions{margin-bottom:0}
+@media(max-width:960px){.p-grid3,.p-timeline{grid-template-columns:repeat(2,minmax(0,1fr))}.p-cards{grid-template-columns:1fr}}
+@media(max-width:640px){.p-grid2,.p-grid3,.p-timeline{grid-template-columns:1fr}.p-section{padding:34px 0 44px}.product-hero{padding-top:48px}}
+</style>
+</head>
+<body>
+<header>
+<nav class="wrap" aria-label="Site navigation">
+<a class="brand" href="index.html"><span class="mark" aria-hidden="true">⌖</span>AimRoutine Tracker</a>
+<div class="navlinks">
+<a class="always" href="index.html"><span class="en">Home</span><span class="fr">Accueil</span></a>
+<a class="always" href="riot-integration.html"><span class="en">Riot API flow</span><span class="fr">Parcours Riot</span></a>
+<a class="always" href="privacy.html"><span class="en">Privacy</span><span class="fr">Confidentialité</span></a>
+<button type="button" class="lang" data-switch-lang aria-label="Switch language">FR</button>
+</div>
+</nav>
+</header>
+<main>
+<div class="wrap product-hero">
+<div class="eyebrow"><span class="en">PRODUCT OVERVIEW · WINDOWS DESKTOP · PROJECT IN DEVELOPMENT</span><span class="fr">PRÉSENTATION DU PROJET · WINDOWS · EN DÉVELOPPEMENT</span></div>
+<h1><span class="en">A dedicated workspace for <span class="accent">better aim.</span></span><span class="fr">Un environnement complet pour <span class="accent">progresser en AIM.</span></span></h1>
+<p class="lead en">AimRoutine Tracker is an independent Windows desktop project for VALORANT players. Its goal is to bring structured aim practice, adjustable training plans and honest progress tracking into one place — whether you are Iron, Radiant, or somewhere in between.</p>
+<p class="lead fr">AimRoutine Tracker est un projet de logiciel Windows indépendant pour les joueurs VALORANT. Son objectif : réunir des entraînements AIM structurés, des routines adaptées et un suivi clair de la progression, du rang Fer jusqu'à Radiant.</p>
+<div class="product-tags">
+<span>VALORANT</span><span>Aim Lab</span><span>KovaaK's</span><span>Oblivity</span><span><span class="en">Local-first</span><span class="fr">Données locales</span></span><span><span class="en">Optional Riot API after approval</span><span class="fr">API Riot facultative après autorisation</span></span>
+</div>
+<nav class="p-nav" aria-label="Page sections">
+<a href="#purpose"><span class="en">Mission</span><span class="fr">Mission</span></a>
+<a href="#experience"><span class="en">User journey</span><span class="fr">Parcours</span></a>
+<a href="#ranks"><span class="en">Ranks</span><span class="fr">Rangs</span></a>
+<a href="#trainers"><span class="en">Compatibility</span><span class="fr">Compatibilité</span></a>
+<a href="#tracking"><span class="en">Analytics</span><span class="fr">Statistiques</span></a>
+<a href="#riot"><span class="en">Riot API</span><span class="fr">API Riot</span></a>
+<a href="#roadmap"><span class="en">Roadmap</span><span class="fr">Feuille de route</span></a>
+</nav>
+<div class="p-status">
+<span class="p-label plan"><span class="en">PUBLIC ROADMAP · NO APPROVAL IMPLIED</span><span class="fr">FEUILLE DE ROUTE PUBLIQUE · AUCUNE APPROBATION IMPLICITE</span></span>
+<strong><span class="en">Production API application: submitted, pending Riot review.</span><span class="fr">Demande API de production : déposée, en attente d'examen par Riot.</span></strong>
+<p class="en">The project website was verified by Riot's URL-ownership process. This does not mean the desktop app has been certified or that Riot Sign On is operational. Descriptions below distinguish current groundwork from plans and illustrations.</p>
+<p class="fr">Le site a passé la vérification de propriété de l'URL chez Riot. Cela ne signifie pas que l'application est certifiée ou que Riot Sign On fonctionne. Les sections suivantes distinguent les éléments disponibles, les objectifs et les exemples.</p>
+</div>
+</div>
+
+<section class="wrap p-section" id="purpose">
+<span class="p-kicker">01 / <span class="en">WHY IT EXISTS</span><span class="fr">POURQUOI CE PROJET</span></span>
+<h2><span class="en">Not another score leaderboard. A practical training companion.</span><span class="fr">Pas seulement des records de score. Un véritable compagnon d'entraînement.</span></h2>
+<p class="p-lead en">A high aim-trainer score does not necessarily translate to better VALORANT duels. This project is designed to help players select relevant exercises, work on weaknesses, train consistently, and compare comparable metrics over time. VALORANT practice itself remains part of the routine.</p>
+<p class="p-lead fr">Un excellent score dans un aim trainer ne garantit pas de gagner davantage de duels sur VALORANT. Le projet aide à sélectionner les bons exercices, travailler les points faibles, s'entraîner régulièrement et comparer des mesures pertinentes, sans oublier la pratique directement en jeu.</p>
+<div class="p-grid3">
+<div class="p-tile"><div class="p-index">01 / PERSONALIZATION</div><h3><span class="en">Training matched to the player</span><span class="fr">Entraînement adapté au joueur</span></h3><p class="en">Consider rank, practical aim skill, available software, goal, session length and recent results. Rank is guidance, not an absolute measurement of aim.</p><p class="fr">Tenir compte du rang, du niveau mécanique réel, des logiciels, des objectifs, du temps disponible et des résultats. Le rang sert d'indication, pas de mesure absolue de l'aim.</p></div>
+<div class="p-tile"><div class="p-index">02 / CONSISTENCY</div><h3><span class="en">Make training repeatable</span><span class="fr">Créer de bonnes habitudes</span></h3><p class="en">Build practical plans with timers, checklists, weekly calendars and planned rest days, without forcing daily high-volume practice.</p><p class="fr">Construire des séances reproductibles avec chronomètre, validation, calendrier hebdomadaire et repos, sans imposer une pratique intensive tous les jours.</p></div>
+<div class="p-tile"><div class="p-index">03 / INSIGHT</div><h3><span class="en">Understand the result</span><span class="fr">Comprendre les résultats</span></h3><p class="en">Track improvements per scenario, spot inconsistency, and avoid misleading comparisons between different aim-trainer scoring systems.</p><p class="fr">Suivre les progrès par scénario, repérer les variations de régularité et éviter les comparaisons trompeuses entre systèmes de score différents.</p></div>
+</div>
+</section>
+
+<section class="wrap p-section" id="experience">
+<span class="p-kicker">02 / <span class="en">PROPOSED USER EXPERIENCE</span><span class="fr">EXPÉRIENCE UTILISATEUR PRÉVUE</span></span>
+<h2><span class="en">From first launch to a completed session.</span><span class="fr">De la première ouverture à la fin d'une séance.</span></h2>
+<div class="p-timeline">
+<div class="p-step"><div class="number">01</div><h3><span class="en">Set up your profile</span><span class="fr">Créer ton profil</span></h3><p class="en">Choose VALORANT rank, training goal, DPI and sensitivity, and the aim trainers you own.</p><p class="fr">Choisir son rang, ses objectifs, DPI, sensibilité et les aim trainers disponibles.</p></div>
+<div class="p-step"><div class="number">02</div><h3><span class="en">Build your routine</span><span class="fr">Générer une routine</span></h3><p class="en">Select short warm-up, daily routine or advanced session. Adjust the plan manually if needed.</p><p class="fr">Choisir un échauffement, une séance quotidienne ou avancée, et personnaliser le programme.</p></div>
+<div class="p-step"><div class="number">03</div><h3><span class="en">Train with feedback</span><span class="fr">S'entraîner et noter</span></h3><p class="en">Follow exercise instructions and timers, then record scores, accuracy, completion and personal notes.</p><p class="fr">Suivre les consignes et chronomètres, puis noter scores, précision, validation et ressenti.</p></div>
+<div class="p-step"><div class="number">04</div><h3><span class="en">Review and adapt</span><span class="fr">Analyser et ajuster</span></h3><p class="en">Review session history and trends, identify weaknesses and choose the next training emphasis.</p><p class="fr">Consulter l'historique, observer les tendances, identifier les difficultés et ajuster la priorité.</p></div>
+</div>
+<div class="p-compare">
+<h3><span class="en">Three training modes, different purposes</span><span class="fr">Trois modes d'entraînement, trois objectifs</span></h3>
+<div class="p-cards">
+<div class="p-card"><span class="p-index">QUICK WARM-UP</span><strong>5–15 min</strong><small class="en">Light activation before ranked. Focus on clean first shots; avoid fatigue.</small><small class="fr">Échauffement léger avant les ranked. Premier tir précis, sans fatigue inutile.</small></div>
+<div class="p-card"><span class="p-index">DAILY ROUTINE</span><strong>20–40 min</strong><small class="en">Targeted practice, balanced skills and optional VALORANT range or Deathmatch.</small><small class="fr">Travail ciblé et équilibré, avec stand de tir ou Deathmatch selon le besoin.</small></div>
+<div class="p-card"><span class="p-index">ADVANCED TRAINING</span><strong>40–60 min</strong><small class="en">Longer optional practice, breaks included, for experienced players.</small><small class="fr">Séance plus longue facultative pour joueurs confirmés, pauses comprises.</small></div>
+</div>
+</div>
+</section>
+
+<section class="wrap p-section" id="ranks">
+<span class="p-kicker">03 / <span class="en">ALL COMPETITIVE RANKS</span><span class="fr">TOUS LES RANGS COMPÉTITIFS</span></span>
+<h2><span class="en">Iron to Radiant — no rigid assumptions.</span><span class="fr">De Fer à Radiant, sans enfermer les joueurs dans une catégorie.</span></h2>
+<p class="p-lead en">Suggested emphases below are starting points, not verified claims about all players in a rank. The final routine should respond to observed performance, goals and fatigue.</p>
+<p class="p-lead fr">Les axes ci-dessous servent de point de départ, pas de diagnostic automatique de tous les joueurs d'un rang. La routine finale doit s'adapter aux performances observées, aux objectifs et à la fatigue.</p>
+<div class="p-table-wrap"><table class="p-table"><thead><tr><th><span class="en">VALORANT rank</span><span class="fr">Rang VALORANT</span></th><th><span class="en">Suggested focus</span><span class="fr">Travail prioritaire suggéré</span></th><th><span class="en">Training approach</span><span class="fr">Approche</span></th></tr></thead><tbody>
+<tr><td><strong>Iron / Fer</strong></td><td><span class="en">Basic mouse control, crosshair height</span><span class="fr">Contrôle de souris, hauteur du viseur</span></td><td><span class="en">Simple targets + stop before shooting</span><span class="fr">Cibles simples + arrêt avant tir</span></td></tr>
+<tr><td><strong>Bronze</strong></td><td><span class="en">Clean first shot, consistency</span><span class="fr">Premier tir précis, régularité</span></td><td><span class="en">Easy clicking + practice range</span><span class="fr">Clicking accessible + stand de tir</span></td></tr>
+<tr><td><strong>Silver / Argent</strong></td><td><span class="en">Micro-corrections, basic flicks</span><span class="fr">Micro-corrections, flicks simples</span></td><td><span class="en">Small static targets + movement drills</span><span class="fr">Petites cibles statiques + déplacement</span></td></tr>
+<tr><td><strong>Gold / Or</strong></td><td><span class="en">Moving-target accuracy</span><span class="fr">Précision sur cibles mobiles</span></td><td><span class="en">Dynamic clicking + peek practice</span><span class="fr">Clicking dynamique + peeks</span></td></tr>
+<tr><td><strong>Platinum / Platine</strong></td><td><span class="en">Controlled speed and duels</span><span class="fr">Vitesse contrôlée, duels</span></td><td><span class="en">Small flicks + movement timing</span><span class="fr">Micro-flicks + timing déplacement/tir</span></td></tr>
+<tr><td><strong>Diamond / Diamant</strong></td><td><span class="en">Click timing and target acquisition</span><span class="fr">Click timing et acquisition des cibles</span></td><td><span class="en">Mixed dynamic tasks + precision</span><span class="fr">Exercices dynamiques + précision</span></td></tr>
+<tr><td><strong>Ascendant</strong></td><td><span class="en">Fast micro-adjustments, stability</span><span class="fr">Micro-ajustements rapides, stabilité</span></td><td><span class="en">Targeted weaknesses + in-game transfer</span><span class="fr">Points faibles + transfert en jeu</span></td></tr>
+<tr><td><strong>Immortal / Immortel</strong></td><td><span class="en">Consistency under speed</span><span class="fr">Régularité à haute vitesse</span></td><td><span class="en">Advanced precision + review</span><span class="fr">Précision avancée + analyse</span></td></tr>
+<tr><td><strong>Radiant</strong></td><td><span class="en">Specific weaknesses and refinement</span><span class="fr">Points faibles spécifiques, perfectionnement</span></td><td><span class="en">Highly individualized work</span><span class="fr">Travail très individualisé</span></td></tr>
+</tbody></table></div>
+<div class="p-note"><span class="en">Iron players may excel at flicks; Immortal players may still need basic corrections. The rank helps choose a starting intensity but does not determine a player's mechanical potential.</span><span class="fr">Un joueur Fer peut déjà avoir d'excellents flicks, et un Immortel peut devoir retravailler les bases. Le rang aide à choisir une difficulté initiale, mais ne détermine pas le potentiel mécanique.</span></div>
+</section>
+
+<section class="wrap p-section" id="trainers">
+<span class="p-kicker">04 / <span class="en">SOFTWARE COMPATIBILITY</span><span class="fr">COMPATIBILITÉ LOGICIELLE</span></span>
+<h2><span class="en">Own one trainer, all three, or none.</span><span class="fr">Un seul aim trainer, les trois, ou aucun.</span></h2>
+<p class="p-lead en">The core design requirement is accessible training. No player should be forced to purchase an additional aim trainer in order to follow a relevant routine.</p>
+<p class="p-lead fr">L'exigence centrale est l'accessibilité. Aucun joueur ne devrait devoir acheter un logiciel supplémentaire pour suivre une routine pertinente.</p>
+<div class="p-grid2">
+<div class="p-tile"><span class="p-index">AIM LAB</span><h3><span class="en">Accessible scenario practice</span><span class="fr">Entraînement par scénarios</span></h3><p class="en">Use suitable static and dynamic clicking, micro-corrections and peek-related tasks. Adapt the duration and difficulty. Example catalogue: Micro 2 Sphere VALORANT, Adjustshot VALORANT.</p><p class="fr">Pratiquer le clicking statique/dynamique, les micro-corrections et les exercices liés aux peeks, avec difficulté adaptée. Exemples de catalogue : Micro 2 Sphere VALORANT, Adjustshot VALORANT.</p></div>
+<div class="p-tile"><span class="p-index">KOVAAK'S</span><h3><span class="en">Fine-grained mechanical drills</span><span class="fr">Travail mécanique ciblé</span></h3><p class="en">Focus on precision clicking, small flicks, moving-target timing and switching. Example catalogue: Pasu Small Reload and Floating Heads Timing 400%. Scenario availability must be checked.</p><p class="fr">Travail des flicks précis, du timing sur cibles mobiles et du target switching. Exemples : Pasu Small Reload et Floating Heads Timing 400%. Vérifier la disponibilité des scénarios.</p></div>
+<div class="p-tile"><span class="p-index">OBLIVITY</span><h3><span class="en">Aim assessment and replay</span><span class="fr">Diagnostic et analyse</span></h3><p class="en">Support training tasks that are actually available in the installed version, error review and optional sensitivity analysis. Do not invent third-party scenarios.</p><p class="fr">Proposer les exercices disponibles dans la version installée, analyser les erreurs et éventuellement tester la sensibilité. Ne pas inventer de scénarios.</p></div>
+<div class="p-tile"><span class="p-index">VALORANT</span><h3><span class="en">In-game transfer</span><span class="fr">Transfert en situation de jeu</span></h3><p class="en">Practice range, stop-and-shoot mechanics, crosshair placement and Deathmatch are available as a complete route for players without third-party software.</p><p class="fr">Stand de tir, arrêt avant tir, placement du viseur et Deathmatch constituent un programme exploitable même sans logiciel tiers.</p></div>
+</div>
+<div class="p-note"><span class="en">Combinations are selectable: one platform, two, three, or VALORANT only. Program generation should replace unavailable exercises with equivalent training goals, not silently add tools the player does not own.</span><span class="fr">Les combinaisons sont libres : un logiciel, deux, trois, ou VALORANT uniquement. Le générateur doit remplacer les exercices indisponibles par des objectifs équivalents, sans imposer un logiciel non possédé.</span></div>
+</section>
+
+<section class="wrap p-section" id="training">
+<span class="p-kicker">05 / <span class="en">TRAINING CONTENT</span><span class="fr">CONTENU DES SÉANCES</span></span>
+<h2><span class="en">Work on the mechanics that actually matter.</span><span class="fr">Travailler les mécaniques qui comptent vraiment.</span></h2>
+<div class="p-grid3">
+<div class="p-tile"><span class="p-index">STATIC CLICKING</span><h3><span class="en">Precision &amp; first shot</span><span class="fr">Précision et premier tir</span></h3><p class="en">Small-target accuracy and controlled initial movements.</p><p class="fr">Précision sur petites cibles et mouvements initiaux contrôlés.</p></div>
+<div class="p-tile"><span class="p-index">MICRO FLICKS</span><h3><span class="en">Fast corrections</span><span class="fr">Corrections rapides</span></h3><p class="en">Reduce unnecessary mouse movements when the crosshair is close to a head.</p><p class="fr">Réduire les mouvements inutiles lorsque le viseur est proche de la tête.</p></div>
+<div class="p-tile"><span class="p-index">DYNAMIC CLICKING</span><h3><span class="en">Moving targets</span><span class="fr">Cibles mobiles</span></h3><p class="en">Develop timing and reading of enemy movement.</p><p class="fr">Développer le timing et la lecture des déplacements ennemis.</p></div>
+<div class="p-tile"><span class="p-index">TARGET SWITCHING</span><h3><span class="en">Target transitions</span><span class="fr">Transitions entre cibles</span></h3><p class="en">Improve acquisition of new targets after a shot.</p><p class="fr">Améliorer l'acquisition d'une nouvelle cible après un tir.</p></div>
+<div class="p-tile"><span class="p-index">TRACKING</span><h3><span class="en">Control and smoothness</span><span class="fr">Contrôle et fluidité</span></h3><p class="en">Track moving objects as a supporting skill, while prioritizing VALORANT-specific timing.</p><p class="fr">Suivre des cibles comme compétence complémentaire, en privilégiant le timing propre à VALORANT.</p></div>
+<div class="p-tile"><span class="p-index">IN-GAME MECHANICS</span><h3><span class="en">Peeks &amp; stop-to-shoot</span><span class="fr">Peeks et arrêt avant tir</span></h3><p class="en">Practice movement, angle discipline and head-level crosshair placement directly inside VALORANT.</p><p class="fr">Travailler les déplacements, les angles et le placement du viseur à hauteur de tête dans le jeu.</p></div>
+</div>
+</section>
+
+<section class="wrap p-section" id="tracking">
+<span class="p-kicker">06 / <span class="en">SESSION HISTORY & ANALYTICS</span><span class="fr">HISTORIQUE ET STATISTIQUES</span></span>
+<h2><span class="en">Measure progress without misleading claims.</span><span class="fr">Mesurer les progrès sans statistiques trompeuses.</span></h2>
+<div class="p-grid2">
+<div class="p-tile"><h3><span class="en">Session-level records</span><span class="fr">Résultats de chaque séance</span></h3><ul class="p-list">
+<li class="en">Date, exercise name, trainer and actual duration</li><li class="fr">Date, exercice, logiciel et durée réelle</li>
+<li class="en">Score and accuracy when available</li><li class="fr">Score et précision lorsqu'ils sont disponibles</li>
+<li class="en">Completion, optional notes and perceived fatigue</li><li class="fr">Validation, commentaires et fatigue ressentie</li>
+<li class="en">Manual entry or user-supplied JSON imports</li><li class="fr">Saisie manuelle ou import JSON fourni par l'utilisateur</li>
+</ul></div>
+<div class="p-tile"><h3><span class="en">Progress-oriented analysis</span><span class="fr">Analyse de la progression</span></h3><ul class="p-list">
+<li class="en">Trends per scenario and training category</li><li class="fr">Évolution par scénario et compétence</li>
+<li class="en">Consistency across multiple attempts, not only personal records</li><li class="fr">Régularité sur plusieurs essais, pas seulement les records</li>
+<li class="en">7-, 30- and 90-day views when sufficient data exists</li><li class="fr">Vues sur 7, 30 et 90 jours quand les données le permettent</li>
+<li class="en">Clear distinction between actual, manually entered and demonstration data</li><li class="fr">Distinction entre données réelles, saisies et démonstration</li>
+</ul></div>
+</div>
+<div class="p-note"><span class="en">Scores from different scenarios are not directly comparable. A future adaptive engine will look at normalized progress per exercise and avoid interpreting a single exceptional run as lasting improvement. No rank-up predictions or substitute MMR scoring are intended.</span><span class="fr">Les scores de scénarios différents ne sont pas directement comparables. Le moteur adaptatif prévu analysera les progrès par exercice, sans confondre un record isolé avec un gain durable. Aucun classement MMR alternatif ni prédiction de montée de rang n'est prévu.</span></div>
+</section>
+
+<section class="wrap p-section" id="examples">
+<span class="p-kicker">07 / <span class="en">ILLUSTRATIVE USE CASES</span><span class="fr">EXEMPLES D'UTILISATION</span></span>
+<h2><span class="en">Two players, two different routines.</span><span class="fr">Deux joueurs, deux routines différentes.</span></h2>
+<p class="p-lead en">The examples below illustrate planned personalization logic. They are not automated recommendations generated by a live production service.</p>
+<p class="p-lead fr">Ces exemples illustrent le principe de personnalisation prévu. Ce ne sont pas des recommandations émises par un moteur automatisé déjà déployé.</p>
+<div class="p-grid2">
+<div class="p-tile">
+<span class="p-label">EXAMPLE A</span>
+<h3><span class="en">Silver · Aim Lab only · 25 minutes</span><span class="fr">Argent · Aim Lab uniquement · 25 minutes</span></h3>
+<ul class="p-list">
+<li class="en">Easy precision clicking and small corrections</li><li class="fr">Clicking précis accessible et petites corrections</li>
+<li class="en">Short dynamic target exercise</li><li class="fr">Court exercice sur cibles mobiles</li>
+<li class="en">Practice range: stop and shoot</li><li class="fr">Stand de tir : arrêt avant tir</li>
+<li class="en">Log completion and score</li><li class="fr">Enregistrer la séance et son score</li>
+</ul>
+</div>
+<div class="p-tile">
+<span class="p-label">EXAMPLE B</span>
+<h3><span class="en">Immortal · Multiple trainers · 45 minutes</span><span class="fr">Immortel · Plusieurs logiciels · 45 minutes</span></h3>
+<ul class="p-list">
+<li class="en">KovaaK's: micro-flicks and dynamic clicking</li><li class="fr">KovaaK's : micro-flicks et clicking dynamique</li>
+<li class="en">Aim Lab: correction drills and peek timing</li><li class="fr">Aim Lab : corrections et timing des peeks</li>
+<li class="en">VALORANT: range and Deathmatch</li><li class="fr">VALORANT : stand de tir et Deathmatch</li>
+<li class="en">Oblivity: optional weekly review, not mandatory daily</li><li class="fr">Oblivity : bilan hebdomadaire facultatif, pas obligatoire chaque jour</li>
+</ul>
+</div>
+</div>
+</section>
+
+<section class="wrap p-section" id="riot">
+<span class="p-kicker">08 / <span class="en">RIOT GAMES DATA INTEGRATION</span><span class="fr">INTÉGRATION AUX DONNÉES RIOT GAMES</span></span>
+<h2><span class="en">Optional, consent-based match analysis after approval.</span><span class="fr">Analyse des parties facultative et consentie, après autorisation.</span></h2>
+<p class="p-lead en">A future integration would allow players to authorize Riot account access via official Riot Sign On (RSO). Once approved and implemented, AimRoutine Tracker would fetch eligible historical match details for the connected player to produce post-game trends, such as match results, kills, deaths, assists, and headshot indicators where underlying fields permit. The match data would be compared with local aim-training sessions.</p>
+<p class="p-lead fr">Une future intégration permettra au joueur d'autoriser la connexion à son compte via Riot Sign On (RSO). Après approbation et développement, AimRoutine Tracker récupérera les parties historiques autorisées du joueur connecté pour calculer des tendances après-match : résultats, éliminations, morts, assists et indicateurs de headshots lorsque les données le permettent. Les résultats seront comparés aux entraînements AIM locaux.</p>
+<div class="p-timeline">
+<div class="p-step"><div class="number">01</div><h3><span class="en">User chooses opt-in</span><span class="fr">Choix du joueur</span></h3><p class="en">Training continues without Riot login.</p><p class="fr">L'entraînement reste possible sans compte Riot.</p></div>
+<div class="p-step"><div class="number">02</div><h3><span class="en">Official Riot login</span><span class="fr">Connexion officielle</span></h3><p class="en">RSO flow only after explicit Riot approval.</p><p class="fr">Parcours RSO uniquement après approbation.</p></div>
+<div class="p-step"><div class="number">03</div><h3><span class="en">Authorized match retrieval</span><span class="fr">Parties autorisées</span></h3><p class="en">Secure server handles credentials and API requests.</p><p class="fr">Un serveur sécurisé gère les secrets et les requêtes API.</p></div>
+<div class="p-step"><div class="number">04</div><h3><span class="en">After-match review</span><span class="fr">Analyse après partie</span></h3><p class="en">Trends for the player's own authorized data.</p><p class="fr">Tendances à partir des données autorisées du joueur.</p></div>
+</div>
+<div class="p-note"><strong><span class="en">Not active today.</span><span class="fr">Pas encore actif.</span></strong> <span class="en">Riot website ownership verification has succeeded, but the application remains under production review. No RSO client approval, live Riot connection or official match syncing is claimed. The app will not provide prohibited live tactical information, opponent scouting, or unofficial MMR systems.</span><span class="fr">La vérification du site a réussi, mais la demande de production attend toujours l'examen de Riot. Aucune autorisation RSO, connexion Riot réelle ou synchronisation automatique n'est revendiquée. Aucun avantage tactique en direct, scouting d'adversaires ou système MMR non officiel n'est prévu.</span></div>
+<div class="actions"><a class="btn outline" href="riot-integration.html"><span class="en">View RSO consent and API flow mockup</span><span class="fr">Voir la maquette RSO et l'utilisation prévue de l'API</span></a><a class="btn outline" href="privacy.html"><span class="en">Privacy policy</span><span class="fr">Politique de confidentialité</span></a></div>
+</section>
+
+<section class="wrap p-section" id="tech">
+<span class="p-kicker">09 / <span class="en">PROPOSED TECHNICAL APPROACH</span><span class="fr">ARCHITECTURE TECHNIQUE ENVISAGÉE</span></span>
+<h2><span class="en">Designed to be local-first and modular.</span><span class="fr">Une architecture locale et modulaire.</span></h2>
+<div class="p-grid3">
+<div class="p-tile"><span class="p-index">WINDOWS DESKTOP</span><h3>Tauri + React + TypeScript</h3><p class="en">Target stack for a responsive native desktop shell and maintainable user interface. This is an implementation target, not a completed architecture audit.</p><p class="fr">Stack envisagée pour une application Windows réactive et une interface maintenable. Il s'agit d'un objectif technique, pas d'un audit d'implémentation terminé.</p></div>
+<div class="p-tile"><span class="p-index">LOCAL DATA</span><h3>SQLite + JSON</h3><p class="en">Local training sessions, preferences and user-initiated imports. Data must be labelled by origin and should support backup/export.</p><p class="fr">Séances locales, préférences et imports volontaires. Chaque donnée doit conserver sa provenance, avec sauvegarde et export.</p></div>
+<div class="p-tile"><span class="p-index">FUTURE RIOT INTEGRATION</span><h3><span class="en">Secure HTTPS backend</span><span class="fr">Backend HTTPS sécurisé</span></h3><p class="en">Server-side RSO secrets, authorization flow, rate limits and data-handling controls. No production secret will be embedded in the distributed desktop application.</p><p class="fr">Secrets RSO côté serveur, gestion de l'authentification, limites de requêtes et contrôle des données. Aucun secret de production dans le logiciel distribué.</p></div>
+</div>
+</section>
+
+<section class="wrap p-section" id="roadmap">
+<span class="p-kicker">10 / <span class="en">IMPLEMENTATION STATUS</span><span class="fr">ÉTAT D'AVANCEMENT</span></span>
+<h2><span class="en">What is public, what is reported, what is planned.</span><span class="fr">Ce qui est public, ce qui est déclaré et ce qui reste à développer.</span></h2>
+<div class="p-table-wrap"><table class="p-table"><thead><tr><th><span class="en">Area</span><span class="fr">Élément</span></th><th><span class="en">Current status</span><span class="fr">Statut actuel</span></th><th><span class="en">Clarification</span><span class="fr">Précision</span></th></tr></thead><tbody>
+<tr><td><strong><span class="en">Public website</span><span class="fr">Site vitrine</span></strong></td><td><span class="p-label now"><span class="en">PUBLISHED</span><span class="fr">PUBLIÉ</span></span></td><td class="en">Public website and product presentation available.</td><td class="fr">Site public et présentation du projet disponibles.</td></tr>
+<tr><td><strong><span class="en">Riot URL verification</span><span class="fr">Vérification URL Riot</span></strong></td><td><span class="p-label now"><span class="en">VALIDATED</span><span class="fr">VALIDÉE</span></span></td><td><span class="en">Website ownership code accepted, not product approval.</span><span class="fr">Code de propriété accepté, pas une approbation du produit.</span></td></tr>
+<tr><td><strong><span class="en">Desktop training prototype</span><span class="fr">Prototype Windows</span></strong></td><td><span class="p-label"><span class="en">IN DEVELOPMENT</span><span class="fr">EN DÉVELOPPEMENT</span></span></td><td><span class="en">Feature descriptions express project goals; public executable not supplied here.</span><span class="fr">Les fonctions décrivent les objectifs ; aucun exécutable public n'est fourni ici.</span></td></tr>
+<tr><td><strong><span class="en">Manual JSON import</span><span class="fr">Import JSON manuel</span></strong></td><td><span class="p-label"><span class="en">REPORTED IN PROTOTYPE</span><span class="fr">DÉCLARÉ DANS LE PROTOTYPE</span></span></td><td><span class="en">Working locally per current project description; not independently tested on this site.</span><span class="fr">Décrit comme fonctionnel localement ; non testé indépendamment sur ce site.</span></td></tr>
+<tr><td><strong><span class="en">Adaptive training engine</span><span class="fr">Générateur adaptatif</span></strong></td><td><span class="p-label plan"><span class="en">PLANNED / ITERATING</span><span class="fr">PRÉVU / À DÉVELOPPER</span></span></td><td><span class="en">Requires reliable scores, user controls and per-scenario validation.</span><span class="fr">Nécessite des scores fiables, des réglages et des tests par scénario.</span></td></tr>
+<tr><td><strong><span class="en">Production API permission</span><span class="fr">Autorisation API production</span></strong></td><td><span class="p-label plan"><span class="en">PENDING RIOT REVIEW</span><span class="fr">EN ATTENTE DE RIOT</span></span></td><td><span class="en">Application submitted; no approval yet.</span><span class="fr">Demande déposée ; pas encore approuvée.</span></td></tr>
+<tr><td><strong>Riot Sign On / <span class="en">match sync</span><span class="fr">synchro matchs</span></strong></td><td><span class="p-label plan"><span class="en">NOT AVAILABLE</span><span class="fr">NON DISPONIBLE</span></span></td><td><span class="en">Will require Riot approval and additional secure backend work.</span><span class="fr">Nécessite une autorisation Riot et un backend sécurisé supplémentaire.</span></td></tr>
+</tbody></table></div>
+</section>
+
+<section class="wrap p-section" id="faq">
+<span class="p-kicker">11 / <span class="en">FREQUENT QUESTIONS</span><span class="fr">QUESTIONS FRÉQUENTES</span></span>
+<h2><span class="en">Practical answers.</span><span class="fr">Réponses essentielles.</span></h2>
+<div class="p-faq">
+<details><summary><span class="en">Do I need all three aim trainers?</span><span class="fr">Faut-il posséder les trois aim trainers ?</span></summary><p class="en">No. The design supports Aim Lab alone, KovaaK's alone, Oblivity alone, combinations, or just VALORANT practice.</p><p class="fr">Non. Le projet prévoit Aim Lab seul, KovaaK's seul, Oblivity seul, leurs combinaisons, ou uniquement VALORANT.</p></details>
+<details><summary><span class="en">Is it only for high-ranked players?</span><span class="fr">Est-ce réservé aux hauts rangs ?</span></summary><p class="en">No. Planned onboarding and training categories cover Iron through Radiant, using player-specific adjustments rather than rank stereotypes.</p><p class="fr">Non. L'accueil et les programmes prévus couvrent Fer à Radiant avec une adaptation aux résultats, pas des stéréotypes de rang.</p></details>
+<details><summary><span class="en">Does it require connecting a Riot account?</span><span class="fr">Faut-il connecter son compte Riot ?</span></summary><p class="en">No for local training. Official account linking is a separate optional future feature awaiting Riot permissions.</p><p class="fr">Non pour l'entraînement local. La liaison officielle est une fonction future, facultative et soumise aux autorisations Riot.</p></details>
+<details><summary><span class="en">Will it automatically rank me up?</span><span class="fr">Est-ce que le logiciel me fera automatiquement monter de rang ?</span></summary><p class="en">No. Training may help improve mechanics, but competitive results depend on many game skills. No rank-up guarantee is made.</p><p class="fr">Non. L'entraînement peut aider la mécanique, mais les résultats dépendent de nombreuses compétences de jeu. Aucun gain de rang n'est garanti.</p></details>
+<details><summary><span class="en">Is this a Riot Games product?</span><span class="fr">Est-ce un produit Riot Games ?</span></summary><p class="en">No. This is an independent community project, not sponsored by or affiliated with Riot Games. Official API access is under review.</p><p class="fr">Non. C'est un projet communautaire indépendant, ni sponsorisé ni affilié à Riot Games. La demande API est en attente.</p></details>
+</div>
+</section>
+
+<section class="wrap p-section">
+<div class="p-footer-cta">
+<span class="p-kicker"><span class="en">OPEN PROJECT · TRANSPARENT ROADMAP</span><span class="fr">PROJET PUBLIC · FEUILLE DE ROUTE TRANSPARENTE</span></span>
+<h2><span class="en">Training that adapts to the player — not the other way around.</span><span class="fr">Un entraînement qui s'adapte au joueur, pas l'inverse.</span></h2>
+<p class="p-lead en">AimRoutine Tracker aims to make consistent, focused aim practice accessible to the whole VALORANT community while keeping account integrations opt-in and compliant with Riot's approval process.</p>
+<p class="p-lead fr">AimRoutine Tracker veut rendre l'entraînement AIM régulier et ciblé accessible à toute la communauté VALORANT, avec des connexions de compte facultatives et respectueuses des autorisations Riot.</p>
+<div class="actions"><a class="btn" href="riot-integration.html"><span class="en">Explore the Riot API user flow</span><span class="fr">Explorer le parcours Riot API</span></a><a class="btn outline" href="index.html"><span class="en">Back to home</span><span class="fr">Retour à l'accueil</span></a></div>
+</div>
+</section>
+</main>
+<footer><div class="wrap footer-row"><div>© 2026 AimRoutine Tracker. <span class="en">Independent project; not endorsed, sponsored or affiliated with Riot Games.</span><span class="fr">Projet indépendant, ni approuvé, ni sponsorisé, ni affilié à Riot Games.</span></div><div class="footer-links"><a href="privacy.html"><span class="en">Privacy</span><span class="fr">Confidentialité</span></a><a href="terms.html"><span class="en">Terms</span><span class="fr">Conditions</span></a><a href="riot-integration.html">Riot API / RSO</a></div></div></footer>
+</body>
+</html>
