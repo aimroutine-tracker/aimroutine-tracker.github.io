@@ -282,10 +282,18 @@
     });
     p.querySelectorAll('.ti-chart-point').forEach((node,i)=>node.classList.toggle('is-picked',i===index));
   }
+  const sidebar=root.querySelector('.ti-aside');
+  if(sidebar)sidebar.removeAttribute('aria-hidden');
   clickable(root.querySelector('.ti-profile'),'profile');
   root.querySelectorAll('.ti-aside .ti-navitem').forEach((node,i)=>clickable(node,i===4?'riot':'nav'));
   root.querySelectorAll('.ti-top-pill').forEach(node=>clickable(node,node.classList.contains('neutral')?'privacy':'intro'));
-  const f=dashboard.querySelector('.ti-footnote');if(f)clickable(f,'privacy');
+  const f=dashboard.querySelector('.ti-footnote');
+  if(f){
+    const info=document.createElement('button');info.type='button';info.className='ti-learn-btn';
+    info.textContent='ⓘ'; info.setAttribute('aria-label',tr('Comprendre la confidentialité','Understand data privacy'));
+    info.addEventListener('click',()=>{tourMode=false;show('privacy',f)});
+    f.append(info);
+  }
   const info=root.querySelector('.ti-tabs');
   if(info){const trigger=document.createElement('button');trigger.type='button';trigger.className='ti-learn-btn ti-tabs-info';trigger.textContent='ⓘ';trigger.setAttribute('aria-label',tr('Que signifient les onglets ?','What do these tabs mean?'));trigger.addEventListener('click',()=>{tourMode=false;show('tabs',info)});info.after(trigger)}
   function activityLevel(i,p){
