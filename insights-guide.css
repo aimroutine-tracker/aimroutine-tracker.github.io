@@ -68,3 +68,24 @@
 @media(max-width:900px){.ti-learn-top{padding:14px}.ti-learn-intro{flex:1 1 270px}.ti-learn-controls{width:100%}.ti-learn-controls .ti-learn-btn{flex:1}.ti-guide-toast{top:70px}}
 @media(max-width:680px){.ti-learn-top{gap:12px}.ti-learn-symbol{width:34px;height:34px}.ti-learn-intro strong{font-size:13px}.ti-learn-controls .ti-learn-btn{flex:1 1 auto}.ti-learn-select{flex:1 1 110px;max-width:none}.ti-learning-guide-grid{grid-template-columns:1fr}.ti-explainer{padding:14px}.ti-tour-counter{flex:1 1 100%}.ti-guide-toast{position:relative;top:auto}.ti-learning-guide{padding:15px}}
 @media(prefers-reduced-motion:reduce){.ti-learning-active,.ti-chart-point,.ti-tour-progress i{transition:none!important}}
+
+
+/* Larger, keyboard-friendly chart point selectors. */
+.ti-graph-points{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:5px;margin:11px 0 7px}
+.ti-graph-point-btn{border:1px solid #355a69;border-radius:8px;background:#122b3d;color:#9fbfcf;padding:7px 2px;font-family:inherit;font-size:11px;font-weight:800;cursor:pointer;min-width:0}
+.ti-graph-point-btn:hover{border-color:#8aeadb;color:#f0fbff;background:#214358}
+.ti-graph-point-btn[aria-pressed="true"]{border-color:#7af0db;background:#24574f;color:#d9fff5}
+.ti-graph-point-btn:focus-visible{outline:2px solid #b4ffeb;outline-offset:2px}
+.ti-tabs-info{margin-right:auto;min-width:32px;flex:none;min-height:30px;padding:5px 8px;font-size:13px}
+.ti-footnote .ti-learn-btn{margin-left:9px;flex:none;min-width:32px;min-height:30px;padding:5px 8px}
+.ti-learn-controls .ti-learn-label{display:inline-flex;align-items:center}
+.ti-learning-hotspot.ti-tip{cursor:pointer}
+.ti-breakdown>.ti-learning-hotspot{border:1px solid transparent;border-radius:9px;cursor:pointer;padding:8px;margin:-8px 0 7px}
+.ti-breakdown>.ti-learning-hotspot:hover{background:rgba(61,130,138,.12)}
+@media(max-width:680px){
+  .ti-guide-toast{position:fixed;top:auto;bottom:calc(10px + env(safe-area-inset-bottom,0px));left:12px;right:12px;z-index:100;max-height:min(54vh,425px);overflow-y:auto;box-shadow:0 18px 60px #000b}
+  .ti-graph-points{gap:3px}
+  .ti-graph-point-btn{padding:7px 1px;font-size:10px}
+  .ti-footnote .ti-learn-btn{margin:9px auto 0}
+  .ti-tabs-info{margin:3px 0 8px}
+}
