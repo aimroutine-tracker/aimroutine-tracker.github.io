@@ -107,3 +107,8 @@
 .v5-landing .v5-desktop-links .experience-nav-cta:hover{color:#05242e;background:#adfff0}
 .v5-landing .v5-mobile-panel .experience-mobile-cta{color:#09313b;background:#89edd9;font-weight:880;border-radius:8px;margin-bottom:5px}
 .v5-landing .v5-mobile-panel .experience-mobile-cta:hover{color:#0d3038;background:#a5ffe9}
+
+/* Keep exactly one checkmark per hero fact (avoid duplicated icons on translated spans). */
+.v5-landing .v5-hero-facts>span:before{content:"✓"}
+.v5-landing .v5-hero-facts span.en:before,.v5-landing .v5-hero-facts span.fr:before{content:none}
+.v5-landing .v5-hero-facts>span>span{display:inline;gap:0}
