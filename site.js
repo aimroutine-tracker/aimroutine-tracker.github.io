@@ -65,3 +65,34 @@
     document.addEventListener("click",e=>{if(menu.open&&!menu.contains(e.target))menu.open=false});
   }
 })();
+
+
+/* Training Insights: accessible client-side demo tabs; entirely fictional
+ * presentation data, no Riot auth, APIs, cookies or network requests. */
+(function(){
+  const list=document.querySelector('.ti-tabs[role="tablist"]');
+  if(!list) return;
+  const tabs=Array.from(list.querySelectorAll('[role="tab"]'));
+  function activate(index, focus){
+    const normalized=(index+tabs.length)%tabs.length;
+    tabs.forEach((tab,i)=>{
+      const active=i===normalized;
+      tab.setAttribute('aria-selected',String(active));
+      tab.tabIndex=active?0:-1;
+      const panel=document.getElementById(tab.getAttribute('aria-controls'));
+      if(panel) panel.hidden=!active;
+    });
+    if(focus) tabs[normalized].focus();
+  }
+  tabs.forEach((tab,index)=>{
+    tab.addEventListener('click',()=>activate(index,false));
+    tab.addEventListener('keydown',e=>{
+      if(e.key==='ArrowRight'){e.preventDefault();activate(index+1,true);}
+      else if(e.key==='ArrowLeft'){e.preventDefault();activate(index-1,true);}
+      else if(e.key==='Home'){e.preventDefault();activate(0,true);}
+      else if(e.key==='End'){e.preventDefault();activate(tabs.length-1,true);}
+    });
+  });
+  const initial=tabs.findIndex(x=>x.getAttribute('aria-selected')==='true');
+  activate(initial<0?0:initial,false);
+})();
