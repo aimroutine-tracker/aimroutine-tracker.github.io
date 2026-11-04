@@ -1,48 +1,66 @@
-# AimRoutine Tracker — GitHub Pages site
+# AimRoutine Tracker — public project website
 
-Site vitrine bilingue français/anglais, statique et sans clé API ni backend.
+[Open the site](https://aimroutine-tracker.github.io/) · [Try the routine demo](https://aimroutine-tracker.github.io/#routine) · [Training Insights](https://aimroutine-tracker.github.io/#insights)
 
-## Publication recommandée (Riot)
+Public FR/EN landing site for **AimRoutine Tracker V2**, an independent Windows VALORANT aim-training and coaching project.
 
-1. Crée un dépôt **PUBLIC** portant exactement le nom `TON_UTILISATEUR_GITHUB.github.io`
-   où `TON_UTILISATEUR_GITHUB` est ton identifiant GitHub réel (pas ton Riot ID).
-2. Décompresse `aimroutine-github-pages.zip` sur ton ordinateur.
-3. Dans le dépôt, utilise **Add file > Upload files**, sélectionne `index.html`,
-   `privacy.html`, `terms.html`, `styles.css`, `site.js`, `.nojekyll` et `README.md`
-   à la racine du dépôt. (Si `.nojekyll` est difficile à sélectionner, ce n'est pas bloquant.)
-4. Clique sur **Commit changes**.
-5. Ouvre **Settings > Pages > Build and deployment**.
-6. Mets **Source = Deploy from a branch**, **Branch = main**, **Folder = /(root)** puis Save.
-7. Vérifie `https://TON_UTILISATEUR_GITHUB.github.io/`.
-8. Dans Riot Developer, mets **Product URL** à cette adresse seulement lorsqu'elle fonctionne.
+## What this website does
 
-## Vérification Riot
+- Explains the intended user journey: select rank, focus, available tools and session duration; train; understand progress.
+- Recreates the desktop application's V2 visual identity in a **static hero miniature** (not an actual running desktop-app screenshot).
+- Offers a **fully client-side educational routine demo** that changes exercise categories and time allocations based on selected rank, training goal, available software and time.
+- Offers **Training Insights**, an interactive *fictional* dashboard featuring three tabs, chart-point explanations, skill breakdowns, a training calendar, sample profiles and a guided tour.
+- Provides a detailed product presentation, privacy policy, terms and a conceptual Riot Sign On journey.
 
-- Après enregistrement Riot, récupère **uniquement** la chaîne de vérification fournie par Riot.
-- Crée un nouveau fichier nommé `riot.txt` à la racine de la branche publiée.
-- Mets dans le fichier la chaîne exactement, sans aucun espace ou autre contenu.
-- Vérifie qu'elle est visible via `https://TON_UTILISATEUR_GITHUB.github.io/riot.txt`.
-- Relance ensuite la vérification depuis le Developer Portal.
-- Riot recommande de supprimer/masquer le fichier après vérification.
+**Do not mistake website demos for working Windows software functionality, verified training recommendations, real Riot player data, or a public installer.** All demo numbers are fictional. The web page does not log training sessions. No real Riot connection is provided.
 
-**Ne jamais placer de clé RGAPI, mot de passe, secret RSO, token ou fichier `.env` sur ce site.**
+## Current status
 
-## Avant un examen de production Riot
+| Component | Status |
+| --- | --- |
+| Public GitHub Pages site | Published from `main` root |
+| Windows V2 interface | Shown in a creator-provided screenshot; reproduced as a static website preview |
+| Public interactive demonstration | Available without login; examples only |
+| Riot URL-ownership verification | Verified by Riot |
+| Production API / Riot Sign On | Application pending review; not enabled |
+| Public Windows download | Not offered by this website |
 
-- Remplacer les paragraphes provisoires de contact par un contact réel et public.
-- Adapter la politique de confidentialité à l'état effectif du produit.
-- Ajouter une vraie démo, captures d'écran et/ou une page de téléchargement lorsque disponibles.
-- L'approbation de Riot n'est pas garantie. Riot peut demander un domaine personnel
-  vérifiable (`exemple.fr`) même si ce site fonctionne sous `github.io`.
-- Dans ce cas, GitHub Pages peut héberger le même site sous un **domaine personnalisé**.
+Do not claim functionality is released unless separately verified. Do not create a fake download button, beta list, review, rating, or player performance guarantee.
 
-## Structure
+## Deployment
 
-- `index.html` — accueil & présentation
-- `privacy.html` — confidentialité (texte de base à adapter)
-- `terms.html` — conditions d'utilisation (texte de base à adapter)
-- `styles.css` — styles responsive
-- `site.js` — changement de langue local
-- `.nojekyll` — livraison des fichiers statiques sans transformation Jekyll
+GitHub Pages is configured to publish `main` at `/(root)`. After editing, check **Actions → pages build and deployment**, then open the public site with a fresh cache-busting query such as `?v=11`. A successful commit does not by itself guarantee the public site has already deployed.
 
-Ce site est un **site vitrine**, pas une application Riot Sign On et pas un serveur d'API.
+The Riot URL verification file is `/riot.txt`. Preserve it unless the project owner intentionally decides otherwise.
+
+Never commit API keys, Riot Sign On secrets, tokens, account credentials, user match histories, or `.env` files.
+
+## Main website files
+
+- `index.html`: landing narrative, demo sections and calls to action.
+- `product.html`: detailed product explanation and planned features.
+- `riot-integration.html`: conceptual opt-in flow only.
+- `privacy.html`, `terms.html`: public policy documents; review them before launch and provide a real public support contact.
+- `site.js`: language preference, existing rank demo and Insights tab behavior.
+- `experience-v11.js`: bilingual illustrative training plan builder.
+- `insights-guide.js`, `insights-v2.js`: interactive teaching layer and desktop-style mockup behavior.
+- `hero-v2-static.css`: noninteractive miniature of the Windows V2 interface.
+- `experience-v11.css`: value proposition, three-step narrative, status cards, routine settings, FAQ and responsive styles.
+- `v5.css`, `design.css`, `styles.css`, `insights*.css`: older base and analytics CSS layers. Changes to CSS order require checking regressions.
+- `aimroutine-arena.svg`: original SVG used in the static miniatures; not an official Riot character image.
+- `favicon.svg`: site icon.
+
+## Development checklist
+
+1. Test `index.html` on 320, 375, 390, 430, 768, 1024 and 1440 px widths in real browsers.
+2. Switch FR/EN and test every training selector, tab, chart point, FAQ item and guided tour.
+3. Check that static miniatures contain **no clickable controls**.
+4. Verify every link, especially `#routine`, `#insights`, `#availability` and links into `product.html`.
+5. Verify website descriptions clearly label mockups, planned functionality and pending Riot approval.
+6. Replace provisional legal contact language with a real public support channel before wider distribution.
+7. When a Windows installer becomes available, validate its distribution and signature before adding a real download call to action.
+8. Consider adding a **real licensed screenshot or product walkthrough video** to increase trust; the current miniature is a reconstruction.
+
+## Trademarks
+
+AimRoutine Tracker is not endorsed, certified or sponsored by Riot Games. VALORANT and the names of optional aim-training products remain the properties of their respective owners.
