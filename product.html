@@ -14,7 +14,7 @@
 .product-hero h1{font-size:clamp(39px,5.6vw,68px);max-width:950px}
 .product-hero .lead{max-width:850px}
 .product-tags{display:flex;gap:9px;flex-wrap:wrap;margin-top:27px}
-.product-tags > span{border:1px solid #33536b;background:#13263d;color:#c1dce9;border-radius:100px;padding:6px 12px;font-size:12px;max-width:100%;overflow-wrap:anywhere;line-height:1.5}
+.product-tags > .product-tag{display:inline-flex;align-items:center;border:1px solid #33536b;background:#13263d;color:#c1dce9;border-radius:100px;padding:6px 12px;font-size:12px;max-width:100%;overflow-wrap:anywhere;line-height:1.5;box-sizing:border-box}
 .p-section{padding:46px 0 60px}
 .p-section+.p-section{border-top:1px solid rgba(148,196,222,.12)}
 .p-kicker{display:block;color:#58e9e5;font-weight:800;font-size:12px;letter-spacing:.15em;text-transform:uppercase}
@@ -87,8 +87,15 @@
 <h1><span class="en">A dedicated workspace for <span class="accent">better aim.</span></span><span class="fr">Un environnement complet pour <span class="accent">progresser en AIM.</span></span></h1>
 <p class="lead en">AimRoutine Tracker is an independent Windows desktop project for VALORANT players. Its goal is to bring structured aim practice, adjustable training plans and honest progress tracking into one place — whether you are Iron, Radiant, or somewhere in between.</p>
 <p class="lead fr">AimRoutine Tracker est un projet de logiciel Windows indépendant pour les joueurs VALORANT. Son objectif : réunir des entraînements AIM structurés, des routines adaptées et un suivi clair de la progression, du rang Fer jusqu'à Radiant.</p>
-<div class="product-tags">
-<span>VALORANT</span><span>Aim Lab</span><span>KovaaK's</span><span>Oblivity</span><span><span class="en">Local-first</span><span class="fr">Données locales</span></span><span><span class="en">Optional Riot API after approval</span><span class="fr">API Riot facultative après autorisation</span></span>
+<div class="product-tags" aria-label="VALORANT, Aim Lab, KovaaK's, Oblivity, local data, optional Riot API">
+<span class="product-tag">VALORANT</span>
+<span class="product-tag">Aim Lab</span>
+<span class="product-tag">KovaaK's</span>
+<span class="product-tag">Oblivity</span>
+<span class="product-tag en" lang="en">Local-first</span>
+<span class="product-tag fr" lang="fr">Données locales</span>
+<span class="product-tag en" lang="en">Optional Riot API after approval</span>
+<span class="product-tag fr" lang="fr">API Riot facultative après autorisation</span>
 </div>
 <nav class="p-nav" aria-label="Page sections">
 <a href="#purpose"><span class="en">Mission</span><span class="fr">Mission</span></a>
