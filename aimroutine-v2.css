@@ -221,3 +221,18 @@ body.v8-app [id]{scroll-margin-top:100px}
 @media(prefers-reduced-motion:reduce){
  body.v8-app .v8-sidebar,body.v8-app .v8-side-link{transition:none}
 }
+
+
+/* Specificity fixes against the older generic site stylesheet. */
+body.v8-app section.v8-hero-card{padding:0}
+body.v8-app .v8-main .v8-hero-card .v8-hero-body{padding-top:24px;padding-bottom:22px}
+body.v8-app .v8-footer{margin:0}
+body.v8-app .v8-sidebar .v8-side-links{align-items:stretch;justify-content:flex-start;min-height:0}
+body.v8-app .v8-sidebar .v8-side-links a{width:100%}
+@media(max-width:920px){
+ body.v8-app .v8-topbar .lang{display:none}
+ body.v8-app.v8-menu-open{overflow:hidden}
+}
+@media(max-width:680px){
+ body.v8-app .v8-main .v8-hero-card .v8-hero-body{padding-top:23px;padding-bottom:19px}
+}
