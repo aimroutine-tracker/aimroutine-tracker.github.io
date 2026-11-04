@@ -7,8 +7,9 @@
        b.textContent=v==='en'?'FR':'EN';
     });
   }
-  let preferred = 'en';
-  try { preferred=localStorage.getItem('aimroutine_site_lang')||'en'; } catch(e) {}
+  // Honor the saved choice; otherwise use the visitor's browser language.
+  let preferred = (navigator.language || 'en').toLowerCase().startsWith('fr') ? 'fr' : 'en';
+  try { preferred = localStorage.getItem('aimroutine_site_lang') || preferred; } catch(e) {}
   setLang(preferred==='fr'?'fr':'en');
   document.querySelectorAll('[data-switch-lang]').forEach(b=>b.addEventListener('click',()=>setLang(document.documentElement.lang==='en'?'fr':'en')));
 })();
