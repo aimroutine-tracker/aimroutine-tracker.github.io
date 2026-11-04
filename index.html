@@ -2,154 +2,187 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#07111f">
-<meta name="description" content="AimRoutine Tracker — independent VALORANT aim training companion for Windows. Planned personalized routines from Iron to Radiant, compatible with Aim Lab, KovaaK's, Oblivity and VALORANT practice.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#070e1a">
+<meta name="description" content="AimRoutine Tracker: VALORANT aim-training companion for Windows. Personalized routines from Iron to Radiant, Aim Lab, KovaaK's, Oblivity and progress tracking. In development.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="AimRoutine Tracker — Train with purpose">
-<meta property="og:description" content="Personalized aim-training routines and progress tracking for every VALORANT rank. Independent Windows project in development.">
+<meta property="og:title" content="AimRoutine Tracker — Train smarter. Aim better.">
+<meta property="og:description" content="A new way to organize your VALORANT aim training. Routines, skills, progress and a transparent roadmap. Independent Windows project in development.">
 <meta property="og:url" content="https://aimroutine-tracker.github.io/">
 <link rel="canonical" href="https://aimroutine-tracker.github.io/">
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
-<title>AimRoutine Tracker — Train with purpose</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<title>AimRoutine Tracker | Train smarter. Aim better.</title>
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="design.css">
+<link rel="stylesheet" href="v5.css">
 <script src="site.js" defer></script>
 </head>
-<body>
-<a class="skip-link" href="#main"><span class="en">Skip to content</span><span class="fr">Aller au contenu</span></a>
-<header>
- <nav class="wrap" aria-label="Primary navigation">
-   <a class="brand" href="index.html" aria-label="AimRoutine Tracker — Home"><span class="mark" aria-hidden="true">⌖</span><span class="brand-name">AimRoutine Tracker</span></a>
-   <div class="navlinks site-nav">
+<body class="v5-landing">
+<a class="skip-link" href="#main"><span class="en">Skip to main content</span><span class="fr">Aller au contenu</span></a>
+<header class="v5-header">
+ <nav class="v5-nav v5-container" aria-label="Primary navigation">
+  <a class="v5-brand" href="index.html" aria-label="AimRoutine Tracker — homepage"><span class="v5-brand-mark" aria-hidden="true">⌖</span><span>AimRoutine Tracker</span></a>
+  <div class="v5-nav-right">
+   <div class="v5-desktop-links">
     <a href="#features"><span class="en">Features</span><span class="fr">Fonctionnalités</span></a>
-    <a href="#approach"><span class="en">How it works</span><span class="fr">Comment ça marche</span></a>
-    <a href="#riot">Riot API</a>
-    <a class="always" href="product.html"><span class="en">Explore the project</span><span class="fr">Présentation</span></a>
-    <button type="button" class="lang" data-switch-lang aria-label="Switch language">FR</button>
+    <a href="#routine"><span class="en">Training demo</span><span class="fr">Démo des routines</span></a>
+    <a href="#tools"><span class="en">Compatibility</span><span class="fr">Compatibilité</span></a>
+    <a href="product.html"><span class="en">About the project</span><span class="fr">Présentation</span></a>
+    <a href="riot-integration.html">Riot API</a>
    </div>
+   <details class="v5-mobile-nav">
+    <summary><span class="en">Menu</span><span class="fr">Menu</span></summary>
+    <div class="v5-mobile-panel">
+      <a href="#features"><span class="en">Features</span><span class="fr">Fonctionnalités</span></a>
+      <a href="#routine"><span class="en">Training demo</span><span class="fr">Démo des routines</span></a>
+      <a href="#tools"><span class="en">Compatibility</span><span class="fr">Compatibilité</span></a>
+      <a href="product.html"><span class="en">About the project</span><span class="fr">Présentation</span></a>
+      <a href="riot-integration.html">Riot API</a>
+      <a href="privacy.html"><span class="en">Privacy</span><span class="fr">Confidentialité</span></a>
+    </div>
+   </details>
+   <button type="button" class="v5-lang lang" data-switch-lang aria-label="Switch language">FR</button>
+  </div>
  </nav>
 </header>
-<main id="main">
-<div class="wrap landing-hero">
- <div class="landing-copy">
-  <div class="eyebrow"><span class="en">AIM TRAINING / WINDOWS / IN DEVELOPMENT</span><span class="fr">ENTRAÎNEMENT AIM / WINDOWS / EN DÉVELOPPEMENT</span></div>
-  <h1><span class="en">Train with <em>purpose.</em><br>Improve with clarity.</span><span class="fr">Entraîne-toi avec <em>méthode.</em><br>Progresse avec précision.</span></h1>
-  <p class="lead"><span class="en">Your personalized VALORANT aim-training workspace. Build routines for your level, track deliberate practice and learn where to focus next — from Iron to Radiant.</span><span class="fr">Ton espace d'entraînement AIM sur VALORANT. Compose des routines adaptées à ton niveau, suis tes séances et découvre les mécaniques à travailler — de Fer à Radiant.</span></p>
-  <div class="actions">
-   <a class="btn" href="product.html"><span class="en">Discover AimRoutine Tracker</span><span class="fr">Découvrir AimRoutine Tracker</span> <span aria-hidden="true">↗</span></a>
-   <a class="btn outline" href="#features"><span class="en">Explore features</span><span class="fr">Voir les fonctionnalités</span> <span aria-hidden="true">↓</span></a>
-  </div>
-  <div class="landing-tick"><span><span class="en">Made for every rank</span><span class="fr">Pour tous les rangs</span></span><span><span class="en">No trainer required</span><span class="fr">Aucun trainer obligatoire</span></span><span><span class="en">Local-first design</span><span class="fr">Données locales en priorité</span></span></div>
- </div>
- <div class="landing-visual">
-  <div class="app-window" aria-label="Illustrative dashboard mockup; no actual player statistics">
-   <div class="app-titlebar">
-    <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
-    <span class="app-title">AIMROUTINE / TRACKER</span>
-    <span class="app-chip">CONCEPT UI</span>
-   </div>
-   <div class="app-shell">
-    <aside class="app-sidebar" aria-hidden="true"><span class="sidebar-logo">⌖</span><span class="sidebar-btn active">▦</span><span class="sidebar-btn">◎</span><span class="sidebar-btn">◷</span><span class="sidebar-btn">⌁</span></aside>
-    <div class="app-content">
-     <div class="app-topline"><div><small><span class="en">YOUR WORKSPACE</span><span class="fr">TON ESPACE</span></small><h3><span class="en">Training overview</span><span class="fr">Vue d'ensemble</span></h3></div><span class="app-day"><span class="en">Preview</span><span class="fr">Aperçu</span></span></div>
-     <div class="app-scoregrid">
-      <div class="app-score"><small><span class="en">Available ranks</span><span class="fr">Rangs pris en charge</span></small><strong>09</strong><span>Iron → Radiant</span></div>
-      <div class="app-score"><small><span class="en">Session formats</span><span class="fr">Formats de séance</span></small><strong>03</strong><span>5–60 min</span></div>
-      <div class="app-score"><small><span class="en">Practice sources</span><span class="fr">Sources d'entraînement</span></small><strong>04</strong><span><span class="en">Flexible</span><span class="fr">Flexible</span></span></div>
-     </div>
-     <div class="app-lower">
-      <div class="app-chart">
-       <div class="app-paneltitle"><span><span class="en">Illustrative trend</span><span class="fr">Tendance fictive</span></span><b><span class="en">SAMPLE</span><span class="fr">EXEMPLE</span></b></div>
-       <div class="app-bars" aria-hidden="true"><i style="height:35%"></i><i style="height:48%"></i><i style="height:39%"></i><i style="height:62%"></i><i style="height:53%"></i><i style="height:75%"></i><i style="height:67%"></i><i style="height:86%"></i></div>
-       <div class="app-legend" aria-hidden="true"><span>01</span><span>04</span><span>08</span></div>
-      </div>
-      <div class="app-routine">
-       <div class="app-paneltitle"><span><span class="en">Example routine</span><span class="fr">Routine d'exemple</span></span><b>30 MIN</b></div>
-       <div class="routine-item"><b>✓</b><span>Micro adjustments</span><em>08m</em></div>
-       <div class="routine-item"><b>✓</b><span>Dynamic clicking</span><em>10m</em></div>
-       <div class="routine-item"><b>·</b><span>VALORANT Range</span><em>12m</em></div>
-      </div>
-     </div>
-     <div class="app-footer"><span><span class="en">Design preview · no real data</span><span class="fr">Maquette · aucune donnée réelle</span></span><strong><span class="en">PERSONALIZED AIM</span><span class="fr">AIM PERSONNALISÉ</span></strong></div>
+<main id="main" class="v5-main">
+ <section class="v5-hero">
+  <div class="v5-container v5-hero-layout">
+   <div class="v5-hero-copy">
+    <div class="v5-eyebrow"><span class="v5-eyebrow-dot"></span><span class="en">YOUR AIM. YOUR PROGRESSION. / WINDOWS</span><span class="fr">TON AIM. TA PROGRESSION. / WINDOWS</span></div>
+    <h1><span class="en">Train smarter.<br><span class="v5-gradient-text">Aim better.</span></span><span class="fr">Entraîne ton aim.<br><span class="v5-gradient-text">Dépasse tes limites.</span></span></h1>
+    <p class="v5-hero-lead"><span class="en">Your personalized space to practice, track and understand your VALORANT aim. Thoughtful routines from Iron to Radiant, designed around the tools you actually have.</span><span class="fr">L’espace pensé pour t’entraîner, mesurer tes progrès et développer ton aim sur VALORANT. Des routines de Fer à Radiant, adaptées à ton niveau et aux logiciels que tu possèdes.</span></p>
+    <div class="v5-cta-row">
+     <a class="v5-btn primary" href="product.html"><span class="en">Discover the project</span><span class="fr">Découvrir le logiciel</span> <span aria-hidden="true">↗</span></a>
+     <a class="v5-btn secondary" href="#routine"><span class="en">Explore a routine</span><span class="fr">Essayer une routine</span> <span aria-hidden="true">↓</span></a>
     </div>
+    <div class="v5-hero-facts"><span><span class="en">All ranks</span><span class="fr">Tous les rangs</span></span><span><span class="en">Your own tools</span><span class="fr">Tes logiciels</span></span><span><span class="en">In development</span><span class="fr">En développement</span></span></div>
+   </div>
+   <div class="v5-preview-wrap">
+    <div class="v5-device" aria-label="Illustrative aim training dashboard concept, not an active app or real player statistics">
+     <div class="v5-device-top"><div class="v5-device-dots" aria-hidden="true"><i></i><i></i><i></i></div><span class="v5-device-title">AIMROUTINE / DASHBOARD</span><span class="v5-device-chip">CONCEPT</span></div>
+     <div class="v5-device-layout">
+      <div class="v5-device-side" aria-hidden="true"><span>⌖</span><span class="selected">▦</span><span>◎</span><span>◷</span><span>↗</span></div>
+      <div class="v5-device-content">
+       <div class="v5-device-label"><small><span class="en">TRAINING WORKSPACE</span><span class="fr">TON ESPACE D'ENTRAÎNEMENT</span></small><em><span class="en">UI preview</span><span class="fr">Aperçu UI</span></em></div>
+       <h3><span class="en">Your training, organized.</span><span class="fr">Ton entraînement, organisé.</span></h3>
+       <div class="v5-device-metrics">
+        <div class="v5-metric"><strong>09</strong><span><span class="en">Supported ranks</span><span class="fr">Rangs couverts</span></span></div>
+        <div class="v5-metric"><strong>04</strong><span><span class="en">Training sources</span><span class="fr">Sources d'entraînement</span></span></div>
+        <div class="v5-metric"><strong>03</strong><span><span class="en">Routine formats</span><span class="fr">Formats de routine</span></span></div>
+       </div>
+       <div class="v5-device-bottom">
+        <div class="v5-device-box">
+         <div class="v5-box-head"><span class="en">Progress illustration</span><span class="fr">Progression fictive</span> <b>DEMO</b></div>
+         <div class="v5-bar-chart" aria-hidden="true"><span style="height:36%"></span><span style="height:50%"></span><span style="height:42%"></span><span style="height:59%"></span><span style="height:70%"></span><span style="height:64%"></span><span style="height:83%"></span></div>
+         <div class="v5-bar-labels" aria-hidden="true"><span>01</span><span>04</span><span>07</span></div>
+        </div>
+        <div class="v5-device-box">
+         <div class="v5-box-head"><span class="en">Sample session</span><span class="fr">Séance fictive</span> <b>30 MIN</b></div>
+         <div class="v5-task"><i>✓</i><span>Micro corrections</span><em>08m</em></div>
+         <div class="v5-task"><i>✓</i><span>Dynamic clicking</span><em>10m</em></div>
+         <div class="v5-task"><i>·</i><span>VALORANT Range</span><em>12m</em></div>
+        </div>
+       </div>
+       <div class="v5-device-foot"><span><span class="en">Preview only — no actual data</span><span class="fr">Maquette — aucune donnée réelle</span></span><span>AIM / ROUTINE / ANALYSIS</span></div>
+      </div>
+     </div>
+    </div>
+    <div class="v5-preview-caption"><span class="en">Conceptual interface, not an actual software screenshot</span><span class="fr">Interface conceptuelle, pas une capture réelle du logiciel</span></div>
    </div>
   </div>
-  <div class="mock-caption"><span class="en">Product concept visualization — not a live app screenshot</span><span class="fr">Visuel conceptuel — pas une capture réelle du logiciel</span></div>
+ </section>
+ <div class="v5-container v5-counts">
+  <div class="v5-count"><strong>09</strong><p><span class="en">Ranks from Iron to Radiant</span><span class="fr">Rangs de Fer à Radiant</span></p></div>
+  <div class="v5-count"><strong>04</strong><p><span class="en">Training sources to choose from</span><span class="fr">Sources d'entraînement possibles</span></p></div>
+  <div class="v5-count"><strong>03</strong><p><span class="en">Session formats to fit your schedule</span><span class="fr">Formats adaptés à ton emploi du temps</span></p></div>
  </div>
-</div>
-
-<div class="wrap statstrip" aria-label="Project scope">
- <div class="statstrip-item"><strong>09</strong><p><span class="en">VALORANT ranks, Iron to Radiant</span><span class="fr">Rangs Valorant, de Fer à Radiant</span></p></div>
- <div class="statstrip-item"><strong>04</strong><p><span class="en">Training sources — choose the ones you own</span><span class="fr">Sources d'entraînement — choisis celles que tu possèdes</span></p></div>
- <div class="statstrip-item"><strong>03</strong><p><span class="en">Practice formats, from quick warm-ups to longer sessions</span><span class="fr">Formats, de l'échauffement à la séance avancée</span></p></div>
-</div>
-
-<section class="wrap landing-section" id="features">
- <div class="section-label"><span class="en">BUILT AROUND YOUR PROGRESSION</span><span class="fr">PENSÉ POUR TA PROGRESSION</span></div>
- <h2><span class="en">Practice smarter.<br>Understand your growth.</span><span class="fr">Un entraînement intelligent.<br>Des progrès lisibles.</span></h2>
- <p class="intro"><span class="en">More than a checklist: AimRoutine Tracker is being designed to bring your training routine, skill development and progress review into one place. Features below describe development goals.</span><span class="fr">Plus qu'une liste d'exercices : AimRoutine Tracker est conçu pour rassembler tes routines, tes compétences et l'analyse de tes progrès. Les fonctions présentées sont des objectifs de développement.</span></p>
- <div class="feature-grid"><article class="feature-tile"><div class="feature-head"><span class="feature-icon" aria-hidden="true">◎</span><span class="feature-num">01</span></div><h3><span class="en">Routines truly personalized</span><span class="fr">Des routines vraiment personnalisées</span></h3><p><span class="en">Build a program around your level, aims, available tools and training time — not a generic list of drills.</span><span class="fr">Un programme selon ton niveau, tes objectifs, tes logiciels et ton temps disponible — pas une simple liste d'exercices.</span></p></article>
-<article class="feature-tile"><div class="feature-head"><span class="feature-icon" aria-hidden="true">⌖</span><span class="feature-num">02</span></div><h3><span class="en">Practice the right mechanics</span><span class="fr">Travaille les bonnes mécaniques</span></h3><p><span class="en">Micro-adjustments, clicking, tracking and target switching, with difficulty adjusted over time.</span><span class="fr">Micro-ajustements, clicking, tracking et transitions entre cibles, avec difficulté évolutive.</span></p></article>
-<article class="feature-tile"><div class="feature-head"><span class="feature-icon" aria-hidden="true">◷</span><span class="feature-num">03</span></div><h3><span class="en">One session, one clear plan</span><span class="fr">Une séance, un plan clair</span></h3><p><span class="en">Guided exercise order, timers, breaks and notes to help keep your sessions deliberate.</span><span class="fr">Un ordre d'exercices, des chronomètres, des pauses et des notes pour rester méthodique.</span></p></article>
-<article class="feature-tile"><div class="feature-head"><span class="feature-icon" aria-hidden="true">↗</span><span class="feature-num">04</span></div><h3><span class="en">Progress you can understand</span><span class="fr">Des progrès compréhensibles</span></h3><p><span class="en">See comparable scores and consistency over time, without misleading rankings or inflated metrics.</span><span class="fr">Compare les scores équivalents et la régularité, sans classement artificiel ni métriques trompeuses.</span></p></article>
-<article class="feature-tile"><div class="feature-head"><span class="feature-icon" aria-hidden="true">▦</span><span class="feature-num">05</span></div><h3><span class="en">A schedule that fits real life</span><span class="fr">Un planning adapté à ton rythme</span></h3><p><span class="en">Quick warm-ups or deeper training, with rest days and flexible session durations.</span><span class="fr">Échauffements rapides ou séances approfondies, avec repos et durées flexibles.</span></p></article>
-<article class="feature-tile"><div class="feature-head"><span class="feature-icon" aria-hidden="true">◇</span><span class="feature-num">06</span></div><h3><span class="en">Your data, your choice</span><span class="fr">Tes données, ton choix</span></h3><p><span class="en">Local-first training records. Riot match synchronization is optional and requires official approval.</span><span class="fr">Suivi d'entraînement local. La synchronisation Riot est facultative et soumise à autorisation.</span></p></article></div>
-</section>
-
-<section class="wrap landing-section" id="approach">
- <div class="section-label"><span class="en">YOUR TRAINING JOURNEY</span><span class="fr">TON PARCOURS D'ENTRAÎNEMENT</span></div>
- <h2><span class="en">Three steps to train with intention.</span><span class="fr">Trois étapes pour s'entraîner efficacement.</span></h2>
- <p class="intro"><span class="en">A simple, repeatable method — suited to your schedule and skill level.</span><span class="fr">Une méthode simple et reproductible, adaptée à ton niveau et à ton emploi du temps.</span></p>
- <div class="process-panel"><div class="process-step"><span class="count">01</span><h3><span class="en">Set your goals</span><span class="fr">Définis tes objectifs</span></h3><p><span class="en">Select your rank, trainers and the skills you want to improve.</span><span class="fr">Choisis ton rang, tes aim trainers et les compétences à améliorer.</span></p></div><div class="process-step"><span class="count">02</span><h3><span class="en">Train with structure</span><span class="fr">Entraîne-toi avec méthode</span></h3><p><span class="en">Follow a session designed around your time and available tools.</span><span class="fr">Suis une séance adaptée au temps et aux logiciels dont tu disposes.</span></p></div><div class="process-step"><span class="count">03</span><h3><span class="en">Review and adjust</span><span class="fr">Analyse et ajuste</span></h3><p><span class="en">Track repeated results to understand where to focus next.</span><span class="fr">Observe plusieurs résultats pour mieux cibler les séances suivantes.</span></p></div></div>
-</section>
-
-<section class="wrap landing-section" id="compatible">
- <div class="compat-panel">
-  <div>
-   <div class="section-label"><span class="en">ONE WORKSPACE, YOUR TOOLS</span><span class="fr">UN ESPACE, TES LOGICIELS</span></div>
-   <h2><span class="en">No need to own every aim trainer.</span><span class="fr">Pas besoin de posséder tous les aim trainers.</span></h2>
-   <p><span class="en">Whether you use Aim Lab, KovaaK's, Oblivity or VALORANT's practice modes, the aim is to build a coherent routine around what's actually available to you.</span><span class="fr">Que tu utilises Aim Lab, KovaaK's, Oblivity ou les modes d'entraînement de Valorant, l'objectif est de proposer un programme cohérent avec ce que tu possèdes.</span></p>
-   <a class="btn outline" href="product.html#trainers"><span class="en">Explore compatibility</span><span class="fr">Découvrir les compatibilités</span> <span aria-hidden="true">↗</span></a>
+ <section class="v5-section v5-container" id="features">
+  <div class="v5-section-head">
+   <span class="v5-kicker"><span class="en">BUILT AROUND YOUR PROGRESSION</span><span class="fr">PENSÉ POUR TA PROGRESSION</span></span>
+   <h2><span class="en">Everything your practice needs.<br>Nothing unnecessary.</span><span class="fr">Un entraînement plus clair.<br>Une progression plus concrète.</span></h2>
+   <p><span class="en">One place for structured practice, session history and understandable feedback. These are the intended features of a Windows app still in development.</span><span class="fr">Un seul espace pour structurer tes séances, retrouver ton historique et comprendre tes résultats. Il s'agit des fonctionnalités prévues d'un logiciel Windows encore en développement.</span></p>
   </div>
-  <div class="compat-list"><div class="compat-cell"><span class="compat-dot" aria-hidden="true">⌖</span>Aim Lab</div><div class="compat-cell"><span class="compat-dot" aria-hidden="true">◎</span>KovaaK's</div><div class="compat-cell"><span class="compat-dot" aria-hidden="true">◈</span>Oblivity</div><div class="compat-cell"><span class="compat-dot" aria-hidden="true">◇</span>VALORANT</div><div class="compat-foot"><span class="en">Examples of intended compatible training sources. No affiliation or official integration implied.</span><span class="fr">Sources d'entraînement envisagées. Aucune affiliation ou intégration officielle sous-entendue.</span></div></div>
- </div>
-</section>
-
-<section class="wrap riot-showcase" id="riot">
- <div class="riot-copy">
-  <div class="section-label">RIOT GAMES API · RSO</div>
-  <h2><span class="en">Your matches.<br>More context for your training.</span><span class="fr">Tes parties.<br>Plus de contexte pour progresser.</span></h2>
-  <p><span class="en">Official account linking and post-match statistics are planned as an optional feature. The production API request is pending Riot's review. Riot Sign On and automatic match synchronization are not active.</span><span class="fr">La connexion officielle au compte Riot et les statistiques après partie sont prévues en option. La demande d'accès à l'API de production attend l'examen de Riot. Riot Sign On et la synchronisation automatique ne sont pas actifs.</span></p>
-  <a class="btn outline" href="riot-integration.html"><span class="en">See the planned Riot user flow</span><span class="fr">Voir le parcours Riot prévu</span> <span aria-hidden="true">↗</span></a>
-  <div class="riot-status"><b></b><span class="en">Application status: pending review</span><span class="fr">Statut de la demande : en attente d'examen</span></div>
- </div>
- <div class="riot-flowcard" aria-label="Illustrative planned Riot authorization process">
-  <div class="app-paneltitle"><span><span class="en">PLANNED CONNECTION FLOW</span><span class="fr">PARCOURS DE CONNEXION PRÉVU</span></span><b>Riot Sign On</b></div>
-  <div class="riot-step"><div class="riot-index">01</div><div class="riot-step-text"><strong><span class="en">Player consent</span><span class="fr">Consentement du joueur</span></strong><span><span class="en">Clear privacy information</span><span class="fr">Information sur les données</span></span></div></div>
-  <div class="riot-divider"></div>
-  <div class="riot-step"><div class="riot-index">02</div><div class="riot-step-text"><strong><span class="en">Official Riot Sign On</span><span class="fr">Connexion officielle Riot Sign On</span></strong><span><span class="en">Only after authorization</span><span class="fr">Uniquement après autorisation</span></span></div></div>
-  <div class="riot-divider"></div>
-  <div class="riot-step"><div class="riot-index">03</div><div class="riot-step-text"><strong><span class="en">Approved match data</span><span class="fr">Données des matchs autorisées</span></strong><span><span class="en">Secure backend service</span><span class="fr">Serveur sécurisé</span></span></div></div>
-  <div class="riot-divider"></div>
-  <div class="riot-step"><div class="riot-index">04</div><div class="riot-step-text"><strong><span class="en">Post-game insights</span><span class="fr">Analyses après partie</span></strong><span><span class="en">Optional and player-focused</span><span class="fr">Facultatives et personnelles</span></span></div></div>
- </div>
-</section>
-
-<div class="wrap final-banner">
- <div><div class="section-label"><span class="en">DISCOVER THE PROJECT</span><span class="fr">DÉCOUVRIR LE PROJET</span></div><h2><span class="en">An ambitious vision, grounded in honest development.</span><span class="fr">Une vision ambitieuse, un développement transparent.</span></h2><p><span class="en">Read the full product concept, its limitations and planned features.</span><span class="fr">Retrouve le concept détaillé, ses limites et les fonctionnalités prévues.</span></p></div>
- <a class="btn" href="product.html"><span class="en">Full product presentation</span><span class="fr">Présentation complète</span> <span aria-hidden="true">↗</span></a>
-</div>
+  <div class="v5-feature-grid"><article class="v5-feature"><div class="v5-feature-top"><span class="v5-feature-icon" aria-hidden="true">◎</span><span class="v5-feature-num">01</span></div><h3><span class="en">Routines built around your level</span><span class="fr">Routines adaptées à ton niveau</span></h3><p><span class="en">From Iron to Radiant, training should adapt to your needs—not a fixed template.</span><span class="fr">Fer ou Radiant, ton programme doit correspondre à tes besoins, pas à un modèle unique.</span></p></article>
+<article class="v5-feature"><div class="v5-feature-top"><span class="v5-feature-icon" aria-hidden="true">⌖</span><span class="v5-feature-num">02</span></div><h3><span class="en">Practice the skills that matter</span><span class="fr">Exercices réellement utiles</span></h3><p><span class="en">Micro-adjustments, flicks, dynamic clicking, tracking and target switching.</span><span class="fr">Micro-corrections, flicks, clicking dynamique, tracking et transitions entre cibles.</span></p></article>
+<article class="v5-feature"><div class="v5-feature-top"><span class="v5-feature-icon" aria-hidden="true">◷</span><span class="v5-feature-num">03</span></div><h3><span class="en">Training sessions made simple</span><span class="fr">Séances simples à suivre</span></h3><p><span class="en">Organize drills, rest periods and personal goals in one dedicated workspace.</span><span class="fr">Enchaîne tes exercices, tes temps de repos et tes objectifs dans un seul espace.</span></p></article>
+<article class="v5-feature"><div class="v5-feature-top"><span class="v5-feature-icon" aria-hidden="true">↗</span><span class="v5-feature-num">04</span></div><h3><span class="en">Progress you can measure</span><span class="fr">Progression mesurable</span></h3><p><span class="en">Compare consistent scenarios to see where your aim is genuinely improving.</span><span class="fr">Compare des résultats équivalents pour voir où tu progresses vraiment.</span></p></article>
+<article class="v5-feature"><div class="v5-feature-top"><span class="v5-feature-icon" aria-hidden="true">▦</span><span class="v5-feature-num">05</span></div><h3><span class="en">A plan that fits your schedule</span><span class="fr">Un rythme qui te ressemble</span></h3><p><span class="en">Quick warm-up, regular routine or extended training: your choice.</span><span class="fr">Échauffement rapide, routine classique ou entraînement approfondi : tu choisis.</span></p></article>
+<article class="v5-feature"><div class="v5-feature-top"><span class="v5-feature-icon" aria-hidden="true">◇</span><span class="v5-feature-num">06</span></div><h3><span class="en">Your data stays in your hands</span><span class="fr">Confidentialité avant tout</span></h3><p><span class="en">Local data is prioritized. Riot Sign On requires official approval.</span><span class="fr">Les données locales restent prioritaires. Riot Sign On nécessitera une autorisation officielle.</span></p></article></div>
+ </section>
+ <section class="v5-section v5-container" id="routine">
+  <div class="v5-routine-layout">
+   <div class="v5-routine-copy">
+    <span class="v5-kicker"><span class="en">MADE FOR EVERY SKILL LEVEL</span><span class="fr">POUR CHAQUE NIVEAU</span></span>
+    <h2><span class="en">One goal.<br><span class='v5-gradient-text'>Your own path.</span></span><span class="fr">Le même objectif.<br><span class='v5-gradient-text'>Ton propre parcours.</span></span></h2>
+    <p><span class="en">Someone learning basic crosshair control should not train like an Immortal player refining advanced precision. Explore how the training focus can adapt to different ranks.</span><span class="fr">Un joueur qui apprend à bien placer son viseur ne doit pas s'entraîner exactement comme un Immortel qui perfectionne ses micro-ajustements. Découvre comment les priorités peuvent évoluer selon le rang.</span></p>
+    <p><span class="en">These examples are educational concepts, not proven plans or actual data from Riot.</span><span class="fr">Ces exemples sont des maquettes pédagogiques, pas des programmes validés par Riot ni des statistiques réelles.</span></p>
+    <a class="v5-btn secondary" href="product.html#ranks"><span class="en">See all ranks</span><span class="fr">Voir tous les rangs</span> <span aria-hidden="true">↗</span></a>
+   </div>
+   <div class="v5-routine-card">
+    <div class="v5-card-top"><strong><span class="en">Example training routine</span><span class="fr">Exemple de routine AIM</span></strong><span class="v5-demo-badge"><span class="en">INTERACTIVE DEMO</span><span class="fr">DÉMO INTERACTIVE</span></span></div>
+    <div class="v5-ranks" role="group" aria-label="Select an example VALORANT rank">
+      <button type="button" data-demo-rank="iron" aria-pressed="false"><span class="en">Iron</span><span class="fr">Fer</span></button>
+      <button type="button" data-demo-rank="gold" aria-pressed="true"><span class="en">Gold</span><span class="fr">Or</span></button>
+      <button type="button" data-demo-rank="immortal" aria-pressed="false"><span class="en">Immortal</span><span class="fr">Immortel</span></button>
+    </div>
+    <div class="v5-routine-summary" aria-live="polite"><b data-routine-title><span class="en">Precision and consistency</span><span class="fr">Précision et régularité</span></b><span data-routine-total>30 MIN</span></div>
+    <div class="v5-routine-lines" aria-live="polite">
+      <div class="v5-line"><span class="v5-line-index">01</span><span class="v5-line-title" data-exercise-title="0">Controlled flicks</span><span class="v5-line-time" data-exercise-time="0">08m</span></div>
+      <div class="v5-line"><span class="v5-line-index">02</span><span class="v5-line-title" data-exercise-title="1">Dynamic clicking</span><span class="v5-line-time" data-exercise-time="1">10m</span></div>
+      <div class="v5-line"><span class="v5-line-index">03</span><span class="v5-line-title" data-exercise-title="2">In-game transfer</span><span class="v5-line-time" data-exercise-time="2">12m</span></div>
+    </div>
+    <p class="v5-routine-note" data-routine-note><span class="en">Focus on controlled accuracy before adding speed. Exact scenarios depend on your available tools.</span><span class="fr">Privilégie la précision contrôlée avant d'augmenter la vitesse. Les scénarios dépendent des logiciels disponibles.</span></p>
+   </div>
+  </div>
+ </section>
+ <section class="v5-section v5-container" id="tools">
+  <div class="v5-compatible">
+   <div>
+    <span class="v5-kicker"><span class="en">WORKS WITH YOUR TRAINING TOOLS</span><span class="fr">S'ADAPTE À TES LOGICIELS</span></span>
+    <h2><span class="en">One platform.<br>All the tools you use.</span><span class="fr">Une seule plateforme.<br>Les outils que tu utilises.</span></h2>
+    <p><span class="en">Aim Lab only? KovaaK's? Oblivity? Or simply VALORANT itself? The product is designed so no single paid trainer is required to follow a coherent routine.</span><span class="fr">Tu n'as qu'Aim Lab ? KovaaK's ? Oblivity ? Ou seulement VALORANT ? Le projet est conçu pour proposer une routine cohérente sans obligation d'utiliser plusieurs logiciels.</span></p>
+    <a class="v5-btn secondary" href="product.html#trainers"><span class="en">Explore compatibility</span><span class="fr">Voir les compatibilités</span> <span aria-hidden="true">↗</span></a>
+   </div>
+   <div class="v5-tool-grid">
+    <div class="v5-tool"><span class="v5-tool-mark">◎</span>Aim Lab</div>
+    <div class="v5-tool"><span class="v5-tool-mark">⌖</span>KovaaK's</div>
+    <div class="v5-tool"><span class="v5-tool-mark">◈</span>Oblivity</div>
+    <div class="v5-tool"><span class="v5-tool-mark">◇</span>VALORANT</div>
+    <div class="v5-tool-caption"><span class="en">Training sources planned for routine support. No third-party affiliation implied.</span><span class="fr">Logiciels envisagés pour les routines. Aucune affiliation avec leurs éditeurs.</span></div>
+   </div>
+  </div>
+ </section>
+ <section class="v5-section v5-container" id="riot">
+  <div class="v5-riot-layout">
+   <div>
+    <span class="v5-kicker">RIOT GAMES API / RIOT SIGN ON</span>
+    <h2><span class="en">Your matches, analyzed <span class='v5-gradient-text'>after the game.</span></span><span class="fr">Tes parties, analysées <span class='v5-gradient-text'>après chaque match.</span></span></h2>
+    <p><span class="en">The product plans optional Riot account linking and authorized match history analysis. The request for production API access is pending review. No official account connection is active yet.</span><span class="fr">Le projet prévoit une connexion Riot facultative pour consulter l'historique autorisé de tes parties. La demande d'accès à l'API de production est en cours d'examen. Aucune connexion officielle n'est encore active.</span></p>
+    <a class="v5-btn secondary" href="riot-integration.html"><span class="en">See the planned Riot flow</span><span class="fr">Voir le parcours Riot prévu</span> <span aria-hidden="true">↗</span></a>
+    <div class="v5-status"><span class="en">API application submitted · Pending review</span><span class="fr">Demande API déposée · En attente d'examen</span></div>
+   </div>
+   <div class="v5-riot-flow">
+    <div class="v5-flow-label"><span class="en">PLANNED USER JOURNEY</span><span class="fr">PARCOURS UTILISATEUR PRÉVU</span></div>
+    <div class="v5-flow-step"><span class="v5-flow-number">01</span><div><b><span class="en">Player chooses to connect</span><span class="fr">Le joueur choisit de se connecter</span></b><p><span class="en">Explicit consent, transparent privacy notice</span><span class="fr">Consentement explicite et confidentialité</span></p></div></div>
+    <div class="v5-flow-step"><span class="v5-flow-number">02</span><div><b>Riot Sign On</b><p><span class="en">Official Riot authentication, only after approval</span><span class="fr">Authentification Riot, seulement après autorisation</span></p></div></div>
+    <div class="v5-flow-step"><span class="v5-flow-number">03</span><div><b><span class="en">Authorized match information</span><span class="fr">Informations de matchs autorisées</span></b><p><span class="en">Secure server-side access</span><span class="fr">Accès sécurisé côté serveur</span></p></div></div>
+    <div class="v5-flow-step"><span class="v5-flow-number">04</span><div><b><span class="en">Post-match analysis</span><span class="fr">Analyse après partie</span></b><p><span class="en">Personal insights, no live competitive advantage</span><span class="fr">Analyse personnelle, aucun avantage compétitif en direct</span></p></div></div>
+   </div>
+  </div>
+ </section>
+ <section class="v5-container">
+  <div class="v5-closing">
+   <div><span class="v5-kicker"><span class="en">DISCOVER THE FULL VISION</span><span class="fr">DÉCOUVRE LA VISION COMPLÈTE</span></span><h2><span class="en">Built for a better way to practice.</span><span class="fr">Pensé pour progresser, séance après séance.</span></h2><p><span class="en">Explore the detailed product overview, its roadmap and transparent development status.</span><span class="fr">Découvre la présentation approfondie, les fonctionnalités envisagées et l'état réel du développement.</span></p></div>
+   <a class="v5-btn primary" href="product.html"><span class="en">Full presentation</span><span class="fr">Présentation complète</span> <span aria-hidden="true">↗</span></a>
+  </div>
+ </section>
 </main>
-<footer class="landing-footer">
- <div class="wrap footer-row">
-  <div>© 2026 AimRoutine Tracker. <span class="en">Independent project, not endorsed or sponsored by Riot Games.</span><span class="fr">Projet indépendant, ni approuvé ni sponsorisé par Riot Games.</span></div>
-  <div class="footer-links">
-   <a href="product.html"><span class="en">Product</span><span class="fr">Logiciel</span></a>
-   <a href="riot-integration.html">Riot API</a>
-   <a href="privacy.html"><span class="en">Privacy</span><span class="fr">Confidentialité</span></a>
-   <a href="terms.html"><span class="en">Terms</span><span class="fr">Conditions</span></a>
-  </div>
+<footer class="v5-footer">
+ <div class="v5-container v5-footer-inner">
+  <div>© 2026 AimRoutine Tracker. <span class="en">Independent project in development, not endorsed or sponsored by Riot Games.</span><span class="fr">Projet indépendant en développement, non approuvé ni sponsorisé par Riot Games.</span></div>
+  <div class="v5-footer-links"><a href="product.html"><span class="en">Product</span><span class="fr">Logiciel</span></a><a href="riot-integration.html">Riot API</a><a href="privacy.html"><span class="en">Privacy</span><span class="fr">Confidentialité</span></a><a href="terms.html"><span class="en">Terms</span><span class="fr">Conditions</span></a></div>
  </div>
 </footer>
-</body></html>
+</body>
+</html>
