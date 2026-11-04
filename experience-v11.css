@@ -101,3 +101,9 @@
 @media(prefers-reduced-motion:reduce){
  .v5-landing .experience-step,.v5-landing .experience-proof,.v5-landing .experience-accordion details{transition:none}
 }
+
+/* A clear, first-class entry point to the working web demonstration. */
+.v5-landing .v5-desktop-links .experience-nav-cta{color:#092833;background:#83eada;border:1px solid #91f9e4;padding:9px 13px;border-radius:9px;font-weight:850;white-space:nowrap}
+.v5-landing .v5-desktop-links .experience-nav-cta:hover{color:#05242e;background:#adfff0}
+.v5-landing .v5-mobile-panel .experience-mobile-cta{color:#09313b;background:#89edd9;font-weight:880;border-radius:8px;margin-bottom:5px}
+.v5-landing .v5-mobile-panel .experience-mobile-cta:hover{color:#0d3038;background:#a5ffe9}
