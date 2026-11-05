@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://aimroutine-tracker.github.io/</loc></url>
-  <url><loc>https://aimroutine-tracker.github.io/product.html</loc></url>
-  <url><loc>https://aimroutine-tracker.github.io/riot-integration.html</loc></url>
-  <url><loc>https://aimroutine-tracker.github.io/privacy.html</loc></url>
-  <url><loc>https://aimroutine-tracker.github.io/terms.html</loc></url>
+<url><loc>https://aimroutine-tracker.github.io/</loc><lastmod>2026-11-05</lastmod><priority>1.0</priority></url>
+<url><loc>https://aimroutine-tracker.github.io/product.html</loc><lastmod>2026-11-05</lastmod><priority>0.9</priority></url>
+<url><loc>https://aimroutine-tracker.github.io/presentation.html</loc><lastmod>2026-11-05</lastmod><priority>0.7</priority></url>
+<url><loc>https://aimroutine-tracker.github.io/riot-integration.html</loc><lastmod>2026-11-05</lastmod><priority>0.7</priority></url>
+<url><loc>https://aimroutine-tracker.github.io/privacy.html</loc><lastmod>2026-11-05</lastmod><priority>0.4</priority></url>
+<url><loc>https://aimroutine-tracker.github.io/terms.html</loc><lastmod>2026-11-05</lastmod><priority>0.4</priority></url>
 </urlset>
