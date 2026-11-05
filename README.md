@@ -10,7 +10,7 @@ Two genuine captures show the React production bundle running with an isolated S
 
 ## Website behavior
 
-- The landing page preserves its illustrative routine builder, fictional Training Insights and guided concept tour.
+- The streamlined landing page centers authentic screenshots, a fictional routine builder and Training Insights, with nine focused sections.
 - Dashboard and My Coach gallery tabs show current app captures. Routines and Statistics gallery views remain explicitly conceptual.
 - The new product page provides keyboard-operated image tabs, enlargement, Escape to close, language switching and reduced-motion support.
 - No account connection, training persistence, analytics collection or match-data request was added. The shared language switch stores the existing language preference only.
@@ -34,3 +34,14 @@ GitHub Pages publishes the main branch at the repository root. Confirm the match
 Keep riot.txt (Riot URL-ownership verification), privacy.html and terms.html unchanged unless the owner requests a relevant change. URL ownership verification does not mean Riot product approval.
 
 Never commit keys, credentials, tokens, private match histories or .env files. Never present the web examples as live Riot data, create a fake download button or guarantee rank gains.
+
+## Website 3.3 refresh — 2026-11-05
+
+- Unified site navigation and responsive styles across all public pages.
+- Home reduced from 15 to 9 sections; existing routine and Training Insights demos remain intact.
+- Dashboard and My Coach are authentic 2.9 screenshots; gallery captions explicitly mark the other two panels as conceptual.
+- Added [updates.html](https://aimroutine-tracker.github.io/updates.html) with verified feature status, limited history and public GitHub issue feedback (not private support).
+- Riot API page is a nonfunctional and consent-based integration proposal. No actual OAuth, Riot login or match sync is enabled.
+- No verified public Windows installer is hosted on the site.
+
+Website source is static, bilingual, hosted on GitHub Pages. No credentials, client secrets, live player data or third-party tracking scripts are necessary for website demos.
