@@ -114,3 +114,6 @@
 .site31.site31-product .show33-note a{color:#ff9dab;text-decoration:underline;text-underline-offset:4px}
 .site31.site31-home .v16-real-shot{cursor:zoom-in}
 @media(max-width:700px){.site31.site31-overview .overview33-screenshot{padding-bottom:40px}.site31.site31-overview .overview33-screenshot img{max-height:300px}}
+ 
+/* Keep previously shared section links working without restoring duplicated sections. */
+.site31.site31-home .v33-legacy-anchor{display:block;height:0;overflow:hidden;scroll-margin-top:120px;visibility:hidden}
