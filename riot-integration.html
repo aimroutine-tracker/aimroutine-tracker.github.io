@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0b141f">
 <meta name="description" content="AimRoutine Tracker planned VALORANT Riot Sign On player journey and API data usage — public mockup for Riot review.">
-<title>Riot API — Planned user flow | AimRoutine Tracker</title>
+<title>Riot API — Intégration prévue | AimRoutine Tracker 2.9</title>
 <link rel="canonical" href="https://aimroutine-tracker.github.io/riot-integration.html">
 <link rel="stylesheet" href="styles.css">
 <script src="site.js?v=8" defer></script>
@@ -62,6 +62,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://aimroutine-tracker.github.io/aimroutine-v2-dashboard-real.webp">
 <link rel="stylesheet" href="site-global-v31.css?v=1">
+<link rel="stylesheet" href="riot-presentation-v32.css?v=1">
 </head>
 <body class="ar-v12-page site31 site31-riot"><a class="site31-skip" href="#main"><span class="fr">Aller au contenu</span><span class="en">Skip to content</span></a>
 <header class="site31-header">
@@ -86,17 +87,46 @@
  </nav>
 </header>
 <main id="main">
-<div class="wrap flow-hero">
-  <div class="eyebrow">PUBLIC DEMONSTRATION · VALORANT API / RIOT SIGN ON</div>
-  <h1><span class="en">Planned player journey <span class="accent">&amp; API usage</span></span><span class="fr">Parcours joueur prévu <span class="accent">et utilisation de l’API</span></span></h1>
-  <p class="lead en">This public visual flow demonstrates how the planned desktop app will request the player's explicit consent, connect via Riot Sign On after approval, retrieve authorized match information, and use it for post-game aim-training analysis.</p>
-  <p class="lead fr">Ce parcours visuel public montre comment l'application Windows demandera le consentement du joueur, utilisera Riot Sign On après approbation, récupérera les matchs autorisés et les analysera après les parties.</p>
-  <div class="flow-alert">
-   <strong><span class="en">Mockup only — not a live Riot integration.</span><span class="fr">Maquette uniquement — aucune connexion Riot active.</span></strong>
-   <div class="en">Screens and numbers below are illustrative. No Riot credentials are requested, no login occurs, no live match data is collected, and no production API access is implied.</div>
-   <div class="fr">Les écrans et chiffres ci-dessous sont fictifs. Aucun identifiant Riot n’est demandé, aucune connexion n’a lieu et aucune donnée réelle n’est récupérée.</div>
+<div class="wrap flow-hero riot32-hero">
+ <div class="riot32-hero-copy">
+  <div class="eyebrow">RIOT GAMES API / RIOT SIGN ON / <span class="fr">INTÉGRATION ENVISAGÉE</span><span class="en">PLANNED INTEGRATION</span></div>
+  <h1><span class="fr">Tes parties.<br>Tes données.<br><span class="accent">Ton choix.</span></span><span class="en">Your matches.<br>Your data.<br><span class="accent">Your choice.</span></span></h1>
+  <p class="lead"><span class="fr">Découvre comment AimRoutine Tracker prévoit de connecter ton compte Riot uniquement avec ton accord, puis d’analyser tes propres matchs après la partie. L’authentification officielle et la synchronisation ne sont pas encore disponibles.</span><span class="en">Explore how AimRoutine Tracker plans to link your Riot account only with your consent, then review your own matches after play. Official authentication and synchronization are not yet available.</span></p>
+  <div class="riot32-hero-actions">
+   <a class="riot32-primary" href="#flow"><span class="fr">Découvrir le parcours</span><span class="en">Explore the journey</span> <span aria-hidden="true">↘</span></a>
+   <a class="riot32-secondary" href="#screens"><span class="fr">Voir les maquettes</span><span class="en">See the mockups</span> <span aria-hidden="true">↗</span></a>
   </div>
-  <div class="flow-chapters"><a href="#flow"><span class="en">User journey</span><span class="fr">Parcours utilisateur</span></a><a href="#screens"><span class="en">Screen mockups</span><span class="fr">Maquettes d’écrans</span></a><a href="#api"><span class="en">API and security</span><span class="fr">API et sécurité</span></a><a href="#status"><span class="en">Status</span><span class="fr">Statut</span></a></div>
+  <div class="riot32-status"><i aria-hidden="true"></i><span class="fr">Intégration Riot en attente d’autorisation</span><span class="en">Riot integration pending approval</span></div>
+ </div>
+ <div class="riot32-hero-aside" aria-label="Signature visuelle AimRoutine Tracker, sans authentification Riot active">
+  <span class="riot32-aside-symbol" aria-hidden="true">⌖</span>
+  <p><span class="fr">TA PRATIQUE.<br>TES MATCHS.<br>TA PROGRESSION.</span><span class="en">YOUR PRACTICE.<br>YOUR MATCHES.<br>YOUR PROGRESS.</span></p>
+  <span class="riot32-aside-note"><span class="fr">Consentement · Confidentialité · Analyse après partie</span><span class="en">Consent · Privacy · Post-match analysis</span></span>
+ </div>
+</div>
+<section class="wrap riot32-real" aria-labelledby="riot32-real-title">
+ <div class="riot32-real-heading">
+  <div><span class="riot32-real-kicker"><span class="fr">UN LOGICIEL WINDOWS BIEN RÉEL / VERSION 2.9</span><span class="en">A REAL WINDOWS APP / VERSION 2.9</span></span>
+  <h2 class="riot32-real-title" id="riot32-real-title"><span class="fr">Le logiciel aujourd’hui. L’intégration Riot, demain.</span><span class="en">The app today. Riot integration in the future.</span></h2></div>
+  <p class="riot32-real-desc"><span class="fr">Voici le Dashboard de la version 2.9 en fonctionnement, pas une capture de connexion Riot.</span><span class="en">This is the running version 2.9 Dashboard, not a screenshot of Riot account linking.</span></p>
+ </div>
+ <div class="riot32-real-frame">
+  <img src="aimroutine-29-dashboard.webp" width="1440" height="1000" loading="lazy" decoding="async" alt="Capture réelle du Dashboard AimRoutine Tracker 2.9 avec un profil fictif. La connexion Riot n’est pas active.">
+ </div>
+ <p class="riot32-real-caption"><span class="fr">Capture authentique du logiciel Windows 2.9 · Profil fictif · La connexion Riot et les données de matchs automatiques sont encore des fonctionnalités envisagées.</span><span class="en">Authentic Windows 2.9 screenshot · Fictional profile · Riot account linking and automatic match data remain planned features.</span></p>
+</section>
+<div class="wrap">
+ <div class="riot32-state" role="note">
+  <div><p class="riot32-state-title"><span class="fr">Démonstration uniquement — aucune connexion Riot active.</span><span class="en">Demonstration only — Riot login is not live.</span></p>
+   <p class="riot32-state-desc"><span class="fr">Les trois écrans ci-dessous sont des maquettes non interactives et leurs chiffres sont fictifs. Aucun identifiant Riot n’est demandé, aucune connexion n’a lieu, et aucune donnée réelle n’est collectée.</span><span class="en">The three screens below are noninteractive mockups with fictional values. No Riot credentials are requested, no login takes place, and no real match data is collected.</span></p></div>
+  <span class="riot32-state-tag">RSO / <span class="fr">EN ATTENTE</span><span class="en">PENDING</span></span>
+ </div>
+ <nav class="riot32-chapters" aria-label="Sections de l’intégration Riot / Riot integration sections">
+  <a href="#flow"><span class="fr">01 Parcours utilisateur</span><span class="en">01 User journey</span></a>
+  <a href="#screens"><span class="fr">02 Maquettes</span><span class="en">02 Screen mockups</span></a>
+  <a href="#api"><span class="fr">03 API et sécurité</span><span class="en">03 API and security</span></a>
+  <a href="#status"><span class="fr">04 Avancement</span><span class="en">04 Project status</span></a>
+ </nav>
 </div>
 <section class="wrap" id="flow">
   <div class="section-label"><span class="en">01 — Account linking journey</span><span class="fr">01 — Connexion du compte</span></div>
