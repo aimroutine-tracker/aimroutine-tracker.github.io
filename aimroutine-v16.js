@@ -11,7 +11,7 @@
     let scheduled=false;
     const paint=()=>{
       scheduled=false;
-      const header=document.querySelector(".v5-header");
+      const header=document.querySelector(".site31-header, .v5-header");
       const rail=document.querySelector(".v14-chapters");
       const cutoff=(header?.offsetHeight||0)+(rail?.offsetHeight||0)+52;
       let current=chapters[0];
