@@ -1333,3 +1333,19 @@ body.v5-landing .v16-gallery,body.v5-landing .v16-tour,body.v5-landing .v16-road
 @media(prefers-reduced-motion:reduce){
  body.v5-landing .v16-tour-progress span,body.v5-landing .v16-gallery-tab{transition:none}
 }
+
+
+/* The genuine screenshot deserves a clean, obvious path from the hero. */
+body.v5-landing .v16-hero-real-link{
+ display:inline-flex;align-items:center;gap:8px;
+ width:max-content;max-width:100%;padding:7px 11px;margin-top:15px;
+ border:1px solid #6d4b5a;border-radius:5px;background:#2c2531;
+ color:#ffd2d9;font-size:11px;font-weight:760;text-decoration:none;
+ transition:background .16s,border-color .16s;
+}
+body.v5-landing .v16-hero-real-link:hover{background:#403042;border-color:#cc788c}
+body.v5-landing .v16-hero-real-dot{display:block;width:6px;height:6px;background:#ff8499;border-radius:50%;flex:none}
+body.v5-landing .v16-hero-real-link span:last-child{margin-left:4px}
+@media(max-width:680px){
+ body.v5-landing .v16-hero-real-link{font-size:10px}
+}
