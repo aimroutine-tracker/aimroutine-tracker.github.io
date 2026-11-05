@@ -1,0 +1,61 @@
+/* AimRoutine navigation unified, v3.7 — intentionally separate URL to bust stale stylesheet caches. */
+body.site31 .site31-header .site31-links { gap: 8px; }
+body.site31 .site31-header .site31-links > a {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 38px !important;
+  padding: 8px 11px !important;
+  border: 1px solid #ff586f !important;
+  background: #ff586f !important;
+  color: #091521 !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  line-height: 1.3 !important;
+  white-space: nowrap !important;
+  text-decoration: none !important;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%) !important;
+  transition: background-color .18s ease, color .18s ease;
+}
+body.site31 .site31-header .site31-links > a:hover,
+body.site31 .site31-header .site31-links > a:focus-visible {
+  background: #ff9eac !important;
+  color: #091521 !important;
+}
+body.site31 .site31-header .site31-links > a[aria-current="page"] {
+  background: #ffd0d8 !important;
+  color: #091521 !important;
+  box-shadow: inset 0 -3px #0b141f;
+}
+body.site31 .site31-header .site31-mobile-links { gap: 6px; }
+body.site31 .site31-header .site31-mobile-links > a {
+  display: block;
+  padding: 12px 14px;
+  border: 1px solid #ff586f !important;
+  border-left: 3px solid #ff586f !important;
+  background: #ff586f !important;
+  color: #091521 !important;
+  font-weight: 800 !important;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+}
+body.site31 .site31-header .site31-mobile-links > a:hover,
+body.site31 .site31-header .site31-mobile-links > a:focus-visible {
+  background: #ff9eac !important;
+}
+body.site31 .site31-header .site31-mobile-links > a[aria-current="page"] {
+  background: #ffd0d8 !important;
+  border-left-color: #ffd0d8 !important;
+  color: #091521 !important;
+}
+@media (max-width: 1150px) and (min-width: 1071px) {
+  body.site31 .site31-header .site31-links { gap: 5px; }
+  body.site31 .site31-header .site31-links > a { padding: 7px 8px !important; font-size: 11px !important; }
+}
+@media (max-width: 1070px) {
+  body.site31 .site31-header .site31-links { display: none !important; }
+  body.site31 .site31-header .site31-mobile-nav { display: block !important; }
+  body.site31 .site31-header .site31-controls { margin-left: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.site31 .site31-header .site31-links > a { transition: none !important; }
+}
