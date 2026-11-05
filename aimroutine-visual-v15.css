@@ -125,3 +125,16 @@ body.v5-landing .ti-v2-mode .ti-v2-stat strong{font-variant-numeric:tabular-nums
  body.v5-landing .v15-focus-card,body.v5-landing .v15-focus-icon{transition:none}
  body.v5-landing .v15-focus-card:hover{transform:none}
 }
+
+body.v5-landing .v15-focus-card[aria-pressed="true"]{
+ border-color:#a15d6d;box-shadow:inset 0 0 0 1px rgba(211,87,110,.18),0 12px 34px rgba(0,0,0,.12);
+}
+body.v5-landing .v15-focus-card[aria-pressed="true"] .v15-focus-icon{
+ border-color:#b96072;background:#442839;color:#ffd3da
+}
+body.v5-landing .v15-focus-card:nth-child(2)[aria-pressed="true"]{
+ border-color:#63928f;box-shadow:inset 0 0 0 1px rgba(107,216,203,.15),0 12px 34px rgba(0,0,0,.12)
+}
+body.v5-landing .v15-focus-card:nth-child(2)[aria-pressed="true"] .v15-focus-icon{
+ border-color:#649d93;background:#15383e;color:#ccfff3
+}
