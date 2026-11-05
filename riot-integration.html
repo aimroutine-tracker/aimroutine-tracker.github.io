@@ -62,7 +62,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://aimroutine-tracker.github.io/aimroutine-v2-dashboard-real.webp">
 <link rel="stylesheet" href="site-global-v31.css?v=1">
-<link rel="stylesheet" href="riot-presentation-v32.css?v=2">
+<link rel="stylesheet" href="riot-presentation-v32.css?v=3">
 </head>
 <body class="ar-v12-page site31 site31-riot"><a class="site31-skip" href="#main"><span class="fr">Aller au contenu</span><span class="en">Skip to content</span></a>
 <header class="site31-header">
@@ -172,7 +172,14 @@
 <section class="wrap" id="api">
  <div class="section-label"><span class="en">03 — Intended data handling</span><span class="fr">03 — Traitement prévu des données</span></div>
  <h2><span class="en">What the Riot API will be used for</span><span class="fr">Comment l'API Riot sera utilisée</span></h2>
- <div class="technical">
+ <div class="riot33-consent" aria-label="Résumé des engagements / Privacy commitments">
+ <div><span class="riot33-num">01</span><h3><span class="fr">Consentement d'abord</span><span class="en">Opt-in comes first</span></h3><p><span class="fr">La liaison du compte serait toujours facultative, après explication de l’usage des données.</span><span class="en">Account linking would always be optional, after explaining the use of data.</span></p></div>
+ <div><span class="riot33-num">02</span><h3><span class="fr">Tes propres parties</span><span class="en">Your own matches</span></h3><p><span class="fr">Seules les données autorisées du joueur consentant seraient consultées pour l’analyse après partie.</span><span class="en">Only the opted-in player’s permitted data would be used for post-match analysis.</span></p></div>
+ <div><span class="riot33-num">03</span><h3><span class="fr">Aucun avantage en direct</span><span class="en">No live advantage</span></h3><p><span class="fr">Pas de scouting d’adversaires, d’informations privées sur des tiers ou d’assistance tactique en temps réel.</span><span class="en">No opponent scouting, private third-party information or real-time tactical coaching.</span></p></div>
+ <div><span class="riot33-num">04</span><h3><span class="fr">Contrôles prévus</span><span class="en">Planned controls</span></h3><p><span class="fr">Déconnexion et suppression des données devront être prévues avant une éventuelle mise en service.</span><span class="en">Unlinking and data-deletion controls would be required before any future launch.</span></p></div>
+</div>
+<p class="riot33-api-note"><span class="fr">Tout ce parcours reste un projet soumis aux autorisations Riot. <a href="updates.html#planned">Consulter l'état actuel des fonctionnalités.</a></span><span class="en">This entire flow remains a proposal subject to Riot approval. <a href="updates.html#planned">Check the current feature status.</a></span></p>
+<div class="technical">
   <article class="card"><h3><span class="en">Planned official endpoints</span><span class="fr">Endpoints officiels prévus</span></h3>
   <p><code>GET /riot/account/v1/accounts/me</code><br><span class="en">Identify the player after successful approved RSO login.</span><span class="fr">Identifier le joueur après connexion RSO autorisée.</span></p>
   <p><code>GET /val/match/v1/matchlists/by-puuid/{puuid}</code><br><span class="en">Retrieve available match IDs for the opted-in player.</span><span class="fr">Récupérer les identifiants des matchs du joueur consentant.</span></p>
