@@ -99,10 +99,19 @@ body.v5-landing .ti-v2-mode .ti-v2-stat strong{font-variant-numeric:tabular-nums
  body.v5-landing .v15-focus-name{font-size:17px}
 }
 @media(max-width:760px){
- body.v5-landing .v15-focus{padding-bottom:72px}
+ body.v5-landing .v15-focus{padding-bottom:65px}
  body.v5-landing .v15-focus-heading{display:block}
  body.v5-landing .v15-focus-skip{display:inline-flex;margin-top:13px}
- body.v5-landing .v15-focus-grid{grid-template-columns:1fr;gap:10px}
+ body.v5-landing .v15-focus-grid{
+  display:grid;grid-template-columns:none;grid-auto-flow:column;
+  grid-auto-columns:min(84vw,340px);gap:10px;
+  overflow-x:auto;overflow-y:hidden;overscroll-behavior-inline:contain;
+  scroll-snap-type:x mandatory;scroll-padding-inline:2px;
+  -webkit-overflow-scrolling:touch;
+  padding:3px 3px 14px;margin:0 -3px;
+  scrollbar-width:thin;scrollbar-color:#75495a #142331;
+ }
+ body.v5-landing .v15-focus-card{scroll-snap-align:start}
  body.v5-landing .v15-focus-card{min-height:0;padding:17px 19px}
  body.v5-landing .v15-focus-figure{height:83px;margin:12px 0}
  body.v5-landing .v15-focus-figure svg{height:76px}
@@ -137,4 +146,16 @@ body.v5-landing .v15-focus-card:nth-child(2)[aria-pressed="true"]{
 }
 body.v5-landing .v15-focus-card:nth-child(2)[aria-pressed="true"] .v15-focus-icon{
  border-color:#649d93;background:#15383e;color:#ccfff3
+}
+
+/* Compact the explanatory three-step sequence: the goal gallery supplies
+   the richer visual cards, while the process remains a readable timeline. */
+body.v5-landing #how-it-works .experience-step{min-height:195px;padding:20px 22px}
+body.v5-landing #how-it-works .experience-step-top{margin-bottom:11px}
+body.v5-landing #how-it-works .experience-step h3{font-size:19px}
+body.v5-landing #how-it-works .experience-step p{font-size:12px}
+body.v5-landing .v15-focus-figure{pointer-events:none}
+@media(max-width:760px){
+ body.v5-landing #how-it-works .experience-step{min-height:0}
+ body.v5-landing .v15-focus-card{min-height:305px}
 }
