@@ -1,0 +1,74 @@
+/* Visual refinement v4.2 — crisp editorial art direction, official Riot press-kit imagery.
+   Do not imply affiliation with Riot Games; visuals are decorative editorial imagery only. */
+body.site31{--ar42-navy:#0b1622;--ar42-ink:#0a141f;--ar42-line:#354d5d;--ar42-soft:#afc3d0;--ar42-red:#ff5369}
+body.site31 .site31-header{background:#0b141f !important;backdrop-filter:none !important;border-bottom:1px solid #314757}
+body.site31 main{isolation:isolate}
+body.site31 main :is(h1,h2,h3){text-wrap:balance}
+body.site31 main p{line-height:1.68}
+body.site31 main :is(h1,h2){letter-spacing:-.035em}
+body.site31 main .ar42-eyebrow,body.site31 main .ar42-label{font-size:10px;font-weight:850;letter-spacing:.18em;text-transform:uppercase;color:#a4e5df}
+body.site31 main .ar42-source{color:#a9bece;font-size:12px;line-height:1.7;margin:14px 0 0}
+body.site31 main .ar42-source a{color:#e1a9b1;text-underline-offset:4px}
+body.site31 main .ar42-hero-poster,body.site31 main .ar42-wide-visual,body.site31 main .ar42-media-tile,body.site31 main .ar42-training-art,body.site31 main .ar42-updates-visual{margin:0;position:relative;overflow:hidden;background:linear-gradient(120deg,#203c4d,#122130);border:1px solid #435a6c;border-radius:10px}
+body.site31 main .ar42-hero-poster img,body.site31 main .ar42-wide-visual img,body.site31 main .ar42-media-tile img,body.site31 main .ar42-training-art img,body.site31 main .ar42-updates-visual img{width:100%;height:100%;display:block;object-fit:cover;object-position:center;image-rendering:auto}
+body.site31 main .ar42-hero-poster{width:100%;min-height:330px;aspect-ratio:5/5.3;box-shadow:0 17px 34px #0005}
+body.site31 main .ar42-hero-poster img{position:absolute;inset:0;object-position:54% center}
+body.site31 main .ar42-hero-poster:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 37%,#07131fe9 100%);pointer-events:none}
+body.site31 main .ar42-hero-poster figcaption{position:absolute;bottom:0;left:0;right:0;padding:clamp(18px,2.4vw,28px);z-index:1;display:grid;gap:8px}
+body.site31 main .ar42-hero-poster figcaption strong{font-size:clamp(21px,2vw,31px);line-height:1.2;color:#fff;max-width:20ch}
+body.site31 main .ar42-hero-poster figcaption small{font-size:10px;color:#c3d2de;line-height:1.5;max-width:40ch}
+body.site31.site31-home .v5-preview-wrap{display:flex;flex-direction:column;justify-content:center;align-self:stretch;min-width:0}
+body.site31.site31-home .v5-hero-layout{align-items:center}
+body.site31.site31-home .ar42-image-strip{width:min(1180px,calc(100% - 48px));max-width:1180px}
+body.site31.site31-home .ar42-strip-heading{display:grid;grid-template-columns:1fr minmax(0,330px);align-items:end;gap:28px;margin-bottom:24px}
+body.site31.site31-home .ar42-strip-heading h2{font-size:clamp(26px,3.1vw,43px);line-height:1.15;margin:9px 0 0;letter-spacing:-.035em}
+body.site31.site31-home .ar42-strip-heading p{color:#b9cbd6;font-size:14px;line-height:1.7;margin:0}
+body.site31 main .ar42-media-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:16px}
+body.site31 main .ar42-media-tile{min-height:220px;aspect-ratio:1.46}
+body.site31 main .ar42-media-tile img{position:absolute;inset:0;object-position:center}
+body.site31 main .ar42-media-tile:nth-child(2) img{object-position:50% center}
+body.site31 main .ar42-media-tile:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#06101cf0,transparent 70%);pointer-events:none}
+body.site31 main .ar42-media-tile figcaption{position:absolute;inset:auto 0 0;padding:20px;z-index:1;display:grid;gap:7px}
+body.site31 main .ar42-media-tile figcaption>span{font-size:15px;font-weight:850;color:#fff;letter-spacing:.06em}
+body.site31 main .ar42-media-tile figcaption small{color:#d2dce5;font-size:10px}
+body.site31 main .ar42-wide-visual{margin:26px auto;max-width:1180px;min-height:230px;height:clamp(235px,27vw,350px);border-top:2px solid #ff5369}
+body.site31 main .ar42-wide-visual img{position:absolute;inset:0;object-position:center}
+body.site31 main .ar42-overview-visual img{object-position:center}
+body.site31 main .ar42-wide-visual:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#081522eb 3%,#08152233 86%),linear-gradient(0deg,#07111dcc,transparent 75%);pointer-events:none}
+body.site31 main .ar42-wide-visual figcaption{position:absolute;inset:auto 28px 25px;z-index:1;display:grid;gap:12px}
+body.site31 main .ar42-wide-visual figcaption>div{display:grid;gap:7px}
+body.site31 main .ar42-wide-visual figcaption strong{max-width:570px;font-size:clamp(22px,2.7vw,34px);line-height:1.15;color:#fff}
+body.site31 main .ar42-wide-visual figcaption small{font-size:10px;color:#d2dce5}
+body.site31.site31-product .ar42-wide-visual{width:min(1180px,calc(100% - 48px))}
+body.site31.site31-product main>section.show-showcase{margin-top:20px}
+body.site31.site31-overview main .overview33-screenshot img{width:100%;max-height:none;height:auto;object-fit:contain;object-position:center}
+body.site31.site31-riot main .riot32-real-frame img{width:100%;max-height:none;height:auto;object-fit:contain;object-position:center}
+body.site31.site31-training .ar42-training-art{flex:0 0 min(32vw,360px);height:270px;min-width:0;box-shadow:0 10px 28px #0004}
+body.site31.site31-training .ar42-training-art img{object-position:50% center}
+body.site31.site31-training .ar42-training-art:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#06121de5,transparent 60%);pointer-events:none}
+body.site31.site31-training .ar42-training-art figcaption{position:absolute;inset:auto 14px 12px;z-index:1;display:grid;gap:5px}
+body.site31.site31-training .ar42-training-art figcaption small{font-size:10px;color:#d1dce6}
+body.site31.site31-training .intro>div:first-child{flex:1;min-width:0}
+body.site31.site31-updates .ar42-updates-visual{height:130px;margin:20px 0 0}
+body.site31.site31-updates .ar42-updates-visual img{object-position:center}
+body.site31.site31-updates .ar42-updates-visual figcaption{position:absolute;bottom:0;left:0;right:0;padding:18px;background:linear-gradient(0deg,#06121d,transparent);font-size:10px;color:#e2e9ef}
+body.site31 main .v16-real-shot{object-fit:contain}
+body.site31 main .show-screen-panel img{width:100%;height:auto;object-fit:contain}
+body.site31 main .ar42-media-grid img,body.site31 main .ar42-hero-poster img{backface-visibility:hidden}
+@media(max-width:900px){
+body.site31.site31-home .ar42-hero-poster{min-height:280px;aspect-ratio:4/3}
+body.site31.site31-home .ar42-strip-heading{grid-template-columns:1fr}
+body.site31.site31-training .ar42-training-art{flex-basis:250px}
+}
+@media(max-width:650px){
+body.site31.site31-home .ar42-image-strip{width:calc(100% - 24px)}
+body.site31.site31-home .ar42-hero-poster{min-height:225px;aspect-ratio:16/11}
+body.site31 main .ar42-media-grid{grid-template-columns:1fr}
+body.site31 main .ar42-media-tile{aspect-ratio:16/10;min-height:180px}
+body.site31 main .ar42-wide-visual,body.site31.site31-product .ar42-wide-visual{width:calc(100% - 24px);height:245px;margin-block:16px}
+body.site31 main .ar42-wide-visual figcaption{inset:auto 16px 16px}
+body.site31 main .ar42-wide-visual figcaption strong{font-size:22px}
+body.site31.site31-training .intro{flex-direction:column;align-items:stretch}
+body.site31.site31-training .ar42-training-art{flex:0 0 auto;width:100%;height:210px}
+body.site31.site31-training .intro h1{font-size:clamp(32px,8vw,46px)}
+}
