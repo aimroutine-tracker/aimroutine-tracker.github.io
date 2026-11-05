@@ -124,3 +124,26 @@ body.site31:before,body.site31:after{display:none}
 .site31 .site31-mobile-links a[href="training.html"]{background:#253745;border-left-color:#ff5369;color:#ffb1bd;font-weight:800}
 .site31 .site31-mobile-links a[href="training.html"]:hover,.site31 .site31-mobile-links a[href="training.html"][aria-current="page"]{background:#3a2936;color:#fff1f3}
 @media(max-width:1140px) and (min-width:961px){.site31 .site31-links{gap:10px}.site31 .site31-links a{font-size:12px}.site31 .site31-links a[href="training.html"]{padding-inline:9px}.site31 .site31-brand{font-size:14px}.site31 .site31-brand>span{font-size:9px}}
+
+/* v3.6 — shared cut-corner buttons for all site navigation items */
+.site31 .site31-links{gap:8px}
+.site31 .site31-links a,.site31 .site31-links a[href="training.html"]{
+display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:7px 10px;
+background:#ff5369;border:1px solid #ff5369;color:#0b141f;font-size:12px;font-weight:800;
+text-decoration:none;white-space:nowrap;clip-path:polygon(0 0,calc(100% - 7px) 0,100% 7px,100% 100%,0 100%);
+transition:background-color .17s ease,color .17s ease}
+.site31 .site31-links a:hover,.site31 .site31-links a[href="training.html"]:hover{background:#ff8c9b;color:#0b141f}
+.site31 .site31-links a[aria-current="page"],.site31 .site31-links a[href="training.html"][aria-current="page"]{
+background:#ffd4da;color:#14202b;box-shadow:inset 0 -3px #0b141f}
+.site31 .site31-mobile-links{gap:6px}
+.site31 .site31-mobile-links a,.site31 .site31-mobile-links a[href="training.html"]{
+border:1px solid #ff5369;border-left:3px solid #ff5369;background:#ff5369;color:#0b141f;font-weight:800;
+clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,0 100%)}
+.site31 .site31-mobile-links a:hover,.site31 .site31-mobile-links a[href="training.html"]:hover{background:#ff8c9b;color:#0b141f}
+.site31 .site31-mobile-links a[aria-current="page"],.site31 .site31-mobile-links a[href="training.html"][aria-current="page"]{
+background:#ffd4da;color:#14202b;border-left-color:#ffd4da}
+@media (max-width:1140px) and (min-width:961px){
+.site31 .site31-links{gap:6px}
+.site31 .site31-links a,.site31 .site31-links a[href="training.html"]{padding-inline:7px;font-size:11px}}
+@media(max-width:1070px){.site31 .site31-links{display:none}.site31 .site31-mobile-nav{display:block}.site31 .site31-controls{margin-left:auto}}
+@media(prefers-reduced-motion:reduce){.site31 .site31-links a{transition:none!important}}
