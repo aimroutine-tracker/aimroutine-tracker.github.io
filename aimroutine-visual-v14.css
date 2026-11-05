@@ -62,7 +62,7 @@ body.v5-landing #how-it-works{padding-top:10px}
 body.v5-landing #routine{padding-top:26px;padding-bottom:110px}
 body.v5-landing #features{padding-top:56px;padding-bottom:110px;position:relative}
 body.v5-landing #features:before{
- content:"";position:absolute;z-index:-1;inset:-25px -100vw -10px;
+ content:"";position:absolute;z-index:-1;inset:-25px 0 -10px;border-radius:8px;
  background:linear-gradient(180deg,rgba(18,34,50,.80),rgba(10,23,36,.1));
  border-top:1px solid rgba(92,113,134,.12);border-bottom:1px solid rgba(92,113,134,.1);
  pointer-events:none;
@@ -125,3 +125,10 @@ body.v5-landing .v5-v2-static *{user-select:none}
  body.v5-landing .v14-chapters-links a,
  body.v5-landing .v14-timeline-track .v14-part{transition:none}
 }
+/* Keep all heading targets visible beneath the sticky header and chapter rail. */
+body.v5-landing #how-it-works,body.v5-landing #routine,body.v5-landing #features,
+body.v5-landing #insights,body.v5-landing #tools,body.v5-landing #availability,
+body.v5-landing #questions{scroll-margin-top:155px}
+@media(max-width:920px){body.v5-landing #how-it-works,body.v5-landing #routine,
+body.v5-landing #features,body.v5-landing #insights,body.v5-landing #tools,
+body.v5-landing #availability,body.v5-landing #questions{scroll-margin-top:135px}}
