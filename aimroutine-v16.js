@@ -142,6 +142,7 @@
        tab.tabIndex=j===index?0:-1;
        if(panels[j])panels[j].hidden=j!==index;
        dots[j]?.classList.toggle("active",j===index);
+       gallery.querySelectorAll("[data-v33-caption]").forEach(caption=>{caption.hidden=caption.dataset.v33Caption!==tabs[index].dataset.v16Gallery;});
      });
      if(expand)expand.hidden=!panels[index]?.querySelector('img.v16-real-shot');
      if(focus)tabs[index].focus();
@@ -169,6 +170,22 @@
    dialog?.addEventListener("click",event=>{
      if(event.target===dialog){dialog.close?.();dialog.removeAttribute("open");}
    });
+   // The screenshot itself is clickable as a convenience; the explicit enlarge
+   // button remains the keyboard-accessible way to open the lightbox.
+   gallery.querySelectorAll("img.v16-real-shot").forEach(img=>{
+     img.addEventListener("click",()=>expand?.click());
+   });
+   const updateGalleryLocale=()=>{
+     const fr=document.documentElement.lang==="fr";
+     const tablist=gallery.querySelector('[role="tablist"]');
+     if(tablist)tablist.setAttribute("aria-label",fr?"Vues du logiciel Windows 2.9":"Windows 2.9 application views");
+     if(expand)expand.setAttribute("aria-label",fr?"Agrandir la capture sélectionnée":"Enlarge selected screenshot");
+     if(dialog)dialog.setAttribute("aria-label",fr?"Capture agrandie du logiciel":"Enlarged application screenshot");
+     const close=dialog?.querySelector("[data-v16-close]");
+     if(close)close.setAttribute("aria-label",fr?"Fermer la capture":"Close screenshot");
+   };
+   updateGalleryLocale();
+   new MutationObserver(updateGalleryLocale).observe(document.documentElement,{attributes:true,attributeFilter:["lang"]});
    show(0,false);
  }
  const root=document.getElementById("product-tour");
