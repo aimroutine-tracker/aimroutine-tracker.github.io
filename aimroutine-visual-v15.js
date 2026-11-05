@@ -35,7 +35,7 @@
     });
   }
   for(const button of buttons){
-    button.setAttribute("aria-pressed","false");
+    button.setAttribute("aria-pressed",String(button.dataset.v15Focus===select.value));
     button.addEventListener("click",()=>choose(button.dataset.v15Focus));
   }
   // Keep the visual selection in sync if a different goal is chosen in the
