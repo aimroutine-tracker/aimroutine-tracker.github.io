@@ -1,0 +1,14 @@
+/* Shared usability and accessibility refinements — v3.4.
+   Additive only: preserve the existing landing and product design. */
+html{scroll-padding-top:100px}
+.site31 a:focus-visible,.site31 button:focus-visible,.site31 summary:focus-visible,.site31 [tabindex]:focus-visible{outline:3px solid #8bded3;outline-offset:4px}
+.site31 [hidden]{display:none!important}
+.site31 img{max-width:100%}
+.site31 main,.site31 .wrap,.site31 .site31-nav{min-width:0}
+.site31 .site31-links a[aria-current="page"],.site31 .site31-mobile-links a[aria-current="page"]{text-decoration-thickness:2px;text-underline-offset:7px}
+.site34-top{position:fixed;right:clamp(15px,3vw,36px);bottom:clamp(15px,3vw,30px);width:44px;height:44px;border:1px solid #467080;background:#142536;color:#f3f8fa;display:grid;place-items:center;box-shadow:0 8px 28px #0007;z-index:70;cursor:pointer;border-radius:12px;font-size:22px;font-weight:700;transition:opacity .2s ease,transform .2s ease}
+.site34-top[hidden]{display:none!important}
+.site34-top:hover{background:#254254;transform:translateY(-2px)}
+.site34-top:focus-visible{outline:3px solid #8bded3;outline-offset:4px}
+@media(max-width:680px){html{scroll-padding-top:78px}.site34-top{width:42px;height:42px;right:13px;bottom:13px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}.site34-top{transition:none!important;transform:none!important}}
