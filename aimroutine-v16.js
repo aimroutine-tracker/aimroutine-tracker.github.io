@@ -142,7 +142,10 @@
        tab.tabIndex=j===index?0:-1;
        if(panels[j])panels[j].hidden=j!==index;
        dots[j]?.classList.toggle("active",j===index);
-       gallery.querySelectorAll("[data-v33-caption]").forEach(caption=>{caption.hidden=caption.dataset.v33Caption!==tabs[index].dataset.v16Gallery;});
+
+     });
+     gallery.querySelectorAll("[data-v33-caption]").forEach(caption=>{
+       caption.hidden=caption.dataset.v33Caption!==tabs[index].dataset.v16Gallery;
      });
      if(expand)expand.hidden=!panels[index]?.querySelector('img.v16-real-shot');
      if(focus)tabs[index].focus();
