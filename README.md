@@ -9,6 +9,7 @@ Public FR/EN landing site for **AimRoutine Tracker V2**, an independent Windows 
 - Explains the intended user journey: select rank, focus, available tools and session duration; train; understand progress.
 - Recreates the desktop application's V2 visual identity in a **static hero miniature** (not an actual running desktop-app screenshot).
 - Offers a **fully client-side educational routine demo** that changes exercise categories and time allocations based on selected rank, training goal, available software and time.
+- Offers a **three-card illustrated choice of AIM focus** (first shot, tracking or switching), which directly preconfigures the routine demo; on narrow phones it becomes a native horizontal swipe gallery.
 - Offers **Training Insights**, an interactive *fictional* dashboard featuring three tabs, chart-point explanations, skill breakdowns, a training calendar, sample profiles and a guided tour.
 - Provides a detailed product presentation, privacy policy, terms and a conceptual Riot Sign On journey.
 
@@ -43,9 +44,11 @@ Never commit API keys, Riot Sign On secrets, tokens, account credentials, user m
 - `privacy.html`, `terms.html`: public policy documents; review them before launch and provide a real public support contact.
 - `site.js`: language preference, existing rank demo and Insights tab behavior.
 - `experience-v11.js`: bilingual illustrative training plan builder.
+- `aimroutine-visual-v14.js`, `aimroutine-visual-v15.js`: chapter navigation, training-time split, and focus-to-routine controls.
 - `insights-guide.js`, `insights-v2.js`: interactive teaching layer and desktop-style mockup behavior.
 - `hero-v2-static.css`: noninteractive miniature of the Windows V2 interface.
 - `experience-v11.css`: value proposition, three-step narrative, status cards, routine settings, FAQ and responsive styles.
+- `aimroutine-visual-v15.css`: original skill-card vector artwork styling and mobile snap-scroll gallery.
 - `v5.css`, `design.css`, `styles.css`, `insights*.css`: older base and analytics CSS layers. Changes to CSS order require checking regressions.
 - `aimroutine-arena.svg`: original SVG used in the static miniatures; not an official Riot character image.
 - `favicon.svg`: site icon.
