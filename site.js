@@ -58,7 +58,7 @@
     document.querySelectorAll("[data-switch-lang]").forEach(b=>b.addEventListener("click",render));
     render();
   }
-  const menu=document.querySelector(".v5-mobile-nav");
+  const menu=document.querySelector(".site31-mobile-nav, .v5-mobile-nav");
   if(menu){
     menu.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{menu.open=false}));
     document.addEventListener("keydown",e=>{if(e.key==="Escape")menu.open=false});
