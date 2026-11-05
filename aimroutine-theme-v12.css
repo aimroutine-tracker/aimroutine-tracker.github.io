@@ -447,3 +447,29 @@ body.ar-v12-page .footer-links a:hover{color:#ff96a5}
 @media(prefers-reduced-motion:reduce){
   body.v5-landing .v5-btn,body.ar-v12-page .btn{transition:none!important;transform:none!important}
 }
+
+/* Accessible high-contrast primary actions: keep bright coral for brand accents
+ * but use a slightly deeper coral beneath small white button labels. */
+:root{--ar-action:#cf3650;--ar-action-hover:#b82f48}
+body.v5-landing .v5-desktop-links a.experience-nav-cta,
+body.v5-landing .v5-mobile-panel .experience-mobile-cta,
+body.v5-landing .v5-btn.primary,
+body.v5-landing .v5-closing .v5-btn.primary,
+body.v5-landing .v5-ranks button[aria-pressed="true"],
+body.v5-landing .ti-v2-mode .ti-v2-red-btn,
+body.v5-landing .ti-v2-mode .ti-learn-btn.primary,
+body.v5-landing .ti-v2-mode .ti-tour-navigation .ti-learn-btn.primary,
+body.ar-v12-page .btn:not(.outline),
+body.ar-v12-page .p-try-demo-btn{
+  background:var(--ar-action);color:#fff;border-color:#f26d80;
+}
+body.v5-landing .v5-desktop-links a.experience-nav-cta:hover,
+body.v5-landing .v5-mobile-panel .experience-mobile-cta:hover,
+body.v5-landing .v5-btn.primary:hover,
+body.v5-landing .v5-ranks button[aria-pressed="true"]:hover,
+body.v5-landing .ti-v2-mode .ti-v2-red-btn:hover,
+body.v5-landing .ti-v2-mode .ti-learn-btn.primary:hover,
+body.ar-v12-page .btn:not(.outline):hover,
+body.ar-v12-page .p-try-demo-btn:hover{
+  background:var(--ar-action-hover);color:#fff;
+}
