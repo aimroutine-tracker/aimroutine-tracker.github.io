@@ -1,0 +1,116 @@
+/* Riot API page — complete editorial redesign in the same language as product 2.9.
+   Public mockups remain noninteractive. No login, OAuth or live Riot API calls. */
+.site31.site31-riot main{background:#0b141f}
+.site31.site31-riot .riot32-hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:40px;align-items:center;padding:83px 0 62px}
+.site31.site31-riot .riot32-hero-copy{min-width:0}
+.site31.site31-riot .riot32-hero .eyebrow{color:#a5b6c6;letter-spacing:2px;font-size:10px;text-transform:uppercase}
+.site31.site31-riot .riot32-hero h1{font-size:clamp(44px,5.1vw,72px);font-weight:800;line-height:1.05;letter-spacing:-2.8px;margin:22px 0 26px;max-width:760px;color:#f3f6f8}
+.site31.site31-riot .riot32-hero .accent{color:#ff5369}
+.site31.site31-riot .riot32-hero .lead{color:#b4c4d2;font-size:16px;line-height:1.65;max-width:570px;margin:0}
+.site31.site31-riot .riot32-hero-actions{display:flex;flex-wrap:wrap;align-items:center;gap:26px;margin:30px 0 0}
+.site31.site31-riot .riot32-primary{display:inline-flex;justify-content:space-between;gap:26px;align-items:center;background:#ff5369;color:#0b141f;text-decoration:none;padding:14px 20px;font-size:13px;font-weight:800;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);transition:background-color .2s,transform .2s}
+.site31.site31-riot .riot32-primary:hover{background:#ff8191;transform:translateY(-2px)}
+.site31.site31-riot .riot32-secondary{color:#d6e2ea;font-size:13px;font-weight:600;text-decoration:underline;text-underline-offset:5px}
+.site31.site31-riot .riot32-secondary:hover{color:#ff8191}
+.site31.site31-riot .riot32-hero-aside{border-left:1px solid #35414e;padding-left:55px;align-self:center;justify-self:stretch}
+.site31.site31-riot .riot32-aside-symbol{display:block;color:#ff5369;font-size:110px;line-height:1;margin:0 0 20px;font-weight:750}
+.site31.site31-riot .riot32-hero-aside p{font-size:25px;font-weight:800;line-height:1.25;color:#e7edf1;margin:0}
+.site31.site31-riot .riot32-aside-note{display:block;font-size:11px;color:#8fa9bb;margin-top:17px}
+.site31.site31-riot .riot32-status{display:flex;align-items:center;gap:9px;margin-top:23px;font-size:12px;color:#c5d5e0;font-weight:600}
+.site31.site31-riot .riot32-status i{height:7px;width:7px;background:#e3bd7f;display:block;flex:none;box-shadow:0 0 0 4px rgba(227,189,127,.11)}
+.site31.site31-riot .riot32-real{padding:4px 0 52px;border-bottom:1px solid #2e404f}
+.site31.site31-riot .riot32-real-heading{display:flex;align-items:end;justify-content:space-between;gap:25px;margin-bottom:18px}
+.site31.site31-riot .riot32-real-title{margin:0;font-size:20px;letter-spacing:-.5px;line-height:1.3;color:#f3f6f8;font-weight:750}
+.site31.site31-riot .riot32-real-kicker{display:block;font-size:10px;color:#a5b6c6;letter-spacing:1.6px;margin-bottom:9px;font-weight:750}
+.site31.site31-riot .riot32-real-desc{font-size:12px;color:#9fb5c6;line-height:1.65;margin:0;max-width:550px}
+.site31.site31-riot .riot32-real-frame{border:1px solid #3a4b5a;box-shadow:0 28px 65px #0004;background:#0b141f;overflow:hidden;position:relative}
+.site31.site31-riot .riot32-real-frame img{width:100%;height:clamp(250px,37vw,420px);display:block;object-fit:cover;object-position:center 8%}
+.site31.site31-riot .riot32-real-caption{font-size:12px;color:#96aebf;margin:14px 0 0;line-height:1.7}
+.site31.site31-riot .riot32-state{display:flex;justify-content:space-between;gap:25px;align-items:center;
+  margin:32px 0 12px;border:0;border-left:3px solid #ff5369;background:linear-gradient(120deg,#ff536915,#152532);
+  padding:24px 30px;color:#ccdae4}
+.site31.site31-riot .riot32-state-title{font-weight:780;color:#f7f9fa;font-size:15px;line-height:1.5;margin:0 0 5px}
+.site31.site31-riot .riot32-state-title:before{content:"";display:inline-block;width:7px;height:7px;background:#e3bd7f;margin-right:10px;vertical-align:middle}
+.site31.site31-riot .riot32-state-desc{font-size:13px;line-height:1.7;margin:0;color:#adc3d0}
+.site31.site31-riot .riot32-state-tag{font-size:10px;color:#e7c58d;letter-spacing:1.3px;font-weight:800;white-space:nowrap;border:1px solid #886f4a;padding:9px 12px}
+.site31.site31-riot .riot32-chapters{display:flex;gap:25px;flex-wrap:wrap;align-items:center;margin:28px 0 0;border-bottom:1px solid #2e404f;padding:0 0 21px}
+.site31.site31-riot .riot32-chapters a{border:0;background:none;border-radius:0;padding:0;font-size:12px;font-weight:680;text-decoration:none;color:#b3c5d0;letter-spacing:0}
+.site31.site31-riot .riot32-chapters a:hover{color:#ff8191}
+.site31.site31-riot .riot32-chapters a:before{content:"/";color:#ff5369;font-weight:800;margin-right:8px}
+.site31.site31-riot main>section.wrap{padding:72px 0;border-top:0;border-bottom:1px solid #2e404f;scroll-margin-top:105px}
+.site31.site31-riot main>section.wrap .section-label{font-size:10px;letter-spacing:1.7px;color:#a5b6c6;font-weight:700}
+.site31.site31-riot main>section.wrap h2{font-size:clamp(29px,3.1vw,43px);font-weight:800;letter-spacing:-1.3px;line-height:1.15;color:#f3f6f8;margin:14px 0 25px}
+.site31.site31-riot .flow-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin-top:28px}
+.site31.site31-riot .flow-node{border:0;border-top:2px solid #3a4f60;background:none;padding:24px 18px 24px 0;min-height:0;margin:0;border-radius:0}
+.site31.site31-riot .flow-node:not(:first-child){border-left:1px solid #2e404f;padding-left:21px}
+.site31.site31-riot .flow-node:first-child{border-top-color:#ff5369}
+.site31.site31-riot .flow-node:not(:last-child):after{display:none}
+.site31.site31-riot .flow-node .n{font-size:11px;letter-spacing:1.3px;color:#ff5369;font-weight:850}
+.site31.site31-riot .flow-node strong{color:#f3f6f8;font-size:17px;line-height:1.3;margin:11px 0 8px}
+.site31.site31-riot .flow-node p{color:#acbecc;font-size:13px;line-height:1.72;margin:0}
+.site31.site31-riot #screens .intro{color:#afc2d0;font-size:15px;line-height:1.75;max-width:800px;margin-bottom:20px}
+.site31.site31-riot .mockups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:24px}
+.site31.site31-riot .mockup{border:1px solid #3a4b5a;border-radius:0;background:#142331;box-shadow:0 14px 40px #0002;overflow:hidden}
+.site31.site31-riot .mockup-top{display:flex;gap:8px;align-items:center;color:#9db4c6;background:#1a2937;border-bottom:1px solid #344959;padding:14px 18px;font-size:11px;letter-spacing:1px;font-weight:700}
+.site31.site31-riot .mockup-dot{width:6px;height:6px;background:#657c8d;border-radius:0}
+.site31.site31-riot .mockup-dot:first-child{background:#ff5369}
+.site31.site31-riot .mockup-body{background:#142331;padding:24px 21px;min-height:310px}
+.site31.site31-riot .mockup-body h3{font-size:19px;line-height:1.3;letter-spacing:-.4px;color:#f4f7f9;margin:12px 0}
+.site31.site31-riot .mockup-body p{font-size:13px;line-height:1.7;color:#b0c3d0}
+.site31.site31-riot .mockup-body .section-label{font-size:10px;color:#8bded3;letter-spacing:1.4px}
+.site31.site31-riot .fake-button{background:#ff5369;color:#0b141f;font-size:12px;font-weight:850;border-radius:0;margin:16px 0 12px;padding:13px}
+.site31.site31-riot .fake-button.disabled{background:#263644;color:#a5b8c7;border:1px solid #405363}
+.site31.site31-riot .fake-check,.site31.site31-riot .fake-metrics div,.site31.site31-riot .fake-list li{border:1px solid #3b5160;background:#1a2e3b;border-radius:0;font-size:12px;line-height:1.7}
+.site31.site31-riot .fake-metrics b{color:#f6fafc;font-size:22px}
+.site31.site31-riot .fake-metrics small{color:#9ab4c2}
+.site31.site31-riot .technical{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
+.site31.site31-riot .technical .card{background:transparent;border:0;border-top:2px solid #344959;border-radius:0;box-shadow:none;min-height:0;padding:22px 0}
+.site31.site31-riot .technical .card:first-child{border-top-color:#ff5369}
+.site31.site31-riot .technical .card h3{font-size:20px;line-height:1.35;color:#f2f6f8;margin:0 0 20px}
+.site31.site31-riot .technical .card p,.site31.site31-riot .technical .card li{font-size:13px;color:#b3c6d3;line-height:1.7}
+.site31.site31-riot .technical code{color:#8bded3;overflow-wrap:anywhere;font-size:12px}
+.site31.site31-riot #status .panel{background:linear-gradient(120deg,#ff536915,#152532);border:0;border-left:3px solid #ff5369;border-radius:0;padding:34px}
+.site31.site31-riot #status h2{margin:14px 0 26px}
+.site31.site31-riot .timeline{border-left:2px solid #ff5369;padding-left:22px}
+.site31.site31-riot .timeline>div{padding:8px 0 20px}
+.site31.site31-riot .timeline strong{font-size:14px;line-height:1.5;color:#edf3f6}
+.site31.site31-riot .timeline p{font-size:13px;color:#b3c6d3;line-height:1.7}
+.site31.site31-riot #status .small-note{color:#9fb3c1;font-size:12px;margin:12px 0 20px}
+.site31.site31-riot #status .btn.outline{border-radius:0;background:transparent;color:#e0e8ef;border:1px solid #4a5b68;font-size:13px}
+@media(max-width:1000px){
+ .site31.site31-riot .riot32-hero{gap:30px;grid-template-columns:1.45fr .9fr}
+ .site31.site31-riot .riot32-hero-aside{padding-left:32px}
+ .site31.site31-riot .riot32-hero-aside p{font-size:22px}
+ .site31.site31-riot .riot32-aside-symbol{font-size:90px}
+ .site31.site31-riot .mockups{gap:10px}
+ .site31.site31-riot .mockup-body{padding:20px 14px}
+}
+@media(max-width:800px){
+ .site31.site31-riot .riot32-hero{grid-template-columns:1fr;padding:58px 0 40px;gap:0}
+ .site31.site31-riot .riot32-hero-aside{display:none}
+ .site31.site31-riot .riot32-hero h1{font-size:clamp(42px,6vw,57px);letter-spacing:-2px}
+ .site31.site31-riot .riot32-real-frame img{height:clamp(260px,50vw,380px)}
+ .site31.site31-riot main>section.wrap{padding:52px 0}
+ .site31.site31-riot .flow-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+ .site31.site31-riot .flow-node,.site31.site31-riot .flow-node:not(:first-child){border-top:2px solid #344959;border-left:0;padding:19px 0}
+ .site31.site31-riot .flow-node:first-child{border-top-color:#ff5369}
+ .site31.site31-riot .mockups{grid-template-columns:1fr;gap:15px}
+ .site31.site31-riot .mockup-body{min-height:0;padding:22px}
+}
+@media(max-width:540px){
+ .site31.site31-riot .riot32-hero h1{font-size:43px;letter-spacing:-1.6px}
+ .site31.site31-riot .riot32-hero-actions{gap:18px}
+ .site31.site31-riot .riot32-primary{width:100%}
+ .site31.site31-riot .riot32-real-heading{align-items:flex-start;flex-direction:column;gap:8px}
+ .site31.site31-riot .riot32-real-frame img{height:240px;object-position:center top}
+ .site31.site31-riot .riot32-state{flex-direction:column;align-items:flex-start;padding:21px;gap:13px}
+ .site31.site31-riot .riot32-state-tag{font-size:9px}
+ .site31.site31-riot .riot32-chapters{gap:15px}
+ .site31.site31-riot .riot32-chapters a{font-size:11px}
+ .site31.site31-riot .flow-grid{grid-template-columns:1fr;gap:5px}
+ .site31.site31-riot .technical{grid-template-columns:1fr}
+ .site31.site31-riot #status .panel{padding:24px 18px}
+ .site31.site31-riot main>section.wrap h2{font-size:29px}
+}
+@media(max-width:380px){.site31.site31-riot .riot32-hero h1{font-size:38px}.site31.site31-riot .riot32-real-frame img{height:205px}}
+@media(prefers-reduced-motion:reduce){.site31.site31-riot .riot32-primary{transition:none!important;transform:none!important}}
