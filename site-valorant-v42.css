@@ -72,3 +72,10 @@ body.site31.site31-training .intro{flex-direction:column;align-items:stretch}
 body.site31.site31-training .ar42-training-art{flex:0 0 auto;width:100%;height:210px}
 body.site31.site31-training .intro h1{font-size:clamp(32px,8vw,46px)}
 }
+/* Product hero: treat artwork as a background, never as a layout-driving inline image. */
+body.site31.site31-product .ar42-product-aside{position:relative;isolation:isolate;overflow:hidden;background:#102032;border:1px solid #364d5d}
+body.site31.site31-product .ar42-product-aside .ar42-aside-image{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;object-position:center;opacity:.62;pointer-events:none}
+body.site31.site31-product .ar42-product-aside:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#07111d25 20%,#06111be9 100%);pointer-events:none}
+body.site31.site31-product .ar42-product-aside>.show-cross,
+body.site31.site31-product .ar42-product-aside>p,
+body.site31.site31-product .ar42-product-aside>.show-side-note{position:relative;z-index:1;text-shadow:0 2px 12px #03101acf}
