@@ -101,3 +101,16 @@
 }
 @media(max-width:360px){.site31.site31-updates .updates33-hero h1{font-size:36px}}
 @media(prefers-reduced-motion:reduce){.site31.site31-updates *{transition:none!important;animation:none!important}}
+
+/* Visual evidence on the detailed project page, styled to match the 2.9 product showcase. */
+.site31.site31-overview .overview33-screenshot{padding:0 0 59px;margin-top:0}
+.site31.site31-overview .overview33-screenshot a{display:block}
+.site31.site31-overview .overview33-screenshot>a{border:1px solid #344959;overflow:hidden;background:#142331;box-shadow:0 18px 50px #0004}
+.site31.site31-overview .overview33-screenshot img{display:block;width:100%;max-height:440px;object-fit:cover;object-position:top center;height:auto}
+.site31.site31-overview .overview33-screenshot p{font-size:12px;line-height:1.7;color:#aebfcf;margin:14px 0 0}
+.site31.site31-overview .overview33-screenshot p a{display:inline;color:#8bded3;text-decoration:underline;text-underline-offset:3px}
+.site31.site31-overview .disclaimer a{color:#ff9dab;text-decoration:underline;text-underline-offset:4px}
+.site31.site31-product .show33-note{font-size:12px;color:#a7becd;line-height:1.6;margin:21px 0 0;max-width:600px}
+.site31.site31-product .show33-note a{color:#ff9dab;text-decoration:underline;text-underline-offset:4px}
+.site31.site31-home .v16-real-shot{cursor:zoom-in}
+@media(max-width:700px){.site31.site31-overview .overview33-screenshot{padding-bottom:40px}.site31.site31-overview .overview33-screenshot img{max-height:300px}}
