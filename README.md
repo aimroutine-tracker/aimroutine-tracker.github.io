@@ -1,79 +1,36 @@
 # AimRoutine Tracker — public project website
 
-[Open the site](https://aimroutine-tracker.github.io/) · [Try the routine demo](https://aimroutine-tracker.github.io/#routine) · [Training Insights](https://aimroutine-tracker.github.io/#insights)
+Bilingual FR/EN presentation on [GitHub Pages](https://aimroutine-tracker.github.io/).
 
-Public FR/EN landing site for **AimRoutine Tracker V2**, an independent Windows VALORANT aim-training and coaching project.
+## Current product presentation
 
-## What this website does
+[product.html](https://aimroutine-tracker.github.io/product.html) presents the locally verified Windows portable version 2.9: separate local profiles, rank-adapted routines, timers, result entry, charts, reviews and JSON match imports. Official Riot history synchronization and Riot Sign On remain disabled without production approval. The website offers no public desktop download.
 
-- Explains the intended user journey: select rank, focus, available tools and session duration; train; understand progress.
-- Recreates the desktop application's V2 visual identity in a **static hero miniature** (not an actual running desktop-app screenshot).
-- Publishes an **authentic creator-provided Windows V2 Dashboard capture** as a compressed WebP asset, alongside clearly marked conceptual previews of Coach, Routines and Statistics. The authentic capture is a still image, not a running Windows app.
-- Offers a **fully client-side educational routine demo** that changes exercise categories and time allocations based on selected rank, training goal, available software and time.
-- Offers a **three-card illustrated choice of AIM focus** (first shot, tracking or switching), which directly preconfigures the routine demo; on narrow phones it becomes a native horizontal swipe gallery.
-- Offers **Training Insights**, an interactive *fictional* dashboard featuring three tabs, chart-point explanations, skill breakdowns, a training calendar, sample profiles and a guided tour.
-- Provides a detailed product presentation, privacy policy, terms and a conceptual Riot Sign On journey.
-- Includes a **four-step user-initiated interactive walkthrough** in place of pretending to have video footage. This is an illustrated storyboard, not an actual recording.
-- Shows a four-stage roadmap (public web demonstration, Windows V2 view, pending Riot production review, no verified public installer).
-- Includes SEO / social Open Graph metadata, WebSite structured data, a sitemap, robots rules, a manifest in browser mode, and bilingual 404 recovery.
+Two genuine captures show the React production bundle running with an isolated SQLite profile named Alex. The profile is fictional; the files contain no real player history or credential. The images are lossless WebP conversions, with no visual modifications. The desktop interface is French; the presentation is available in both languages.
 
-**Do not mistake website demos for working Windows software functionality, verified training recommendations, real Riot player data, or a public installer.** All demo numbers are fictional. The web page does not log training sessions. No real Riot connection is provided.
+## Website behavior
 
-## Current status
+- The landing page preserves its illustrative routine builder, fictional Training Insights and guided concept tour.
+- Dashboard and My Coach gallery tabs show current app captures. Routines and Statistics gallery views remain explicitly conceptual.
+- The new product page provides keyboard-operated image tabs, enlargement, Escape to close, language switching and reduced-motion support.
+- No account connection, training persistence, analytics collection or match-data request was added. The shared language switch stores the existing language preference only.
+- Runtime data is not inferred from the marketing images. Public web examples remain illustrative.
 
-| Component | Status |
-| --- | --- |
-| Public GitHub Pages site | Published from `main` root |
-| Windows V2 interface | Authentic Dashboard screenshot shown in the gallery; static hero reconstruction also retained |
-| Public interactive demonstration | Available without login; examples only |
-| Riot URL-ownership verification | Verified by Riot |
-| Production API / Riot Sign On | Application pending review; not enabled |
-| Public Windows download | Not offered by this website |
-| Genuine walkthrough video | Not available among the supplied source files; website offers an explicitly illustrative animated tour |
+## Verification
 
-Do not claim functionality is released unless separately verified. Do not create a fake download button, beta list, review, rating, or player performance guarantee.
+Desktop 2.9: 108 unit/integration tests, six headless UI scenarios and a packaged Electron/SQLite smoke check. Website: FR/EN, tabs and keyboard, image enlargement and Escape, reduced motion, landing links/gallery and layouts at 1440, 768 and 390 pixels; no JavaScript or asset errors in those checks.
 
-## Deployment
+## Files updated for 2.9
 
-GitHub Pages is configured to publish `main` at `/(root)`. After editing, check **Actions → pages build and deployment**, then open the public site with a fresh cache-busting query such as `?v=16`. A successful commit does not by itself guarantee the public site has already deployed.
+- product.html, product-v29.css, product-v29.js: current software presentation.
+- index.html, release-v29.css: new version entry point and updated capture/status content.
+- aimroutine-v16.js: enlargement of the active authentic gallery image.
+- aimroutine-29-dashboard.webp, aimroutine-29-coach.webp: actual app captures with a fictional profile.
 
-The Riot URL verification file is `/riot.txt`. Preserve it unless the project owner intentionally decides otherwise.
+## Deployment and protected content
 
-Never commit API keys, Riot Sign On secrets, tokens, account credentials, user match histories, or `.env` files.
+GitHub Pages publishes the main branch at the repository root. Confirm the matching Pages deployment completes; a source commit alone does not prove publication.
 
-## Main website files
+Keep riot.txt (Riot URL-ownership verification), privacy.html and terms.html unchanged unless the owner requests a relevant change. URL ownership verification does not mean Riot product approval.
 
-- `index.html`: landing narrative, demo sections and calls to action.
-- `product.html`: detailed product explanation and planned features.
-- `riot-integration.html`: conceptual opt-in flow only.
-- `privacy.html`, `terms.html`: public policy documents; review them before launch and provide a real public support contact.
-- `site.js`: language preference, existing rank demo and Insights tab behavior.
-- `experience-v11.js`: bilingual illustrative training plan builder.
-- `aimroutine-v16.js`: bundled chapter navigation, training-time split, focus-to-routine controls, accessible gallery tabs and a user-controlled four-step guided demonstration.
-- `insights-guide.js`, `insights-v2.js`: interactive teaching layer and desktop-style mockup behavior.
-- `hero-v2-static.css`: noninteractive miniature of the Windows V2 interface.
-- `experience-v11.css`: value proposition, three-step narrative, status cards, routine settings, FAQ and responsive styles.
-- `aimroutine-v16.css`: consolidated V12–V15 theme and layout CSS plus gallery, walkthrough, and roadmap styles.
-- `aimroutine-v2-dashboard-real.webp`: **real 480 px optimized screenshot**, sourced from the creator-provided Windows V2 Dashboard; a larger, authorized image could replace it later for increased clarity.
-- `aimroutine-v2-dashboard-capture.svg`: equivalent SVG wrapper of that same WebP screenshot; the site uses the dedicated WebP file.
-- `sitemap.xml`, `robots.txt`, `manifest.webmanifest`, `404.html`: discovery, browser appearance and branded error recovery.
-- `v5.css`, `design.css`, `styles.css`, `insights*.css`: older base and analytics CSS layers. Changes to CSS order require checking regressions.
-- `aimroutine-arena.svg`: original SVG used in the static miniatures; not an official Riot character image.
-- `favicon.svg`: site icon.
-
-## Development checklist
-
-1. Test `index.html` on 320, 375, 390, 430, 768, 1024 and 1440 px widths in real browsers.
-2. Switch FR/EN and test every training selector, tab, chart point, FAQ item and guided tour.
-3. Check that static miniatures contain **no clickable controls**.
-4. Verify every link, especially `#routine`, `#insights`, `#availability` and links into `product.html`.
-5. Verify website descriptions clearly label mockups, planned functionality and pending Riot approval.
-6. Replace provisional legal contact language with a real public support channel before wider distribution.
-7. When a Windows installer becomes available, validate its distribution and signature before adding a real download call to action.
-8. A genuine Dashboard screenshot is now available in the gallery. Request separate authorized captures of Coach, Routines, Reviews and Statistics to replace labelled concepts; do not invent them.
-9. When an authentic Windows app walkthrough video is available, encode it for web, add accessible captions and a poster, then replace the illustrative stepper or supplement it. Do not label the current stepper a recording.
-10. Test social sharing embeds in Discord; some clients have limited WebP support. A future raster PNG/JPEG social cover may be useful.
-
-## Trademarks
-
-AimRoutine Tracker is not endorsed, certified or sponsored by Riot Games. VALORANT and the names of optional aim-training products remain the properties of their respective owners.
+Never commit keys, credentials, tokens, private match histories or .env files. Never present the web examples as live Riot data, create a fake download button or guarantee rank gains.
