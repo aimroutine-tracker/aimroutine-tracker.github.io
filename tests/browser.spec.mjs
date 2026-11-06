@@ -138,31 +138,19 @@ test('All public pages render without overflow or script errors',async({page,isM
   await expect(page.locator('main'),path).toHaveCount(1);
   await expect(page.locator('nav.site31-nav'),path).toHaveCount(1);
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
-  if(overflow>2){
-   const wide=await page.evaluate(()=>[...document.querySelectorAll('body *')].map(el=>{
-    const r=el.getBoundingClientRect();return {tag:el.tagName,cls:String(el.className).slice(0,80),right:Math.round(r.right),left:Math.round(r.left),width:Math.round(r.width)};
-   }).filter(r=>r.right>innerWidth+2&&r.width>0).slice(0,22));
-   console.log(path+' mobile overflow diagnosis: '+JSON.stringify(wide));
-   const extra=await page.evaluate(()=>({
-    viewport:{innerWidth,clientWidth:document.documentElement.clientWidth,
-      bodyWidth:document.body.scrollWidth,htmlWidth:document.documentElement.scrollWidth},
-    suspects:[...document.querySelectorAll('a,small')].filter(el=>{
-      const r=el.getBoundingClientRect();return r.right>innerWidth+4 && r.left<innerWidth+45;
-    }).slice(0,12).map(el=>{
-      const chain=[];let p=el;
-      for(let i=0;i<5&&p;i++,p=p.parentElement){
-       const st=getComputedStyle(p),r=p.getBoundingClientRect();
-       chain.push({tag:p.tagName,cls:String(p.className).slice(0,65),
-        right:Math.round(r.right),width:Math.round(r.width),
-        overflowX:st.overflowX,scrollWidth:p.scrollWidth,clientWidth:p.clientWidth});
-      }
-      return {html:el.outerHTML.slice(0,210),chain};
-    })
-   }));
-   console.log(path+' overflow ancestors: '+JSON.stringify(extra));
-  }
   expect(overflow,path+' causes horizontal scrolling').toBeLessThanOrEqual(2);
   if(isMobile)await expect(page.locator('details.site31-mobile-nav > summary'),path).toBeVisible();
+  if(isMobile&&path==='index.html'){
+   const carousel=page.locator('.v15-focus-grid');
+   await expect(carousel).toBeVisible();
+   const scroll=await carousel.evaluate(el=>{
+    const available=el.scrollWidth-el.clientWidth;
+    el.scrollLeft=100;
+    return {available,offset:el.scrollLeft};
+   });
+   expect(scroll.available).toBeGreaterThan(20);
+   expect(scroll.offset).toBeGreaterThan(0);
+  }
  }
  expect(jsErrors).toEqual([]);
 });
