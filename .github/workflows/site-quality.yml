@@ -1,0 +1,43 @@
+name: Site quality checks
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "**/*.html"
+      - "**/*.css"
+      - "**/*.js"
+      - "**/*.mjs"
+      - "tests/**"
+      - ".github/workflows/site-quality.yml"
+  pull_request:
+    paths:
+      - "**/*.html"
+      - "**/*.css"
+      - "**/*.js"
+      - "**/*.mjs"
+      - "tests/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: aimroutine-quality-\${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate all JavaScript syntax
+        run: |
+          for script in *.js *.mjs; do node --check "$script"; done
+      - name: Test training logic
+        run: node --test tests/training-core.test.mjs
+      - name: Validate internal HTML links and assets
+        run: python3 tests/check_site.py
