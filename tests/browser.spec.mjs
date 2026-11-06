@@ -126,3 +126,30 @@ test('Google OAuth beta button is enabled but public email signup stays gated',a
  await page.locator('#login-mode').click();
  await expect(page.locator('#google-signin')).toBeEnabled();
 });
+
+test('All public pages render without overflow or script errors',async({page,isMobile})=>{
+ const paths=['index.html','product.html','presentation.html','riot-integration.html',
+  'updates.html','releases.html','changelog.html','privacy.html','terms.html','account.html','training.html','404.html'];
+ const jsErrors=[];
+ page.on('pageerror',error=>jsErrors.push(error.message));
+ for(const path of paths){
+  const response=await page.goto('/'+path,{waitUntil:'domcontentloaded'});
+  expect(response?.status(),path).toBe(200);
+  await expect(page.locator('main'),path).toHaveCount(1);
+  await expect(page.locator('nav.site31-nav'),path).toHaveCount(1);
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+  expect(overflow,path+' causes horizontal scrolling').toBeLessThanOrEqual(2);
+  if(isMobile)await expect(page.locator('details.site31-mobile-nav > summary'),path).toBeVisible();
+ }
+ expect(jsErrors).toEqual([]);
+});
+
+test('Privacy and account pages describe the real Google self-deletion path',async({page})=>{
+ await page.goto('/privacy.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('main')).toContainText('SUPPRIMER');
+ await expect(page.locator('main')).toContainText('Supabase');
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#delete-account-confirmation')).toHaveAttribute('pattern','SUPPRIMER');
+ await expect(page.locator('#google-delete-reauth')).toHaveCount(0);
+ await expect(page.locator('#signup-submit')).toBeDisabled();
+});
