@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" sizes="128x128" href="aimroutine-logo.png?v=2">
 <link rel="manifest" href="manifest.webmanifest?v=2">
 <link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="site-global-v31.css?v=3"><link rel="stylesheet" href="site-shared-v5.css?v=3">
-<link rel="stylesheet" href="account-v7.css?v=5">
+<link rel="stylesheet" href="account-v7.css?v=6">
 <script>
 /* Force-check the PWA cache repair even if a former service worker is serving old JS. */
 if('serviceWorker' in navigator&&window.isSecureContext){
@@ -27,7 +27,7 @@ if('serviceWorker' in navigator&&window.isSecureContext){
   },{once:true});
 }
 </script><script src="site.js?v=8" defer></script><script src="site-quality-v34.js?v=1" defer></script>
-<script type="module" src="account-v7.mjs?v=5"></script>
+<script type="module" src="account-v7.mjs?v=6"></script>
 <style id="account-critical-style">
 /* Critical visible layout: independent of older PWA-cached CSS versions. */
 body.site31.site31-account .ar7-account-highlights{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:20px 0}
@@ -140,12 +140,20 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
 <details class="ar7-delete-cloud ar7-delete-account">
 <summary><span class="fr">Supprimer définitivement mon compte</span><span class="en">Permanently delete my account</span></summary>
 <p><span class="fr">Cette action supprime l'identité de connexion Supabase et les données de progression du compte dans nos quatre tables (suppression en cascade). Elle ne supprime pas automatiquement les exports JSON et les copies enregistrées sur d'autres appareils. Il n'y a pas d'annulation possible.</span><span class="en">This deletes your Supabase authentication identity and progress in our four database tables (cascading deletion). Other devices and exported JSON files may retain copies. This action cannot be undone.</span></p>
+<section id="google-delete-flow" class="ar7-delete-google" hidden>
+ <p class="fr">Ton compte utilise Google : aucun mot de passe AimRoutine n'est nécessaire. Confirme d'abord ton identité avec Google, puis écris SUPPRIMER dans le formulaire. La confirmation reste valable quelques minutes.</p>
+ <p class="en">This account uses Google: no AimRoutine password is needed. Reconfirm your identity with Google, then type SUPPRIMER below. Verification is valid for a few minutes.</p>
+ <button type="button" id="google-delete-reauth" class="ar7-secondary">
+  <span class="fr">Vérifier mon identité avec Google</span><span class="en">Verify my identity with Google</span>
+ </button>
+ <p id="google-delete-status" role="status" aria-live="polite"></p>
+</section>
 <form id="delete-account-form" class="ar7-auth-form" autocomplete="off">
-<label><span class="fr">Confirme avec ton mot de passe actuel</span><span class="en">Confirm with your current password</span>
+<label id="delete-password-row"><span class="fr">Confirme avec ton mot de passe actuel</span><span class="en">Confirm with your current password</span>
 <input id="delete-account-password" type="password" autocomplete="current-password" required minlength="6"></label>
 <label><span class="fr">Écris exactement SUPPRIMER</span><span class="en">Type exactly SUPPRIMER</span>
 <input id="delete-account-confirmation" type="text" required autocomplete="off" spellcheck="false" maxlength="9" placeholder="SUPPRIMER"></label>
-<button type="submit" class="ar7-danger"><span class="fr">Supprimer définitivement mon compte</span><span class="en">Permanently delete my account</span></button>
+<button type="submit" id="delete-account-final" class="ar7-danger"><span class="fr">Supprimer définitivement mon compte</span><span class="en">Permanently delete my account</span></button>
 </form>
 </details>
 </section>

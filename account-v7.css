@@ -73,3 +73,11 @@ body.site31.site31-account{background:#091620;color:#e8f2f7}
 .site31-account .ar7-social-note{margin:0;font-size:12px;line-height:1.6;color:#b4ccd9}
 .site31-account .ar7-divider{display:flex;align-items:center;gap:15px;color:#9cbbc9;font-size:10px;font-weight:850;letter-spacing:.12em}
 .site31-account .ar7-divider::before,.site31-account .ar7-divider::after{content:"";height:1px;flex:1;background:#38576a}
+
+/* Google OAuth account deletion confirmation */
+.site31-account .ar7-delete-google[hidden],.site31-account #delete-password-row[hidden]{display:none!important}
+.site31-account .ar7-delete-google{display:grid;gap:12px;margin:13px 0 18px;padding:16px;background:#142f3b;border:1px solid #567e8e;border-radius:8px}
+.site31-account .ar7-delete-google p{margin:0;font-size:12px;line-height:1.7;color:#d5e5ee}
+.site31-account #google-delete-status{font-size:12px;color:#b5e7dc}
+.site31-account .ar7-delete-google button{justify-self:start}
+.site31-account #delete-account-final:disabled{opacity:.45;cursor:not-allowed}
