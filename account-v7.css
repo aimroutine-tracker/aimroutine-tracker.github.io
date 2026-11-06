@@ -6,9 +6,10 @@ body.site31.site31-account{background:#091620;color:#e8f2f7}
 .site31-account .ar7-account-hero h1{color:white;line-height:1.03;letter-spacing:-.05em;font-size:clamp(37px,5vw,66px);margin:17px 0 23px}
 .site31-account .ar7-account-hero h1 em{font-style:normal;color:#ff8190}
 .site31-account .ar7-account-hero p{color:#c4d5df;max-width:54ch;font-size:15px;line-height:1.75}
-.site31-account .ar7-account-highlights{display:flex;flex-wrap:wrap;gap:9px;margin:25px 0}
-.site31-account .ar7-account-highlights span{border:1px solid #416175;background:#122a3a;color:#bfece5;padding:8px 10px;border-radius:6px;font-size:12px}
-.site31-account .ar7-guest-link{display:inline-block;background:#ff586f;padding:13px 17px;color:#0c1824;font-weight:850;font-size:13px;text-decoration:none;border-radius:7px}
+.site31-account .ar7-account-highlights{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:20px 0}
+.site31-account .ar7-account-highlights>span{display:inline-flex;align-items:center;justify-content:center;border:1px solid #416175;background:#122a3a;color:#bfece5;padding:8px 12px;border-radius:6px;font-size:12px;font-weight:650;line-height:1.4;min-height:36px;max-width:100%;box-sizing:border-box}
+.site31-account .ar7-account-highlights>span>span{border:0!important;outline:0!important;background:transparent!important;padding:0!important;margin:0!important;border-radius:0!important;box-shadow:none!important;font:inherit;color:inherit;line-height:inherit}
+.site31-account .ar7-guest-link{display:inline-flex;align-items:center;justify-content:center;gap:8px;max-width:100%;min-height:44px;box-sizing:border-box;background:#ff586f;padding:12px 18px;color:#0c1824;font-weight:850;font-size:13px;line-height:1.35;text-decoration:none;border-radius:7px}
 .site31-account .ar7-account-hero figure{display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0;min-height:245px;border:1px solid #466071;border-radius:12px;padding:30px;background:radial-gradient(circle,#24445a,#091724)}
 .site31-account .ar7-account-hero img{object-fit:contain;width:136px;height:136px}
 .site31-account .ar7-account-hero figcaption{letter-spacing:.15em;font-size:11px;color:#c8d7e0;margin-top:18px;font-weight:850}

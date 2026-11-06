@@ -80,3 +80,23 @@ test('Offline training works after initial install',async ({page,context,browser
  await expect.poll(()=>page.evaluate(()=>Boolean(window.AIMWeb))).toBe(true);
  await context.setOffline(false);
 });
+
+test('Cloud account landing has single-border tags and a compact accessible guest button',async({page})=>{
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ const chips=page.locator('.ar7-account-highlights > span');
+ await expect(chips).toHaveCount(3);
+ await expect(page.locator('.ar7-guest-link')).toBeVisible();
+ const check=await page.evaluate(()=>{
+   const badges=[...document.querySelectorAll('.ar7-account-highlights > span')];
+   const borders=badges.map(chip=>({
+     outer:getComputedStyle(chip).borderTopWidth,
+     inner:getComputedStyle(chip.querySelector('span')).borderTopWidth,
+     innerPadding:getComputedStyle(chip.querySelector('span')).paddingLeft
+   }));
+   const button=document.querySelector('.ar7-guest-link').getBoundingClientRect();
+   return {borders,buttonWidth:button.width,overflow:document.documentElement.scrollWidth-window.innerWidth};
+ });
+ expect(check.borders.every(x=>x.outer==='1px'&&x.inner==='0px'&&x.innerPadding==='0px')).toBe(true);
+ expect(check.buttonWidth).toBeLessThanOrEqual(page.viewportSize().width);
+ expect(check.overflow).toBeLessThanOrEqual(2);
+});
