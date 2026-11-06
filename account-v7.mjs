@@ -2,6 +2,7 @@
 import {supabase,SITE_URL} from './cloud-client-v7.mjs';
 import {UID_STORAGE_KEY,validUid,scopedKey,TRAINING_KEY} from './cloud-core-v7.mjs';
 import {synchronize,isEnabled,setEnabled,readUserLocal,importGuestIntoAccount,deleteCloudProgress} from './cloud-sync-v7.mjs';
+import {checkLeakedPassword} from './password-security-v7.mjs';
 const SIGNUPS_READY=false; // Email signup stays closed until custom SMTP and real email tests succeed.
 const GOOGLE_READY=true; // Provider enabled by project owner; live OAuth is in beta until end-to-end testing.
 const RESET_LINKS_CONFIGURED=true; // Owner confirmed Site URL and redirect allowlist; delivery needs real-user testing. // Keep closed until owner configures Supabase Auth Site URL and redirect allowlist.
@@ -78,9 +79,13 @@ $('#login-form').addEventListener('submit',e=>{e.preventDefault();run(async()=>{
  }
 })});
 $('#signup-form').addEventListener('submit',e=>{e.preventDefault();
- if(!SIGNUPS_READY){msg("Les inscriptions sont désactivées jusqu'à la configuration des redirections d'e-mails Supabase.");return}
+ if(!SIGNUPS_READY){msg("Les inscriptions par e-mail sont encore fermées pendant les tests de sécurité et de synchronisation.");return}
  run(async()=>{
- const {error}=await supabase.auth.signUp({email:$('#signup-email').value.trim(),password:$('#signup-password').value,
+ const password=$('#signup-password').value;
+ msg('Vérification de la sécurité du nouveau mot de passe…');
+ const assessment=await checkLeakedPassword(password);
+ if(!assessment.safe)throw Error('Ce mot de passe figure dans des fuites connues. Choisis-en un autre.');
+ const {error}=await supabase.auth.signUp({email:$('#signup-email').value.trim(),password,
   options:{emailRedirectTo:SITE_URL+'account.html'}});
  if(error)throw error;
  $('#signup-password').value='';
@@ -92,7 +97,11 @@ $('#reset-form').addEventListener('submit',e=>{e.preventDefault();if(!RESET_LINK
  msg('Si un compte existe pour cette adresse, tu recevras les instructions de réinitialisation.');
 })});
 $('#new-password-form').addEventListener('submit',e=>{e.preventDefault();run(async()=>{
- const {error}=await supabase.auth.updateUser({password:$('#new-password').value});
+ const password=$('#new-password').value;
+ msg('Vérification du nouveau mot de passe…');
+ const assessment=await checkLeakedPassword(password);
+ if(!assessment.safe)throw Error('Ce mot de passe a déjà été compromis dans des fuites connues. Choisis-en un autre.');
+ const {error}=await supabase.auth.updateUser({password});
  if(error)throw error;
  $('#new-password').value='';
  recovery=false;

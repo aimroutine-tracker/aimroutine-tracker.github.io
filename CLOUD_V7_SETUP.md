@@ -68,3 +68,11 @@ Supabase SMTP: https://supabase.com/docs/guides/auth/auth-smtp
 Supabase Gmail troubleshooting: https://supabase.com/kb/troubleshooting/using-google-smtp-with-supabase-custom-smtp-ZZzU4Y
 
 **Current state (Nov 6):** The owner enabled Google provider in Supabase, confirmed its enabled status by screenshot, and confirmed Gmail SMTP invitation was delivered. Google OAuth test button is enabled on the web; end-to-end sign-in has not yet been confirmed. Public email/password signup remains closed until direct signup-confirmation/recovery testing and account isolation verification. Do not claim the cloud is fully production-ready. If dedicated Gmail SMTP cannot reliably deliver, keep email signups closed and offer Google login once tested.
+
+## Password leakage prevention on Supabase Free (6 November 2026)
+
+- Supabase's **native leaked-password protection is a paid Pro+ feature**, unavailable on our $0 Free project; the Security Advisor will continue to report `auth_leaked_password_protection` until Supabase changes its plan availability. Source: https://supabase.com/docs/guides/auth/password-security.
+- Added `password-security-v7.mjs`: browser-side free Have I Been Pwned Pwned Passwords check using 5 SHA-1 hex characters, k-anonymity and padding, only when the user SUBMITS a new password. The full password and full hash never leave the browser for HIBP; the request can expose network metadata/IP. On API failure, refuse the password change rather than silently bypassing the check. Refuse fewer than 12 characters and trivial repetition.
+- **Security limitation:** this is client-side only. Direct calls to Supabase Auth APIs can bypass it. It **does not replace native server-side password-leak protection** and MUST NOT be described as a fixed security advisor warning.
+- Public email signup stays gated pending real two-account E2E, full password recovery, secure deletion and SMTP sending under load. Google OAuth does not use AimRoutine passwords.
+- The project owner should additionally set Supabase Authentication → Providers → Email → minimum password length to **12** and the strongest available character requirements, on the free plan. This protects direct API requests too; do not claim this backend setting has been changed unless verified.
