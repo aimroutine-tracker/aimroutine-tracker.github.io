@@ -39,5 +39,7 @@ jobs:
           for script in *.js *.mjs; do node --check "$script"; done
       - name: Test training logic
         run: node --test tests/*core.test.mjs
+      - name: Prevent accidental secret commits
+        run: python3 tests/check_secrets.py
       - name: Validate internal HTML links and assets
         run: python3 tests/check_site.py
