@@ -3,7 +3,7 @@ import {supabase,SITE_URL} from './cloud-client-v7.mjs';
 import {UID_STORAGE_KEY,validUid,scopedKey,TRAINING_KEY} from './cloud-core-v7.mjs';
 import {synchronize,isEnabled,setEnabled,readUserLocal,importGuestIntoAccount,deleteCloudProgress} from './cloud-sync-v7.mjs';
 import {checkLeakedPassword} from './password-security-v7.mjs';
-import {GOOGLE_DELETE_MARKER,hasGoogleIdentity,isGoogleDeleteVerified,readGoogleDeleteMarker} from './google-delete-v7.mjs';
+import {hasGoogleIdentity} from './google-delete-v7.mjs';
 const SIGNUPS_READY=false; // Email signup stays closed until custom SMTP and real email tests succeed.
 const GOOGLE_READY=true; // Provider enabled by project owner; live OAuth is in beta until end-to-end testing.
 const RESET_LINKS_CONFIGURED=true; // Owner confirmed Site URL and redirect allowlist; delivery needs real-user testing. // Keep closed until owner configures Supabase Auth Site URL and redirect allowlist.
@@ -31,7 +31,6 @@ function showUser(next){
    msg('Compte connecté. La sauvegarde cloud est facultative et doit être activée pour ce compte.');
  }else{
    localStorage.removeItem(UID_STORAGE_KEY);
-   sessionStorage.removeItem(GOOGLE_DELETE_MARKER);
    msg('Tu peux te connecter ou continuer à utiliser AimRoutine sans compte.');
  }
 }
@@ -48,15 +47,11 @@ function renderCounts(){
 function renderDeleteOptions(){
  if(!user)return;
  const google=hasGoogleIdentity(user);
- const googleStep=$('#google-delete-flow');
- googleStep.hidden=!google;
+ $('#google-delete-flow').hidden=!google;
  $('#delete-password-row').hidden=google;
  $('#delete-account-password').required=!google;
- const checked=true; // An authenticated Google account needs only SUPPRIMER.
- $('#google-delete-status').textContent=google?(checked?
-   'Identité Google revérifiée. Tu peux maintenant saisir SUPPRIMER puis confirmer la suppression.':
-   'Vérifie ton identité avec Google avant de pouvoir supprimer ce compte.') : '';
- $('#delete-account-final').disabled=working;
+ $('#google-delete-status').textContent=google?'Pour supprimer le compte, écris exactement SUPPRIMER en majuscules.':'';
+ $('#delete-account-final').disabled=working||(google&&$('#delete-account-confirmation').value!=='SUPPRIMER');
 }
 async function run(task){
  if(working)return;
@@ -163,22 +158,10 @@ $('#cloud-delete').addEventListener('click',()=>run(async()=>{
  setEnabled(user.id,false);
  msg('La progression cloud a été supprimée. Le compte existe toujours et les données invitées n’ont pas été modifiées.');
 }));
-$('#google-delete-reauth').addEventListener('click',()=>{
- if(!user||!hasGoogleIdentity(user))return;
- if(!confirm('Google va vérifier ton identité. Aucune donnée ne sera supprimée pendant cette étape.'))return;
- run(async()=>{
-  const previousUid=user.id;
-  sessionStorage.setItem(GOOGLE_DELETE_MARKER,JSON.stringify({uid:previousUid,startedAt:Date.now()}));
-  const {error}=await supabase.auth.signInWithOAuth({
-   provider:'google',
-   options:{redirectTo:SITE_URL+'account.html',queryParams:{prompt:'select_account'}}
-  });
-  if(error){sessionStorage.removeItem(GOOGLE_DELETE_MARKER);throw error}
- });
-});
+$('#delete-account-confirmation').addEventListener('input',renderDeleteOptions);
 $('#delete-account-form').addEventListener('submit',event=>{
  event.preventDefault();
- const confirmation=$('#delete-account-confirmation').value.trim();
+ const confirmation=$('#delete-account-confirmation').value;
  if(!user||confirmation!=='SUPPRIMER'){
   msg('Écris exactement SUPPRIMER pour confirmer la suppression définitive.');return;
  }
@@ -205,7 +188,6 @@ $('#delete-account-form').addEventListener('submit',event=>{
   }
   $('#delete-account-password').value='';
   $('#delete-account-confirmation').value='';
-  sessionStorage.removeItem(GOOGLE_DELETE_MARKER);
   // Only this account's local copies are erased. Guest data remains untouched.
   const prefix='aimroutine_cloud_user_'+oldUid+'_';
   for(let i=localStorage.length-1;i>=0;i--){
@@ -233,19 +215,9 @@ supabase.auth.onAuthStateChange((event,session)=>{
  try{
   const {data:{user:validated},error}=await supabase.auth.getUser();
   if(error||!validated){showUser(null);if(new URLSearchParams(location.search).has('reset'))msg('Ouvre le lien reçu par e-mail pour terminer la réinitialisation.');return;}
-  // An OAuth return cannot delete anything automatically: always require typing SUPPRIMER.
-  const marker=readGoogleDeleteMarker(sessionStorage);
-  const mismatched=marker&&marker.uid!==validated.id;
-  if(mismatched)sessionStorage.removeItem(GOOGLE_DELETE_MARKER);
   showUser(validated);
-  if(mismatched){
-   msg('Tu as choisi un compte Google différent. La suppression a été annulée.');
-  }else if(marker&&isGoogleDeleteVerified(validated,marker)){
-   document.querySelector('.ar7-delete-account').open=true;
-   msg('Identité Google confirmée. Dans « Supprimer définitivement mon compte », écris SUPPRIMER pour confirmer. Aucune donnée n’a été effacée.');
-  }
   if(isEnabled(validated.id)){
-   try{await synchronize(supabase,validated.id);renderCounts();if(!marker||!isGoogleDeleteVerified(validated,marker))msg('Compte connecté · Sauvegarde cloud synchronisée.')}
+   try{await synchronize(supabase,validated.id);renderCounts();msg('Compte connecté · Sauvegarde cloud synchronisée.')}
    catch(e){msg('Compte connecté · Cloud indisponible : '+e.message)}
   }
  }catch(e){showUser(null);msg('Service indisponible : '+e.message)}
