@@ -1,18 +1,42 @@
 {
-  "name": "AimRoutine Tracker — Coach AIM VALORANT",
+  "name": "AimRoutine Tracker — Espace AIM",
   "short_name": "AimRoutine",
-  "description": "AimRoutine Tracker : présentation du logiciel Windows et espace web d'entraînement AIM avec données locales.",
-  "start_url": "/",
+  "description": "Espace d'entraînement AIM local pour VALORANT. Routines, profils, programmes et statistiques.",
+  "id": "/training.html",
+  "start_url": "/training.html",
   "scope": "/",
-  "display": "browser",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
   "background_color": "#0b141f",
   "theme_color": "#0b141f",
+  "lang": "fr",
   "icons": [
     {
       "src": "aimroutine-logo.png",
       "sizes": "128x128",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
     }
-  ]
+  ],
+  "categories": [
+    "games",
+    "productivity",
+    "sports"
+  ],
+  "prefer_related_applications": false
 }

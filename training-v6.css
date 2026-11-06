@@ -1,0 +1,91 @@
+/* AimRoutine v6 — training detail, accessible program calendar, and immersive mode. */
+body.site31.site31-training .ar6-install-inline{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 18px}
+body.site31.site31-training .ar6-install-inline .outline{white-space:nowrap;min-height:42px}
+body.site31.site31-training .ar6-install-inline .muted{font-size:12px;max-width:700px}
+body.site31.site31-training .ar6-timer-settings{display:flex;align-items:center;gap:14px 30px;flex-wrap:wrap;margin-top:22px;padding-top:18px;border-top:1px solid #3c586a}
+body.site31.site31-training .ar6-timer-settings label{display:flex;gap:9px;align-items:center;font-size:12px;font-weight:700;color:#cddce6;cursor:pointer}
+body.site31.site31-training .ar6-timer-settings input{width:18px;height:18px;accent-color:#ff586f;min-height:0}
+body.site31.site31-training .ar6-program-config,body.site31.site31-training .ar6-profile-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:end}
+body.site31.site31-training .ar6-program-config label,body.site31.site31-training .ar6-profile-form label,body.site31.site31-training .ar6-range label,body.site31.site31-training .ar6-scenario-filter{display:grid;gap:8px;color:#d6e6ed;font-size:12px;font-weight:700}
+body.site31.site31-training .ar6-program-config>button{min-height:45px}
+body.site31.site31-training #program-overview{margin:20px 0}
+body.site31.site31-training .ar6-program-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+body.site31.site31-training .ar6-program-summary h3{margin:0}
+body.site31.site31-training .ar6-program-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-block:20px}
+body.site31.site31-training .ar6-program-day{min-height:155px;display:flex;flex-direction:column;gap:13px;background:#0e2030;border:1px solid #3c5568;border-radius:10px;padding:16px}
+body.site31.site31-training .ar6-program-day.is-rest{background:#192b34;border-color:#3b5f61}
+body.site31.site31-training .ar6-program-day.is-complete{border-color:#66ae9f;background:#153434}
+body.site31.site31-training .ar6-program-day-head{display:flex;justify-content:space-between;gap:8px;color:#8bded3;font-weight:800;font-size:11px}
+body.site31.site31-training .ar6-program-day strong{font-size:15px;line-height:1.35;color:#f2f7fa}
+body.site31.site31-training .ar6-program-day small{font-size:11px;line-height:1.4;color:#a8bfca}
+body.site31.site31-training .ar6-program-day button{margin-top:auto;padding:10px 9px;font-size:11px}
+body.site31.site31-training .ar6-completed{font-size:11px;font-weight:800;color:#a7f2d8;margin-top:auto}
+body.site31.site31-training .ar6-achievements{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+body.site31.site31-training .ar6-achievement{display:grid;grid-template-columns:54px minmax(0,1fr) auto;align-items:center;gap:12px;padding:19px;border:1px solid #425667;border-radius:10px;background:#132638}
+body.site31.site31-training .ar6-achievement.achieved{background:#183636;border-color:#488978}
+body.site31.site31-training .ar6-achievement-glyph{display:grid;place-items:center;width:50px;height:50px;border:1px solid #4b6b80;border-radius:50%;background:#0e2131;color:#8bded3;font-size:25px}
+body.site31.site31-training .ar6-achievement.achieved .ar6-achievement-glyph{color:#ffe3aa;border-color:#b4a06a}
+body.site31.site31-training .ar6-achievement strong{font-size:15px;color:#f1f8fa}
+body.site31.site31-training .ar6-achievement p{font-size:12px;margin:5px 0 0}
+body.site31.site31-training .ar6-profile-form{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.site31.site31-training .ar6-profile-summary{display:flex;gap:15px;align-items:center;padding:12px;background:#0f2232;border:1px solid #415b6d;border-radius:10px}
+body.site31.site31-training .ar6-avatar{display:grid;place-items:center;width:57px;height:57px;border-radius:12px;background:#f05b73;color:#091521;font-size:38px}
+body.site31.site31-training .ar6-profile-summary strong{display:block;font-size:16px;color:#f2f8fb}
+body.site31.site31-training .ar6-profile-summary small{display:block;color:#b9cfdb;font-size:13px;margin-top:5px}
+body.site31.site31-training .ar6-range{margin-bottom:16px;max-width:260px}
+body.site31.site31-training .ar6-analytics-extra{display:grid;grid-template-columns:minmax(0,260px) 1fr;align-items:end;gap:18px;margin-bottom:20px}
+body.site31.site31-training .ar6-mini-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+body.site31.site31-training .ar6-stat-box{padding:14px 12px;border-radius:9px;background:#102335;border:1px solid #38576a}
+body.site31.site31-training .ar6-stat-box span{display:block;color:#b4c8d3;font-size:11px}
+body.site31.site31-training .ar6-stat-box strong{display:block;font-size:18px;font-variant-numeric:tabular-nums;margin-top:7px;color:#f1f8fb}
+body.site31.site31-training .ar6-calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+body.site31.site31-training .ar6-cal-cell{display:block;aspect-ratio:1;border:1px solid #415b6b;border-radius:6px;background:#24394b}
+body.site31.site31-training .ar6-cal-cell.has-sessions{background:#5caaa6;border-color:#8bded3}
+body.site31.site31-training .ar6-cal-cell[data-count="2"]{background:#439a98}
+body.site31.site31-training .ar6-cal-cell[data-count="3"],body.site31.site31-training .ar6-cal-cell[data-count="4"]{background:#bbefde}
+body.site31.site31-training .ar6-calendar p{grid-column:1/-1;font-size:11px}
+body.site31.site31-training .ar6-records{display:grid;gap:8px}
+body.site31.site31-training .ar6-record-row{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #354f5d;padding:11px 0}
+body.site31.site31-training .ar6-record-row strong{display:block;color:#e5f0f5;font-size:12px;line-height:1.35;overflow-wrap:anywhere}
+body.site31.site31-training .ar6-record-row small{font-size:11px;color:#afc7d4}
+body.site31.site31-training .ar6-portable{margin:20px 0}
+body.site31.site31-training .ar6-portable .controls{gap:12px}
+body.site31.site31-training .ar6-portable p{max-width:800px}
+/* Full-screen API or iOS-compatible CSS fallback; no browser chrome hacks. */
+body.site31.site31-training.ar6-immersive{overflow:hidden!important}
+body.site31.site31-training.ar6-immersive #session-area,
+body.site31.site31-training #session-area:fullscreen{
+  position:fixed!important;inset:0!important;z-index:1500!important;
+  display:flex!important;flex-direction:column!important;align-items:stretch;
+  justify-content:center!important;gap:22px;
+  max-width:none!important;width:100vw!important;height:100dvh!important;
+  overflow-y:auto!important;margin:0!important;padding:clamp(26px,5vw,80px)!important;
+  border-radius:0!important;background:#081521!important;
+}
+body.site31.site31-training.ar6-immersive #session-area .clock,
+body.site31.site31-training #session-area:fullscreen .clock{font-size:clamp(64px,13vw,170px);line-height:1.1;color:#ff7088}
+body.site31.site31-training.ar6-immersive #session-area #active-exercise,
+body.site31.site31-training #session-area:fullscreen #active-exercise{font-size:clamp(30px,5vw,64px)}
+body.site31.site31-training.ar6-immersive #session-area .progress,
+body.site31.site31-training #session-area:fullscreen .progress{height:15px;border-radius:20px;overflow:hidden}
+body.site31.site31-training.ar6-immersive #session-area .progress>div,
+body.site31.site31-training #session-area:fullscreen .progress>div{height:100%}
+@media(max-width:980px){
+ body.site31.site31-training .ar6-program-grid{grid-template-columns:repeat(3,1fr)}
+ body.site31.site31-training .ar6-achievements{grid-template-columns:1fr}
+ body.site31.site31-training .ar6-mini-stats{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:690px){
+ body.site31.site31-training .ar6-program-config{grid-template-columns:1fr}
+ body.site31.site31-training .ar6-program-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ body.site31.site31-training .ar6-profile-form{grid-template-columns:1fr}
+ body.site31.site31-training .ar6-analytics-extra{grid-template-columns:1fr}
+ body.site31.site31-training .ar6-program-day{padding:12px;min-height:160px}
+ body.site31.site31-training .ar6-program-day strong{font-size:13px}
+ body.site31.site31-training .ar6-achievement{grid-template-columns:45px minmax(0,1fr);gap:10px;padding:14px}
+ body.site31.site31-training .ar6-achievement .ar5-pill{grid-column:2}
+ body.site31.site31-training .ar6-achievement-glyph{width:42px;height:42px}
+ body.site31.site31-training .ar6-stat-box strong{font-size:16px}
+ body.site31.site31-training .ar6-timer-settings{flex-direction:column;align-items:flex-start}
+}
+@media(max-width:390px){body.site31.site31-training .ar6-program-grid{grid-template-columns:1fr}}
