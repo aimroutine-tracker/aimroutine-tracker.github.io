@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {synchronize,setEnabled,readUserLocal,collectFavoriteDeletion,deleteCloudProgress} from '../cloud-sync-v7.mjs';
-import {scopedKey,TRAINING_KEY} from '../cloud-core-v7.mjs';
+import {scopedKey,TRAINING_KEY,LEGACY_KEY} from '../cloud-core-v7.mjs';
 
 // Deterministic in-memory Supabase API: emulates owner-only RLS for sync logic.
 // Live PostgreSQL RLS is tested separately, inside a fully rolled-back transaction.
@@ -119,7 +119,10 @@ test('two devices merge offline training without cross-account data, honor favor
   assert.equal(r.downloadedSessions,1);
  });
  await use(a1,async()=>{
+  // Old V1 data must never reappear when deleting V2 and cloud progress.
+  a1.setItem(scopedKey(LEGACY_KEY,USER_A),JSON.stringify({sessions:[session('legacy-reborn')]}));
   await deleteCloudProgress(ca,USER_A);
+  assert.equal(a1.getItem(scopedKey(LEGACY_KEY,USER_A)),null);
   assert.equal(readUserLocal(USER_A).store.sessions.length,0);
  });
  assert.equal(db.aim_sessions.filter(x=>x.user_id===USER_A).length,0);
