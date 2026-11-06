@@ -108,3 +108,19 @@ Official docs: https://supabase.com/docs/guides/auth/auth-hooks/before-user-crea
 - Updated the preview generation workflow to regenerate on original screenshot modifications, rather than only on first installation.
 - Lighthouse after earlier responsive art and preload changes (single run): home **84**, training **94**, account **99** performance; gallery compression reduces bytes transferred and may not improve the synthetic page-performance score.
 - GitHub Pages deployment of the optimized gallery: https://github.com/aimroutine-tracker/aimroutine-tracker.github.io/actions/runs/42238136691 — successful.
+
+
+## Live Outlook delivery and support mailbox (6 November 2026, 15:18 UTC)
+
+- Connected Outlook account is the project's official private support mailbox: `aimroutine-tracker@outlook.fr`.
+- A genuine Gmail-to-Outlook support-contact message arrived in the official Outlook inbox.
+- Ran a **single-use live Supabase Auth signup** to a disposable Outlook plus-address, with a random password held only in GitHub Actions job memory. CI run: https://github.com/aimroutine-tracker/aimroutine-tracker.github.io/actions/runs/42241728663 (**success**).
+- Supabase signup returned HTTP 200 **without an authenticated session**, sign-in before confirmation returned HTTP 400, and password-recovery request returned HTTP 200.
+- Independently verified that Outlook received **both** Supabase emails: `Confirm your email address` (15:18:06 UTC) and `Reset your password` (15:18:09 UTC). No verification links were opened, shared, or logged.
+- The exact disposable account was deleted using a SQL transaction guarded by UUID, email, creation time, unconfirmed state and absence of app data. A final query returned **2 original Auth users, 0 Outlook test users**.
+- Deleted the single-use GitHub Actions workflow and script to prevent accidental repeated account creation. Gmail and Outlook mailbox deliverability are now both **verified**. Confirmation/recovery link completion, live two-browser sync, Google account deletion and OAuth client secret rotation remain **pending**.
+
+## GitHub Pages deploy queue (6 November 2026)
+
+- The build and cross-browser/site-quality checks were successful, but run https://github.com/aimroutine-tracker/aimroutine-tracker.github.io/actions/runs/42238929206 failed in GitHub's Pages **deployment** step after staying in `deployment_queued` / `updating_pages` until its 10-minute timeout. This is a host deployment timeout, not a failing JavaScript/build test.
+- Retried failed deployment job, which again timed out. Newer commits trigger another Pages deployment; **do not claim the latest site is live unless the corresponding deployment run concludes success**.
