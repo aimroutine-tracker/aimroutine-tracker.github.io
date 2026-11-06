@@ -159,6 +159,9 @@ test('Privacy and account pages describe the real Google self-deletion path',asy
  await page.goto('/privacy.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('main')).toContainText('SUPPRIMER');
  await expect(page.locator('main')).toContainText('Supabase');
+ await expect(page.locator('main a[href="mailto:aimroutine-tracker@outlook.fr"]')).toHaveCount(2);
+ await page.goto('/terms.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('main a[href="mailto:aimroutine-tracker@outlook.fr"]')).toHaveCount(2);
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#delete-account-confirmation')).toHaveAttribute('pattern','SUPPRIMER');
  await expect(page.locator('#google-delete-reauth')).toHaveCount(0);
