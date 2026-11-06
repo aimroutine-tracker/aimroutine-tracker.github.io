@@ -1,6 +1,6 @@
 /* AimRoutine Cloud v7. Initial and incremental synchronization.
    User ownership is enforced by Supabase RLS; browser-side checks are defense in depth. */
-import {TRAINING_KEY,LEGACY_KEY,EXT_KEY,scopedKey,CLOUD_META_PREFIX,safeMeta,mergeRecords,changedRecords} from './cloud-core-v7.mjs';
+import {TRAINING_KEY,LEGACY_KEY,EXT_KEY,scopedKey,CLOUD_META_PREFIX,safeMeta,freshCloudMeta,mergeRecords,changedRecords} from './cloud-core-v7.mjs';
 import {normalizeStore,validSession,validPreset} from './training-core-v5.mjs';
 import {cleanExtension} from './training-v6-core.mjs';
 
@@ -45,7 +45,7 @@ export async function synchronize(client,uid,{guestImport=false}={}){
  if(!isEnabled(uid))throw Error('La sauvegarde cloud doit être activée depuis Mon compte.');
  const {data:{user},error:authError}=await client.auth.getUser();
  if(authError||!user||user.id!==uid)throw Error('Session non validée : reconnecte-toi à ton compte.');
- const local=readUserLocal(uid);
+ let local=readUserLocal(uid);
  const meta=readMeta(uid);
  const [remoteSessions,remotePresets,profileResult,prefResult]=await Promise.all([
   fetchAll(client,'aim_sessions','session_id'),
@@ -55,6 +55,20 @@ export async function synchronize(client,uid,{guestImport=false}={}){
  ]);
  if(profileResult.error)throw profileResult.error;
  if(prefResult.error)throw prefResult.error;
+ // Progress deletion must propagate even to offline devices that still have
+ // their old records in localStorage. The cloud reset cursor is authoritative:
+ // never upload stale local sessions/presets from an older device.
+ const remoteResetAt=typeof prefResult.data?.settings?.reset_at==='string'&&
+   Number.isFinite(Date.parse(prefResult.data.settings.reset_at))
+    ?new Date(prefResult.data.settings.reset_at).toISOString():null;
+ const unseenReset=Boolean(remoteResetAt&&remoteResetAt!==meta.resetAt);
+ if(unseenReset){
+   local={store:normalizeStore({},null),ext:cleanExtension({})};
+   meta.presetDeletedIds=[];
+   meta.profileHash=null;
+   meta.prefsHash=null;
+   meta.resetAt=remoteResetAt;
+ }
  const count=remoteSessions.filter(x=>!x.deleted_at).length;
  const pcount=remotePresets.filter(x=>!x.deleted_at).length;
  if(count>STORAGE_LIMIT||pcount>25)throw Error('Le volume cloud dépasse les limites de l’espace AIM web.');
@@ -100,13 +114,17 @@ export async function synchronize(client,uid,{guestImport=false}={}){
  let finalGoal=prefResult.data?.weekly_goal??localGoal;
  if(!prefResult.data||prefsChanged||guestImport){
    finalGoal=localGoal;
-   const {error}=await client.from('aim_preferences').upsert({user_id:uid,weekly_goal:finalGoal,settings:{format:'aimroutine-web-v2'}});
+   const {error}=await client.from('aim_preferences').upsert({user_id:uid,weekly_goal:finalGoal,settings:{format:'aimroutine-web-v2',...(remoteResetAt?{reset_at:remoteResetAt}:{})}});
    if(error)throw error;
  }
  const finalStore={...local.store,sessions:mergedSessions,presets:mergedPresets,weeklyGoal:finalGoal};
  meta.presetDeletedIds=[];
  meta.profileHash=JSON.stringify(finalProfile);
  meta.prefsHash=JSON.stringify({weeklyGoal:finalGoal});
+ if(unseenReset){
+   // Prevent the V1 fallback from resurrecting data after V2 is replaced.
+   localStorage.removeItem(scopedKey(LEGACY_KEY,uid));
+ }
  writeLocal(uid,finalStore,finalProfile,meta);
  return {
   synced:true,uploadedSessions:newSessions.length,uploadedFavorites:newPresets.length,
@@ -139,11 +157,19 @@ export async function deleteCloudProgress(client,uid){
  const {data:{user},error}=await client.auth.getUser();
  if(error||!user||user.id!==uid)throw Error('Session non validée.');
  // Remove only this user's AIM data. Auth account deletion is a separate operation.
- for(const table of ['aim_sessions','aim_presets','aim_profiles','aim_preferences']){
+ // Retain a non-training preferences row carrying a new cloud-reset cursor, so
+ // a second device cannot re-upload deleted sessions when it reconnects.
+ for(const table of ['aim_sessions','aim_presets','aim_profiles']){
   const {error:deleteError}=await client.from(table).delete().eq('user_id',uid);
   if(deleteError)throw deleteError;
  }
- localStorage.removeItem(metaKey(uid));
+ const resetAt=new Date().toISOString();
+ const {error:resetError}=await client.from('aim_preferences').upsert({
+   user_id:uid,weekly_goal:3,settings:{format:'aimroutine-web-v2',reset_at:resetAt}
+ });
+ if(resetError)throw resetError;
+ const resetMeta={...freshCloudMeta(),resetAt};
+ localStorage.setItem(metaKey(uid),JSON.stringify(resetMeta));
  localStorage.removeItem(scopedKey(TRAINING_KEY,uid));
  // The legacy V1 key is a fallback in readUserLocal(). Clearing only V2 could
  // silently repopulate deleted training data on the next visit.
