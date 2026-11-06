@@ -145,6 +145,9 @@ export async function deleteCloudProgress(client,uid){
  }
  localStorage.removeItem(metaKey(uid));
  localStorage.removeItem(scopedKey(TRAINING_KEY,uid));
+ // The legacy V1 key is a fallback in readUserLocal(). Clearing only V2 could
+ // silently repopulate deleted training data on the next visit.
+ localStorage.removeItem(scopedKey(LEGACY_KEY,uid));
  localStorage.removeItem(scopedKey(EXT_KEY,uid));
  return true;
 }
