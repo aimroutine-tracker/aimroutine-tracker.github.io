@@ -22,8 +22,21 @@
   setNote('Pour installer : utilise « Ajouter à l’écran d’accueil » sur iPhone/iPad, ou le menu Installer dans Chrome/Edge. Une première visite en ligne est nécessaire.');
  });
  if('serviceWorker' in navigator&&window.isSecureContext){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw-v6.js',{scope:'./'})
-   .then(()=>{if(status()&&!pending)setNote('Hors ligne : l’espace AIM et ses fichiers de base restent accessibles après une première visite en ligne. Les illustrations Riot peuvent nécessiter Internet.');})
-   .catch(()=>setNote('Le cache hors ligne n’a pas pu être activé sur ce navigateur.')));
+  window.addEventListener('load',()=>{
+    const hadController=Boolean(navigator.serviceWorker.controller);
+    let refreshed=false;
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{
+      if(hadController&&!refreshed){
+        refreshed=true;
+        // Only refresh the page; never clear localStorage/session history.
+        window.location.reload();
+      }
+    });
+    navigator.serviceWorker.register('./sw-v6.js',{scope:'./',updateViaCache:'none'})
+      .then(reg=>{
+        if(status()&&!pending)setNote('Hors ligne : les fichiers essentiels restent accessibles après une première visite.');
+        return reg.update();
+      }).catch(()=>setNote('Le cache hors ligne n’a pas pu être actualisé.'));
+  });
  }
 })();

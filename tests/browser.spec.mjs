@@ -83,11 +83,11 @@ test('Offline training works after initial install',async ({page,context,browser
 
 test('Cloud account landing has single-border tags and a compact accessible guest button',async({page})=>{
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
- const chips=page.locator('.ar7-account-highlights > span');
+ const chips=page.locator('.ar7-account-highlights > .ar7-account-chip');
  await expect(chips).toHaveCount(3);
  await expect(page.locator('.ar7-guest-link')).toBeVisible();
  const check=await page.evaluate(()=>{
-   const badges=[...document.querySelectorAll('.ar7-account-highlights > span')];
+   const badges=[...document.querySelectorAll('.ar7-account-highlights > .ar7-account-chip')];
    const borders=badges.map(chip=>({
      outer:getComputedStyle(chip).borderTopWidth,
      inner:getComputedStyle(chip.querySelector('span')).borderTopWidth,
