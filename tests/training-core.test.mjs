@@ -5,7 +5,7 @@ import {FOCUS,RANK,TOOLS,createRoutine,sessionMinutes,normalizeStore,
   exportPayload,importPayload,streak} from '../training-core-v5.mjs';
 
 function sample(date='2026-11-01T17:00:00.000Z', accuracy=75, suffix='1',focus='flick',tool='VALORANT'){
- return {id:'test-'+suffix,date,rank:'immortal',focus,minutes:25,accuracy,feeling:'good',notes:'ok',tool};
+ return {id:'test-'+suffix,date,rank:'immortal',focus,minutes:25,accuracy,feeling:'good',notes:'ok',tool,scenario:'Stand de tir'};
 }
 test('Routine builder gives a valid editable set and correct minutes',()=>{
  for(const tool of TOOLS){
@@ -87,4 +87,9 @@ test('Import rejects malformed accuracy, format and presets',()=>{
 test('Core exports remain defined',()=>{
  assert.ok(Object.keys(FOCUS).length===4&&Object.keys(RANK).length===4);
  assert.equal(validSession(sample()),true);
+});
+
+test('Coach never compares a mixture of different scenarios',()=>{
+ const mixed=[65,63,77,79].map((x,i)=>({...sample(new Date(Date.UTC(2026,10,1+i)).toISOString(),x,'s'+i),scenario:i%2?'Cible B':'Cible A'}));
+ assert.match(coach(mixed,'flick','VALORANT').confidence,/insuffisantes/);
 });

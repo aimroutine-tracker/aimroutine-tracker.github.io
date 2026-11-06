@@ -109,18 +109,27 @@ export function comparable(sessions,focus,tool){
   return sessions.filter(s=>s.focus===focus&&s.accuracy!==null&&(!tool||s.tool===tool)).sort((a,b)=>a.date.localeCompare(b.date));
 }
 export function coach(sessions,focus,tool,weeklyGoal=3,now=new Date()){
-  const stat=computeStats(sessions,weeklyGoal,now);
-  const xs=comparable(sessions,focus,tool);
   if(!sessions.length)return {title:'Premiers pas',message:'Prépare une séance courte, note ton ressenti, puis répète plusieurs fois les mêmes exercices.',confidence:'Démarrage',focus};
+  // Only compare identical tools and named scenarios; rank alone is not evidence.
+  const groups=new Map();
+  sessions.filter(s=>validSession(s)&&s.accuracy!==null&&s.focus===focus&&
+    (!tool||s.tool===tool)&&typeof s.scenario==='string'&&s.scenario.trim()&&
+    TOOLS.includes(s.tool)).forEach(s=>{
+    const key=s.tool+'::'+s.scenario.trim();
+    if(!groups.has(key))groups.set(key,[]);
+    groups.get(key).push(s);
+  });
+  const best=[...groups.values()].sort((a,b)=>b.length-a.length)[0]||[];
+  const xs=best.slice().sort((a,b)=>a.date.localeCompare(b.date));
   if(xs.length<4)return {title:'Construire un historique comparable',
-    message:'Il faut au moins quatre séances avec une précision renseignée pour '+FOCUS[focus].toLowerCase()+' avec le même outil. Continue à enregistrer tes résultats.',
-    confidence:'Données insuffisantes',focus};
+    message:'Enregistre au moins quatre précisions avec le même logiciel et le même scénario nommé. Des exercices différents ne permettent pas de conclure.',confidence:'Données insuffisantes',focus};
   const prev=xs.slice(-4,-2),recent=xs.slice(-2);
   const mean=a=>a.reduce((n,s)=>n+s.accuracy,0)/a.length;
   const delta=mean(recent)-mean(prev);
-  if(delta<=-3)return {title:'Priorité au contrôle',message:'Tes deux dernières précisions sont inférieures aux deux précédentes (−'+Math.abs(delta).toFixed(1)+' points). Réduis la vitesse et conserve un scénario comparable.',confidence:'Tendance indicative',focus};
-  if(delta>=3)return {title:'Consolider la progression',message:'Tes deux dernières précisions sont en hausse (+'+delta.toFixed(1)+' points). Garde la même difficulté quelques séances pour confirmer.',confidence:'Tendance indicative',focus};
-  return {title:'Régularité',message:'Ta précision évolue de moins de 3 points entre les deux périodes. Répète les mêmes scénarios et vise '+weeklyGoal+' séances par semaine.',confidence:'Tendance indicative',focus};
+  const caution=' Cette tendance reste indicative : conserve une difficulté et des réglages similaires.';
+  if(delta<=-3)return {title:'Priorité au contrôle',message:'Sur le même scénario, tes deux dernières précisions baissent de '+Math.abs(delta).toFixed(1)+' points. Privilégie le contrôle avant la vitesse.'+caution,confidence:'Tendance indicative',focus};
+  if(delta>=3)return {title:'Consolider la progression',message:'Sur le même scénario, tes deux dernières précisions progressent de '+delta.toFixed(1)+' points.'+caution,confidence:'Tendance indicative',focus};
+  return {title:'Régularité',message:'La précision varie de moins de 3 points sur le même scénario. Vise '+weeklyGoal+' séances par semaine.'+caution,confidence:'Tendance indicative',focus};
 }
 export function exportPayload(store){
   return {format:'aimroutine-web-v2',exportedAt:new Date().toISOString(),sessions:store.sessions,presets:store.presets,weeklyGoal:store.weeklyGoal};
