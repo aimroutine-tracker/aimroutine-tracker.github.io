@@ -31,7 +31,7 @@ function clientFor(db,uid){
   update(values){return new Query(this.table,'update',values)}
   delete(){return new Query(this.table,'delete')}
   async upsert(values){
-   for(const source of values){
+   for(const source of (Array.isArray(values)?values:[values])){
     if(source.user_id!==uid)return {error:Error('permission denied by RLS')};
     const rows=db[this.table], key=primary(this.table,source);
     const existing=rows.findIndex(x=>primary(this.table,x)===key);
