@@ -1,7 +1,7 @@
 {
   "name": "AimRoutine Tracker — Coach AIM VALORANT",
   "short_name": "AimRoutine",
-  "description": "Projet Windows AIM VALORANT, site de présentation et démonstrations fictives.",
+  "description": "AimRoutine Tracker : présentation du logiciel Windows et espace web d'entraînement AIM avec données locales.",
   "start_url": "/",
   "scope": "/",
   "display": "browser",
@@ -9,9 +9,9 @@
   "theme_color": "#0b141f",
   "icons": [
     {
-      "src": "favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "aimroutine-logo.png",
+      "sizes": "128x128",
+      "type": "image/png",
       "purpose": "any"
     }
   ]

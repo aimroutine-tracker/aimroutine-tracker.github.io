@@ -60,3 +60,7 @@ The live web workspace at [training.html](https://aimroutine-tracker.github.io/t
 - Riot website/media assets are credited and served externally. Riot product approval is not implied.
 
 The earlier Website behavior section above described the landing-site demos before web v5.0; the separate active workspace now persists user-entered training history in localStorage only.
+
+## Official application logo — 2026-11-06
+
+The official AimRoutine Tracker logo supplied by the project owner has been added unchanged in appearance as `aimroutine-logo.png` (losslessly optimized PNG, 128 × 128, transparent background). All HTML pages use it in the navigation bar and browser favicon, including the 404 and releases pages. The web manifest points to the same image. The shared footer branding also uses this icon.

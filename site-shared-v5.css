@@ -592,3 +592,10 @@ body.site31.site31-home .ar5-preview-cards strong{color:#ff8699;font-size:13px}
 body.site31.site31-home .ar5-preview-cards span{color:#c8d7e2;font-size:11px;font-weight:700;letter-spacing:.08em}
 body.site31.site31-home .ar5-home-preview p{font-size:11px;color:#adc1cc;margin:20px 0 0}
 @media(max-width:760px){body.site31.site31-home .ar5-home-workspace{grid-template-columns:1fr}body.site31.site31-home .ar5-home-preview{padding:18px}body.site31.site31-home .ar5-preview-bars{height:70px}}
+
+/* Official AimRoutine icon: preserved from the supplied 128px RGBA PNG. */
+body.site31 .site31-brand img{width:40px;height:40px;object-fit:contain;display:block;flex:none;filter:drop-shadow(0 2px 10px #ff53692b)}
+body.site31 .site31-footer-logo{display:flex;align-items:center;gap:10px}
+body.site31 .site31-footer-logo:before{content:"";display:inline-block;width:27px;height:27px;flex:none;background:url("aimroutine-logo.png?v=1") center/contain no-repeat}
+@media(max-width:640px){body.site31 .site31-brand img{width:34px;height:34px}}
+@media(max-width:380px){body.site31 .site31-brand img{width:30px;height:30px}}
