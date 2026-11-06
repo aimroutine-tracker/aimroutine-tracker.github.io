@@ -1,0 +1,19 @@
+name: One-time disposable Auth email delivery test
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/one-time-email-delivery.yml"
+permissions:
+  contents: read
+jobs:
+  smtp-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Request email verification and recovery for disposable Gmail alias
+        run: node tests/one-time-email-delivery.mjs
