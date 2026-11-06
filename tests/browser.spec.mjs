@@ -110,7 +110,8 @@ test('Account deletion UI exists but remains inaccessible to guests',async({page
  await expect(section.locator('input[type="password"]')).toHaveCount(1);
  await expect(section.locator('input#delete-account-confirmation')).toHaveAttribute('maxlength','9');
  await expect(section.locator('#google-delete-flow')).toHaveCount(1);
- await expect(section.locator('#google-delete-reauth')).toHaveCount(1);
+ await expect(section.locator('#google-delete-reauth')).toHaveCount(0);
+ await expect(section.locator('#delete-account-confirmation')).toHaveAttribute('pattern','SUPPRIMER');
  await expect(section.locator('#delete-account-final')).toHaveCount(1);
  await expect(section.locator('button[type="submit"]')).toHaveCount(1);
 });
