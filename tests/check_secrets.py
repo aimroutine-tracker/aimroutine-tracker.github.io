@@ -7,6 +7,7 @@ import re, subprocess, sys
 ROOT = Path(__file__).resolve().parents[1]
 PATTERNS = {
   "Google OAuth client secret": r"GOCSPX-[A-Za-z0-9_-]{10,}",
+  "Riot Games API key": r"RGAPI-[A-Za-z0-9_-]{10,}",
   "Supabase secret key": r"sb_secret_[A-Za-z0-9_-]{12,}",
   "Google private API key": r"AIza[A-Za-z0-9_-]{30,}",
   "GitHub personal access token": r"ghp_[A-Za-z0-9]{32,}",

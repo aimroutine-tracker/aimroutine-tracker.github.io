@@ -1,5 +1,4 @@
 name: Site quality checks
-
 on:
   push:
     branches: [main]
@@ -9,6 +8,7 @@ on:
       - "**/*.js"
       - "**/*.mjs"
       - "tests/**"
+      - "scripts/**"
       - ".github/workflows/site-quality.yml"
   pull_request:
     paths:
@@ -17,13 +17,14 @@ on:
       - "**/*.js"
       - "**/*.mjs"
       - "tests/**"
+      - "scripts/**"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: aimroutine-quality-\${{ github.ref }}
+  group: aimroutine-quality-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -34,7 +35,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Validate all JavaScript syntax
+      - name: Validate JavaScript syntax
         run: |
           for script in *.js *.mjs; do node --check "$script"; done
       - name: Test training logic
@@ -43,3 +44,7 @@ jobs:
         run: python3 tests/check_secrets.py
       - name: Validate internal HTML links and assets
         run: python3 tests/check_site.py
+      - name: Verify minimal public artifact
+        run: |
+          python3 scripts/build_public.py
+          python3 tests/check_public_artifact.py

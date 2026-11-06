@@ -3,17 +3,13 @@
  * No raw password, full SHA-1 or email is ever sent to the API.
  * Advisory UX defense: Supabase Free does not enforce this server-side.
  */
-export const MIN_PASSWORD_LENGTH=8;
+export const MIN_PASSWORD_LENGTH=12;
 export function checkPasswordLength(password){
  if(typeof password!=='string'||password.length<MIN_PASSWORD_LENGTH){
-  return {ok:false,message:'Choisis un mot de passe de 8 caractères minimum.'};
+  return {ok:false,message:'Choisis un mot de passe de 12 caractères minimum.'};
  }
- // Match the recommended Supabase server policy: lowercase, uppercase, digit and symbol.
- // The backend enforces its configured minimum independently of this browser check.
- if(!/[a-z]/.test(password)||!/[A-Z]/.test(password)||!/[0-9]/.test(password)||!/[^A-Za-z0-9]/.test(password)){
-  return {ok:false,message:'Utilise une minuscule, une majuscule, un chiffre et un symbole.'};
- }
- if(new Set(password).size<5)return {ok:false,message:'Mot de passe trop répétitif. Choisis-en un plus varié.'};
+ // Prevent trivially repetitive passwords without demanding arbitrary classes.
+ if(new Set(password).size<5)return {ok:false,message:'Mot de passe trop répétitif. Choisis une phrase de passe plus variée.'};
  return {ok:true,message:''};
 }
 export function findHashSuffix(body,suffix){

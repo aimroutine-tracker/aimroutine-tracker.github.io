@@ -1,9 +1,5 @@
-name: Recover stalled Pages deployment and publish site
-
+name: Recover stalled Pages deployment (manual only)
 on:
-  push:
-    paths:
-      - .github/workflows/recover-pages.yml
   workflow_dispatch:
 
 permissions:
@@ -12,7 +8,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: aimroutine-pages-recovery
+  group: aimroutine-pages-deploy
   cancel-in-progress: false
 
 jobs:
@@ -22,13 +18,12 @@ jobs:
       contents: read
       pages: write
     steps:
-      - name: Cancel the specific stale Pages deployment reported by GitHub
+      - name: Cancel previously identified stalled Pages deployment
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          # Stale deployment SHA from Pages error logs, not the latest commit.
           STALE_SHA="d51d6ee9dce168c4108d5db656d6eec0bb401369"
           API="https://api.github.com/repos/${GITHUB_REPOSITORY}/pages/deployments/${STALE_SHA}/cancel"
           HTTP_CODE="$(curl --silent --show-error --retry 3 --retry-delay 2 \
@@ -37,11 +32,8 @@ jobs:
             -H 'X-GitHub-Api-Version: 2022-11-28' \
             -H "Authorization: Bearer ${GH_TOKEN}" "$API")"
           echo "Cancellation status: ${HTTP_CODE}"
-          if [[ "$HTTP_CODE" == "204" || "$HTTP_CODE" == "404" ]]; then
-            echo "Known stalled deployment cancelled or already absent."
-          else
-            cat /tmp/pages-cancel-response.json
-            echo "::error::Pages API refused the targeted cancellation."
+          if [[ "$HTTP_CODE" != "204" && "$HTTP_CODE" != "404" ]]; then
+            echo "::error::Pages API refused cancellation"
             exit 1
           fi
 
@@ -57,11 +49,16 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: Build and verify public-only artifact
+        run: |
+          python3 scripts/build_public.py
+          python3 tests/check_public_artifact.py
+          python3 tests/check_site.py
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:
-          path: .
-      - name: Deploy latest site to GitHub Pages
+          path: .public-site
+      - name: Deploy latest verified public site
         id: deployment
         uses: actions/deploy-pages@v5
         with:

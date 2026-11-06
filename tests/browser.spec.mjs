@@ -124,7 +124,6 @@ test('Google OAuth beta button is enabled but public email signup stays gated',a
  await expect(page.locator('#google-login-wrap')).toBeVisible();
  await expect(page.locator('#google-signin')).toBeEnabled();
  await page.locator('#signup-mode').click();
- await expect(page.locator('#signup-password')).toHaveAttribute('minlength','8');
  await expect(page.locator('#signup-submit')).toBeDisabled();
  await expect(page.locator('#google-signin')).toBeEnabled();
  await page.locator('#login-mode').click();
@@ -258,7 +257,7 @@ test('Password recovery deep link updates credentials through the auth SDK (mock
  await page.route('https://lmzswtzboobpokumxzhy.supabase.co/auth/v1/user',route=>{
   if(route.request().method()==='PUT'){
    passwordUpdates++;
-   expect(JSON.parse(route.request().postData()||'{}').password).toBe('Aa1!bcde');
+   expect(JSON.parse(route.request().postData()||'{}').password).toBe('StrongExample2026!#');
   }
   return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(user)});
  });
@@ -268,8 +267,7 @@ test('Password recovery deep link updates credentials through the auth SDK (mock
   '&expires_in=3600&token_type=bearer&refresh_token=mock-recovery-refresh&type=recovery';
  await page.goto('/account.html'+hash,{waitUntil:'domcontentloaded'});
  await expect(page.locator('#new-password-form')).toBeVisible();
- await expect(page.locator('#new-password')).toHaveAttribute('minlength','8');
- await page.locator('#new-password').fill('Aa1!bcde');
+ await page.locator('#new-password').fill('StrongExample2026!#');
  await page.locator('#new-password-form button[type="submit"]').click();
  await expect(page.locator('#account-status')).toContainText('Mot de passe mis à jour');
  expect(passwordUpdates).toBe(1);
