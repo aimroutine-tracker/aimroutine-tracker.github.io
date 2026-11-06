@@ -42,7 +42,7 @@ Docs: https://supabase.com/docs/guides/auth/general-configuration and https://su
 
 ### C. Confirm production email and password policy
 
-1. In Supabase Auth settings set **minimum password length to at least 12** server-side; check available complexity options. The present client-side 12-character test can be bypassed using the REST Auth API.
+1. **Server-side 12-character minimum is now empirically verified:** direct Auth API signup with an 11-character random password returned HTTP 422 and the 12-character candidate succeeded with a confirmation-required account. The disposable account was immediately deleted and SQL verified no probe accounts remain. Preserve this setting; review other available complexity options in Supabase.
 2. Confirm mail redirects for `https://aimroutine-tracker.github.io/account.html` and its `?reset=1` variant.
 3. Use a disposable email account to test: signup → confirmation mail → link → login → session → password reset request → reset mail → new password → old password fails → correct password succeeds → self-deletion. Do not paste verification links/codes/passwords into chat or logs.
 4. Check delivery to Gmail and Outlook independently and verify SPF/DKIM / sender reputation where applicable. Custom Gmail SMTP may be unsuitable beyond low-volume beta.
@@ -72,3 +72,9 @@ Docs: https://supabase.com/docs/guides/auth/password-security and https://supaba
 - Gmail delivered **Confirm your email address** and **Reset your password** (two distinct test messages received within seconds).
 - SQL account cleanup verified the plus-alias does not exist in `auth.users`. The owner-created accounts were not modified.
 - The confirmation/recovery links were not opened, so account activation, completing recovery and trying the changed password must still be tested from a fully interactive, authorized browser session. A second independent destination (Outlook) is also pending.
+
+## Direct server-side password policy check (6 November 2026)
+
+- GitHub Actions: https://github.com/aimroutine-tracker/aimroutine-tracker.github.io/actions/runs/42232428474 — HTTP 422 for a random 11-character password, response explicitly indicated **minimum 12**, and HTTP 200 for 12 characters with no authenticated session issued.
+- One disposable account was created only in the accepted 12-character case. It was deleted with an exact email+UUID+recent creation+no-cloud-data SQL guard; a follow-up count confirmed exactly **two original users remained** and zero matching disposable password-policy accounts.
+- This independently verifies server-side **minimum length**, not server-side compromised-password checking. The native leaked-password security warning remains.
