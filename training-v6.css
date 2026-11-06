@@ -89,3 +89,9 @@ body.site31.site31-training #session-area:fullscreen .progress>div{height:100%}
  body.site31.site31-training .ar6-timer-settings{flex-direction:column;align-items:flex-start}
 }
 @media(max-width:390px){body.site31.site31-training .ar6-program-grid{grid-template-columns:1fr}}
+
+/* Cloud account status inside the AIM workspace */
+body.site31.site31-training .ar7-account-line{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:12px 0;padding:12px 15px;border:1px solid #3b5a6c;border-radius:8px;background:#122d3a}
+body.site31.site31-training .ar7-account-link{display:inline-flex;align-items:center;gap:9px;border-radius:5px;padding:8px 10px;text-decoration:none;background:#ff586f;color:#0b1620;font-weight:850;font-size:12px}
+body.site31.site31-training #cloud-training-status{font-size:12px;color:#b9d0df;line-height:1.6}
+body.site31.site31-training .ar7-account-dot{font-size:9px;color:#123b36}

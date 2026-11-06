@@ -1,4 +1,5 @@
 import {FOCUS,TOOLS,createRoutine} from './training-core-v5.mjs';
+import {storageKey} from './cloud-core-v7.mjs';
 import {EXT_KEY,cleanExtension,cleanProfile,startProgram,programCalendar,scenarioOptions,scenarioMetrics,calendarGrid,achievements,toInterchange,parseInterchange} from './training-v6-core.mjs';
 (()=>{
 'use strict';
@@ -9,10 +10,10 @@ const getStore=()=>window.AIMWeb.getStore();
 const percentile=n=>n===null?'—':Number(n).toFixed(1)+' %';
 let extras;
 function load(){
- try{extras=cleanExtension(JSON.parse(localStorage.getItem(EXT_KEY)||'null'))}catch{extras=cleanExtension(null)}
+ try{extras=cleanExtension(JSON.parse(localStorage.getItem(storageKey(EXT_KEY))||'null'))}catch{extras=cleanExtension(null)}
 }
 function save(next){
- try{localStorage.setItem(EXT_KEY,JSON.stringify(next));extras=next;return true}
+ try{localStorage.setItem(storageKey(EXT_KEY),JSON.stringify(next));extras=next;window.dispatchEvent(new CustomEvent('aim-cloud-data-changed'));return true}
  catch{alert('Le stockage local du navigateur est indisponible.');return false}
 }
 function showProfile(){

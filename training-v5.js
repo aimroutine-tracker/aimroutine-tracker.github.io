@@ -1,3 +1,5 @@
+import {storageKey,activeUid} from './cloud-core-v7.mjs';
+import {collectFavoriteDeletion} from './cloud-sync-v7.mjs';
 import {STORAGE_KEY,LEGACY_KEY,FOCUS,RANK,TOOLS,CATALOG,normalizeStore,
   createRoutine,validPreset,validExercise,sessionMinutes,computeStats,comparable,coach,
   exportPayload,importPayload} from './training-core-v5.mjs';
@@ -8,11 +10,15 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const make=(tag,text,cls)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=String(text);if(cls)el.className=cls;return el;};
 const id=()=>crypto?.randomUUID?.()||Date.now()+'-'+Math.random().toString(36).slice(2);
 const showMessage=message=>{$('#data-message').textContent=message;};
-function readJSON(key){try{return JSON.parse(localStorage.getItem(key)||'null')}catch{return null}}
+function readJSON(key){try{return JSON.parse(localStorage.getItem(storageKey(key))||'null')}catch{return null}}
 let store=normalizeStore(readJSON(STORAGE_KEY),readJSON(LEGACY_KEY));
 let plan=null,active=null,interval=null,remaining=0,deadline=0,running=false;
 function save(next=store){
-  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(next));store=next;
+  try{
+    const removed=store.presets.filter(p=>!next.presets.some(n=>n.id===p.id)).map(p=>p.id);
+    const uid=activeUid();
+    if(uid&&removed.length)collectFavoriteDeletion(uid,removed);
+    localStorage.setItem(storageKey(STORAGE_KEY),JSON.stringify(next));store=next;
       window.dispatchEvent(new CustomEvent('aim-store-updated'));
       return true}
   catch{alert('Le navigateur ne permet pas cet enregistrement. Vérifie son espace de stockage et ses paramètres.');return false}
@@ -359,9 +365,9 @@ $('#import-data').addEventListener('change',async event=>{
 $('#clear-data').addEventListener('click',()=>{
  if(!confirm('Effacer définitivement toutes tes séances, routines favorites et objectifs locaux ?'))return;
  if(!confirm('Dernière confirmation : as-tu exporté ta sauvegarde ?'))return;
- try{localStorage.removeItem(STORAGE_KEY);localStorage.removeItem(LEGACY_KEY)}catch{showMessage('Impossible d’effacer le stockage de ce navigateur.');return}
+ try{localStorage.removeItem(storageKey(STORAGE_KEY));localStorage.removeItem(storageKey(LEGACY_KEY))}catch{showMessage('Impossible d’effacer le stockage de ce navigateur.');return}
  store=normalizeStore(null,null);plan=null;active=null;stopTimer();editor();renderFavorites();renderDashboard();renderInsights();renderCoach();
- $('#session-area').hidden=true;$('#finish-form').hidden=true;showMessage('Les données de cet espace ont été effacées.');
+ $('#session-area').hidden=true;$('#finish-form').hidden=true;showMessage(activeUid()?'Cache de cet appareil effacé. Les sauvegardes cloud restent disponibles dans Mon compte.':'Les données de cet espace ont été effacées.');
 });
 window.AIMWeb=Object.freeze({
   getStore:()=>JSON.parse(JSON.stringify(store)),
@@ -389,7 +395,7 @@ window.AIMWeb=Object.freeze({
 });
 window.dispatchEvent(new CustomEvent('aim-v5-ready'));
 window.addEventListener('storage',event=>{
- if([STORAGE_KEY,LEGACY_KEY].includes(event.key)){
+ if([storageKey(STORAGE_KEY),storageKey(LEGACY_KEY)].includes(event.key)){
   store=normalizeStore(readJSON(STORAGE_KEY),readJSON(LEGACY_KEY));
   renderDashboard();renderInsights();renderCoach();renderFavorites();
  }
