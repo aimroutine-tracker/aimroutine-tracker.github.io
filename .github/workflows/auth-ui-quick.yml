@@ -27,5 +27,5 @@ jobs:
           for i in $(seq 1 25); do curl -fsS http://127.0.0.1:8765/account.html >/dev/null && exit 0; sleep 1; done
           cat /tmp/aimroutine-auth-ui.log
           exit 1
-      - name: Verify mocked Google self-deletion and recovery
-        run: npx playwright test --config=tests/playwright.config.mjs --project=chromium-desktop --grep "Google deletion UX|Password reset UI"
+      - name: Validate all desktop Chromium scenarios including mocked account deletion and recovery
+        run: npx playwright test --config=tests/playwright.config.mjs --project=chromium-desktop
