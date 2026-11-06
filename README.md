@@ -45,3 +45,18 @@ Never commit keys, credentials, tokens, private match histories or .env files. N
 - No verified public Windows installer is hosted on the site.
 
 Website source is static, bilingual, hosted on GitHub Pages. No credentials, client secrets, live player data or third-party tracking scripts are necessary for website demos.
+
+
+## Web player workspace v5.0 — 2026-11-06
+
+The live web workspace at [training.html](https://aimroutine-tracker.github.io/training.html) supports editable exercise plans (tool, name, duration, hints), ordered steps, optional breaks, manual timer, local favorites, weekly targets, streaks, accuracy trends, rule-based transparent coaching and JSON import/export.
+
+- Training history from the earlier web v1 localStorage key is automatically imported on first load into v2. The old key is not removed unless the user deliberately clears local data. Previous unknown training tools are labelled **Non précisé**.
+- All data is browser-local; no API calls or accounts, no live Riot data, no background sync. User-provided scores must be compared on similar scenarios.
+- [releases.html](https://aimroutine-tracker.github.io/releases.html) distinguishes web availability from Windows 2.9 local screenshots and planned Riot features. There is **no public Windows installer**.
+- Navigation across pages is grouped into four primary links plus an Explorer dropdown, with mobile equivalents.
+- Four overlapping shared visual stylesheets were consolidated to site-shared-v5.css to reduce requests; page-specific styles are retained.
+- GitHub Actions site-quality workflow checks JavaScript syntax, internal links/assets and Node unit tests for the training model. The repository still requires real-browser manual or automated acceptance testing prior to claiming the entire UX is production verified.
+- Riot website/media assets are credited and served externally. Riot product approval is not implied.
+
+The earlier Website behavior section above described the landing-site demos before web v5.0; the separate active workspace now persists user-entered training history in localStorage only.

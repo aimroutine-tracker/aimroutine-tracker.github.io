@@ -28,6 +28,7 @@ test('Legacy v1 sessions survive migration',()=>{
  assert.equal(next.sessions[0].id,'test-1');
  assert.equal(next.weeklyGoal,3);
  assert.deepEqual(next.presets,[]);
+ assert.equal(normalizeStore(null,{sessions:[{...sample(),tool:undefined}]}).sessions[0].tool,'Non précisé');
 });
 test('Migration ignores invalid sessions and duplicate ids',()=>{
  const s=sample(),bad={...s,id:'x',accuracy:1000};
@@ -75,6 +76,7 @@ test('V2 export and import preserve favorites and settings',()=>{
  assert.equal(restored.store.sessions.length,1);
  assert.equal(restored.store.presets.length,1);
  assert.equal(backup.weeklyGoal,5);
+ assert.equal(restored.store.weeklyGoal,5);
 });
 test('Import rejects malformed accuracy, format and presets',()=>{
  const state=normalizeStore(null,null);
