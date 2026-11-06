@@ -1,0 +1,118 @@
+/* AimRoutine v5 — intentional, responsive game-performance workspace.
+   Loaded AFTER legacy styles to avoid specificity conflicts. */
+body.site31.site31-training{--ar5-bg:#0b1520;--ar5-panel:#142535;--ar5-border:#35495a;--ar5-red:#ff586f;--ar5-cyan:#8bded3;background:#0b1520}
+body.site31.site31-training .ar5-workspace{padding-block:36px 76px;max-width:1220px}
+body.site31.site31-training .ar5-hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(270px,.85fr);gap:clamp(22px,3vw,44px);border-radius:16px;background:linear-gradient(130deg,#152c3f,#0d1c2b);padding:clamp(24px,4vw,48px);overflow:hidden;align-items:center}
+body.site31.site31-training .ar5-hero-copy h1{font-size:clamp(39px,5.4vw,75px);line-height:1.02;letter-spacing:-.06em;max-width:700px}
+body.site31.site31-training .ar5-hero-copy>p:not(.eyebrow){font-size:16px;max-width:560px;line-height:1.72}
+body.site31.site31-training .ar5-hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+body.site31.site31-training .ar5-proof{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px;font-size:11px;color:#b3c8d6}
+body.site31.site31-training .ar5-proof span{padding:7px 10px;border:1px solid #3c5769;border-radius:5px;background:#132738}
+body.site31.site31-training .ar5-art{margin:0;min-width:0;position:relative;height:330px;overflow:hidden;border:1px solid #4e6071;border-radius:13px;isolation:isolate;background:#173247}
+body.site31.site31-training .ar5-art img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+body.site31.site31-training .ar5-art:after{content:"";position:absolute;inset:25% 0 0;background:linear-gradient(transparent,#07131ddc);pointer-events:none}
+body.site31.site31-training .ar5-art figcaption{position:absolute;bottom:14px;left:16px;font-size:11px;z-index:1;color:#e5ebf0}
+body.site31.site31-training .ar5-privacy{font-size:12px;line-height:1.75;border:1px solid #355669;border-left:3px solid #8bded3;background:#122638;padding:16px 20px;margin:14px 0 26px;border-radius:8px;color:#c3d3df}
+body.site31.site31-training .ar5-tab-wrap{position:sticky;top:80px;z-index:90;background:#0b1520e8;padding:5px 0 12px;margin-bottom:18px;backdrop-filter:blur(12px)}
+body.site31.site31-training .ar5-tab-wrap .tabs{display:flex;gap:8px;overflow-x:auto;padding:8px;background:#112333;border:1px solid #365063;border-radius:10px;margin:0;scrollbar-width:thin}
+body.site31.site31-training .ar5-tab-wrap .tabs button{font-size:13px;padding:13px 18px;border:0;background:transparent;color:#b7c7d4;white-space:nowrap;flex:0 0 auto;min-height:44px;border-radius:6px;font-weight:750}
+body.site31.site31-training .ar5-tab-wrap .tabs button[aria-selected="true"]{background:#ff586f;color:#081520;box-shadow:0 6px 18px #0003}
+body.site31.site31-training .ar5-workspace>.panel:not([hidden]){border:1px solid #304b5d;border-top:2px solid #8bded3;padding:clamp(20px,3.4vw,40px);border-radius:14px;background:linear-gradient(145deg,#132739,#0f1d2b)}
+body.site31.site31-training .ar5-workspace .section-heading{align-items:flex-end;gap:20px}
+body.site31.site31-training .ar5-workspace .section-heading h2{font-size:clamp(27px,3.4vw,44px);letter-spacing:-.05em}
+body.site31.site31-training .ar5-workspace .section-heading .muted{margin:8px 0 0}
+body.site31.site31-training .ar5-workspace .surface,body.site31.site31-training .ar5-workspace .metric{border:1px solid #39566a;background:linear-gradient(140deg,#142a3a,#101e2c);border-radius:10px;padding:clamp(19px,2.6vw,27px)}
+body.site31.site31-training .ar5-workspace .metric{min-height:168px}
+body.site31.site31-training .ar5-workspace .metric strong{font-size:clamp(29px,3vw,44px);letter-spacing:-.04em;margin:13px 0 6px}
+body.site31.site31-training .ar5-workspace .two{grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
+body.site31.site31-training .ar5-workspace .primary,body.site31.site31-training .ar5-workspace .outline{min-height:44px;border-radius:7px;clip-path:none}
+body.site31.site31-training .ar5-workspace button:not(:disabled){transition:background .15s,border-color .15s,transform .15s}
+body.site31.site31-training .ar5-workspace button:hover:not(:disabled){transform:translateY(-1px)}
+body.site31.site31-training .ar5-workspace button:disabled{opacity:.42;cursor:not-allowed}
+body.site31.site31-training .ar5-workspace :is(input,select){background:#0b1c2b;color:#f1f6f9;border:1px solid #486576;border-radius:7px;padding:12px 11px;min-width:0;width:100%;min-height:44px}
+body.site31.site31-training .ar5-workspace :is(input,select):focus-visible{border-color:#8bded3;outline:2px solid #8bded3;outline-offset:2px}
+body.site31.site31-training .ar5-field,body.site31.site31-training .ar5-builder-form label,body.site31.site31-training .ar5-finish-grid label,body.site31.site31-training .ar5-filter-row label{display:grid;gap:9px;color:#d3e0e8;font-size:12px;font-weight:700}
+body.site31.site31-training .ar5-goal-input{max-width:230px;margin:16px 0}
+body.site31.site31-training .ar5-goal-input input{max-width:140px}
+body.site31.site31-training .ar5-pill{display:inline-flex;align-items:center;gap:5px;background:#173e43;color:#9cebe1;border:1px solid #38686b;border-radius:50px;padding:6px 10px;font-size:11px;font-weight:800}
+body.site31.site31-training .ar5-meter{height:9px;background:#2b4453;border-radius:10px;overflow:hidden;margin:16px 0}
+body.site31.site31-training .ar5-meter span{display:block;height:100%;width:0;background:linear-gradient(90deg,#69bfbd,#a4fff0);border-radius:10px;transition:width .3s ease}
+body.site31.site31-training .ar5-badges{display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;font-size:13px;color:#bed2dd}
+body.site31.site31-training .ar5-badges strong{font-size:20px;color:#fff;margin-right:5px}
+body.site31.site31-training .history-row{padding:15px 0}
+body.site31.site31-training .ar5-builder-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:16px}
+body.site31.site31-training .ar5-builder-form button{grid-column:3;min-height:48px}
+body.site31.site31-training .ar5-favorites{margin:20px 0}
+body.site31.site31-training .ar5-fav-list{display:grid;gap:9px}
+body.site31.site31-training .ar5-favorite{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 16px;border:1px solid #365264;background:#0e1f2f;border-radius:8px}
+body.site31.site31-training .ar5-favorite strong{display:block;color:#f1f7fb}
+body.site31.site31-training .ar5-favorite small{display:block;color:#9eb9c8;margin-top:5px}
+body.site31.site31-training .ar5-favorite .controls{margin:0}
+body.site31.site31-training .ar5-favorite button{padding:9px 12px;min-height:40px}
+body.site31.site31-training .ar5-plan-summary{margin-top:14px;color:#9ceae0;font-weight:750;font-size:12px}
+body.site31.site31-training .ar5-edit-list{display:grid;gap:14px;margin:22px 0}
+body.site31.site31-training .ar5-edit-row{border:1px solid #3b5669;background:#0f2131;border-radius:10px;padding:18px;display:grid;gap:16px}
+body.site31.site31-training .ar5-edit-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+body.site31.site31-training .ar5-edit-head strong{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#8bded3}
+body.site31.site31-training .ar5-row-actions{display:flex;gap:7px}
+body.site31.site31-training .ar5-icon-button,body.site31.site31-training .ar5-quiet-button{border:1px solid #486578;color:#d1e2ec;border-radius:7px;padding:8px 12px;background:#1a3446}
+body.site31.site31-training .ar5-quiet-button{font-size:12px}
+body.site31.site31-training .ar5-fields{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr) 100px;gap:14px}
+body.site31.site31-training .ar5-edit-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+body.site31.site31-training .ar5-edit-actions .primary{margin-left:auto}
+body.site31.site31-training .ar5-session{margin-top:18px;border-top:2px solid #ff586f}
+body.site31.site31-training .ar5-note{font-size:12px;margin-top:16px}
+body.site31.site31-training .ar5-finish-grid{display:grid;grid-template-columns:1fr 1fr 2fr;gap:16px;margin:16px 0 22px}
+body.site31.site31-training .ar5-filter-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin:0 0 20px}
+body.site31.site31-training #chart{min-height:250px}
+body.site31.site31-training #chart svg{display:block;max-width:100%}
+body.site31.site31-training .ar5-coach-card{border-top:2px solid #ff586f}
+body.site31.site31-training .ar5-coach-card h3{font-size:clamp(24px,2.4vw,33px);margin:19px 0}
+body.site31.site31-training .ar5-coach-card p{min-height:100px}
+body.site31.site31-training .ar5-workspace section[hidden]{display:none!important}
+body.site31.site31-training footer{color:#aebfcd}
+@media(max-width:1000px){
+body.site31.site31-training .ar5-hero{grid-template-columns:1.1fr .9fr}
+body.site31.site31-training .ar5-art{height:280px}
+body.site31.site31-training .ar5-workspace .metrics{grid-template-columns:repeat(2,1fr)}
+body.site31.site31-training .ar5-tab-wrap{top:65px}
+}
+@media(max-width:750px){
+body.site31.site31-training .ar5-hero{grid-template-columns:1fr}
+body.site31.site31-training .ar5-art{height:240px}
+body.site31.site31-training .ar5-builder-form{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.site31.site31-training .ar5-builder-form button{grid-column:1/-1}
+body.site31.site31-training .ar5-workspace .two{grid-template-columns:1fr}
+body.site31.site31-training .ar5-fields{grid-template-columns:1fr 1fr}
+body.site31.site31-training .ar5-fields>:first-child{grid-column:1/-1}
+body.site31.site31-training .ar5-finish-grid{grid-template-columns:1fr 1fr}
+body.site31.site31-training .ar5-finish-grid>:last-child{grid-column:1/-1}
+}
+@media(max-width:520px){
+body.site31.site31-training .ar5-workspace{padding:16px 12px 60px}
+body.site31.site31-training .ar5-hero{padding:25px 19px}
+body.site31.site31-training .ar5-hero-copy h1{font-size:42px}
+body.site31.site31-training .ar5-proof{margin-top:20px;gap:6px}
+body.site31.site31-training .ar5-proof span{font-size:10px}
+body.site31.site31-training .ar5-tab-wrap{top:65px;margin-inline:-4px}
+body.site31.site31-training .ar5-tab-wrap .tabs button{padding:12px 13px;font-size:12px}
+body.site31.site31-training .ar5-workspace>.panel:not([hidden]){padding:21px 15px}
+body.site31.site31-training .ar5-workspace .metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+body.site31.site31-training .ar5-workspace .metric{min-height:145px;padding:17px 12px}
+body.site31.site31-training .ar5-workspace .metric span{font-size:9px}
+body.site31.site31-training .ar5-workspace .metric strong{font-size:28px}
+body.site31.site31-training .ar5-workspace .section-heading{align-items:flex-start;flex-direction:column}
+body.site31.site31-training .ar5-builder-form{grid-template-columns:1fr}
+body.site31.site31-training .ar5-edit-actions{display:grid;grid-template-columns:1fr}
+body.site31.site31-training .ar5-edit-actions .primary{margin-left:0}
+body.site31.site31-training .ar5-fields{grid-template-columns:1fr}
+body.site31.site31-training .ar5-fields>:first-child{grid-column:auto}
+body.site31.site31-training .ar5-favorite{flex-direction:column;align-items:flex-start}
+body.site31.site31-training .ar5-finish-grid,.site31.site31-training .ar5-filter-row{grid-template-columns:1fr}
+body.site31.site31-training .ar5-finish-grid>:last-child{grid-column:auto}
+body.site31.site31-training .ar5-edit-head{align-items:flex-start;flex-direction:column}
+body.site31.site31-training .ar5-workspace .surface{padding:18px 14px}
+}
+@media(prefers-reduced-motion:reduce){
+body.site31.site31-training .ar5-workspace button,body.site31.site31-training .ar5-meter span{transition:none!important}
+}
