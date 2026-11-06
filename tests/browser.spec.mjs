@@ -167,3 +167,59 @@ test('Privacy and account pages describe the real Google self-deletion path',asy
  await expect(page.locator('#google-delete-reauth')).toHaveCount(0);
  await expect(page.locator('#signup-submit')).toBeDisabled();
 });
+
+test('Google deletion UX uses exactly SUPPRIMER without a second Google login (mock account)',async({page})=>{
+ const uid='33333333-3333-4333-8333-333333333333';
+ const mockUser={id:uid,email:'test-google-delete@example.invalid',
+   app_metadata:{provider:'google',providers:['google']},
+   identities:[{provider:'google',id:'test-identity'}],
+   aud:'authenticated',role:'authenticated',created_at:'2026-11-06T00:00:00Z'};
+ const session={access_token:'mock-google-session-access-token',token_type:'bearer',
+   expires_at:Math.floor(Date.now()/1000)+7200,expires_in:7200,
+   refresh_token:'mock-refresh-token',user:mockUser};
+ await page.addInitScript(value=>{
+   localStorage.setItem('sb-lmzswtzboobpokumxzhy-auth-token',JSON.stringify(value));
+ },session);
+ let deleteCalls=0,googleOAuthCalls=0,dialogCalls=0;
+ page.on('dialog',dialog=>{dialogCalls++;dialog.dismiss()});
+ await page.route('https://lmzswtzboobpokumxzhy.supabase.co/auth/v1/user',route=>
+  route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(mockUser)}));
+ await page.route('https://lmzswtzboobpokumxzhy.supabase.co/auth/v1/authorize**',route=>{
+  googleOAuthCalls++;return route.abort();
+ });
+ await page.route('https://lmzswtzboobpokumxzhy.supabase.co/functions/v1/delete-aim-account',route=>{
+  deleteCalls++;
+  expect(route.request().method()).toBe('POST');
+  expect(JSON.parse(route.request().postData()||'{}')).toEqual({
+   action:'delete_my_account',confirmation:'SUPPRIMER'
+  });
+  return route.fulfill({status:200,contentType:'application/json',body:'{"deleted":true}'});
+ });
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ const details=page.locator('.ar7-delete-account');
+ await expect(details).toBeVisible();
+ await details.locator('summary').click();
+ await expect(page.locator('#google-delete-flow')).toBeVisible();
+ await expect(page.locator('#delete-password-row')).toBeHidden();
+ await expect(page.locator('#delete-account-final')).toBeDisabled();
+ await page.locator('#delete-account-confirmation').fill('SUPPRIMER');
+ await expect(page.locator('#delete-account-final')).toBeEnabled();
+ await page.locator('#delete-account-final').click();
+ await expect(page.locator('#account-status')).toContainText('supprimés');
+ expect(deleteCalls).toBe(1);
+ expect(googleOAuthCalls).toBe(0);
+ expect(dialogCalls).toBe(0);
+});
+test('Password reset UI submits recovery request and reports generic success (mock SMTP)',async({page})=>{
+ let sentEmail='';
+ await page.route('https://lmzswtzboobpokumxzhy.supabase.co/auth/v1/recover**',route=>{
+  sentEmail=JSON.parse(route.request().postData()||'{}').email;
+  return route.fulfill({status:200,contentType:'application/json',body:'{}'});
+ });
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await page.locator('#reset-link').click();
+ await page.locator('#reset-email').fill('test-recovery@example.invalid');
+ await page.locator('#reset-form button[type="submit"]').first().click();
+ await expect(page.locator('#account-status')).toContainText('Si un compte existe');
+ expect(sentEmail).toBe('test-recovery@example.invalid');
+});
