@@ -43,7 +43,7 @@ No paid domain required. The existing public web origin stays `https://aimroutin
 3. Authorized JavaScript origin: `https://aimroutine-tracker.github.io`.
 4. Authorized redirect URI (the Supabase callback): `https://lmzswtzboobpokumxzhy.supabase.co/auth/v1/callback`.
 5. In Supabase Dashboard → Authentication → Sign In / Providers → Google, enable the Google provider. Paste Client ID and **Client secret in the Supabase dashboard only**, never GitHub or chat.
-6. Verify the browser login, return to `/account.html`, account creation, sign-out, profile separation and mobile behavior. Only after tests change `GOOGLE_READY=false` to `true` in `account-v7.mjs`.
+6. Verify the browser login, return to `/account.html`, account creation, sign-out, profile separation and mobile behavior. Owner confirmed provider enabled with screenshot, and beta test button `GOOGLE_READY=true` deployed. Complete real user sign-in and account isolation test before announcing production readiness.
 
 Official documentation: https://supabase.com/docs/guides/auth/social-sign-in/auth-google
 
@@ -67,4 +67,4 @@ Google app-password instructions: https://support.google.com/accounts/answer/185
 Supabase SMTP: https://supabase.com/docs/guides/auth/auth-smtp
 Supabase Gmail troubleshooting: https://supabase.com/kb/troubleshooting/using-google-smtp-with-supabase-custom-smtp-ZZzU4Y
 
-**Current state:** Both login routes are prepared in source, but neither Google OAuth nor public email signups are open. The user has not provided OAuth credentials or a verified SMTP configuration. Do not claim either is operational until configured and tested. If dedicated Gmail SMTP cannot reliably deliver, keep email signups closed and offer Google login once tested.
+**Current state (Nov 6):** The owner enabled Google provider in Supabase, confirmed its enabled status by screenshot, and confirmed Gmail SMTP invitation was delivered. Google OAuth test button is enabled on the web; end-to-end sign-in has not yet been confirmed. Public email/password signup remains closed until direct signup-confirmation/recovery testing and account isolation verification. Do not claim the cloud is fully production-ready. If dedicated Gmail SMTP cannot reliably deliver, keep email signups closed and offer Google login once tested.

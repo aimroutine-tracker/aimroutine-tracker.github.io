@@ -112,13 +112,13 @@ test('Account deletion UI exists but remains inaccessible to guests',async({page
  await expect(section.locator('button[type="submit"]')).toHaveCount(1);
 });
 
-test('Free authentication methods are clearly gated pending OAuth and SMTP',async({page})=>{
+test('Google OAuth beta button is enabled but public email signup stays gated',async({page})=>{
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#google-login-wrap')).toBeVisible();
- await expect(page.locator('#google-signin')).toBeDisabled();
+ await expect(page.locator('#google-signin')).toBeEnabled();
  await page.locator('#signup-mode').click();
  await expect(page.locator('#signup-submit')).toBeDisabled();
- await expect(page.locator('#google-signin')).toBeDisabled();
+ await expect(page.locator('#google-signin')).toBeEnabled();
  await page.locator('#login-mode').click();
- await expect(page.locator('#google-signin')).toBeDisabled();
+ await expect(page.locator('#google-signin')).toBeEnabled();
 });
