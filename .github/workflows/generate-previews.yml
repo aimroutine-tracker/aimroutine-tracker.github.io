@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/generate-previews.yml"
+      - "aimroutine-29-dashboard.webp"
+      - "aimroutine-29-coach.webp"
   workflow_dispatch:
 permissions:
   contents: write
