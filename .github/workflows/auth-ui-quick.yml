@@ -6,6 +6,10 @@ on:
     paths:
       - ".github/workflows/auth-ui-quick.yml"
       - "tests/browser.spec.mjs"
+      - "account-v7.mjs"
+      - "cloud-sync-v7.mjs"
+      - "cloud-core-v7.mjs"
+      - "supabase/migrations/**"
 permissions:
   contents: read
 jobs:
