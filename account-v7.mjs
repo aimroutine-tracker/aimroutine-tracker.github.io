@@ -4,9 +4,9 @@ import {UID_STORAGE_KEY,validUid,scopedKey,TRAINING_KEY} from './cloud-core-v7.m
 import {synchronize,isEnabled,setEnabled,readUserLocal,importGuestIntoAccount,deleteCloudProgress} from './cloud-sync-v7.mjs';
 import {checkLeakedPassword} from './password-security-v7.mjs';
 import {hasGoogleIdentity} from './google-delete-v7.mjs';
-const SIGNUPS_READY=false; // Email signup stays closed until custom SMTP and real email tests succeed.
+const SIGNUPS_READY=false; // Release gate: verified email confirmation/reset, server-side Auth restrictions, Google secret rotation and security review.
 const GOOGLE_READY=true; // Provider enabled by project owner; live OAuth is in beta until end-to-end testing.
-const RESET_LINKS_CONFIGURED=true; // Owner confirmed Site URL and redirect allowlist; delivery needs real-user testing. // Keep closed until owner configures Supabase Auth Site URL and redirect allowlist.
+const RESET_LINKS_CONFIGURED=true; // Redirect allowlist was configured; real email delivery and recovery completion still require confirmation.
 const $=s=>document.querySelector(s);
 let user=null,working=false,recovery=false;
 const msg=(message)=>{$('#account-status').textContent=message};
