@@ -245,3 +245,30 @@ test('Optimized Windows gallery previews preserve full-quality lightbox',async({
  await page.locator('.v16-expand[data-v16-expand]').click();
  await expect(lightbox.locator('img')).toHaveAttribute('src','aimroutine-29-coach.webp');
 });
+test('Password recovery deep link updates credentials through the auth SDK (mock)',async({page})=>{
+ const uid='44444444-4444-4444-8444-444444444444';
+ const user={id:uid,email:'recovery-ui@example.invalid',aud:'authenticated',
+  role:'authenticated',app_metadata:{provider:'email',providers:['email']},
+  identities:[],created_at:'2026-11-06T00:00:00Z'};
+ const accessToken=['eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
+  Buffer.from(JSON.stringify({sub:uid,role:'authenticated',
+   exp:Math.floor(Date.now()/1000)+3600})).toString('base64url'),'testing'].join('.');
+ let passwordUpdates=0;
+ await page.route('https://lmzswtzboobpokumxzhy.supabase.co/auth/v1/user',route=>{
+  if(route.request().method()==='PUT'){
+   passwordUpdates++;
+   expect(JSON.parse(route.request().postData()||'{}').password).toBe('StrongExample2026!#');
+  }
+  return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(user)});
+ });
+ await page.route('https://api.pwnedpasswords.com/range/**',route=>
+  route.fulfill({status:200,contentType:'text/plain',body:''}));
+ const hash='#access_token='+encodeURIComponent(accessToken)+
+  '&expires_in=3600&token_type=bearer&refresh_token=mock-recovery-refresh&type=recovery';
+ await page.goto('/account.html'+hash,{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#new-password-form')).toBeVisible();
+ await page.locator('#new-password').fill('StrongExample2026!#');
+ await page.locator('#new-password-form button[type="submit"]').click();
+ await expect(page.locator('#account-status')).toContainText('Mot de passe mis à jour');
+ expect(passwordUpdates).toBe(1);
+});
