@@ -1,0 +1,41 @@
+name: Cross-browser AIM smoke tests
+on:
+  push:
+    branches: [main]
+    paths:
+      - "training*.js"
+      - "training*.mjs"
+      - "training*.css"
+      - "training.html"
+      - "pwa-v6.js"
+      - "sw-v6.js"
+      - "tests/browser.spec.mjs"
+      - "tests/playwright.config.mjs"
+      - ".github/workflows/browser-smoke.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: aimroutine-browser-\${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  browsers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install browser test runner
+        run: npm install --no-save @playwright/test@1.56.1
+      - name: Install browser engines
+        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Start local static site
+        run: |
+          nohup python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/aimroutine-http.log 2>&1 &
+          for i in $(seq 1 25); do curl -fsS http://127.0.0.1:8765/training.html >/dev/null && exit 0; sleep 1; done
+          cat /tmp/aimroutine-http.log
+          exit 1
+      - name: Run desktop and mobile browser scenarios
+        run: npx playwright test --config=tests/playwright.config.mjs
