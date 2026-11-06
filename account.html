@@ -13,7 +13,20 @@
 <link rel="manifest" href="manifest.webmanifest?v=2">
 <link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="site-global-v31.css?v=3"><link rel="stylesheet" href="site-shared-v5.css?v=3">
 <link rel="stylesheet" href="account-v7.css?v=3">
-<script src="pwa-v6.js?v=3" defer></script><script src="site.js?v=8" defer></script><script src="site-quality-v34.js?v=1" defer></script>
+<script>
+/* Force-check the PWA cache repair even if a former service worker is serving old JS. */
+if('serviceWorker' in navigator&&window.isSecureContext){
+  const hadController=Boolean(navigator.serviceWorker.controller);
+  let refreshed=false;
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{
+    if(hadController&&!refreshed){refreshed=true;location.reload()}
+  });
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw-v6.js',{scope:'./',updateViaCache:'none'})
+      .then(reg=>reg.update()).catch(()=>{ /* Guest mode remains available. */ });
+  },{once:true});
+}
+</script><script src="site.js?v=8" defer></script><script src="site-quality-v34.js?v=1" defer></script>
 <script type="module" src="account-v7.mjs?v=1"></script>
 <style id="account-critical-style">
 /* Critical visible layout: independent of older PWA-cached CSS versions. */
