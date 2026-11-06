@@ -1349,3 +1349,10 @@ body.v5-landing .v16-hero-real-link span:last-child{margin-left:4px}
 @media(max-width:680px){
  body.v5-landing .v16-hero-real-link{font-size:10px}
 }
+
+/* Keep the mobile document width constrained while preserving independently
+   scrollable focus cards and chapter links. overflow:clip does not create
+   a scrolling ancestor, so the sticky chapter navigation still works. */
+@media(max-width:680px){
+ body.v5-landing .v5-main{overflow-x:clip}
+}
