@@ -5,6 +5,13 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/lighthouse-audit.yml"
+      - "index.html"
+      - "training.html"
+      - "account.html"
+      - "aimroutine-v16.css"
+      - "training*.js"
+      - "training*.mjs"
+      - "training*.css"
 permissions:
   contents: read
 jobs:
