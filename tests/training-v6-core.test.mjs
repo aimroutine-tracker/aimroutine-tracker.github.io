@@ -18,7 +18,7 @@ test('7/14/30-day programs are deterministic and include rest days',()=>{
   assert.equal(programCalendar(plan).length,days);
   assert.equal(scheduledDay(plan,6).rest,true);
   assert.equal(scheduledDay(plan,0).focus,'flick');
-  assert.equal(scheduledDay(plan,7).focus,'flick');
+  if(days>7)assert.equal(scheduledDay(plan,7).focus,'flick');
  }
 });
 test('Program completes only matching recorded sessions after start',()=>{
