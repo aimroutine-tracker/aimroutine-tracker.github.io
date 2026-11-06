@@ -82,3 +82,7 @@ The official AimRoutine Tracker logo supplied by the project owner has been adde
 ## Complete desktop Windows patch notes — November 6, 2026
 
 The project-owner-provided historical source `PATCH-NOTES-AimRoutine-Tracker.md` is displayed in full at [changelog.html](https://aimroutine-tracker.github.io/changelog.html) with 18 version/history chapters, anchor navigation and an original Markdown download. This is the Windows desktop software change history from the 1.x era through **Windows 2.9.1**, and does not imply the **web AIM workspace 6.0** shares its feature inventory. Version 2.9.1 adds Windows icon integration and metadata corrections. The site still uses authentic **Windows 2.9** screenshots, explicitly labeled. No public Windows installer is available and production Riot Sign On / automatic matchmaking retrieval remain unavailable. The navigation, homepage, product page, releases page and updates page link to the original notes.
+
+## Cloud V7 beta — 2026-11-06
+
+The owner approved a $0/month Supabase Free project in Paris (`eu-west-3`), project ref `lmzswtzboobpokumxzhy`. Four RLS-protected tables were created; the Supabase Security Advisor reported zero findings. `account.html` provides the optional account/backup prototype with sign-in, explicit opt-in, per-user browser storage and guest-history import. **Public registration remains disabled** pending email redirect setup, two-account end-to-end tests, a complete account-deletion flow and private support. Guest mode remains independent; no Riot Sign On or Windows cloud sync is included.

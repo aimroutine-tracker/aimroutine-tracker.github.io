@@ -57,7 +57,7 @@ for page in PAGES:
         absolute = ROOT / target
         if not absolute.is_file():
             issues.append(f"{page.name}: missing {tag} target {raw}")
-    if page.name in {"index.html", "product.html", "presentation.html", "riot-integration.html", "updates.html", "privacy.html", "terms.html", "404.html", "training.html", "releases.html"}:
+    if page.name in {"index.html", "product.html", "presentation.html", "riot-integration.html", "updates.html", "privacy.html", "terms.html", "404.html", "training.html", "releases.html", "account.html"}:
         html = page.read_text(encoding="utf-8")
         if 'src="aimroutine-logo.png?v=2"' not in html:
             issues.append(f"{page.name}: official logo missing from header")
@@ -67,6 +67,11 @@ for page in PAGES:
             issues.append(f"{page.name}: official social image missing")
         if 'favicon.svg' in html:
             issues.append(f"{page.name}: outdated favicon reference")
+    if page.name == "account.html":
+        html = page.read_text(encoding="utf-8")
+        for marker in ['id="login-form"', 'id="signup-form"', 'id="dashboard-panel"', 'account-v7.mjs', 'account-v7.css']:
+            if marker not in html:
+                issues.append(f"account.html: missing {marker}")
     if page.name == "changelog.html":
         source = ROOT / "PATCH-NOTES-AimRoutine-Tracker.md"
         if not source.exists():
@@ -77,7 +82,7 @@ for page in PAGES:
         if "2.9.1" not in html or "Riot Sign On" not in html:
             issues.append("changelog.html: release status not visible")
     if page.name == "training.html":
-        for marker in ['id="panel-dashboard"', 'id="panel-builder"', 'id="panel-insights"', 'id="panel-coach"', 'id="panel-data"', 'training-v5.js', 'training-v5.css']:
+        for marker in ['id="panel-dashboard"', 'id="panel-builder"', 'id="panel-insights"', 'id="panel-coach"', 'id="panel-data"', 'training-entry-v7.mjs', 'training-v5.css']:
             if marker not in page.read_text(encoding="utf-8"):
                 issues.append(f"training.html: missing {marker}")
 

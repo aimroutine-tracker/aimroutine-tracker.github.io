@@ -635,3 +635,8 @@ body.site31.site31-home .ar-notes-home-logo{display:flex;flex-direction:column;a
 body.site31.site31-home .ar-notes-home-logo img{width:135px;height:135px;object-fit:contain}
 body.site31.site31-home .ar-notes-home-logo span{font-size:11px;font-weight:850;letter-spacing:.12em;color:#f6bdc7}
 @media(max-width:650px){body.site31 .ar-product-patch-grid{grid-template-columns:1fr}body.site31 .ar-product-patch-grid>img{width:110px;height:110px}body.site31.site31-home .ar-notes-home{width:calc(100% - 24px);grid-template-columns:1fr;padding:26px 19px}body.site31.site31-home .ar-notes-home-logo{flex-direction:row;justify-content:flex-start}body.site31.site31-home .ar-notes-home-logo img{width:67px;height:67px}}
+
+/* Cloud V7 navigation accent */
+body.site31 .site31-header .site31-links>a[href="account.html"]{color:#ffe2e8!important;border-color:#9d5a69!important;background:#302334!important}
+body.site31 .site31-header .site31-links>a[href="account.html"]:hover{background:#563346!important;color:white!important}
+body.site31 .site31-header .site31-links>a[href="account.html"][aria-current="page"]{background:#ff586f!important;color:#0b1520!important}

@@ -1,42 +1,25 @@
-# AimRoutine Tracker — Cloud V7 architecture (preparation)
+# AimRoutine Tracker Cloud V7 — Deployment checklist
 
-**State:** database migration and integration design only. No live Supabase project, account system, or online sync was created when this file was written. Do not label cloud functionality as available on the public website until deployed and tested.
+**Status (November 6, 2026):** Supabase project `lmzswtzboobpokumxzhy` is ACTIVE_HEALTHY, hosted in Paris (`eu-west-3`), under organization AIM Routine Tracker. Free project cost quoted $0/month and approved. Migration `cloud_v7_initial` applied with four owner-only RLS tables; Supabase Security Advisor returned zero security warnings.
 
-## What stays local / what syncs
+## Required before public signup
 
-- The current website uses `aimroutine_web_training_v2` (sessions, presets, weeklyGoal) and `aimroutine_web_training_extensions_v1` (v6 profile, program and preferences). Discover key values from the live modules before implementing.
-- Keep local storage for the guest/offline experience. Guest can train without an account.
-- After explicit login and explicit one-time import consent, upload sessions and presets **per record**, profile and preferences **per user**. Do not delete local copies until a confirmed read-back matches the local data.
-- Never merge two guests' datasets silently. If a player changes the signed-in account, show account separation, confirm the intended import and prevent cross-account contamination.
-- Run input validation through existing v5/v6 validation functions both before upload and after download.
-- Use record IDs and revision handling to reconcile multiple devices. Deleted records use `deleted_at` tombstones so offline devices cannot resurrect them. Sync must not use blind "replace all" writes.
-- Existing training history and exported JSON must keep working when offline.
-- Derived metrics and achievement badges should be recalculated from sessions, never trusted as authentication or game rankings.
+1. Open https://supabase.com/dashboard/project/lmzswtzboobpokumxzhy/auth/url-configuration
+2. Set Site URL to `https://aimroutine-tracker.github.io/`.
+3. Add allowed redirects `https://aimroutine-tracker.github.io/account.html` and `https://aimroutine-tracker.github.io/account.html?reset=1`.
+4. Verify confirmation and recovery e-mails with real test users, and check Supabase Auth email limits.
+5. Implement full authentication-account deletion and a private contact channel.
+6. Complete authenticated end-to-end tests with two distinct accounts, including cross-account read/update/delete rejection and offline conflicts.
+7. Only then enable `SIGNUPS_READY` in `account-v7.mjs`.
 
-## Auth and security
+## Current implementation
 
-- Use Supabase Auth with email verification and password reset, plus a **publishable** browser key only.
-- NEVER place a service role / secret key in GitHub Pages, JavaScript, HTML, a manifest, or a public commit.
-- User data lives in `aim_profiles`, `aim_preferences`, `aim_sessions`, `aim_presets` with `user_id` foreign key and RLS policies restricting access to the authenticated owner.
-- Confirm RLS by testing account A cannot list/update/delete account B's data. Check both the authenticated and unauthenticated API paths.
-- No user-adjustable metadata can confer permissions, and no client-side trust alone is sufficient.
-- Confirm site redirect URLs, email delivery, password reset and anti-abuse protection on the actual Supabase project.
-- Configure an EU hosting region at project creation if that is the owner's choice. Update privacy policy for hosted account data, processors, retention and deletion.
-- Cloud profile/account deletion must be implemented securely on the server, including relevant identity data; removing browser storage is not enough.
+- `cloud-client-v7.mjs` uses Supabase JS SDK v2.119.0 with only the **public publishable** key, no service-role keys.
+- `account.html` provides sign-in, optional sync activation, manual sync, explicit guest-history import, cloud progress deletion (not account deletion), and password-reset/registration screens gated pending auth URL configuration.
+- `training-entry-v7.mjs` loads guest/local mode when not authenticated and account-scoped storage when signed in, synchronizing before v5/v6 modules load. Changes queue cloud uploads if opted in.
+- `cloud-sync-v7.mjs` stores sessions and favorites by ID, soft-deletes removed favorites, and handles profile/goal fields. Robust real-world conflict testing still needed; retain JSON exports.
+- Original local keys: `aimroutine_web_training_v2` for sessions, favorites, weekly goal and `aimroutine_player_extensions_v1` for V6 player profile/program. Guest data is not automatically uploaded to a new account.
+- Four RLS-protected tables (`aim_profiles`, `aim_preferences`, `aim_sessions`, `aim_presets`) own rows by `auth.uid()`. The `anon` role has no table privileges.
+- Cloud is not Riot Sign On and not connected to the Windows 2.9.1 application.
 
-## Deployment checklist
-
-1. Select the user's Supabase organization, then review **the actual quoted project cost** before project creation. Create project in chosen region.
-2. Review migration `supabase/migrations/20261106053000_cloud_v7_initial.sql` and apply it to that project.
-3. Verify table/column access privileges, ownership RLS and Supabase security advisors.
-4. Get project API URL and **publishable** key; do not retrieve or deploy secret keys.
-5. Implement login/signup/logout/password reset, safe URL redirects and accessible errors.
-6. Implement per-record sync and conflict handling; test local-to-cloud migration, offline changes, account changes and record deletion.
-7. Add browser E2E tests with two isolated users, including anonymous denial.
-8. Update privacy/legal pages, publish once tests are green, and clearly mark cloud as optional.
-
-## Roadmap
-
-The Windows 2.9.1 desktop application is a different codebase. Cloud sync in the website does **not** automatically sync the Windows app. Windows must later implement the same validated data exchange and authentication flow, without storing privileged credentials in its client binary.
-
-Riot Sign On / automatic match history retrieval remain separate, subject to their own permissions.
+Do not state cloud registration is generally available until all steps above are completed.

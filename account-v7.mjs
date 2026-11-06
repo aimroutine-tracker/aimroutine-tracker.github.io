@@ -75,7 +75,7 @@ $('#signup-form').addEventListener('submit',e=>{e.preventDefault();
  $('#signup-password').value='';
  msg('Si cette adresse est éligible, un e-mail de confirmation sera envoyé. Vérifie aussi tes indésirables.');
  })});
-$('#reset-form').addEventListener('submit',e=>{e.preventDefault();run(async()=>{
+$('#reset-form').addEventListener('submit',e=>{e.preventDefault();if(!SIGNUPS_READY){msg('Les liens de réinitialisation attendent la configuration des redirections Supabase.');return;}run(async()=>{
  const {error}=await supabase.auth.resetPasswordForEmail($('#reset-email').value.trim(),{redirectTo:SITE_URL+'account.html?reset=1'});
  if(error)throw error;
  msg('Si un compte existe pour cette adresse, tu recevras les instructions de réinitialisation.');
