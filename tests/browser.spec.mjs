@@ -274,3 +274,45 @@ test('Password recovery deep link updates credentials through the auth SDK (mock
  await expect(page.locator('#account-status')).toContainText('Mot de passe mis à jour');
  expect(passwordUpdates).toBe(1);
 });
+
+
+test('Turnstile-enabled browser form forwards a token on login and password reset (mock provider)',async({page})=>{
+ // Test replaces only the PUBLIC key in this Playwright browser. No secret used.
+ await page.route('**/turnstile-v7.mjs',async route=>{
+  const result=await route.fetch();
+  const body=(await result.text()).replace(
+   "export const TURNSTILE_SITE_KEY='';",
+   "export const TURNSTILE_SITE_KEY='qa-test-public-sitekey';");
+  expect(body).toContain("TURNSTILE_SITE_KEY='qa-test-public-sitekey'");
+  await route.fulfill({response:result,body});
+ });
+ await page.route('https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit',route=>
+  route.fulfill({status:200,contentType:'application/javascript',
+   body:"window.__turnstileResetCount=0;window.turnstile={render(element,options){element.dataset.rendered='yes';options.callback('qa-synthetic-captcha-token');return 42},reset(){window.__turnstileResetCount++}};"}));
+ const calls=[];
+ await page.route('https://lmzswtzboobpokumxzhy.supabase.co/auth/v1/token?grant_type=password',route=>{
+  const data=JSON.parse(route.request().postData()||'{}');
+  calls.push({type:'login',captcha:data.captcha_token});
+  return route.fulfill({status:400,contentType:'application/json',
+   body:JSON.stringify({code:'invalid_credentials',msg:'Invalid login credentials'})});
+ });
+ await page.route('https://lmzswtzboobpokumxzhy.supabase.co/auth/v1/recover**',route=>{
+  const data=JSON.parse(route.request().postData()||'{}');
+  calls.push({type:'recovery',captcha:data.captcha_token});
+  return route.fulfill({status:200,contentType:'application/json',body:'{}'});
+ });
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#captcha-login')).toHaveAttribute('data-rendered','yes');
+ await page.locator('#login-email').fill('disposable@example.invalid');
+ await page.locator('#login-password').fill('Ab1!cdef');
+ await page.locator('#login-form button[type="submit"]').click();
+ await expect.poll(()=>calls.filter(x=>x.type==='login').length).toBe(1);
+ expect(calls[0].captcha).toBe('qa-synthetic-captcha-token');
+ await page.locator('#reset-link').click();
+ await expect(page.locator('#captcha-reset')).toHaveAttribute('data-rendered','yes');
+ await page.locator('#reset-email').fill('disposable@example.invalid');
+ await page.locator('#reset-form button[type="submit"]').click();
+ await expect.poll(()=>calls.filter(x=>x.type==='recovery').length).toBe(1);
+ expect(calls[1].captcha).toBe('qa-synthetic-captcha-token');
+ await expect.poll(()=>page.evaluate(()=>window.__turnstileResetCount)).toBe(2);
+});
