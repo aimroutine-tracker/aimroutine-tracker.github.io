@@ -47,6 +47,24 @@ jobs:
             const score=id=>Math.round(100*(r.categories[id]?.score??0));
             console.log('| '+file.replace('.report.json','')+' | '+score('performance')+' | '+score('accessibility')+' | '+score('best-practices')+' | '+score('seo')+' |');
           }
+          console.log('');
+          console.log('### Performance diagnostics');
+          for(const file of files){
+            const r=JSON.parse(readFileSync('lh-reports/'+file,'utf8'));
+            console.log('\n#### '+file.replace('.report.json',''));
+            for(const key of ['first-contentful-paint','largest-contentful-paint','speed-index','total-blocking-time','cumulative-layout-shift','server-response-time','render-blocking-requests','unused-css-rules','unused-javascript','total-byte-weight']){
+              const a=r.audits[key];
+              if(!a)continue;
+              console.log('- '+key+': '+(a.displayValue||('score='+a.score)));
+              if(['render-blocking-requests','unused-css-rules','unused-javascript'].includes(key)&&a.details?.items){
+                for(const item of a.details.items.slice(0,5))console.log('  - '+String(item.url||item.source?.url||item.node?.snippet||'').slice(0,160)+'; savings='+(item.wastedMs??item.wastedBytes??0));
+              }
+            }
+            const network=(r.audits['network-requests']?.details?.items||[])
+              .filter(x=>x.transferSize>0).sort((a,b)=>b.transferSize-a.transferSize).slice(0,10);
+            console.log('Largest requests:');
+            for(const x of network)console.log('  - '+String(x.url||'').slice(0,185)+' ('+Math.round((x.transferSize||0)/1024)+' KB)');
+          }
           NODE
           cat lighthouse-summary.md >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v4
