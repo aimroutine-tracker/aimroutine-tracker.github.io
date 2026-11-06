@@ -51,7 +51,22 @@ function clientFor(db,uid){
   then(resolve,reject){return this.exec().then(resolve,reject)}
  }
  return {auth:{getUser:async()=>({data:{user:{id:uid}},error:null})},
-   from(table){assert.ok(db[table],table);return new Query(table)}
+   from(table){assert.ok(db[table],table);return new Query(table)},
+   async rpc(name){
+    assert.equal(name,'aim_reset_my_progress');
+    // Real function uses SECURITY INVOKER + RLS and returns the reset cursor.
+    for(const table of ['aim_sessions','aim_presets','aim_profiles']){
+     db[table]=db[table].filter(row=>row.user_id!==uid);
+    }
+    const stamp=new Date().toISOString();
+    const marker={user_id:uid,weekly_goal:3,
+      settings:{format:'aimroutine-web-v2',reset_at:stamp}};
+    const preferences=db.aim_preferences;
+    const idx=preferences.findIndex(x=>x.user_id===uid);
+    if(idx>=0)preferences[idx]={...preferences[idx],...marker};
+    else preferences.push(marker);
+    return {data:stamp,error:null};
+   }
  };
 }
 const session=id=>({id,date:'2026-11-06T12:00:00.000Z',rank:'silver',
