@@ -127,6 +127,32 @@ test('two devices merge offline training without cross-account data, honor favor
  });
  assert.equal(db.aim_sessions.filter(x=>x.user_id===USER_A).length,0);
  assert.equal(db.aim_sessions.filter(x=>x.user_id===USER_B).length,1);
+ const cloudReset=db.aim_preferences.find(x=>x.user_id===USER_A)?.settings?.reset_at;
+ assert.ok(Number.isFinite(Date.parse(cloudReset)),'Cloud deletion must publish a reset cursor');
+ await use(a2,async()=>{
+  // Device 2 remained offline during deletion; it still holds obsolete local V2/V1 data.
+  assert.ok(readUserLocal(USER_A).store.sessions.length>0);
+  a2.setItem(scopedKey(LEGACY_KEY,USER_A),JSON.stringify({sessions:[session('resurrected-v1')]}));
+  await synchronize(ca,USER_A);
+  assert.deepEqual(readUserLocal(USER_A).store.sessions,[]);
+  assert.deepEqual(readUserLocal(USER_A).store.presets,[]);
+  assert.equal(a2.getItem(scopedKey(LEGACY_KEY,USER_A)),null);
+ });
+ assert.equal(db.aim_sessions.filter(x=>x.user_id===USER_A).length,0,
+  'Offline device must not restore deleted sessions on reconnect');
+ assert.equal(db.aim_presets.filter(x=>x.user_id===USER_A).length,0,
+  'Offline device must not restore deleted presets on reconnect');
+ await use(a1,async()=>{
+  write(a1,USER_A,[session('post-reset-new')]);
+  await synchronize(ca,USER_A);
+  assert.equal(db.aim_preferences.find(x=>x.user_id===USER_A).settings.reset_at,cloudReset,
+   'Regular sync must preserve reset marker after new training');
+ });
+ await use(a2,async()=>{
+  await synchronize(ca,USER_A);
+  assert.deepEqual(readUserLocal(USER_A).store.sessions.map(x=>x.id),['post-reset-new']);
+ });
+ assert.equal(db.aim_sessions.filter(x=>x.user_id===USER_B).length,1);
 });
 test('authenticated uid mismatch rejects sync and cloud deletion',async()=>{
  const db=makeDb(),store=new MemoryStorage(),cb=clientFor(db,USER_B);
