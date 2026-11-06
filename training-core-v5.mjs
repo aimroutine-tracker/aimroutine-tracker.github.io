@@ -35,7 +35,7 @@ export function validSession(s){
     (s.accuracy===null||(typeof s.accuracy==='number'&&Number.isFinite(s.accuracy)&&s.accuracy>=0&&s.accuracy<=100))&&
     ['good','ok','hard'].includes(s.feeling)&&
     typeof s.notes==='string'&&s.notes.length<=240&&
-    (s.tool===undefined||TOOLS.includes(s.tool)));
+    (s.tool===undefined||TOOLS.includes(s.tool)||s.tool==='Non précisé'));
 }
 export function normalizeSession(s){
   if(!validSession(s)) return null;
@@ -43,7 +43,7 @@ export function normalizeSession(s){
     id:s.id,date:new Date(s.date).toISOString(),rank:s.rank,focus:s.focus,
     minutes:Number(s.minutes),accuracy:s.accuracy,feeling:s.feeling,
     notes:s.notes.slice(0,240),
-    tool:TOOLS.includes(s.tool)?s.tool:'VALORANT',
+    tool:TOOLS.includes(s.tool)?s.tool:'Non précisé',
     scenario:typeof s.scenario==='string'?s.scenario.slice(0,90):'',
     breakSeconds:int(s.breakSeconds,0,120)?Number(s.breakSeconds):0
   };
@@ -131,5 +131,5 @@ export function importPayload(payload,store){
   const known=new Set(store.sessions.map(x=>x.id));
   const added=payload.sessions.map(normalizeSession).filter(x=>!known.has(x.id));
   const presets=payload.format==='aimroutine-web-v2'?[...store.presets,...payload.presets.filter(p=>!store.presets.some(y=>y.id===p.id))].slice(-25):store.presets;
-  return {store:{...store,sessions:[...store.sessions,...added].slice(-1000),presets},added:added.length};
+  return {store:{...store,sessions:[...store.sessions,...added].slice(-1000),presets,weeklyGoal:int(payload.weeklyGoal,1,14)?Number(payload.weeklyGoal):store.weeklyGoal},added:added.length};
 }
