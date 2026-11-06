@@ -19,6 +19,17 @@ console.log('Auth public configuration: '+JSON.stringify({
 assert.equal(publicSettings.external?.google,true,'Google OAuth provider unexpectedly disabled');
 assert.notEqual(publicSettings.mailer_autoconfirm,true,'Email should require confirmation for public registration');
 
+// Check the public OAuth initiation path without authenticating as anyone.
+// This verifies that Supabase can build the Google consent redirect, but is
+// NOT proof of a completed Google sign-in.
+const authorizeUrl=origin+'/auth/v1/authorize?provider=google&redirect_to='+encodeURIComponent('https://aimroutine-tracker.github.io/account.html');
+const authorize=await fetch(authorizeUrl,{headers:{apikey:key},redirect:'manual'});
+const destination=authorize.headers.get('location');
+console.log('Google OAuth initiation: HTTP '+authorize.status+'; Google consent redirect='+Boolean(destination&&new URL(destination).hostname==='accounts.google.com'));
+assert.ok([302,303,307].includes(authorize.status),'Google OAuth initiation did not redirect to a consent page');
+assert.equal(new URL(destination).hostname,'accounts.google.com','Google OAuth redirect host is not the expected official Google service');
+
+
 const url=origin+'/functions/v1/delete-aim-account';
 for(const [name,headers] of [
  ['without user JWT',jsonHeaders],
