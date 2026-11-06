@@ -12,7 +12,9 @@ function readJSON(key){try{return JSON.parse(localStorage.getItem(key)||'null')}
 let store=normalizeStore(readJSON(STORAGE_KEY),readJSON(LEGACY_KEY));
 let plan=null,active=null,interval=null,remaining=0,deadline=0,running=false;
 function save(next=store){
-  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(next));store=next;return true}
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(next));store=next;
+      window.dispatchEvent(new CustomEvent('aim-store-updated'));
+      return true}
   catch{alert('Le navigateur ne permet pas cet enregistrement. Vérifie son espace de stockage et ses paramètres.');return false}
 }
 function chooseTab(name,focus=false){
@@ -184,6 +186,35 @@ function renderFavorites(){
 }
 function stopTimer(){if(interval!==null)clearInterval(interval);interval=null;running=false}
 function setRemaining(ms){remaining=Math.max(0,ms);updateClock()}
+let audioContext=null;
+function transitionCue(){
+  if(!$('#timer-sound')?.checked)return;
+  try{
+    const Context=window.AudioContext||window.webkitAudioContext;
+    if(!Context)return;
+    if(!audioContext)audioContext=new Context();
+    if(audioContext.state==='suspended')audioContext.resume().catch(()=>{});
+    const tone=audioContext.createOscillator(),gain=audioContext.createGain();
+    tone.type='sine';tone.frequency.value=784;gain.gain.value=.035;
+    tone.connect(gain);gain.connect(audioContext.destination);
+    tone.start();tone.stop(audioContext.currentTime+.15);
+  }catch{}
+}
+function transitionStep(){
+  if(!active||!plan)return false;
+  if(active.phase==='break'){active.index++;active.phase='exercise'}
+  else if(active.index===plan.exercises.length-1){
+    stopTimer();$('#session-area').hidden=true;$('#finish-form').hidden=false;
+    document.body.classList.remove('ar6-immersive');
+    if(document.fullscreenElement=== $('#session-area'))document.exitFullscreen?.().catch(()=>{});
+    $('#finish-form').scrollIntoView({behavior:'smooth',block:'center'});
+    return false;
+  }else if(plan.breakSeconds>0){active.phase='break'}
+  else{active.index++}
+  return true;
+}
+function stepDuration(){return (active.phase==='break'?plan.breakSeconds:plan.exercises[active.index].minutes*60)*1000;}
+
 function updateClock(){
  $('#clock').textContent=String(Math.floor(Math.ceil(remaining/1000)/60)).padStart(2,'0')+':'+String(Math.ceil(remaining/1000)%60).padStart(2,'0');
  if(!active||!plan)return;
@@ -201,24 +232,68 @@ function startSession(){
  stopTimer();active={index:0,phase:'exercise'};$('#finish-form').hidden=true;$('#session-area').hidden=false;
  setRemaining(plan.exercises[0].minutes*60000);$('#session-area').scrollIntoView({block:'center',behavior:'smooth'});
 }
-function tick(){if(!running)return;const current=deadline-performance.now();if(current<=0){stopTimer();setRemaining(0)}else setRemaining(current)}
+function tick(){
+ if(!running||!active)return;
+ const now=performance.now();
+ if(now<deadline){setRemaining(deadline-now);return}
+ if(!$('#timer-auto')?.checked){
+   stopTimer();setRemaining(0);transitionCue();
+   return;
+ }
+ let count=0;
+ while(active&&now>=deadline&&count++<40){
+   const elapsedDeadline=deadline;
+   transitionCue();
+   if(!transitionStep())return;
+   deadline=elapsedDeadline+stepDuration();
+ }
+ if(count>=40&&now>=deadline)deadline=now+stepDuration();
+ setRemaining(Math.max(0,deadline-now));
+}
 $('#timer-toggle').addEventListener('click',()=>{
  if(!active)return;
  if(running){tick();stopTimer();updateClock()}
  else{if(remaining===0)remaining=(active.phase==='break'?plan.breakSeconds*1000:plan.exercises[active.index].minutes*60000);running=true;deadline=performance.now()+remaining;interval=setInterval(tick,200);updateClock()}
 });
 $('#next-exercise').addEventListener('click',()=>{
- if(!active)return;stopTimer();
- if(active.phase==='break'){active.index++;active.phase='exercise';setRemaining(plan.exercises[active.index].minutes*60000)}
- else if(active.index===plan.exercises.length-1){$('#session-area').hidden=true;$('#finish-form').hidden=false;$('#finish-form').scrollIntoView({block:'center',behavior:'smooth'})}
- else if(plan.breakSeconds>0){active.phase='break';setRemaining(plan.breakSeconds*1000)}
- else{active.index++;setRemaining(plan.exercises[active.index].minutes*60000)}
+ if(!active)return;
+ const wasRunning=running;
+ stopTimer();
+ if(!transitionStep())return;
+ setRemaining(stepDuration());
+ transitionCue();
+ if(wasRunning){running=true;deadline=performance.now()+remaining;interval=setInterval(tick,200);updateClock()}
+});
+$('#focus-mode').addEventListener('click',async()=>{
+ const panel=$('#session-area');
+ const activeMode=!!document.fullscreenElement||document.body.classList.contains('ar6-immersive');
+ if(activeMode){
+   document.body.classList.remove('ar6-immersive');
+   if(document.fullscreenElement)await document.exitFullscreen?.().catch(()=>{});
+ }else{
+   if(panel.requestFullscreen){
+     try{await panel.requestFullscreen()}catch{document.body.classList.add('ar6-immersive')}
+   }else document.body.classList.add('ar6-immersive');
+ }
+ $('#focus-mode').textContent=(document.fullscreenElement||document.body.classList.contains('ar6-immersive'))?'Quitter le plein écran':'Mode immersion';
+});
+document.addEventListener('fullscreenchange',()=>{
+ $('#focus-mode').textContent=document.fullscreenElement?'Quitter le plein écran':'Mode immersion';
+});
+document.addEventListener('keydown',e=>{
+ if(e.key==='Escape'&&document.body.classList.contains('ar6-immersive')){
+   document.body.classList.remove('ar6-immersive');
+   $('#focus-mode').textContent='Mode immersion';
+ }
 });
 $('#cancel-session').addEventListener('click',()=>{
  if(!active||!confirm('Annuler cette séance sans l’enregistrer ?'))return;
- stopTimer();active=null;$('#session-area').hidden=true;$('#finish-form').hidden=true;
+ stopTimer();active=null;document.body.classList.remove('ar6-immersive');$('#session-area').hidden=true;$('#finish-form').hidden=true;
 });
 document.addEventListener('visibilitychange',()=>{if(running)tick()});
+window.addEventListener('pagehide',()=>{
+ if(document.body.classList.contains('ar6-immersive'))document.body.classList.remove('ar6-immersive');
+});
 $('#finish-form').addEventListener('submit',event=>{
  event.preventDefault();if(!active||!plan)return;
  const raw=$('#accuracy').value.trim().replace(',','.');
@@ -288,6 +363,31 @@ $('#clear-data').addEventListener('click',()=>{
  store=normalizeStore(null,null);plan=null;active=null;stopTimer();editor();renderFavorites();renderDashboard();renderInsights();renderCoach();
  $('#session-area').hidden=true;$('#finish-form').hidden=true;showMessage('Les données de cet espace ont été effacées.');
 });
+window.AIMWeb=Object.freeze({
+  getStore:()=>JSON.parse(JSON.stringify(store)),
+  getPlan:()=>plan?JSON.parse(JSON.stringify(plan)):null,
+  setPlan:next=>{
+    if(!next||!Object.hasOwn(RANK,next.rank)||!Object.hasOwn(FOCUS,next.focus)||
+       !Array.isArray(next.exercises)||!next.exercises.length||
+       !next.exercises.every(validExercise)||sessionMinutes(next)>120)return false;
+    if(active&&!confirm('Remplacer la routine actuelle ?'))return false;
+    stopTimer();active=null;$('#session-area').hidden=true;$('#finish-form').hidden=true;
+    plan=JSON.parse(JSON.stringify(next));
+    $('#rank').value=next.rank;$('#focus').value=next.focus;$('#tool').value=next.exercises[0].tool;
+    editor();chooseTab('builder');
+    $('#routine-output').scrollIntoView({block:'start',behavior:'smooth'});
+    return true;
+  },
+  openTab:name=>chooseTab(name),
+  mergeData:payload=>{
+    const result=importPayload({format:'aimroutine-web-v2',sessions:payload.sessions,presets:payload.presets,weeklyGoal:payload.weeklyGoal},store);
+    if(!save(result.store))throw Error('Enregistrement impossible');
+    renderDashboard();renderInsights();renderCoach();renderFavorites();
+    return result.added;
+  },
+  refresh:()=>{renderDashboard();renderInsights();renderCoach();renderFavorites()}
+});
+window.dispatchEvent(new CustomEvent('aim-v5-ready'));
 window.addEventListener('storage',event=>{
  if([STORAGE_KEY,LEGACY_KEY].includes(event.key)){
   store=normalizeStore(readJSON(STORAGE_KEY),readJSON(LEGACY_KEY));
