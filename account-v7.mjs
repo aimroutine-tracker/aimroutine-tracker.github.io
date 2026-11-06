@@ -4,11 +4,18 @@ import {UID_STORAGE_KEY,validUid,scopedKey,TRAINING_KEY} from './cloud-core-v7.m
 import {synchronize,isEnabled,setEnabled,readUserLocal,importGuestIntoAccount,deleteCloudProgress} from './cloud-sync-v7.mjs';
 import {checkLeakedPassword} from './password-security-v7.mjs';
 import {hasGoogleIdentity} from './google-delete-v7.mjs';
+import {TURNSTILE_SITE_KEY,createAuthCaptcha} from './turnstile-v7.mjs';
 const SIGNUPS_READY=false; // Release gate: verified email confirmation/reset, server-side Auth restrictions, Google secret rotation and security review.
 const GOOGLE_READY=true; // Provider enabled by project owner; live OAuth is in beta until end-to-end testing.
 const RESET_LINKS_CONFIGURED=true; // Redirect allowlist was configured; real email delivery and recovery completion still require confirmation.
 const $=s=>document.querySelector(s);
 let user=null,working=false,recovery=false;
+const captcha=createAuthCaptcha(TURNSTILE_SITE_KEY);
+function showCaptcha(mode){
+ if(!captcha.enabled||!['login','signup','reset'].includes(mode))return;
+ void captcha.mount(mode,document.getElementById('captcha-'+mode))
+  .catch(()=>msg('Protection anti-robots indisponible. Réessaie après avoir vérifié ta connexion.'));
+}
 const msg=(message)=>{$('#account-status').textContent=message};
 function authMode(mode='login'){
  $('#login-form').hidden=mode!=='login';
@@ -16,6 +23,7 @@ function authMode(mode='login'){
  $('#reset-form').hidden=mode!=='reset';
  $('#new-password-form').hidden=mode!=='new-password';
  $('#google-login-wrap').hidden=!['login','signup'].includes(mode);
+ showCaptcha(mode);
  $('#login-mode').setAttribute('aria-pressed',String(mode==='login'));
  $('#signup-mode').setAttribute('aria-pressed',String(mode==='signup'));
 }
@@ -67,6 +75,7 @@ async function run(task){
   renderDeleteOptions();
  }
 }
+showCaptcha('login');
 $('#google-signin').disabled=!GOOGLE_READY;
 $('#google-signin').addEventListener('click',()=>{
  if(!GOOGLE_READY){msg('La connexion Google n’est pas encore configurée.');return;}
@@ -80,7 +89,13 @@ $('#signup-mode').addEventListener('click',()=>authMode('signup'));
 $('#reset-link').addEventListener('click',()=>authMode('reset'));
 $('#back-to-login').addEventListener('click',()=>authMode('login'));
 $('#login-form').addEventListener('submit',e=>{e.preventDefault();run(async()=>{
- const {error}=await supabase.auth.signInWithPassword({email:$('#login-email').value.trim(),password:$('#login-password').value});
+ const captchaOptions=captcha.options('login');
+ let loginResult;
+ try{loginResult=await supabase.auth.signInWithPassword({
+  email:$('#login-email').value.trim(),password:$('#login-password').value,
+  options:captchaOptions
+ });}finally{captcha.reset('login')}
+ const {error}=loginResult;
  if(error)throw error;
  const {data:{user:validated},error:validationError}=await supabase.auth.getUser();
  if(validationError||!validated)throw validationError||Error('Connexion non validée.');
@@ -97,14 +112,23 @@ $('#signup-form').addEventListener('submit',e=>{e.preventDefault();
  msg('Vérification de la sécurité du nouveau mot de passe…');
  const assessment=await checkLeakedPassword(password);
  if(!assessment.safe)throw Error('Ce mot de passe figure dans des fuites connues. Choisis-en un autre.');
- const {error}=await supabase.auth.signUp({email:$('#signup-email').value.trim(),password,
-  options:{emailRedirectTo:SITE_URL+'account.html'}});
+ const captchaOptions=captcha.options('signup');
+ let signupResult;
+ try{signupResult=await supabase.auth.signUp({email:$('#signup-email').value.trim(),password,
+  options:{emailRedirectTo:SITE_URL+'account.html',...captchaOptions}});}
+ finally{captcha.reset('signup')}
+ const {error}=signupResult;
  if(error)throw error;
  $('#signup-password').value='';
  msg('Si cette adresse est éligible, un e-mail de confirmation sera envoyé. Vérifie aussi tes indésirables.');
  })});
 $('#reset-form').addEventListener('submit',e=>{e.preventDefault();if(!RESET_LINKS_CONFIGURED){msg('Les URL de réinitialisation ne sont pas encore configurées.');return;}run(async()=>{
- const {error}=await supabase.auth.resetPasswordForEmail($('#reset-email').value.trim(),{redirectTo:SITE_URL+'account.html?reset=1'});
+ const captchaOptions=captcha.options('reset');
+ let recoveryResult;
+ try{recoveryResult=await supabase.auth.resetPasswordForEmail(
+  $('#reset-email').value.trim(),{redirectTo:SITE_URL+'account.html?reset=1',...captchaOptions}
+ );}finally{captcha.reset('reset')}
+ const {error}=recoveryResult;
  if(error)throw error;
  msg('Si un compte existe pour cette adresse, tu recevras les instructions de réinitialisation.');
 })});

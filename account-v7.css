@@ -81,3 +81,7 @@ body.site31.site31-account{background:#091620;color:#e8f2f7}
 .site31-account #google-delete-status{font-size:12px;color:#b5e7dc}
 .site31-account .ar7-delete-google button{justify-self:start}
 .site31-account #delete-account-final:disabled{opacity:.45;cursor:not-allowed}
+
+/* Turnstile renders only after a public site key is configured; no empty space in beta. */
+.site31-account .ar7-captcha:empty{display:none}
+.site31-account .ar7-captcha{max-width:100%;min-height:0;overflow-x:auto;margin:4px 0 10px}
