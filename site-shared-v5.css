@@ -612,3 +612,26 @@ body.site31 .ar-brand-small{width:19px!important;height:19px!important;margin-ri
 body.site31.site31-training footer .ar-brand-footer-link{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:#fff;font-weight:800}
 body.site31.site31-training footer .ar-brand-footer-link img{width:38px;height:38px;object-fit:contain;flex:none}
 @media(max-width:620px){body.site31 .site31-brand>img{width:36px;height:36px}body.site31 .site31-footer-logo>img{width:29px;height:29px}}
+
+/* Desktop patch notes editorial teasers, integrated with the v5 site */
+body.site31 .ar-notes-recent{display:inline-flex;padding:7px 12px;background:#392533;color:#ffacba;border:1px solid #824358;border-radius:6px;letter-spacing:.12em;font-size:11px;font-weight:850}
+body.site31 .ar-notes-links{display:flex;flex-wrap:wrap;gap:14px;margin-top:20px}
+body.site31 .ar-notes-links a,body.site31 .ar-notes-inline-link{color:#ffc0c8!important;font-size:13px;font-weight:850;text-underline-offset:5px}
+body.site31 .ar-notes-spotlight{border-top-color:#ff586f!important}
+body.site31 .ar-notes-spotlight-top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+body.site31 .ar-notes-spotlight h2{font-size:clamp(28px,3.3vw,42px);line-height:1.13;margin:21px 0}
+body.site31 .ar-notes-spotlight p{font-size:14px;line-height:1.78;color:#c8d9e3;max-width:85ch}
+body.site31 .ar-product-patch{border-top-color:#ff586f!important}
+body.site31 .ar-product-patch-grid{display:grid;grid-template-columns:160px minmax(0,1fr);gap:25px;align-items:start}
+body.site31 .ar-product-patch-grid>img{width:154px;height:154px;object-fit:contain;border:1px solid #476070;border-radius:10px;padding:11px;background:#0c1e2d}
+body.site31 .ar-product-patch-grid p{color:#c9d9e2;font-size:14px;line-height:1.76}
+body.site31 .ar-product-caption{font-size:12px!important;color:#a6bccb!important}
+body.site31.site31-home .ar-notes-home{width:min(1180px,calc(100% - 48px));max-width:1180px;padding:clamp(26px,4vw,52px);margin:30px auto;border:1px solid #425969;border-top:2px solid #ff586f;border-radius:12px;background:linear-gradient(122deg,#182d3d,#0f1d2b);display:grid;grid-template-columns:1fr 190px;align-items:center;gap:25px}
+body.site31.site31-home .ar-notes-home h2{font-size:clamp(27px,3.2vw,40px);line-height:1.15;margin:19px 0}
+body.site31.site31-home .ar-notes-home p{font-size:14px;max-width:670px;color:#cad9e4;line-height:1.72}
+body.site31.site31-home .ar-notes-home a{display:inline-flex;margin-top:16px;padding:13px 17px;background:#ff586f;color:#0c1b28;font-weight:850;font-size:12px;border-radius:7px;text-decoration:none}
+body.site31.site31-home .ar-notes-home a:hover{background:#ff97a6}
+body.site31.site31-home .ar-notes-home-logo{display:flex;flex-direction:column;align-items:center;gap:10px}
+body.site31.site31-home .ar-notes-home-logo img{width:135px;height:135px;object-fit:contain}
+body.site31.site31-home .ar-notes-home-logo span{font-size:11px;font-weight:850;letter-spacing:.12em;color:#f6bdc7}
+@media(max-width:650px){body.site31 .ar-product-patch-grid{grid-template-columns:1fr}body.site31 .ar-product-patch-grid>img{width:110px;height:110px}body.site31.site31-home .ar-notes-home{width:calc(100% - 24px);grid-template-columns:1fr;padding:26px 19px}body.site31.site31-home .ar-notes-home-logo{flex-direction:row;justify-content:flex-start}body.site31.site31-home .ar-notes-home-logo img{width:67px;height:67px}}

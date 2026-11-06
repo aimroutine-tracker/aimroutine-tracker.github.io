@@ -77,3 +77,8 @@ The official AimRoutine Tracker logo supplied by the project owner has been adde
 - A reversible FR/EN translation layer covers static player pages and the key dynamic controls.
 - Portable JSON interface format `aimroutine-interchange-v1` to transfer data between web browsers and serve as an **integration contract** for a future Windows importer. **No Windows importer or synchronization is provided yet.** See [WINDOWS_INTERCHANGE_V1.md](WINDOWS_INTERCHANGE_V1.md).
 - GitHub CI adds portable-format tests and browser smoke scenarios using Chromium, Firefox and WebKit, with a mobile viewport. The test results are separate from the published GitHub Pages deployment.
+
+
+## Complete desktop Windows patch notes — November 6, 2026
+
+The project-owner-provided historical source `PATCH-NOTES-AimRoutine-Tracker.md` is displayed in full at [changelog.html](https://aimroutine-tracker.github.io/changelog.html) with 18 version/history chapters, anchor navigation and an original Markdown download. This is the Windows desktop software change history from the 1.x era through **Windows 2.9.1**, and does not imply the **web AIM workspace 6.0** shares its feature inventory. Version 2.9.1 adds Windows icon integration and metadata corrections. The site still uses authentic **Windows 2.9** screenshots, explicitly labeled. No public Windows installer is available and production Riot Sign On / automatic matchmaking retrieval remain unavailable. The navigation, homepage, product page, releases page and updates page link to the original notes.
