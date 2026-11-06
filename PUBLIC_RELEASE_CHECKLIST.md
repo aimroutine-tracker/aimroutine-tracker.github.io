@@ -6,7 +6,7 @@ This file records actual checks against the production GitHub Pages repository a
 
 - Supabase Paris `eu-west-3` is active. Cloud V7 uses four tables (`aim_profiles`, `aim_preferences`, `aim_sessions`, `aim_presets`) with authenticated-owner-only RLS and `ON DELETE CASCADE` references to `auth.users`.
 - A live SQL test used the identities of the two existing accounts. Temporary sample rows were added for both users inside a transaction, an authenticated session for user B attempted cross-user reads, updates, deletes, cross-user insert and ownership transfer, and all forbidden operations returned zero rows or raised insufficient privilege. Own rows remained visible. The transaction was rolled back; no sample data persisted.
-- Live public Auth settings: Google provider enabled, email provider enabled, email autoconfirmation **off**, **server-side signups currently allowed** (`disable_signup=false`). The last item is a security release blocker: a disabled UI signup button does not stop API signups.
+- Public Auth settings: Google and email providers enabled, email autoconfirmation **off**, and global `disable_signup=false`. **As of 6 November 2026, the activated `Before User Created` hook independently blocks new email registrations at the API with verified HTTP 403.** Global signup is still enabled to allow Google beta registration.
 - The deployed account deletion endpoint returned HTTP **401** for requests without a valid user JWT and for a forged user JWT, even when `SUPPRIMER` was supplied. It runs with `verify_jwt=true` and derives account identity server-side. A **real positive Google deletion test after the simplified flow has not been performed**.
 - The web account page keeps `SIGNUPS_READY=false`. Google beta login remains active; public email/password signup is not offered through the UI. **Real SMTP transport and email delivery passed on 6 November 2026**: a deliberately disposable Gmail plus-alias account signed up over Supabase Auth HTTP 200; it received no access session before verification; unconfirmed password sign-in returned HTTP 400; recovery request returned HTTP 200; the connected Gmail mailbox received both separate confirmation and reset messages. The exact disposable account was then deleted in a guarded transaction, and a fresh database query confirmed **zero test accounts remaining** and the two original accounts untouched. This verifies *sending/receiving*, not activation-link click, password update, or Outlook delivery.
 - Added deterministic regression tests for two users, two independent browser data stores, offline training sessions, merge, favorite tombstones, account scoping and progress deletion. These mocks do not replace real authenticated browser testing.
@@ -31,11 +31,11 @@ Official Google instructions: https://support.google.com/cloud/answer/15549257
 
 ### B. Close unwanted signup paths in Supabase Auth
 
-The last safe live check found `disable_signup=false`. The website's `SIGNUPS_READY=false` does **not** prevent direct API signups.
+The `disable_signup=false` flag allows Google beta onboarding, while the **activated and live-tested** `Before User Created` hook prevents new email users. The site also keeps `SIGNUPS_READY=false`. If the hook is disabled before release, direct email registration becomes possible regardless of the website flag.
 
 - Review **Authentication → General** and the setting **Allow new users to sign up**. Disabling it globally blocks creation of new Google users as well as email users; existing sign-ins continue working. Decide whether limited Google beta onboarding must remain enabled.
-- To keep new Google users while denying email registration, configure a genuine server-enforced provider-specific signup restriction / verified **Before User Created** hook rather than treating the UI flag as security. Do not deploy a trigger against managed `auth.users` tables as a shortcut.
-- Confirm the resulting public Auth settings and an actual rejected signup attempt before declaring registration closed on the server.
+- **COMPLETED:** `public.aim_beta_signup_gate` is configured as the active **Before User Created** PostgreSQL hook. This is server-enforced; no trigger on the managed `auth.users` tables was used.
+- **COMPLETED:** live direct Auth signup with the project's disposable Outlook plus-address returned HTTP 403 with the exact beta-gate rejection message. Google provider remained enabled and SQL confirmed zero test users were created.
 - When email signup is intentionally opened, configure policy and rate limits first and then explicitly allow new registrations on the server.
 
 Docs: https://supabase.com/docs/guides/auth/general-configuration and https://supabase.com/docs/guides/auth/auth-hooks/before-user-created-hook
@@ -90,13 +90,13 @@ Docs: https://supabase.com/docs/guides/auth/password-security and https://supaba
 - Verified by a real Auth-role SQL call in an explicit transaction that was then rolled back. Inside that test the user's rows were cleared, a valid reset marker appeared, and post-rollback global row counts were unchanged. Live anonymous and invalid-JWT HTTP calls both received **401**.
 - Deterministic two-user/two-device tests additionally cover an offline device retaining stale V1 and V2 sessions: they must not be reuploaded after a reset. **Real two-browser authenticated testing remains pending.**
 
-### Beta signup Auth Hook prepared, but not enabled
+### Beta signup Auth Hook enabled and verified (6 November 2026)
 
 - New migration: `supabase/migrations/20261106153000_beta_signup_gate.sql` creates the provider-specific `public.aim_beta_signup_gate(event jsonb)` for Supabase's **Before User Created** Auth Hook.
 - The function returns a **403** for newly created email/phone/unknown providers and allows new Google identities; it does not prevent existing accounts from signing in. It runs as `SECURITY INVOKER`, is callable by `supabase_auth_admin` only, and **cannot** be called by browser `anon`/`authenticated` roles. SQL tests verified those conditions.
-- **It is not active until an authorized owner enables it** in [Supabase → Authentication → Hooks](https://supabase.com/dashboard/project/lmzswtzboobpokumxzhy/auth/hooks), choosing the **Before User Created** Postgres function `public.aim_beta_signup_gate`, then saving and enabling the hook.
-- Once enabled, confirm that a disposable direct email signup is denied (403) while an existing Google user can still sign in. Do not leave an email test user in production. This hook only restricts email onboarding during the Google beta. When opening public email registration, replace/disable the hook as appropriate and complete all other release checks.
-- Until activation, the public Auth API still permits new email accounts. The website `SIGNUPS_READY=false` is **not server enforcement**. Do not claim the beta gate is active based on the function's mere existence.
+- **ACTIVE:** the owner enabled the hook in [Supabase → Authentication → Hooks](https://supabase.com/dashboard/project/lmzswtzboobpokumxzhy/auth/hooks) and verified the dashboard displayed `ENABLED`, schema `public`, function `aim_beta_signup_gate`.
+- **LIVE TEST PASSED:** new email registration was rejected (HTTP 403, expected beta-gate message). Supabase's public settings still report Google provider enabled. Existing Google login and **actual new Google OAuth account creation** still require positive browser testing. When opening public email registration, deactivate or revise the beta gate and complete all remaining release checks.
+- **API-side email beta restriction is now enforced.** The website flag `SIGNUPS_READY=false` remains a separate UI gate. Do not remove the hook or enable public email signups until verification/recovery, security controls and support are ready.
 
 Official docs: https://supabase.com/docs/guides/auth/auth-hooks/before-user-created-hook
 
@@ -124,3 +124,13 @@ Official docs: https://supabase.com/docs/guides/auth/auth-hooks/before-user-crea
 
 - The build and cross-browser/site-quality checks were successful, but run https://github.com/aimroutine-tracker/aimroutine-tracker.github.io/actions/runs/42238929206 failed in GitHub's Pages **deployment** step after staying in `deployment_queued` / `updating_pages` until its 10-minute timeout. This is a host deployment timeout, not a failing JavaScript/build test.
 - Retried failed deployment job, which again timed out. Newer commits trigger another Pages deployment; **do not claim the latest site is live unless the corresponding deployment run concludes success**.
+
+## Production email registration denial test (6 November 2026, 15:35 UTC)
+
+- [GitHub Actions 42244394527](https://github.com/aimroutine-tracker/aimroutine-tracker.github.io/actions/runs/42244394527): **success**. An attempt to create a disposable email/password account by calling production `/auth/v1/signup` returned HTTP **403** and the exact text `New email registrations are not available yet.`, proving that the **active** Postgres hook (not just the disabled web form) blocked it.
+- Live `/auth/v1/settings`: Google provider remains enabled; a complete Google OAuth browser sign-in was **not** exercised by this test.
+- SQL audit after the probe: **2 existing users**, **0** disposable beta-hook test users. The one-time workflow and script were removed from the repository to prevent accidental repeated production signup attempts.
+- Supabase Security Advisor continues to report only `auth_leaked_password_protection`; native breached-password blocking is still not enabled. A 12-character server-side password minimum was independently verified earlier.
+- GitHub Pages deployment [42242023471](https://github.com/aimroutine-tracker/aimroutine-tracker.github.io/actions/runs/42242023471) succeeded on the latest pre-probe version. Subsequent docs/cleanup commits trigger additional deployment runs; confirm the newest run before claiming the very latest commit was published.
+
+**Public release is still gated** by end-to-end confirmation/recovery, actual disposable Google deletion, authorized multi-browser cloud sync testing, anti-abuse/CAPTCHA configuration review and a consciously approved public signup policy. When ready, disable or replace `aim_beta_signup_gate` first, then change `SIGNUPS_READY` and verify both UI and API flows. OAuth client-secret rotation is deferred at the owner's request and remains a recorded security recommendation.
