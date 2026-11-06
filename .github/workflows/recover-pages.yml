@@ -1,5 +1,9 @@
-name: Recover stalled Pages deployment (manual only)
+name: Recover stalled Pages deployment (one-time verified)
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/recover-pages.yml'
   workflow_dispatch:
 
 permissions:
@@ -24,7 +28,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          STALE_SHA="d51d6ee9dce168c4108d5db656d6eec0bb401369"
+          STALE_SHA="03d29524ec1a5d560708676b49999fc83d6448ed"
           API="https://api.github.com/repos/${GITHUB_REPOSITORY}/pages/deployments/${STALE_SHA}/cancel"
           HTTP_CODE="$(curl --silent --show-error --retry 3 --retry-delay 2 \
             -o /tmp/pages-cancel-response.json -w '%{http_code}' -X POST \
