@@ -1,13 +1,15 @@
 /* AimRoutine offline shell — V7 cache refresh fix.
    All same-origin static assets are network-first to stop stale CSS from persisting
    across deployments. Offline fallback still supports AIM sessions stored locally. */
-const CACHE='aimroutine-v7-network-first-20261106b';
+const CACHE='aimroutine-v7-network-first-20261106c';
 const BASE=new URL(self.registration.scope);
 const OFFLINE=[
  './','./index.html','./training.html','./account.html','./product.html','./releases.html',
  './training.css','./training-v5.css','./training-v6.css','./account-v7.css',
  './training-v5.js','./training-v6.js','./training-core-v5.mjs','./training-v6-core.mjs',
  './training-entry-v7.mjs','./cloud-core-v7.mjs','./cloud-sync-v7.mjs',
+ './training-i18n-v6.js','./pwa-v6.js','./cloud-client-v7.mjs',
+ './google-delete-v7.mjs','./password-security-v7.mjs','./account-v7.mjs',
  './site-global-v31.css','./site-shared-v5.css','./site-quality-v34.js','./site.js',
  './favicon.svg','./manifest.webmanifest','./aimroutine-logo.png'
 ].map(x=>new URL(x,BASE).toString());
