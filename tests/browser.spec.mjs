@@ -119,5 +119,6 @@ test('Free authentication methods are clearly gated pending OAuth and SMTP',asyn
  await page.locator('#signup-mode').click();
  await expect(page.locator('#signup-submit')).toBeDisabled();
  await expect(page.locator('#google-signin')).toBeDisabled();
- await page.locator('#reset-link').click().catch(()=>{});
+ await page.locator('#login-mode').click();
+ await expect(page.locator('#google-signin')).toBeDisabled();
 });
