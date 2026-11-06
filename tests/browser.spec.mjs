@@ -100,3 +100,13 @@ test('Cloud account landing has single-border tags and a compact accessible gues
  expect(check.buttonWidth).toBeLessThanOrEqual(page.viewportSize().width);
  expect(check.overflow).toBeLessThanOrEqual(2);
 });
+
+test('Account deletion form requires password and explicit typed confirmation',async({page})=>{
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ const section=page.locator('.ar7-delete-account');
+ await expect(section).toHaveCount(1);
+ await section.locator('summary').click();
+ await expect(section.locator('input[type="password"]')).toBeVisible();
+ await expect(section.locator('input#delete-account-confirmation')).toHaveAttribute('maxlength','9');
+ await expect(section.locator('button[type="submit"]')).toBeVisible();
+});

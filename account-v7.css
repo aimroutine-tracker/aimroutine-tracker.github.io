@@ -55,3 +55,11 @@ body.site31.site31-account{background:#091620;color:#e8f2f7}
 .site31-account .ar7-delete-cloud p{font-size:12px;color:#bdcbd4;line-height:1.7}
 @media(max-width:850px){.site31-account .ar7-account-layout,.site31-account .ar7-account-hero{grid-template-columns:1fr}}
 @media(max-width:520px){.site31-account .ar7-account-main{width:calc(100% - 24px);padding:18px 0 65px}.site31-account .ar7-account-hero,.site31-account .ar7-account-panel{padding:24px 17px}.site31-account .ar7-account-hero h1{font-size:39px}.site31-account .ar7-service-grid{grid-template-columns:1fr 1fr}.site31-account .ar7-controls>*{width:100%}}
+
+/* Permanent account deletion confirmation form */
+.site31-account .ar7-delete-account{border-top-color:#a34b5a}
+.site31-account .ar7-delete-account summary{color:#ffc0c8}
+.site31-account .ar7-delete-account form{padding:17px;margin-top:10px;border:1px solid #925260;border-radius:9px;background:#271d29}
+.site31-account .ar7-delete-account form label{font-weight:750}
+.site31-account .ar7-delete-account form input{max-width:100%}
+.site31-account .ar7-delete-account .ar7-danger{justify-self:start;min-height:44px}

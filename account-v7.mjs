@@ -2,7 +2,8 @@
 import {supabase,SITE_URL} from './cloud-client-v7.mjs';
 import {UID_STORAGE_KEY,validUid,scopedKey,TRAINING_KEY} from './cloud-core-v7.mjs';
 import {synchronize,isEnabled,setEnabled,readUserLocal,importGuestIntoAccount,deleteCloudProgress} from './cloud-sync-v7.mjs';
-const SIGNUPS_READY=false; // Keep closed until owner configures Supabase Auth Site URL and redirect allowlist.
+const SIGNUPS_READY=false;
+const RESET_LINKS_CONFIGURED=true; // Owner confirmed Site URL and redirect allowlist; delivery needs real-user testing. // Keep closed until owner configures Supabase Auth Site URL and redirect allowlist.
 const $=s=>document.querySelector(s);
 let user=null,working=false,recovery=false;
 const msg=(message)=>{$('#account-status').textContent=message};
@@ -75,7 +76,7 @@ $('#signup-form').addEventListener('submit',e=>{e.preventDefault();
  $('#signup-password').value='';
  msg('Si cette adresse est éligible, un e-mail de confirmation sera envoyé. Vérifie aussi tes indésirables.');
  })});
-$('#reset-form').addEventListener('submit',e=>{e.preventDefault();if(!SIGNUPS_READY){msg('Les liens de réinitialisation attendent la configuration des redirections Supabase.');return;}run(async()=>{
+$('#reset-form').addEventListener('submit',e=>{e.preventDefault();if(!RESET_LINKS_CONFIGURED){msg('Les URL de réinitialisation ne sont pas encore configurées.');return;}run(async()=>{
  const {error}=await supabase.auth.resetPasswordForEmail($('#reset-email').value.trim(),{redirectTo:SITE_URL+'account.html?reset=1'});
  if(error)throw error;
  msg('Si un compte existe pour cette adresse, tu recevras les instructions de réinitialisation.');
@@ -124,6 +125,44 @@ $('#cloud-delete').addEventListener('click',()=>run(async()=>{
  setEnabled(user.id,false);
  msg('La progression cloud a été supprimée. Le compte existe toujours et les données invitées n’ont pas été modifiées.');
 }));
+$('#delete-account-form').addEventListener('submit',event=>{
+ event.preventDefault();
+ const confirmation=$('#delete-account-confirmation').value.trim();
+ const password=$('#delete-account-password').value;
+ if(!user||confirmation!=='SUPPRIMER'){
+   msg('Écris exactement SUPPRIMER pour confirmer la suppression définitive.');return;
+ }
+ if(!confirm('SUPPRESSION DÉFINITIVE : supprimer ton compte et toutes ses données cloud ?'))return;
+ run(async()=>{
+   const email=user.email,oldUid=user.id;
+   if(!email)throw Error('Adresse e-mail du compte introuvable.');
+   // Demand an actual new password sign-in, not merely an existing or refreshed JWT.
+   const {error:loginError}=await supabase.auth.signInWithPassword({email,password});
+   if(loginError)throw Error('Mot de passe invalide ou reconnexion impossible.');
+   const {data:{user:checked},error:checkedError}=await supabase.auth.getUser();
+   if(checkedError||checked?.id!==oldUid)throw Error('Compte non confirmé. Aucune suppression effectuée.');
+   const {data,resultError,error:deleteError}=await supabase.functions.invoke('delete-aim-account',{
+     method:'POST',body:{action:'delete_my_account',confirmation:'SUPPRIMER'}
+   });
+   if(deleteError||resultError||data?.deleted!==true)throw Error('Suppression refusée par le serveur. Ton compte est conservé.');
+   $('#delete-account-password').value='';
+   $('#delete-account-confirmation').value='';
+   // Clear only this account's local copies, not guest or other accounts.
+   const prefix='aimroutine_cloud_user_'+oldUid+'_';
+   for(let i=localStorage.length-1;i>=0;i--){
+     const key=localStorage.key(i);
+     if(key&&key.startsWith(prefix))localStorage.removeItem(key);
+   }
+   localStorage.removeItem('aimroutine_cloud_enabled_'+oldUid);
+   localStorage.removeItem('aimroutine_cloud_meta_'+oldUid);
+   localStorage.removeItem(UID_STORAGE_KEY);
+   // The Auth user has already been deleted; local sign-out can fail at the server.
+   try{await supabase.auth.signOut({scope:'local'})}catch{}
+   localStorage.removeItem('sb-lmzswtzboobpokumxzhy-auth-token');
+   showUser(null);
+   msg('Ton compte et ses données cloud ont été supprimés. Les copies invitées n’ont pas été effacées.');
+ });
+});
 supabase.auth.onAuthStateChange((event,session)=>{
  if(event==='PASSWORD_RECOVERY'){recovery=true;authMode('new-password')}
  if(event==='SIGNED_OUT'){showUser(null)}

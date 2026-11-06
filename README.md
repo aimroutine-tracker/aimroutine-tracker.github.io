@@ -86,3 +86,5 @@ The project-owner-provided historical source `PATCH-NOTES-AimRoutine-Tracker.md`
 ## Cloud V7 beta — 2026-11-06
 
 The owner approved a $0/month Supabase Free project in Paris (`eu-west-3`), project ref `lmzswtzboobpokumxzhy`. Four RLS-protected tables were created; the Supabase Security Advisor reported zero findings. `account.html` provides the optional account/backup prototype with sign-in, explicit opt-in, per-user browser storage and guest-history import. **Public registration remains disabled** pending email redirect setup, two-account end-to-end tests, a complete account-deletion flow and private support. Guest mode remains independent; no Riot Sign On or Windows cloud sync is included.
+
+Cloud V7 account deletion: server-side `delete-aim-account` Edge Function with verified JWT and recent password reauthentication; `account.html` exposes explicit confirmation form. Public signup remains closed pending SMTP verification and real-user E2E.

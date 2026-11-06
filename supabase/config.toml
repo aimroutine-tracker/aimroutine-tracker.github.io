@@ -1,0 +1,2 @@
+[functions.delete-aim-account]
+verify_jwt = true

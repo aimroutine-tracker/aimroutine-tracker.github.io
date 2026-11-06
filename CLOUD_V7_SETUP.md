@@ -23,3 +23,11 @@
 - Cloud is not Riot Sign On and not connected to the Windows 2.9.1 application.
 
 Do not state cloud registration is generally available until all steps above are completed.
+
+## Progress: deletion endpoint
+
+- Edge Function `delete-aim-account` deployed with **verify_jwt true**, `@supabase/server@1.9.2` with `auth:'user'`, and no administrative credentials in public JS. It verifies the validated user identity, checks a fresh sign-in (five minutes), then calls `auth.admin.deleteUser(user.id)` using the server-provisioned admin client. Database foreign keys cascade to all four training tables.
+- Account UI now requires the current password plus typed `SUPPRIMER` and a final confirmation. No account is deleted except by a valid signed-in user explicitly submitting the form.
+- **Needs E2E**: signed-in deletion test must confirm cascading rows, session invalidation, old credentials rejected, and guest data retained. JWT access tokens can remain valid until expiry; short token lifetimes are recommended.
+- Owner said Site URL/redirect allowlist is configured; direct Supabase Auth dashboard settings are not exposed by connected management tools, so actual settings and confirmation email delivery are not independently verified.
+- Password-reset request is now enabled for existing accounts (still subject to Supabase SMTP restrictions); public signups remain disabled.
