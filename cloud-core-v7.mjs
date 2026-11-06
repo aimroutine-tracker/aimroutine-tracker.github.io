@@ -18,12 +18,13 @@ export function activeUid(){
   return validUid(id)?id:null;
 }
 export function storageKey(key){return scopedKey(key,activeUid());}
-export function freshCloudMeta(){return {version:1,profileHash:null,prefsHash:null,presetDeletedIds:[]};}
+export function freshCloudMeta(){return {version:1,profileHash:null,prefsHash:null,presetDeletedIds:[],resetAt:null};}
 export function safeMeta(meta){
   if(!meta||typeof meta!=='object')return freshCloudMeta();
   return {version:1,profileHash:typeof meta.profileHash==='string'?meta.profileHash:null,
     prefsHash:typeof meta.prefsHash==='string'?meta.prefsHash:null,
-    presetDeletedIds:Array.isArray(meta.presetDeletedIds)?meta.presetDeletedIds.filter(x=>typeof x==='string'&&x.length<101).slice(-100):[]};
+    presetDeletedIds:Array.isArray(meta.presetDeletedIds)?meta.presetDeletedIds.filter(x=>typeof x==='string'&&x.length<101).slice(-100):[],
+    resetAt:typeof meta.resetAt==='string'&&Number.isFinite(Date.parse(meta.resetAt))?new Date(meta.resetAt).toISOString():null};
 }
 export function uniqueById(values){
  const found=new Map();
