@@ -138,6 +138,12 @@ test('All public pages render without overflow or script errors',async({page,isM
   await expect(page.locator('main'),path).toHaveCount(1);
   await expect(page.locator('nav.site31-nav'),path).toHaveCount(1);
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+  if(overflow>2){
+   const wide=await page.evaluate(()=>[...document.querySelectorAll('body *')].map(el=>{
+    const r=el.getBoundingClientRect();return {tag:el.tagName,cls:String(el.className).slice(0,80),right:Math.round(r.right),left:Math.round(r.left),width:Math.round(r.width)};
+   }).filter(r=>r.right>innerWidth+2&&r.width>0).slice(0,22));
+   console.log(path+' mobile overflow diagnosis: '+JSON.stringify(wide));
+  }
   expect(overflow,path+' causes horizontal scrolling').toBeLessThanOrEqual(2);
   if(isMobile)await expect(page.locator('details.site31-mobile-nav > summary'),path).toBeVisible();
  }
