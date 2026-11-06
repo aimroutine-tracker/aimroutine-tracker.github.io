@@ -17,8 +17,8 @@ function authMode(mode='login'){
 }
 function showUser(next){
  user=next&&validUid(next.id)?next:null;
- $('#auth-panel').hidden=!!user;
- $('#dashboard-panel').hidden=!user;
+ $('#auth-panel').hidden=!!user&&!recovery;
+ $('#dashboard-panel').hidden=!user||recovery;
  if(user){
    $('#user-email').textContent=user.email||'Compte AimRoutine';
    localStorage.setItem(UID_STORAGE_KEY,user.id);
@@ -85,7 +85,9 @@ $('#new-password-form').addEventListener('submit',e=>{e.preventDefault();run(asy
  const {error}=await supabase.auth.updateUser({password:$('#new-password').value});
  if(error)throw error;
  $('#new-password').value='';
+ recovery=false;
  authMode('login');
+ showUser(user);
  msg('Mot de passe mis à jour.');
 })});
 $('#logout').addEventListener('click',()=>run(async()=>{
@@ -164,7 +166,11 @@ $('#delete-account-form').addEventListener('submit',event=>{
  });
 });
 supabase.auth.onAuthStateChange((event,session)=>{
- if(event==='PASSWORD_RECOVERY'){recovery=true;authMode('new-password')}
+ if(event==='PASSWORD_RECOVERY'){
+   recovery=true;authMode('new-password');
+   $('#auth-panel').hidden=false;
+   $('#dashboard-panel').hidden=true;
+ }
  if(event==='SIGNED_OUT'){showUser(null)}
 });
 (async()=>{
