@@ -63,3 +63,13 @@ body.site31.site31-account{background:#091620;color:#e8f2f7}
 .site31-account .ar7-delete-account form label{font-weight:750}
 .site31-account .ar7-delete-account form input{max-width:100%}
 .site31-account .ar7-delete-account .ar7-danger{justify-self:start;min-height:44px}
+
+/* Cloud V7 optional Google OAuth login; disabled until owner-provided OAuth credentials are set. */
+.site31-account .ar7-social-login{display:grid;gap:12px;margin:14px 0 20px}
+.site31-account .ar7-social-login[hidden]{display:none!important}
+.site31-account .ar7-google-btn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:48px;padding:11px 17px;color:#fff;background:#193647;border:1px solid #617f92;border-radius:8px;font-size:14px;font-weight:800;cursor:pointer}
+.site31-account .ar7-google-btn:disabled{cursor:not-allowed;opacity:.65}
+.site31-account .ar7-google-icon{display:grid;place-items:center;flex:none;font-size:20px;font-weight:900;color:#f5f8fb;width:24px;height:24px}
+.site31-account .ar7-social-note{margin:0;font-size:12px;line-height:1.6;color:#b4ccd9}
+.site31-account .ar7-divider{display:flex;align-items:center;gap:15px;color:#9cbbc9;font-size:10px;font-weight:850;letter-spacing:.12em}
+.site31-account .ar7-divider::before,.site31-account .ar7-divider::after{content:"";height:1px;flex:1;background:#38576a}

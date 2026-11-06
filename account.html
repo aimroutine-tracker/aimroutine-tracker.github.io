@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" sizes="128x128" href="aimroutine-logo.png?v=2">
 <link rel="manifest" href="manifest.webmanifest?v=2">
 <link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="site-global-v31.css?v=3"><link rel="stylesheet" href="site-shared-v5.css?v=3">
-<link rel="stylesheet" href="account-v7.css?v=4">
+<link rel="stylesheet" href="account-v7.css?v=5">
 <script>
 /* Force-check the PWA cache repair even if a former service worker is serving old JS. */
 if('serviceWorker' in navigator&&window.isSecureContext){
@@ -27,7 +27,7 @@ if('serviceWorker' in navigator&&window.isSecureContext){
   },{once:true});
 }
 </script><script src="site.js?v=8" defer></script><script src="site-quality-v34.js?v=1" defer></script>
-<script type="module" src="account-v7.mjs?v=2"></script>
+<script type="module" src="account-v7.mjs?v=3"></script>
 <style id="account-critical-style">
 /* Critical visible layout: independent of older PWA-cached CSS versions. */
 body.site31.site31-account .ar7-account-highlights{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:20px 0}
@@ -83,14 +83,23 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
  <div class="ar7-form-switch" role="group" aria-label="Mode de connexion">
  <button type="button" id="login-mode" aria-pressed="true"><span class="fr">Connexion</span><span class="en">Log in</span></button>
  <button type="button" id="signup-mode" aria-pressed="false"><span class="fr">Inscription</span><span class="en">Sign up</span></button></div>
- <form id="login-form" class="ar7-auth-form">
+ 
+<div id="google-login-wrap" class="ar7-social-login">
+  <button id="google-signin" class="ar7-google-btn" type="button" disabled aria-describedby="google-login-note">
+    <span class="ar7-google-icon" aria-hidden="true">G</span>
+    <span class="fr">Continuer avec Google</span><span class="en">Continue with Google</span>
+  </button>
+  <p id="google-login-note" class="ar7-social-note"><span class="fr">Connexion Google en préparation — elle sera activée après la configuration OAuth.</span><span class="en">Google sign-in is being prepared and will open once OAuth is configured.</span></p>
+  <div class="ar7-divider"><span class="fr">OU PAR E-MAIL</span><span class="en">OR WITH EMAIL</span></div>
+</div>
+<form id="login-form" class="ar7-auth-form">
   <label><span class="fr">Adresse e-mail</span><span class="en">Email address</span><input id="login-email" type="email" autocomplete="username" required maxlength="254" placeholder="joueur@exemple.fr"></label>
   <label><span class="fr">Mot de passe</span><span class="en">Password</span><input id="login-password" type="password" autocomplete="current-password" minlength="6" required></label>
   <button type="submit" class="ar7-primary"><span class="fr">Se connecter</span><span class="en">Sign in</span> ↗</button>
   <button class="ar7-link" type="button" id="reset-link"><span class="fr">Mot de passe oublié ?</span><span class="en">Forgot password?</span></button>
  </form>
  <form id="signup-form" class="ar7-auth-form" hidden>
-  <p class="ar7-warn"><span class="fr">L'ouverture des inscriptions attend le paramétrage des liens de confirmation par e-mail dans Supabase.</span><span class="en">Public registrations are awaiting confirmation-email URL setup in Supabase.</span></p>
+  <p class="ar7-warn"><span class="fr">Les inscriptions e-mail attendent la configuration SMTP et la vérification des e-mails de confirmation dans Supabase.</span><span class="en">Email registration is awaiting custom SMTP setup and confirmation-email delivery tests in Supabase.</span></p>
   <label><span class="fr">Adresse e-mail</span><span class="en">Email address</span><input id="signup-email" type="email" autocomplete="email" required maxlength="254"></label>
   <label><span class="fr">Mot de passe (12 caractères minimum)</span><span class="en">Password (12 characters minimum)</span><input id="signup-password" type="password" autocomplete="new-password" minlength="12" required></label>
   <button type="submit" class="ar7-primary" id="signup-submit" disabled><span class="fr">Inscription prochainement</span><span class="en">Registration opening soon</span></button>

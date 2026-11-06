@@ -111,3 +111,13 @@ test('Account deletion UI exists but remains inaccessible to guests',async({page
  await expect(section.locator('input#delete-account-confirmation')).toHaveAttribute('maxlength','9');
  await expect(section.locator('button[type="submit"]')).toHaveCount(1);
 });
+
+test('Free authentication methods are clearly gated pending OAuth and SMTP',async({page})=>{
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#google-login-wrap')).toBeVisible();
+ await expect(page.locator('#google-signin')).toBeDisabled();
+ await page.locator('#signup-mode').click();
+ await expect(page.locator('#signup-submit')).toBeDisabled();
+ await expect(page.locator('#google-signin')).toBeDisabled();
+ await page.locator('#reset-link').click().catch(()=>{});
+});

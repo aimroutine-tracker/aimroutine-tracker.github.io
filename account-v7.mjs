@@ -2,7 +2,8 @@
 import {supabase,SITE_URL} from './cloud-client-v7.mjs';
 import {UID_STORAGE_KEY,validUid,scopedKey,TRAINING_KEY} from './cloud-core-v7.mjs';
 import {synchronize,isEnabled,setEnabled,readUserLocal,importGuestIntoAccount,deleteCloudProgress} from './cloud-sync-v7.mjs';
-const SIGNUPS_READY=false;
+const SIGNUPS_READY=false; // Email signup stays closed until custom SMTP and real email tests succeed.
+const GOOGLE_READY=false; // Set true ONLY after Google OAuth provider and callback have passed real login tests.
 const RESET_LINKS_CONFIGURED=true; // Owner confirmed Site URL and redirect allowlist; delivery needs real-user testing. // Keep closed until owner configures Supabase Auth Site URL and redirect allowlist.
 const $=s=>document.querySelector(s);
 let user=null,working=false,recovery=false;
@@ -12,6 +13,7 @@ function authMode(mode='login'){
  $('#signup-form').hidden=mode!=='signup';
  $('#reset-form').hidden=mode!=='reset';
  $('#new-password-form').hidden=mode!=='new-password';
+ $('#google-login-wrap').hidden=!['login','signup'].includes(mode);
  $('#login-mode').setAttribute('aria-pressed',String(mode==='login'));
  $('#signup-mode').setAttribute('aria-pressed',String(mode==='signup'));
 }
@@ -52,6 +54,14 @@ async function run(task){
   renderCounts();
  }
 }
+$('#google-signin').disabled=!GOOGLE_READY;
+$('#google-signin').addEventListener('click',()=>{
+ if(!GOOGLE_READY){msg('La connexion Google doit être activée dans Supabase avant son ouverture.');return;}
+ run(async()=>{
+   const {error}=await supabase.auth.signInWithOAuth({provider:'google',options:{redirectTo:SITE_URL+'account.html'}});
+   if(error)throw error;
+ });
+});
 $('#login-mode').addEventListener('click',()=>authMode('login'));
 $('#signup-mode').addEventListener('click',()=>authMode('signup'));
 $('#reset-link').addEventListener('click',()=>authMode('reset'));

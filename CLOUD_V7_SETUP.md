@@ -31,3 +31,40 @@ Do not state cloud registration is generally available until all steps above are
 - **Needs E2E**: signed-in deletion test must confirm cascading rows, session invalidation, old credentials rejected, and guest data retained. JWT access tokens can remain valid until expiry; short token lifetimes are recommended.
 - Owner said Site URL/redirect allowlist is configured; direct Supabase Auth dashboard settings are not exposed by connected management tools, so actual settings and confirmation email delivery are not independently verified.
 - Password-reset request is now enabled for existing accounts (still subject to Supabase SMTP restrictions); public signups remain disabled.
+
+## Zero-cost path: Google OAuth + dedicated Gmail SMTP (small beta)
+
+No paid domain required. The existing public web origin stays `https://aimroutine-tracker.github.io`. All platform free tiers have usage and anti-abuse limits; this is **not** a guaranteed forever-free scalable production mail system. Keep signup gates CLOSED pending verified operations.
+
+### Google OAuth (separate from Gmail SMTP)
+
+1. In the free Google Cloud console, configure Google Auth Platform branding, Audience and scopes (`openid`, email, profile). Keep scopes minimal.
+2. Create an OAuth client of type **Web application**.
+3. Authorized JavaScript origin: `https://aimroutine-tracker.github.io`.
+4. Authorized redirect URI (the Supabase callback): `https://lmzswtzboobpokumxzhy.supabase.co/auth/v1/callback`.
+5. In Supabase Dashboard → Authentication → Sign In / Providers → Google, enable the Google provider. Paste Client ID and **Client secret in the Supabase dashboard only**, never GitHub or chat.
+6. Verify the browser login, return to `/account.html`, account creation, sign-out, profile separation and mobile behavior. Only after tests change `GOOGLE_READY=false` to `true` in `account-v7.mjs`.
+
+Official documentation: https://supabase.com/docs/guides/auth/social-sign-in/auth-google
+
+### Email/password with zero-cost personal Gmail SMTP (for early beta only)
+
+1. Create a **dedicated free Gmail sender account** just for service emails. Do not reuse an existing personal mailbox. Enable two-step verification and create a Google **app password** if Google allows it.
+2. In Supabase Dashboard → Authentication → SMTP Settings, configure:
+   - Sender address: exactly the dedicated Gmail address (do **not** use `@github.io`).
+   - Sender name: `AimRoutine Tracker`.
+   - SMTP host: `smtp.gmail.com`.
+   - SMTP port: `465` (SSL) or `587` (STARTTLS), depending on the interface.
+   - SMTP user: the dedicated Gmail address.
+   - SMTP password: its **Google app password**, not the ordinary password; enter it **only into the Supabase dashboard**.
+3. Keep Supabase **Confirm email** enabled. Do **not** disable verification to avoid needing SMTP.
+4. Test confirmation and password-reset email end-to-end on two different mail providers. Watch spam and authentication error logs; Gmail can throttle, reject or suspend automated sending. Rate limits and per-account thresholds can change.
+5. Enable CAPTCHA/bot resistance, maintain controlled signup volumes and document retention/deletion. Only then change `SIGNUPS_READY=false` to `true` in `account-v7.mjs`.
+
+Supabase has documented Gmail SMTP support but recommends production-grade providers for reliable deliverability. Treat this Gmail method as a **small-scale testing/beta workaround**, not a reliable bulk-email solution.
+
+Google app-password instructions: https://support.google.com/accounts/answer/185833
+Supabase SMTP: https://supabase.com/docs/guides/auth/auth-smtp
+Supabase Gmail troubleshooting: https://supabase.com/kb/troubleshooting/using-google-smtp-with-supabase-custom-smtp-ZZzU4Y
+
+**Current state:** Both login routes are prepared in source, but neither Google OAuth nor public email signups are open. The user has not provided OAuth credentials or a verified SMTP configuration. Do not claim either is operational until configured and tested. If dedicated Gmail SMTP cannot reliably deliver, keep email signups closed and offer Google login once tested.
