@@ -80,6 +80,7 @@ training-v6-core.mjs
 training-v6.css
 training-v6.js
 training.css
+turnstile-v7.mjs
 training.html
 training.js
 updates.html
