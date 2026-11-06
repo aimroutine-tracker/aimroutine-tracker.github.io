@@ -1,0 +1,73 @@
+/* Changelog: original Windows release notes rendered as accessible cards */
+body.site31.site31-changelog{background:#091621;color:#e8f1f7}
+.site31-changelog .ar-note-main{width:min(1220px,calc(100% - 36px));margin:auto;padding:38px 0 84px}
+.site31-changelog .ar-note-hero{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(230px,.7fr);align-items:center;gap:30px;background:linear-gradient(120deg,#152c3e,#101d2c);border:1px solid #344d61;border-top:2px solid #ff586f;border-radius:14px;padding:clamp(28px,4.5vw,58px)}
+.site31-changelog .ar-note-eyebrow{font-size:11px;font-weight:900;letter-spacing:.16em;color:#8be3d7}
+.site31-changelog .ar-note-hero h1{font-size:clamp(36px,5vw,66px);line-height:1.04;letter-spacing:-.06em;margin:20px 0 22px;color:#fff}
+.site31-changelog .ar-note-hero h1 em{font-style:normal;color:#ff8091}
+.site31-changelog .ar-note-hero-copy>p:not(.ar-note-eyebrow){font-size:16px;line-height:1.75;max-width:58ch;color:#c1d4df}
+.site31-changelog .ar-note-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:25px}
+.site31-changelog .ar-note-actions a{border-radius:7px;min-height:44px;padding:12px 16px;display:inline-flex;align-items:center;font-size:12px;font-weight:850;text-decoration:none}
+.site31-changelog .ar-note-button{background:#ff586f;color:#0b141e}.site31-changelog .ar-note-button:hover{background:#ff94a3}
+.site31-changelog .ar-note-button-ghost{border:1px solid #607e8d;color:#e5eef4}
+.site31-changelog .ar-note-hero-art{min-height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid #496174;border-radius:12px;background:radial-gradient(circle at center,#203948,#081522);padding:30px}
+.site31-changelog .ar-note-hero-art img{display:block;width:130px;height:130px;object-fit:contain;filter:drop-shadow(0 14px 27px #0008)}
+.site31-changelog .ar-note-version{font-size:24px;letter-spacing:.12em;font-weight:950;color:#fff;margin-top:15px}
+.site31-changelog .ar-note-subversion{font-size:10px;letter-spacing:.13em;color:#9ec0cd;margin-top:5px}
+.site31-changelog .ar-note-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:20px 0 32px}
+.site31-changelog .ar-note-summary>div{background:#132738;border:1px solid #355265;border-radius:10px;padding:21px;display:grid;gap:8px}
+.site31-changelog .ar-note-stat-label{font-size:10px;letter-spacing:.13em;font-weight:850;color:#9dded9}
+.site31-changelog .ar-note-summary strong{font-size:26px;color:#fff;line-height:1.15}
+.site31-changelog .ar-note-summary strong small{font-size:12px}
+.site31-changelog .ar-note-summary small{font-size:11px;color:#b4cad5;line-height:1.6}
+.site31-changelog .ar-note-layout{display:grid;grid-template-columns:270px minmax(0,1fr);gap:24px;align-items:start}
+.site31-changelog .ar-note-side{position:sticky;top:90px;max-height:calc(100vh - 110px);overflow:auto;scrollbar-width:thin}
+.site31-changelog .ar-note-toc{border:1px solid #344d61;background:#112536;border-radius:10px;padding:20px}
+.site31-changelog .ar-note-toc>p{margin:0 0 12px}
+.site31-changelog .ar-note-toc a{display:block;padding:10px 12px;color:#bdd1dd;border-radius:6px;text-decoration:none;font-size:11px;font-weight:700;line-height:1.45}
+.site31-changelog .ar-note-toc a:hover,.site31-changelog .ar-note-toc a:focus-visible{color:#fff;background:#243e4f}
+.site31-changelog .ar-note-toc a.ar-note-latest{color:#ffb5c0;background:#3a2738;margin:0 0 10px;border:1px solid #6d4152}
+.site31-changelog .ar-note-links{display:grid;gap:2px}
+.site31-changelog .ar-note-body{min-width:0}
+.site31-changelog .ar-note-toolbar{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin:10px 0 19px}
+.site31-changelog .ar-note-toolbar h2{font-size:clamp(27px,3vw,38px);color:#fff;margin:8px 0 0}
+.site31-changelog .ar-note-tools{display:flex;gap:7px}
+.site31-changelog .ar-note-tools button{border:1px solid #567083;border-radius:7px;padding:10px 12px;background:#162c3e;color:#d9e9f3;font-size:12px;font-weight:750;cursor:pointer}
+.site31-changelog .ar-note-tools button:hover{background:#244258}
+.site31-changelog .ar-note-intro{border:1px solid #355468;border-left:3px solid #8bded3;border-radius:9px;background:#12293a;padding:21px 24px;margin:0 0 17px}
+.site31-changelog .ar-note-intro p{font-size:13px;color:#c1d4e0;line-height:1.75;margin:0 0 11px}
+.site31-changelog .ar-note-intro p:last-child{margin-bottom:0}
+.site31-changelog .ar-note-chapter{background:linear-gradient(160deg,#152839,#0d1d2b);border:1px solid #344e60;border-radius:10px;margin:0 0 13px;scroll-margin-top:102px;overflow:hidden}
+.site31-changelog .ar-note-chapter[open]{border-color:#64818f;box-shadow:0 10px 29px #0003}
+.site31-changelog .ar-note-chapter>summary{cursor:pointer;list-style:none;padding:18px 20px;display:flex;align-items:center;gap:15px}
+.site31-changelog .ar-note-chapter>summary::-webkit-details-marker{display:none}
+.site31-changelog .ar-note-chapter>summary:hover{background:#1b3546}
+.site31-changelog .ar-note-index{width:40px;height:40px;display:grid;place-items:center;flex:none;font-size:12px;font-weight:900;color:#9edbd7;border:1px solid #436373;border-radius:7px;background:#0c2030}
+.site31-changelog .ar-note-heading{display:grid;gap:5px;flex:1;min-width:0}
+.site31-changelog .ar-note-tag{font-size:9px;font-weight:900;letter-spacing:.13em;color:#f58da2}
+.site31-changelog .ar-note-heading-title{font-size:clamp(14px,1.6vw,19px);font-weight:850;line-height:1.36;color:#f2f6fa;text-wrap:balance}
+.site31-changelog .ar-note-chevron{font-size:23px;color:#ff7589;transition:transform .2s}
+.site31-changelog .ar-note-chapter[open] .ar-note-chevron{transform:rotate(180deg)}
+.site31-changelog .ar-note-content{border-top:1px solid #355163;padding:25px clamp(19px,3vw,34px) 29px}
+.site31-changelog .ar-note-content h3{font-size:18px;margin:24px 0 14px;padding-bottom:11px;border-bottom:1px solid #334e60;color:#fff;line-height:1.38}
+.site31-changelog .ar-note-content h3:first-child{margin-top:0}
+.site31-changelog .ar-note-content p,.site31-changelog .ar-note-content li{font-size:13px;line-height:1.8;color:#c4d5e0;overflow-wrap:anywhere}
+.site31-changelog .ar-note-content p{margin:0 0 16px}
+.site31-changelog .ar-note-content ul{margin:0 0 21px;padding-left:23px}
+.site31-changelog .ar-note-content li{padding-left:3px;margin:8px 0}
+.site31-changelog .ar-note-content li::marker{color:#ff7588}
+.site31-changelog .ar-note-content strong{color:#f2f6fa}
+.site31-changelog .ar-note-content a{color:#ffc0c8;text-underline-offset:4px}
+.site31-changelog .ar-note-table-scroll{overflow-x:auto;margin:20px 0 23px;border:1px solid #3b5669;border-radius:8px}
+.site31-changelog .ar-note-content table{border-collapse:collapse;width:100%;min-width:560px}
+.site31-changelog .ar-note-content th,.site31-changelog .ar-note-content td{font-size:12px;line-height:1.55;padding:12px 13px;text-align:left;vertical-align:top;border-bottom:1px solid #344e5c;color:#cedce5}
+.site31-changelog .ar-note-content th{font-weight:800;color:#fff;background:#263e4d}
+.site31-changelog .ar-note-content tr:nth-child(even){background:#1a2b38}
+.site31-changelog .ar-note-bottom{padding:21px 23px;background:#172c3b;border:1px solid #435969;border-radius:10px;margin-top:23px}
+.site31-changelog .ar-note-bottom p{color:#d0dde6;font-size:12px;line-height:1.7}
+.site31-changelog .ar-note-bottom>div{display:flex;gap:15px;flex-wrap:wrap}
+.site31-changelog .ar-note-bottom a{color:#ffb8c1;font-size:13px;font-weight:800}
+@media(max-width:980px){.site31-changelog .ar-note-layout{grid-template-columns:1fr}.site31-changelog .ar-note-side{position:static;max-height:none}.site31-changelog .ar-note-links{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){.site31-changelog .ar-note-hero{grid-template-columns:1fr}.site31-changelog .ar-note-hero-art{min-height:175px;flex-direction:row;gap:15px;flex-wrap:wrap}.site31-changelog .ar-note-hero-art img{width:76px;height:76px}.site31-changelog .ar-note-summary{grid-template-columns:1fr}.site31-changelog .ar-note-links{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.site31-changelog .ar-note-main{width:calc(100% - 24px);padding-top:17px}.site31-changelog .ar-note-hero{padding:27px 18px}.site31-changelog .ar-note-toolbar{align-items:flex-start;flex-direction:column}.site31-changelog .ar-note-chapter>summary{gap:10px;padding:16px 12px}.site31-changelog .ar-note-index{width:32px;height:32px}.site31-changelog .ar-note-content{padding:19px 16px}.site31-changelog .ar-note-links{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.site31-changelog .ar-note-chevron{transition:none}}

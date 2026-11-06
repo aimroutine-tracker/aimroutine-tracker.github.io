@@ -1,0 +1,487 @@
+<!doctype html><html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b141f">
+<title>Patch notes Windows 1.x → 2.9.1 — AimRoutine Tracker</title>
+<meta name="description" content="Historique complet du logiciel Windows AimRoutine Tracker : de la première génération à la version 2.9.1. Routines, coach, rapports de parties, Score AimRoutine et nouveau logo.">
+<link rel="canonical" href="https://aimroutine-tracker.github.io/changelog.html">
+<meta property="og:type" content="website"><meta property="og:title" content="AimRoutine Tracker — Patch notes Windows 2.9.1">
+<meta property="og:description" content="Notes de version détaillées de la série 1.x jusqu'à Windows 2.9.1.">
+<meta property="og:image" content="https://aimroutine-tracker.github.io/aimroutine-logo.png?v=2">
+<meta name="twitter:card" content="summary"><meta name="twitter:image" content="https://aimroutine-tracker.github.io/aimroutine-logo.png?v=2">
+<link rel="manifest" href="manifest.webmanifest?v=2">
+<link rel="icon" type="image/png" sizes="128x128" href="aimroutine-logo.png?v=2">
+<link rel="apple-touch-icon" sizes="128x128" href="aimroutine-logo.png?v=2">
+<link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="site-global-v31.css?v=3">
+<link rel="stylesheet" href="site-shared-v5.css?v=2"><link rel="stylesheet" href="site-v5.css?v=1">
+<link rel="stylesheet" href="changelog-v1.css?v=1">
+<script src="site.js?v=8" defer></script><script src="site-quality-v34.js?v=1" defer></script>
+<script src="changelog-v1.js?v=1" defer></script>
+</head>
+<body class="site31 site31-changelog">
+<a class="site31-skip" href="#main"><span class="fr">Aller au contenu</span><span class="en">Skip to content</span></a>
+<header class="site31-header"><nav class="site31-nav" aria-label="Navigation principale / Main navigation">
+<a class="site31-brand" href="index.html"><img src="aimroutine-logo.png?v=2" width="32" height="32" alt="">AimRoutine <span>TRACKER</span></a>
+<div class="site31-links">
+<a href="index.html"><span class="fr">Accueil</span><span class="en">Home</span></a>
+<a href="product.html"><span class="fr">Logiciel</span><span class="en">Software</span></a>
+<a href="training.html"><span class="fr">Mon espace AIM</span><span class="en">AIM workspace</span></a>
+<a href="releases.html" aria-current="page"><span class="fr">Versions</span><span class="en">Releases</span></a>
+<details class="ar5-nav-explore"><summary><span class="fr">Explorer</span><span class="en">Explore</span></summary><div class="ar5-nav-dropdown"><a href="changelog.html" aria-current="page"><span class="fr">Patch notes</span><span class="en">Release notes</span></a>
+<a href="index.html#routine"><span class="fr">Démo</span><span class="en">Demo</span></a>
+<a href="presentation.html"><span class="fr">Le projet</span><span class="en">Project</span></a>
+<a href="riot-integration.html">Riot API</a>
+<a href="updates.html"><span class="fr">Avancement</span><span class="en">Updates</span></a></div></details>
+</div>
+<div class="site31-controls"><button type="button" class="lang site31-lang" data-switch-lang aria-label="Changer de langue">EN</button>
+<details class="site31-mobile-nav"><summary>Menu</summary><div class="site31-mobile-links"><a href="changelog.html" aria-current="page"><span class="fr">Patch notes</span><span class="en">Release notes</span></a>
+<a href="index.html"><span class="fr">Accueil</span><span class="en">Home</span></a>
+<a href="product.html"><span class="fr">Logiciel</span><span class="en">Software</span></a>
+<a href="training.html"><span class="fr">Mon espace AIM</span><span class="en">AIM workspace</span></a>
+<a href="releases.html" aria-current="page"><span class="fr">Versions</span><span class="en">Releases</span></a>
+<a href="index.html#routine"><span class="fr">Démo</span><span class="en">Demo</span></a>
+<a href="presentation.html"><span class="fr">Le projet</span><span class="en">Project</span></a>
+<a href="riot-integration.html">Riot API</a>
+<a href="updates.html"><span class="fr">Avancement</span><span class="en">Updates</span></a>
+<a href="privacy.html"><span class="fr">Confidentialité</span><span class="en">Privacy</span></a>
+<a href="terms.html"><span class="fr">Conditions</span><span class="en">Terms</span></a>
+</div></details></div></nav></header>
+<main class="ar-note-main" id="main">
+<section class="ar-note-hero">
+ <div class="ar-note-hero-copy"><p class="ar-note-eyebrow">AIMROUTINE TRACKER / WINDOWS RELEASE HISTORY</p>
+ <h1><span class="fr">Chaque évolution.<br><em>En toute transparence.</em></span><span class="en">Every release.<br><em>The full story.</em></span></h1>
+ <p><span class="fr">L'intégralité des notes de version Windows, de la série 1.x à <strong>2.9.1</strong>, avec les fonctionnalités livrées et leurs limites.</span><span class="en">The complete original French Windows release notes, covering versions 1.x through <strong>2.9.1</strong>, including shipped features and their limitations.</span></p>
+ <div class="ar-note-actions"><a href="#version-2-9-1-nouveau-logo-et-integration-windows" class="ar-note-button"><span class="fr">Voir les nouveautés 2.9.1</span><span class="en">View 2.9.1 changes</span> ↘</a><a href="PATCH-NOTES-AimRoutine-Tracker.md" download class="ar-note-button-ghost"><span class="fr">Récupérer le Markdown d’origine</span><span class="en">Download original Markdown</span></a></div></div>
+ <div class="ar-note-hero-art"><img src="aimroutine-logo.png?v=2" alt="Logo officiel AimRoutine Tracker" width="128" height="128"><span class="ar-note-version">WINDOWS 2.9.1</span><span class="ar-note-subversion">06 NOV 2026 · PATCH NOTES</span></div>
+</section>
+<section class="ar-note-summary" aria-label="État de la version Windows">
+<div><span class="ar-note-stat-label"><span class="fr">DERNIÈRE VERSION DOCUMENTÉE</span><span class="en">LATEST DOCUMENTED VERSION</span></span><strong>2.9.1</strong><small><span class="fr">Nouveau logo et intégration Windows</span><span class="en">New logo and Windows integration</span></small></div>
+<div><span class="ar-note-stat-label"><span class="fr">HISTORIQUE</span><span class="en">RELEASE HISTORY</span></span><strong>18 <small>chapitres</small></strong><small><span class="fr">Depuis les premières versions 1.x</span><span class="en">Since the original 1.x editions</span></small></div>
+<div><span class="ar-note-stat-label">RIOT ACCOUNT</span><strong><span class="fr">Non connecté</span><span class="en">Not connected</span></strong><small><span class="fr">Production Riot Sign On / matchs automatiques non disponible</span><span class="en">Riot Sign On / automatic match retrieval not available</span></small></div>
+</section>
+<div class="ar-note-layout">
+<aside class="ar-note-side" aria-label="Sommaire des notes de version">
+<div class="ar-note-toc">
+ <p class="ar-note-eyebrow"><span class="fr">NAVIGATION RAPIDE</span><span class="en">JUMP TO A VERSION</span></p>
+ <a class="ar-note-latest" href="#version-2-9-1-nouveau-logo-et-integration-windows">2.9.1 — <span class="fr">Dernière version</span><span class="en">Latest version</span></a>
+ <nav class="ar-note-links" aria-label="Versions"><a href="#premiere-generation-creation-du-logiciel-serie-1-x">Première génération — création du logiciel, série 1.x</a>
+<a href="#version-2-0-refonte-autour-du-coach-personnel">Version 2.0 — refonte autour du coach personnel</a>
+<a href="#version-2-1-des-parcours-distincts-de-fer-a-radiant">Version 2.1 — des parcours distincts de Fer à Radiant</a>
+<a href="#version-2-2-profils-locaux-et-routines-enregistrees">Version 2.2 — profils locaux et routines enregistrées</a>
+<a href="#version-2-3-identite-valorant-et-bilans-de-seance">Version 2.3 — identité VALORANT et bilans de séance</a>
+<a href="#version-2-3-1-nettoyage-des-textes-et-noms-de-programmes">Version 2.3.1 — nettoyage des textes et noms de programmes</a>
+<a href="#version-2-4-saisie-adaptee-a-chaque-logiciel">Version 2.4 — saisie adaptée à chaque logiciel</a>
+<a href="#version-2-4-1-harmonisation-du-libelle-headshot">Version 2.4.1 — harmonisation du libellé Headshot %</a>
+<a href="#version-2-5-diagnostic-riot-games-et-demonstration-de-parties">Version 2.5 — diagnostic Riot Games et démonstration de parties</a>
+<a href="#version-2-6-portraits-d-agents-et-premieres-animations-de-navigation">Version 2.6 — portraits d’agents et premières animations de navigation</a>
+<a href="#version-2-7-rapports-detailles-et-score-aimroutine">Version 2.7 — rapports détaillés et Score AimRoutine</a>
+<a href="#version-2-8-catalogue-complet-d-agents-et-icones-de-rang">Version 2.8 — catalogue complet d’agents et icônes de rang</a>
+<a href="#version-2-9-interactions-et-transitions-plus-vivantes">Version 2.9 — interactions et transitions plus vivantes</a>
+<a href="#version-2-9-1-nouveau-logo-et-integration-windows">Version 2.9.1 — nouveau logo et intégration Windows</a>
+<a href="#evolution-du-site-de-presentation-en-parallele-de-la-version-2-9">Évolution du site de présentation — en parallèle de la version 2.9</a>
+<a href="#fiabilite-et-verifications-au-fil-des-versions">Fiabilité et vérifications au fil des versions</a>
+<a href="#etat-reel-de-la-version-2-9-1">État réel de la version 2.9.1</a>
+<a href="#sources-de-cet-historique">Sources de cet historique</a></nav>
+</div></aside>
+<div class="ar-note-body">
+<div class="ar-note-toolbar"><div><span class="ar-note-eyebrow"><span class="fr">HISTORIQUE ORIGINAL / FRANÇAIS</span><span class="en">ORIGINAL CHANGELOG / FRENCH</span></span><h2><span class="fr">Toutes les versions</span><span class="en">All versions</span></h2></div>
+ <div class="ar-note-tools"><button type="button" id="expand-changelog"><span class="fr">Tout ouvrir</span><span class="en">Expand all</span></button><button type="button" id="collapse-changelog"><span class="fr">Tout fermer</span><span class="en">Collapse all</span></button></div></div>
+<div class="ar-note-intro">
+ <p><strong>De la création du logiciel à la version 2.9.1.</strong> Mise à jour du <time datetime="2026-11-06">6 novembre 2026</time>.</p>
+ <p>AimRoutine Tracker est un compagnon Windows pour organiser les entraînements AIM, suivre les résultats et analyser les parties VALORANT importées.</p>
+ <p>L'historique ci-dessous reproduit les notes de version fournies par le projet. Les périodes sans numéro ou date de sortie vérifiée ne sont pas datées artificiellement.</p>
+ </div>
+<details class="ar-note-chapter" id="premiere-generation-creation-du-logiciel-serie-1-x"><summary><span class="ar-note-index">01</span><span class="ar-note-heading"><span class="ar-note-tag">HISTORIQUE</span><span class="ar-note-heading-title">Première génération — création du logiciel, série 1.x</span></span><span class="ar-note-chevron" aria-hidden="true">⌄</span></summary><div class="ar-note-content">
+<h3>Le suivi d’entraînement initial</h3>
+<ul>
+<li>Création de l’application Windows AimRoutine Tracker avec une interface en français.</li>
+<li>Mise en place de React et TypeScript pour l’interface, Electron pour l’application desktop et SQLite pour les données locales.</li>
+<li>Première interface sombre bleu nuit avec accents cyan.</li>
+<li>Ajout des pages Dashboard, Routine du jour, Saisie de session, Statistiques, Historique et Paramètres.</li>
+<li>Intégration des quatre logiciels suivis : KovaaK’s, Aim Lab, VALORANT et Oblivity.</li>
+<li>Ajout d’un catalogue initial de 19 exercices.</li>
+<li>Création d’une routine complète et d’un échauffement court distinct.</li>
+<li>Possibilité de modifier les durées cibles et les objectifs.</li>
+</ul>
+<h3>Chronomètre et résultats</h3>
+<ul>
+<li>Chronomètre par exercice avec démarrage, pause et remise à zéro.</li>
+<li>Validation des exercices et suivi de l’avancement de la séance.</li>
+<li>Saisie de la date, du logiciel, de l’exercice, de la durée réellement effectuée, du score, de la précision, du pourcentage d’impacts à la tête, des notes et du ressenti.</li>
+<li>Ajout de résultats libres en dehors des séances guidées.</li>
+<li>Modification et suppression des résultats depuis l’historique.</li>
+<li>Conservation des champs vides comme données inconnues ; les zéros saisis restent de véritables valeurs.</li>
+</ul>
+<h3>Statistiques, calendrier et sauvegardes</h3>
+<ul>
+<li>Graphiques de progression par logiciel et exercice.</li>
+<li>Suivi du temps d’entraînement, des séances terminées et de la régularité.</li>
+<li>Vue calendrier et suivi des jours consécutifs d’entraînement.</li>
+<li>Export JSON et CSV ; import avec validation et prévention des doublons par identifiant.</li>
+<li>Stockage SQLite local avec écritures atomiques et conservation d’une copie précédente.</li>
+<li>Gestion des erreurs de sauvegarde sans écrasement automatique d’une base illisible.</li>
+<li>Première distribution Windows portable, utilisable sans installation de Node.js.</li>
+</ul>
+<h3>Interactivité de la première génération — build conservé 1.1.0</h3>
+<ul>
+<li>Chronomètre circulaire animé et progression visuelle de l’exercice.</li>
+<li>Indication de fin du compte à rebours et son facultatif.</li>
+<li>Retour visuel lors de la fin d’une séance.</li>
+<li>Progression de pratique avec XP, niveaux et objectifs à débloquer.</li>
+<li>Détails des récompenses consultables depuis l’interface.</li>
+<li>Distinction entre progression de pratique et performance : les XP ne déterminent pas le rang VALORANT.</li>
+<li>Conservation du suivi lorsque l’utilisateur passe d’une page à une autre.</li>
+</ul>
+<p>La première routine totalisait <strong>44 minutes de durées cibles</strong>, avec des valeurs de départ modifiables. La routine personnelle de <strong>49 minutes</strong> a été intégrée plus tard, dans la série 2.x.</p>
+</div></details>
+<details class="ar-note-chapter" id="version-2-0-refonte-autour-du-coach-personnel"><summary><span class="ar-note-index">02</span><span class="ar-note-heading"><span class="ar-note-tag">HISTORIQUE</span><span class="ar-note-heading-title">Version 2.0 — refonte autour du coach personnel</span></span><span class="ar-note-chevron" aria-hidden="true">⌄</span></summary><div class="ar-note-content">
+<h3>Profil et préparation de séance</h3>
+<ul>
+<li>Ajout d’un assistant de configuration initiale.</li>
+<li>Prise en compte du rang déclaré, des objectifs, des difficultés observées, de la fatigue et du temps disponible.</li>
+<li>Réglages du DPI, de la sensibilité et des logiciels disponibles.</li>
+<li>Possibilité de construire un programme avec VALORANT uniquement.</li>
+<li>Création de six formats d’entraînement : échauffement, quotidien, intensif, léger, récupération et repos.</li>
+<li>Budget de séance prenant en compte les exercices et les pauses.</li>
+</ul>
+<h3>Bibliothèque et programmes modifiables</h3>
+<ul>
+<li>Bibliothèque d’exercices filtrable par logiciel, compétence et difficulté.</li>
+<li>Ajout d’exercices personnels avec consignes, objectifs et erreurs à éviter.</li>
+<li>Génération d’un programme à partir du profil.</li>
+<li>Modification des durées, répétitions, difficultés et exercices.</li>
+<li>Ajout, retrait et réorganisation des étapes.</li>
+<li>Explications sur les choix du programme et alternatives disponibles.</li>
+</ul>
+<h3>Suivi plus fiable</h3>
+<ul>
+<li>Sauvegarde de la séance en cours et reprise en pause après fermeture.</li>
+<li>Le temps écoulé pendant la fermeture n’est pas ajouté à l’entraînement.</li>
+<li>Atteindre zéro au chronomètre ne valide pas automatiquement un résultat.</li>
+<li>Introduction de mesures de niveau AIM fondées sur des seuils personnalisés et des résultats comparables.</li>
+<li>Distinction entre rang déclaré, niveau technique mesuré et XP de pratique.</li>
+<li>Ajustements de difficulté encadrés par l’historique, la comparabilité, la variabilité et la fatigue.</li>
+<li>Statistiques sur plusieurs périodes et répartition du temps entre compétences.</li>
+<li>Migration des sauvegardes de la première génération.</li>
+<li>Import de fichiers de parties VAL-MATCH-V1 pour consulter les statistiques disponibles localement.</li>
+</ul>
+</div></details>
+<details class="ar-note-chapter" id="version-2-1-des-parcours-distincts-de-fer-a-radiant"><summary><span class="ar-note-index">03</span><span class="ar-note-heading"><span class="ar-note-tag">HISTORIQUE</span><span class="ar-note-heading-title">Version 2.1 — des parcours distincts de Fer à Radiant</span></span><span class="ar-note-chevron" aria-hidden="true">⌄</span></summary><div class="ar-note-content">
+<ul>
+<li>Développement de neuf parcours : Fer, Bronze, Argent, Or, Platine, Diamant, Ascendant, Immortel et Radiant.</li>
+<li>Différenciation des divisions 1, 2 et 3 ; Radiant reste un rang unique.</li>
+<li>Adaptation de la répartition des compétences, des consignes et des contraintes de travail.</li>
+<li>Ajout d’instructions propres au parcours : mise en place, exécution et repère personnel.</li>
+<li>Conservation des consignes originales d’une séance déjà commencée.</li>
+<li>Renforcement des règles de comparabilité : même exercice, durée, difficulté et protocole de travail.</li>
+<li>L’augmentation automatique attend plusieurs résultats comparables sur plusieurs jours ; un record isolé ne suffit pas.</li>
+</ul>
+<p>Ces parcours sont des propositions AimRoutine. Ils ne constituent pas des benchmarks officiels ni des conditions de montée de rang.</p>
+</div></details>
+<details class="ar-note-chapter" id="version-2-2-profils-locaux-et-routines-enregistrees"><summary><span class="ar-note-index">04</span><span class="ar-note-heading"><span class="ar-note-tag">HISTORIQUE</span><span class="ar-note-heading-title">Version 2.2 — profils locaux et routines enregistrées</span></span><span class="ar-note-chevron" aria-hidden="true">⌄</span></summary><div class="ar-note-content">
+<h3>Plusieurs joueurs sur le même logiciel</h3>
+<ul>
+<li>Création et sélection de profils locaux nommés.</li>
+<li>Espace séparé pour chaque joueur : réglages, bibliothèque, calendrier, routines, résultats et parties importées.</li>
+<li>Jusqu’à 50 profils sur le même compte Windows.</li>
+<li>Mise en pause du chronomètre lors d’un changement de profil.</li>
+<li>Attente de la sauvegarde avant de changer d’espace.</li>
+<li>Assistant de configuration et historique vide pour chaque nouveau profil.</li>
+<li>Reprise des données V2 existantes dans le premier profil.</li>
+</ul>
+<h3>Routines prêtes à charger et programmes personnels</h3>
+<ul>
+<li>Ajout de la page <strong>Mes routines</strong>.</li>
+<li>Prévisualisation des étapes avant de charger un programme.</li>
+<li>Enregistrement d’une routine personnelle nommée.</li>
+<li>Chargement d’une copie modifiable du programme.</li>
+<li>Suppression d’une routine enregistrée sans suppression des séances historiques.</li>
+<li>Jusqu’à 100 routines personnelles par profil.</li>
+</ul>
+<h3>Routine AIM VALORANT de 49 minutes</h3>
+<p>Reconstitution du programme fourni lors de la conception :</p>
+<div class="ar-note-table-scroll"><table><thead>
+<tr><th>Bloc</th><th>Contenu</th><th>Durée</th></tr>
+</thead><tbody>
+<tr><td>KovaaK’s</td><td>1w2t smallflicks small 60s ; 1w4ts reload ; Pasu Small Reload ; Floating Heads Timing 400% ; patTargetSwitch Small</td><td>18 min</td></tr>
+<tr><td>Aim Lab</td><td>Micro 2 Sphere, Microshot, Adjustshot, Headshot, Strafeshot et Peekshot VALORANT</td><td>12 min</td></tr>
+<tr><td>VALORANT</td><td>One taps ; strafe + arrêt + tir ; Bots Hard ; Deathmatch</td><td>17 min</td></tr>
+<tr><td>Pauses</td><td>Deux transitions d’une minute</td><td>2 min</td></tr>
+<tr><td><strong>Total</strong></td><td><strong>47 minutes d’exercices et 2 minutes de pause</strong></td><td><strong>49 min</strong></td></tr>
+</tbody></table></div>
+<ul>
+<li>Deathmatch estimé à 12 minutes ; la durée réellement effectuée peut être renseignée.</li>
+<li>Module <strong>Oblivity · analyse hebdomadaire</strong> séparé : 20 minutes.</li>
+<li><strong>Sensitivity Finder</strong> proposé comme test distinct.</li>
+<li>Ajout d’un échauffement de 10 minutes et d’une routine quotidienne de 30 minutes.</li>
+<li>Variante permettant d’adapter la routine aux logiciels du profil avec substitutions signalées.</li>
+<li>Correction du recalcul des répétitions lorsqu’une durée d’exercice est modifiée.</li>
+<li>Préréglage souris facultatif : 1 600 DPI, sensibilité 0,215, polling 4 000 Hz, soit 344 eDPI.</li>
+<li>Intégration d’un planning hebdomadaire conseillé avec repos le dimanche.</li>
+</ul>
+</div></details>
+<details class="ar-note-chapter" id="version-2-3-identite-valorant-et-bilans-de-seance"><summary><span class="ar-note-index">05</span><span class="ar-note-heading"><span class="ar-note-tag">HISTORIQUE</span><span class="ar-note-heading-title">Version 2.3 — identité VALORANT et bilans de séance</span></span><span class="ar-note-chevron" aria-hidden="true">⌄</span></summary><div class="ar-note-content">
+<h3>Refonte visuelle</h3>
+<ul>
+<li>Nouvelle identité bleu nuit et corail.</li>
+<li>Illustration de Jett intégrée localement pour un affichage hors ligne.</li>
+<li>Cartes angulaires, boutons, formulaires et chronomètre assortis.</li>
+<li>Mode de contraste renforcé.</li>
+<li>Aides visuelles illustrant douze compétences d’entraînement.</li>
+</ul>
+<h3>Mes bilans</h3>
+<ul>
+<li>Bilan accessible après une séance terminée et depuis les séances précédentes.</li>
+<li>Comparaison avec 3 à 5 scores antérieurs comparables : exercice, logiciel, difficulté, protocole et durée proche.</li>
+<li>Absence de progression chiffrée lorsque la référence est insuffisante.</li>
+<li>Propositions de travail à partir des baisses observées, de la stabilité de la précision, du ressenti et de la fatigue.</li>
+<li>Préparation d’une séance suivante après action de l’utilisateur.</li>
+<li>Les propositions du coach conservent le rang déclaré et expliquent leur logique.</li>
+</ul>
+<h3>Planning, partage et transferts</h3>
+<ul>
+<li>Association de véritables routines aux jours du calendrier.</li>
+<li>Semaine type récurrente et exceptions par date.</li>
+<li>Affichage du programme prévu aujourd’hui dans le Dashboard.</li>
+<li>Signalement des logiciels manquants avant de lancer une séance.</li>
+<li>Favoris, renommage et duplication des routines enregistrées.</li>
+<li>Export et partage d’une routine seule en JSON.</li>
+<li>Mémorisation des associations de colonnes CSV pour les imports suivants.</li>
+<li>Amélioration de la détection des doublons dans les imports de résultats.</li>
+<li>Sauvegarde de tous les profils dans un fichier, avec leurs parties VALORANT importées.</li>
+<li>Restauration ajoutant des profils séparés tout en conservant les profils existants.</li>
+</ul>
+</div></details>
+<details class="ar-note-chapter" id="version-2-3-1-nettoyage-des-textes-et-noms-de-programmes"><summary><span class="ar-note-index">06</span><span class="ar-note-heading"><span class="ar-note-tag">HISTORIQUE</span><span class="ar-note-heading-title">Version 2.3.1 — nettoyage des textes et noms de programmes</span></span><span class="ar-note-chevron" aria-hidden="true">⌄</span></summary><div class="ar-note-content">
+<ul>
+<li>Suppression des mentions d’origine du type « ton image » dans les noms et consignes générés.</li>
+<li>Noms de routines devenus autonomes et utilisables dans le logiciel.</li>
+<li>Correction des anciens libellés dans les programmes enregistrés, séances en cours et bilans.</li>
+<li>Conservation des noms personnalisés, scores, durées et exercices.</li>
+</ul>
+</div></details>
+<details class="ar-note-chapter" id="version-2-4-saisie-adaptee-a-chaque-logiciel"><summary><span class="ar-note-index">07</span><span class="ar-note-heading"><span class="ar-note-tag">HISTORIQUE</span><span class="ar-note-heading-title">Version 2.4 — saisie adaptée à chaque logiciel</span></span><span class="ar-note-chevron" aria-hidden="true">⌄</span></summary><div class="ar-note-content">
+<h3>Des champs plus faciles à comprendre</h3>
+<ul>
+<li>Aides spécifiques pour Aim Lab, KovaaK’s, Oblivity et VALORANT.</li>
+<li>Explication des valeurs à recopier à la fin d’une tentative.</li>
+<li>Distinction entre score final, record personnel, classement, kills et ACS.</li>
+<li>Pour les modules d’analyse Oblivity, mise en avant des observations et réglages dans les notes.</li>
+<li>Une fiche représente une tentative ; sa durée doit correspondre au résultat saisi.</li>
+</ul>
+<h3>Pourcentage d’impacts à la tête</h3>
+<ul>
+<li>Champ directement visible pour VALORANT.</li>
+<li>Champ facultatif et replié pour les aim trainers, tout en gardant visibles les anciennes valeurs renseignées.</li>
+<li>Colonne ajoutée à l’historique lorsqu’au moins un résultat en contient.</li>
+<li>Le libellé a ensuite été uniformisé en <strong>Headshot %</strong> dans la version 2.4.1.</li>
+</ul>
+<h3>Pourcentages et nombres</h3>
+<ul>
+<li>Calculateur facultatif de précision : tirs réussis / tirs effectués.</li>
+<li>Calculateur facultatif de Headshot % : tête / (tête + corps + jambes).</li>
+<li>Application du résultat uniquement après clic.</li>
+<li>Gestion des virgules et points décimaux, du symbole % et des séparateurs de milliers.</li>
+<li>Choix du format pour les écritures ambiguës et aperçu de la valeur enregistrée.</li>
+<li>Conservation des champs vides et des zéros saisis.</li>
+<li>Remise à vide des chiffres lors d’un changement de logiciel afin d’éviter les reports involontaires.</li>
+<li>Aucun faux pourcentage calculé avec un dénominateur nul.</li>
+</ul>
+</div></details>
+<details class="ar-note-chapter" id="version-2-4-1-harmonisation-du-libelle-headshot"><summary><span class="ar-note-index">08</span><span class="ar-note-heading"><span class="ar-note-tag">HISTORIQUE</span><span class="ar-note-heading-title">Version 2.4.1 — harmonisation du libellé Headshot %</span></span><span class="ar-note-chevron" aria-hidden="true">⌄</span></summary><div class="ar-note-content">
+<ul>
+<li>Remplacement des libellés « HS % » par <strong>Headshot %</strong>.</li>
+<li>Harmonisation dans les formulaires, les calculateurs et leurs aides.</li>
+<li>Même terminologie dans l’historique, les indicateurs VALORANT et l’import CSV.</li>
+<li>Mise à jour des messages de validation dans l’interface et le stockage SQLite.</li>
+<li>Conservation des valeurs déjà enregistrées.</li>
+<li>L’interface générale reste en français ; la demande d’anglais concernait ce libellé précis.</li>
+<li>Maintien de la distribution Windows portable.</li>
+</ul>
+</div></details>
+<details class="ar-note-chapter" id="version-2-5-diagnostic-riot-games-et-demonstration-de-parties"><summary><span class="ar-note-index">09</span><span class="ar-note-heading"><span class="ar-note-tag">HISTORIQUE</span><span class="ar-note-heading-title">Version 2.5 — diagnostic Riot Games et démonstration de parties</span></span><span class="ar-note-chevron" aria-hidden="true">⌄</span></summary><div class="ar-note-content">
+<h3>Connexion Riot Games</h3>
+<ul>
+<li>Création d’une page dédiée aux tests de l’API officielle Riot Account-V1.</li>
+<li>Champ masqué pour une Development API Key.</li>
+<li>Conservation de la clé en mémoire pendant la session ; absence de sauvegarde en clair dans SQLite, localStorage ou les exports.</li>
+<li>Suppression de la clé et des diagnostics depuis l’interface.</li>
+<li>Effacement de la clé lors de la fermeture ou d’un changement de profil.</li>
+<li>Recherche d’un compte par pseudo et tagline, avec encodage des valeurs.</li>
+<li>Affichage des informations renvoyées : Riot ID et PUUID.</li>
+<li>Affichage du statut HTTP, de la durée de réponse et de diagnostics filtrés.</li>
+<li>Gestion des erreurs 401, 403, 404, 429, 500, 502, 503 et 504, du timeout et des erreurs réseau.</li>
+<li>Respect des limites et délais d’attente transmis par Riot ; absence de boucle de relance automatique.</li>
+<li>Un succès indique <strong>« Clé API valide pour cet endpoint »</strong> et ne prouve pas la propriété du compte recherché.</li>
+</ul>
+<p>Un test Account-V1 réel documenté a réussi. Il n’a récupéré aucun historique de parties VALORANT.</p>
+<h3>Mes parties VALORANT</h3>
+<ul>
+<li>Import de fichiers JSON de parties compatibles.</li>
+<li>Historique avec identifiant du match, carte, mode, agent, résultat, kills, deaths et assists.</li>
+<li>Calculs communs de K/D, KDA, Headshot %, ACS et taux de victoire lorsque les données nécessaires sont présentes.</li>
+<li>Graphiques de progression.</li>
+<li>Comparaison descriptive avant/après une séance avec affichage du nombre de parties utilisé.</li>
+<li>Résumé du Dashboard mis à jour à partir des parties disponibles.</li>
+<li>Prévention des doublons par identifiant de match.</li>
+</ul>
+<h3>Mode Démonstration</h3>
+<ul>
+<li>Huit parties fictives fournies localement pour tester l’historique, les graphiques et les calculs.</li>
+<li>Espace de démonstration séparé des parties personnelles.</li>
+<li>Identification visible des données fictives.</li>
+<li>Possibilité de charger, importer et vider la démonstration sans effacer les données personnelles.</li>
+<li>Fournisseurs distincts préparés pour les tests développeur, les fichiers locaux et la future intégration de production.</li>
+</ul>
+</div></details>
+<details class="ar-note-chapter" id="version-2-6-portraits-d-agents-et-premieres-animations-de-navigation"><summary><span class="ar-note-index">10</span><span class="ar-note-heading"><span class="ar-note-tag">HISTORIQUE</span><span class="ar-note-heading-title">Version 2.6 — portraits d’agents et premières animations de navigation</span></span><span class="ar-note-chevron" aria-hidden="true">⌄</span></summary><div class="ar-note-content">
+<ul>
+<li>Portrait, nom et rôle de l’agent sur les cartes de parties.</li>
+<li>Catalogue local comprenant 30 agents au moment de cette livraison.</li>
+<li>Reconnaissance des noms, identifiants UUID et alias connus.</li>
+<li>Affichage neutre pour un agent inconnu, avec conservation de son identifiant.</li>
+<li>Filtre par agent appliqué à l’historique, aux statistiques et aux graphiques.</li>
+<li>Démonstration illustrant notamment Jett, Reyna, Sage, Omen, Clove et Cypher.</li>
+<li>Indicateur de navigation glissant vers l’onglet actif.</li>
+<li>Animations courtes pour les icônes, pages, boutons, fenêtres et cartes de parties.</li>
+<li>Effets de survol et transitions des détails de match.</li>
+<li>Respect de la réduction des mouvements du système.</li>
+<li>Conservation du chronomètre et des données pendant la navigation.</li>
+</ul>
+</div></details>
+<details class="ar-note-chapter" id="version-2-7-rapports-detailles-et-score-aimroutine"><summary><span class="ar-note-index">11</span><span class="ar-note-heading"><span class="ar-note-tag">HISTORIQUE</span><span class="ar-note-heading-title">Version 2.7 — rapports détaillés et Score AimRoutine</span></span><span class="ar-note-chevron" aria-hidden="true">⌄</span></summary><div class="ar-note-content">
+<h3>Une lecture plus complète des parties</h3>
+<ul>
+<li>Présentation des joueurs par équipes, inspirée de la lisibilité des rapports Valorant Tracker.</li>
+<li>Portraits d’agents et rangs fournis par les fichiers importés.</li>
+<li>Tableau des joueurs triable.</li>
+<li>Fiche du joueur sélectionné.</li>
+<li>Chronologie des manches et consultation des événements disponibles.</li>
+<li>Vue agrandie, navigation au clavier et fermeture avec Échap.</li>
+<li>Cinq onglets fonctionnels : <strong>Tableau des scores, Performance, Économie, Manches et Duels</strong>.</li>
+<li>Affichage des mesures disponibles : ACS, K/D/A, différence kills/deaths, ADR, écart de dégâts, Headshot %, KAST, premiers kills, premières morts et manches à plusieurs kills.</li>
+<li>Données manquantes signalées comme indisponibles.</li>
+</ul>
+<h3>Score AimRoutine / Score AR</h3>
+<ul>
+<li>Ajout d’une note indépendante de <strong>0 à 1 000</strong>.</li>
+<li>Calcul local fondé sur quatre composantes de même poids : ACS, KAST, écart de dégâts par manche et proportion de manches gagnées.</li>
+<li>Paliers : S à partir de 800, A de 600, B de 400, C de 200 et D en dessous.</li>
+<li>Formule et conventions consultables dans l’application.</li>
+<li>Note affichée dans le résumé des parties et le graphique de progression.</li>
+<li>Calcul réservé aux modes pris en charge — Compétitif, Non classé et Vélocité — avec données suffisantes.</li>
+<li>Le Score AimRoutine est distinct du Tracker Score de Tracker.gg ; aucune équivalence statistique n’est revendiquée.</li>
+</ul>
+<h3>Imports et qualité des calculs</h3>
+<ul>
+<li>Conservation des détails des joueurs, équipes, manches, événements et données économiques.</li>
+<li>Compatibilité avec les anciennes parties déjà enregistrées.</li>
+<li>Enrichissement d’un match existant lors d’une réimportation plus complète et compatible.</li>
+<li>Refus des contradictions et conservation des données existantes lorsqu’un fichier est moins complet.</li>
+<li>Renforcement des contrôles sur les dégâts adverses, événements répétés et échanges utilisés pour le KAST.</li>
+<li>Convention de trade de cinq secondes indiquée dans les explications.</li>
+<li>Nouvelle démonstration comprenant huit parties fictives de dix joueurs et vingt-quatre manches chacune.</li>
+</ul>
+</div></details>
+<details class="ar-note-chapter" id="version-2-8-catalogue-complet-d-agents-et-icones-de-rang"><summary><span class="ar-note-index">12</span><span class="ar-note-heading"><span class="ar-note-tag">HISTORIQUE</span><span class="ar-note-heading-title">Version 2.8 — catalogue complet d’agents et icônes de rang</span></span><span class="ar-note-chevron" aria-hidden="true">⌄</span></summary><div class="ar-note-content">
+<h3>Filtre Agent joué corrigé</h3>
+<ul>
+<li>Affichage des 30 agents du catalogue même s’ils n’apparaissent dans aucune partie importée.</li>
+<li>Nombre de parties indiqué à côté de chaque agent selon les filtres actifs.</li>
+<li>Sélection possible d’un agent à zéro partie, avec un historique vide explicite.</li>
+<li>Conservation de l’accès aux agents futurs inconnus s’ils sont présents dans un fichier importé.</li>
+</ul>
+<h3>Rangs illustrés</h3>
+<ul>
+<li>Icônes distinctes de Fer 1 à Immortel 3, puis Radiant : 25 rangs et divisions.</li>
+<li>Ajout d’une illustration neutre pour le statut non classé.</li>
+<li>Boutons illustrés des divisions 1, 2 et 3, synchronisés avec les sélections.</li>
+<li>Icônes dans les profils, le Dashboard, le coach, les consignes, les programmes et les rapports de parties.</li>
+<li>Rang des joueurs et rang moyen d’équipe affichés lorsque les fichiers fournissent des informations utilisables.</li>
+<li>Conservation d’un affichage neutre lorsqu’un rang ou une division est inconnu.</li>
+<li>Ressources livrées localement pour fonctionner hors ligne.</li>
+</ul>
+</div></details>
+<details class="ar-note-chapter" open id="version-2-9-interactions-et-transitions-plus-vivantes"><summary><span class="ar-note-index">13</span><span class="ar-note-heading"><span class="ar-note-tag">PRÉCÉDENTE</span><span class="ar-note-heading-title">Version 2.9 — interactions et transitions plus vivantes</span></span><span class="ar-note-chevron" aria-hidden="true">⌄</span></summary><div class="ar-note-content">
+<h3>Changements de page</h3>
+<ul>
+<li>Arrivée animée du titre de chaque page.</li>
+<li>Apparition progressive des cartes et panneaux.</li>
+<li>Mouvement plus souple du repère de navigation.</li>
+<li>Transitions notamment visibles entre Dashboard, Mon coach et les autres rubriques.</li>
+<li>Navigation immédiatement disponible, y compris pendant une animation.</li>
+<li>Les entrées de page ne se relancent pas à chaque saisie, modification de résultat ou mise à jour du chronomètre.</li>
+</ul>
+<h3>Boutons et confort</h3>
+<ul>
+<li>Reflet lumineux au survol des boutons principaux et secondaires.</li>
+<li>Léger relief au survol et effet de pression à l’appui.</li>
+<li>Onde discrète lors de l’activation.</li>
+<li>Retours visuels compatibles avec la souris, le tactile et le clavier.</li>
+<li>Conservation d’une seule action par activation.</li>
+<li>Nettoyage des effets terminés et nombre d’effets simultanés limité.</li>
+<li>Désactivation des mouvements avec le réglage système correspondant.</li>
+<li>Vérification des dialogues pendant les transitions et de la continuité du chronomètre entre les pages.</li>
+</ul>
+</div></details>
+<details class="ar-note-chapter" open id="version-2-9-1-nouveau-logo-et-integration-windows"><summary><span class="ar-note-index">14</span><span class="ar-note-heading"><span class="ar-note-tag">DERNIÈRE VERSION</span><span class="ar-note-heading-title">Version 2.9.1 — nouveau logo et intégration Windows</span></span><span class="ar-note-chevron" aria-hidden="true">⌄</span></summary><div class="ar-note-content">
+<ul>
+<li>Nouveau viseur corail sur fond bleu nuit, assorti à l’identité du logiciel.</li>
+<li>Point central clair et silhouette plus lisible.</li>
+<li>Traits renforcés et centre simplifié dans les petits formats.</li>
+<li>Icône Windows contenant dix tailles : <strong>16, 20, 24, 32, 40, 48, 64, 96, 128 et 256 pixels</strong>.</li>
+<li>Même identité graphique pour l’icône de la fenêtre, la barre des tâches et l’exécutable.</li>
+<li>Remplacement de l’icône Electron intégrée dans l’exécutable portable.</li>
+<li>Métadonnées Windows corrigées : nom du produit, description, nom de fichier et version 2.9.1.</li>
+<li>Identifiant Windows stable pour l’application.</li>
+<li>Vérification des images réellement intégrées dans les ressources de l’exécutable.</li>
+<li>Génération reproductible des icônes depuis leur source vectorielle.</li>
+</ul>
+<p>Pour utiliser cette livraison, fermer l’ancienne version et lancer le nouveau dossier portable complet. Un raccourci épinglé vers un ancien dossier peut être remplacé par celui de la nouvelle version.</p>
+</div></details>
+<details class="ar-note-chapter" id="evolution-du-site-de-presentation-en-parallele-de-la-version-2-9"><summary><span class="ar-note-index">15</span><span class="ar-note-heading"><span class="ar-note-tag">HISTORIQUE</span><span class="ar-note-heading-title">Évolution du site de présentation — en parallèle de la version 2.9</span></span><span class="ar-note-chevron" aria-hidden="true">⌄</span></summary><div class="ar-note-content">
+<ul>
+<li>Mise à jour de la <a href="https://aimroutine-tracker.github.io/product.html" target="_blank" rel="noopener noreferrer">présentation du logiciel sur son site</a>.</li>
+<li>Page détaillée consacrée au logiciel actuel et à ses fonctionnalités.</li>
+<li>Présentation en français et en anglais.</li>
+<li>Captures du Dashboard et de Mon coach en fonctionnement avec un profil fictif.</li>
+<li>Galerie avec onglets, navigation au clavier et agrandissement des captures.</li>
+<li>Mise en avant de la version 2.9 depuis l’accueil.</li>
+<li>Présentation des nouvelles animations et du Score AimRoutine.</li>
+<li>Explication distincte des entraînements locaux, des imports, de la démonstration et de l’accès Riot encore nécessaire.</li>
+<li>Vérification de l’affichage à 1 440, 768 et 390 pixels de large.</li>
+<li>Publication GitHub Pages confirmée.</li>
+</ul>
+<p>Le site est une présentation et une démonstration web ; cette mise à jour n’y a pas ajouté de téléchargement public du logiciel.</p>
+</div></details>
+<details class="ar-note-chapter" id="fiabilite-et-verifications-au-fil-des-versions"><summary><span class="ar-note-index">16</span><span class="ar-note-heading"><span class="ar-note-tag">HISTORIQUE</span><span class="ar-note-heading-title">Fiabilité et vérifications au fil des versions</span></span><span class="ar-note-chevron" aria-hidden="true">⌄</span></summary><div class="ar-note-content">
+<ul>
+<li>Validation des valeurs, dates, pourcentages et durées avant sauvegarde ou import.</li>
+<li>Prévention des doublons et traitement explicite des données manquantes.</li>
+<li>Conservation de l’historique lors des changements de programmes et des migrations prises en charge.</li>
+<li>Séparation des profils locaux et des espaces de démonstration.</li>
+<li>Tests des calculs de statistiques, comparaisons, imports, erreurs et limitations d’API.</li>
+<li>Protection de la clé développeur dans les diagnostics et fichiers produits par l’application.</li>
+<li><strong>Version 2.9 : 108 tests unitaires et d’intégration, plus six parcours d’interface automatisés réussis.</strong></li>
+<li><strong>Version 2.9.1 : compilation vérifiée, contrôle des dix images d’icône intégrées, métadonnées Windows et test de fonctionnement Electron/SQLite sur données isolées.</strong></li>
+</ul>
+</div></details>
+<details class="ar-note-chapter" open id="etat-reel-de-la-version-2-9-1"><summary><span class="ar-note-index">17</span><span class="ar-note-heading"><span class="ar-note-tag">DISPONIBILITÉ</span><span class="ar-note-heading-title">État réel de la version 2.9.1</span></span><span class="ar-note-chevron" aria-hidden="true">⌄</span></summary><div class="ar-note-content">
+<p><strong>Disponible :</strong> profils locaux, routines par rang et routines enregistrées, chronomètre, saisie de résultats, statistiques, calendrier, bilans, sauvegardes, imports locaux, démonstration et rapports de parties selon les données fournies.</p>
+<p><strong>Accès Riot de production toujours nécessaire :</strong> Riot Sign On et récupération automatique officielle de l’historique des parties. Le module de production reste désactivé. Les équipes Premier, leaderboards et distributions globales de rang n’ont pas été ajoutés comme services de récupération automatique.</p>
+<p>Les résultats des aim trainers restent saisis manuellement ou importés depuis des fichiers compatibles. Les chemins des logiciels peuvent être mémorisés ; le lancement des logiciels depuis les routines et le mini-chronomètre indépendant faisaient partie des améliorations proposées, pas des fonctions livrées dans cet historique.</p>
+</div></details>
+<details class="ar-note-chapter" id="sources-de-cet-historique"><summary><span class="ar-note-index">18</span><span class="ar-note-heading"><span class="ar-note-tag">HISTORIQUE</span><span class="ar-note-heading-title">Sources de cet historique</span></span><span class="ar-note-chevron" aria-hidden="true">⌄</span></summary><div class="ar-note-content">
+<ul>
+<li>Guides et sources conservés de la première génération, dont le build 1.1.0.</li>
+<li>Application archivée 2.0.0, scripts de développement 2.1.0, guides et sources des versions 2.2 à 2.9.1.</li>
+<li>README actuel, documentation des résultats et documentation de l’intégration Riot.</li>
+<li>Rapports de vérification des livraisons et confirmation de publication du site.</li>
+</ul>
+<p>Les dates de chaque ancienne livraison ne sont pas ajoutées lorsqu’elles ne sont pas explicitement documentées. La présente note décrit l’évolution du logiciel jusqu’à la <strong>2.9.1</strong> et n’annonce aucune fonction future comme disponible.</p>
+<p>La première génération est documentée par le build 1.1.0 ; aucune version 1.0 autonome n’est présentée comme une livraison vérifiée. Le numéro 2.1.0 est confirmé par les scripts de développement conservés, même si aucun dossier portable distinct de cette version n’est conservé.</p>
+</div></details>
+<div class="ar-note-bottom"><p><strong><span class="fr">À noter :</span><span class="en">Please note:</span></strong> <span class="fr">Les captures du site montrent Windows 2.9 avec un profil fictif ; elles ne sont pas de nouvelles captures vérifiées du build 2.9.1. Aucun installateur Windows public n'est proposé ici.</span><span class="en">Current site screenshots show Windows 2.9 with a fictional profile, not newly verified 2.9.1 screenshots. No verified public Windows installer is offered here.</span></p><div><a href="product.html"><span class="fr">Voir le logiciel</span><span class="en">View software</span></a><a href="releases.html"><span class="fr">Disponibilité des versions</span><span class="en">Release availability</span></a></div></div>
+</div></div>
+</main>
+<footer class="site31-footer"><div class="site31-footer-inner"><div><div class="site31-footer-logo"><img src="aimroutine-logo.png?v=2" width="34" height="34" alt="" loading="lazy"> AimRoutine Tracker</div><p><span class="fr">Un entraînement AIM clair, avec des résultats à toi.</span><span class="en">Focused AIM practice, with data that stays yours.</span></p></div><div class="site31-footer-links"><a href="index.html"><span class="fr">Accueil</span><span class="en">Home</span></a><a href="privacy.html"><span class="fr">Confidentialité</span><span class="en">Privacy</span></a><a href="terms.html"><span class="fr">Conditions</span><span class="en">Terms</span></a></div></div></footer>
+</body></html>
