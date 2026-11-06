@@ -35,5 +35,5 @@ test('a unique password is accepted when hash is absent',async()=>{
  assert.equal(result.safe,true);
 });
 test('an unavailable breach API fails closed',async()=>{
- await assert.rejects(()=>checkLeakedPassword('a-long-unique-passphrase-2026!',{request:async()=>{throw new Error('offline')}}),/indisponible/);
+ await assert.rejects(()=>checkLeakedPassword('A-long-unique-passphrase-2026!',{request:async()=>{throw new Error('offline')}}),/indisponible/);
 });
