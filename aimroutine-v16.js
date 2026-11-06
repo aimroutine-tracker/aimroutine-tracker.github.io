@@ -165,7 +165,7 @@
      if(!dialog)return;
      const selected=panels[index]?.querySelector('img.v16-real-shot');
      const enlarged=dialog.querySelector('img');
-     if(selected&&enlarged){enlarged.src=selected.src;enlarged.alt=selected.alt;}
+     if(selected&&enlarged){enlarged.src=selected.dataset.v16FullSrc||selected.src;enlarged.alt=selected.alt;}
      if(typeof dialog.showModal==="function")dialog.showModal();
      else dialog.setAttribute("open","");
    });
