@@ -64,3 +64,16 @@ The earlier Website behavior section above described the landing-site demos befo
 ## Official application logo — 2026-11-06
 
 The official AimRoutine Tracker logo supplied by the project owner has been added unchanged in appearance as `aimroutine-logo.png` (losslessly optimized PNG, 128 × 128, transparent background). All HTML pages use it in the navigation bar and browser favicon, including the 404 and releases pages. The web manifest points to the same image. The shared footer branding also uses this icon.
+
+
+## Web player workspace v6.0 — 2026-11-06
+
+- Immersive session mode with fullscreen where supported (CSS fallback on iOS), optional audio cue, and **automatic exercise/break progression**. The timer never fakes score collection.
+- Detailed session analysis by explicitly selected tool and scenario for 7/30/90 days or all history, training calendar and personal-best records. Coaches now avoid treating different scenarios as comparable.
+- Programs of 7, 14 or 30 days with a weekly rest day, day-by-day exercise plans and completion based on the actual date, tool and skill of a recorded session.
+- Local optional player profile: nickname, avatar, declared rank, mouse, DPI, game sensitivity, eDPI display, focus and preferred tool.
+- Five local achievement badges based strictly on saved sessions, streaks and frequency, not fake global leaderboards.
+- PWA install support and offline caching of the training UI's static assets after a first online visit. External Riot imagery does not work offline. Installation prompts vary by browser.
+- A reversible FR/EN translation layer covers static player pages and the key dynamic controls.
+- Portable JSON interface format `aimroutine-interchange-v1` to transfer data between web browsers and serve as an **integration contract** for a future Windows importer. **No Windows importer or synchronization is provided yet.** See [WINDOWS_INTERCHANGE_V1.md](WINDOWS_INTERCHANGE_V1.md).
+- GitHub CI adds portable-format tests and browser smoke scenarios using Chromium, Firefox and WebKit, with a mobile viewport. The test results are separate from the published GitHub Pages deployment.
