@@ -27,7 +27,7 @@ if('serviceWorker' in navigator&&window.isSecureContext){
   },{once:true});
 }
 </script><script src="site.js?v=8" defer></script><script src="site-quality-v34.js?v=1" defer></script>
-<script type="module" src="account-v7.mjs?v=8"></script>
+<script type="module" src="account-v7.mjs?v=9"></script>
 <style id="account-critical-style">
 /* Critical visible layout: independent of older PWA-cached CSS versions. */
 body.site31.site31-account .ar7-account-highlights{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:20px 0}
@@ -101,8 +101,8 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
  <form id="signup-form" class="ar7-auth-form" hidden>
   <p class="ar7-warn"><span class="fr">Les inscriptions par e-mail restent fermées pendant les tests de confirmation, de récupération et de sécurité côté serveur.</span><span class="en">Public email signup remains closed during confirmation, recovery and server-side security testing.</span></p>
   <label><span class="fr">Adresse e-mail</span><span class="en">Email address</span><input id="signup-email" type="email" autocomplete="email" required maxlength="254"></label>
-  <label><span class="fr">Mot de passe (12 caractères minimum)</span><span class="en">Password (12 characters minimum)</span><input id="signup-password" type="password" autocomplete="new-password" minlength="12" required></label>
-  <p class="ar7-social-note"><span class="fr">Un contrôle gratuit vérifie les mots de passe déjà exposés dans des fuites. Aucun mot de passe complet n'est transmis au service de vérification.</span><span class="en">Free screening checks passwords found in known breaches. The complete password is never sent to the checking service.</span></p>
+  <label><span class="fr">Mot de passe (8 caractères minimum)</span><span class="en">Password (8 characters minimum)</span><input id="signup-password" type="password" autocomplete="new-password" minlength="8" required></label>
+  <p class="ar7-social-note"><span class="fr">Minimum 8 caractères : une minuscule, une majuscule, un chiffre et un symbole. Un contrôle gratuit vérifie les mots de passe déjà exposés dans des fuites, sans transmettre le mot de passe complet.</span><span class="en">At least 8 characters: lowercase, uppercase, a number and a symbol. Free screening checks known breaches without sharing your full password.</span></p>
   <button type="submit" class="ar7-primary" id="signup-submit" disabled><span class="fr">Inscription prochainement</span><span class="en">Registration opening soon</span></button>
  </form>
  <form id="reset-form" class="ar7-auth-form" hidden>
@@ -113,8 +113,8 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
  </form>
  <form id="new-password-form" class="ar7-auth-form" hidden>
   <h3><span class="fr">Choisir un nouveau mot de passe</span><span class="en">Set new password</span></h3>
-  <label><span class="fr">Nouveau mot de passe (12 caractères minimum)</span><span class="en">New password (at least 12 characters)</span><input id="new-password" type="password" autocomplete="new-password" minlength="12" required></label>
-  <p class="ar7-social-note"><span class="fr">Mot de passe vérifié contre les fuites connues, par empreinte partielle uniquement.</span><span class="en">The password is checked against known leaks using only a partial hash.</span></p>
+  <label><span class="fr">Nouveau mot de passe (8 caractères minimum)</span><span class="en">New password (at least 8 characters)</span><input id="new-password" type="password" autocomplete="new-password" minlength="8" required></label>
+  <p class="ar7-social-note"><span class="fr">Une minuscule, une majuscule, un chiffre et un symbole sont nécessaires. Vérification contre les fuites connues par empreinte partielle uniquement.</span><span class="en">Lowercase, uppercase, a number and a symbol are required. Known-breach screening only sends a partial hash.</span></p>
   <button class="ar7-primary" type="submit"><span class="fr">Mettre à jour</span><span class="en">Update</span></button>
  </form>
 </section>
