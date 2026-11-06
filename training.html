@@ -2,10 +2,10 @@
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0b141f"><meta name="description" content="Espace entraînement AIM : crée des routines VALORANT, chronomètre tes exercices et suis tes progrès localement.">
 <title>Mon espace AIM — AimRoutine Tracker</title><link rel="canonical" href="https://aimroutine-tracker.github.io/training.html"><link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link rel="stylesheet" href="site-global-v31.css?v=3"><link rel="stylesheet" href="training.css?v=2"><script type="module" src="training-v5.js?v=1"></script><script src="site-quality-v34.js?v=1" defer></script><link rel="stylesheet" href="training-v5.css?v=1">
+<link rel="stylesheet" href="site-global-v31.css?v=3"><link rel="stylesheet" href="training.css?v=2"><script type="module" src="training-v5.js?v=2"></script><script src="site-quality-v34.js?v=1" defer></script><link rel="stylesheet" href="training-v5.css?v=1">
 <link rel="preconnect" href="https://cmsassets.rgpub.io" crossorigin>
 <link rel="stylesheet" href="site-shared-v5.css?v=1">
-</head>
+<script type="module" src="training-v6.js?v=1"></script><link rel="stylesheet" href="training-v6.css?v=1"><link rel="manifest" href="manifest.webmanifest"><script src="pwa-v6.js?v=1" defer></script><script src="site.js?v=8" defer></script></head>
 <body class="site31 site31-training"><a class="skip" href="#app">Aller au contenu</a>
 <header class="site31-header"><nav class="site31-nav" aria-label="Navigation principale"><a class="site31-brand" href="index.html" aria-label="AimRoutine Tracker, accueil"><img src="favicon.svg" width="32" height="32" alt="">AimRoutine <span>TRACKER</span></a><div class="site31-links"><a href="index.html">Accueil</a>
 <a href="product.html">Logiciel</a>
@@ -26,7 +26,7 @@
 <main id="app" class="shell ar5-workspace">
 <section class="intro ar5-hero" aria-labelledby="workspace-title">
  <div class="ar5-hero-copy">
-  <p class="eyebrow">AIMROUTINE / PLAYER WORKSPACE <span>· VERSION WEB 5.0</span></p>
+  <p class="eyebrow">AIMROUTINE / PLAYER WORKSPACE <span>· VERSION WEB 6.0</span></p>
   <h1 id="workspace-title">Ton AIM.<br><em>Ta progression.</em></h1>
   <p>Une routine claire, des données à toi, des objectifs réalistes. Entraîne-toi avec méthode et visualise ton évolution.</p>
   <div class="ar5-hero-actions"><button class="primary" type="button" data-go="builder">Créer une routine <span aria-hidden="true">↗</span></button><button type="button" class="outline" data-go="insights">Voir mes statistiques</button></div>
@@ -34,12 +34,15 @@
  </div>
  <figure class="ar5-art"><img src="https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/8f0df8efd5b986039cd37a4d5f3bf31b815d0c54-3840x2160.jpg" width="3840" height="2160" alt="Jett — illustration officielle VALORANT, utilisée dans ce projet indépendant" loading="lazy" decoding="async"><figcaption>© Riot Games · Projet indépendant</figcaption></figure>
 </section>
-<p class="ar5-privacy" role="note"><strong>Respect de tes données :</strong> tes séances et routines favorites restent dans ce navigateur. Aucun compte Riot connecté, aucune donnée de match récupérée. Pense à exporter régulièrement une sauvegarde JSON.</p>
+<div class="ar6-install-inline"><button id="install-app" type="button" class="outline">Installer AimRoutine</button><span id="install-help" class="muted">Sur iPhone : Partager → Sur l’écran d’accueil. Les routines locales fonctionnent hors ligne après leur première ouverture.</span></div><p class="ar5-privacy" role="note"><strong>Respect de tes données :</strong> tes séances et routines favorites restent dans ce navigateur. Aucun compte Riot connecté, aucune donnée de match récupérée. Pense à exporter régulièrement une sauvegarde JSON.</p>
 <div class="ar5-tab-wrap"><div class="tabs" role="tablist" aria-label="Espace joueur">
  <button role="tab" id="tab-dashboard" aria-controls="panel-dashboard" aria-selected="true" data-tab="dashboard">Dashboard</button>
  <button role="tab" id="tab-builder" aria-controls="panel-builder" aria-selected="false" data-tab="builder" tabindex="-1">Mes routines</button>
+ <button role="tab" id="tab-program" aria-controls="panel-program" aria-selected="false" data-tab="program" tabindex="-1">Programmes</button>
  <button role="tab" id="tab-insights" aria-controls="panel-insights" aria-selected="false" data-tab="insights" tabindex="-1">Statistiques</button>
+ <button role="tab" id="tab-challenges" aria-controls="panel-challenges" aria-selected="false" data-tab="challenges" tabindex="-1">Défis</button>
  <button role="tab" id="tab-coach" aria-controls="panel-coach" aria-selected="false" data-tab="coach" tabindex="-1">Coach AIM</button>
+ <button role="tab" id="tab-profile" aria-controls="panel-profile" aria-selected="false" data-tab="profile" tabindex="-1">Mon profil</button>
  <button role="tab" id="tab-data" aria-controls="panel-data" aria-selected="false" data-tab="data" tabindex="-1">Sauvegardes</button>
 </div></div>
 <section id="panel-dashboard" class="panel" role="tabpanel" aria-labelledby="tab-dashboard">
@@ -72,21 +75,63 @@
  </form>
  <article class="surface ar5-favorites"><div class="surface-title"><h3>Routines favorites</h3><span class="ar5-pill">Stockées localement</span></div><div id="favorite-list" class="ar5-fav-list" aria-live="polite"></div></article>
  <article id="routine-output" class="surface" aria-live="polite"><h3>Atelier d'entraînement</h3><p class="muted">Choisis un profil et génère une base pour commencer.</p></article>
- <section id="session-area" class="surface ar5-session" aria-label="Minuteur de séance" hidden><p class="eyebrow" id="phase-label">SÉANCE EN COURS</p><div class="session-top"><div><h3 id="active-exercise">—</h3><p id="active-detail" class="muted"></p></div><strong id="clock" class="clock" role="timer" aria-live="off">00:00</strong></div><div class="progress"><div id="progress-fill"></div></div><div class="controls"><button type="button" class="primary" id="timer-toggle">Démarrer</button><button type="button" class="outline" id="next-exercise">Exercice suivant →</button><button type="button" class="text-button" id="cancel-session">Annuler</button></div><p class="muted ar5-note">Le minuteur n'enregistre pas de score automatiquement. Renseigne ta précision en fin de séance.</p></section>
+ <section id="session-area" class="surface ar5-session" aria-label="Minuteur de séance" hidden><p class="eyebrow" id="phase-label">SÉANCE EN COURS</p><div class="session-top"><div><h3 id="active-exercise">—</h3><p id="active-detail" class="muted"></p></div><strong id="clock" class="clock" role="timer" aria-live="off">00:00</strong></div><div class="progress"><div id="progress-fill"></div></div><div class="controls"><button type="button" class="primary" id="timer-toggle">Démarrer</button><button type="button" class="outline" id="next-exercise">Exercice suivant →</button><button type="button" class="text-button" id="cancel-session">Annuler</button>
+ <button type="button" class="outline" id="focus-mode" aria-label="Activer le mode immersion">Mode immersion</button></div><div class="ar6-timer-settings"><label><input type="checkbox" id="timer-auto" checked> Passage automatique à l'étape suivante</label>
+ <label><input type="checkbox" id="timer-sound"> Signal sonore facultatif</label></div>
+ <p class="muted ar5-note">Le minuteur n'enregistre pas de score automatiquement. Renseigne ta précision en fin de séance.</p></section>
  <form id="finish-form" class="surface" hidden><p class="eyebrow">BILAN DE SÉANCE</p><h3>Enregistre ton résultat</h3><p class="muted">La précision est facultative et déclarative. Pour comparer tes progrès, utilise le même scénario et les mêmes réglages.</p><div class="ar5-finish-grid"><label>Précision (%) <input id="accuracy" type="number" min="0" max="100" step="0.1" placeholder="Ex. 78,5"></label><label>Ressenti<select id="feeling"><option value="good">Bon</option><option value="ok">Correct</option><option value="hard">Difficile</option></select></label><label>Notes <input id="notes" maxlength="240" placeholder="Ce que tu as remarqué…"></label></div><button type="submit" class="primary">Enregistrer cette séance</button></form>
+</section>
+<section id="panel-program" class="panel" role="tabpanel" aria-labelledby="tab-program" hidden>
+ <div class="section-heading"><div><p class="eyebrow">03 / TRAINING PROGRAMS</p><h2>Ton programme d'entraînement.</h2><p class="muted">Un calendrier progressif, avec une journée de récupération par semaine. Les séances terminées sont comptées uniquement si elles sont réellement enregistrées.</p></div></div>
+ <form id="program-form" class="surface ar6-program-config">
+  <label>Durée du programme<select id="program-length"><option value="7">7 jours</option><option value="14">14 jours</option><option value="30">30 jours</option></select></label>
+  <label>Outil principal<select id="program-tool"><option>VALORANT</option><option>Aim Lab</option><option>KovaaK’s</option><option>Oblivity</option></select></label>
+  <button class="primary" type="submit">Commencer le programme →</button>
+ </form>
+ <div class="surface" id="program-overview" aria-live="polite"></div>
+ <div class="ar6-program-grid" id="program-calendar"></div>
+ <button type="button" class="text-button" id="program-reset" hidden>Terminer ce programme</button>
 </section>
 <section id="panel-insights" class="panel" role="tabpanel" aria-labelledby="tab-insights" hidden>
  <div class="section-heading"><div><p class="eyebrow">03 / PERFORMANCE LAB</p><h2>Training Insights</h2><p class="muted">Des graphiques issus de tes résultats réels, saisis manuellement.</p></div></div>
+ <div class="ar6-range"><label>Afficher les <select id="analysis-range"><option value="7">7 derniers jours</option><option value="30" selected>30 derniers jours</option><option value="90">90 derniers jours</option><option value="0">Toutes les séances</option></select></label></div>
  <div class="ar5-filter-row"><label>Comparer une compétence<select id="insight-focus"><option value="flick">Flick et premier tir</option><option value="micro">Micro-corrections</option><option value="tracking">Tracking</option><option value="control">Contrôle et précision</option></select></label><label>Filtrer par logiciel<select id="insight-tool"><option value="">Tous les logiciels</option><option>VALORANT</option><option>Aim Lab</option><option>KovaaK’s</option><option>Oblivity</option></select></label></div>
+ <div class="ar6-analytics-extra"><label class="ar6-scenario-filter">Scénario comparable <select id="analysis-scenario"><option value="">Tous les scénarios (descriptif uniquement)</option></select></label>
+ <div id="scenario-summary" class="ar6-mini-stats" aria-live="polite"></div></div>
  <article class="surface"><div class="surface-title"><h3>Précision au fil des séances</h3><span class="ar5-pill" id="chart-count">0 donnée</span></div><p class="muted">Une précision plus élevée n'implique pas automatiquement une meilleure performance si les exercices changent.</p><div id="chart" class="chart" role="img" aria-label="Évolution des résultats déclarés"></div></article>
+ <div class="two"><article class="surface"><h3>Calendrier des 35 derniers jours</h3><div id="training-calendar" class="ar6-calendar" aria-label="Calendrier des entraînements"></div></article><article class="surface"><h3>Records par scénario</h3><div id="scenario-records" class="ar6-records"></div></article></div>
  <div class="two"><article class="surface"><h3>Répartition des entraînements</h3><div id="focus-breakdown"></div></article><article class="surface"><h3>Analyse des tendances</h3><p id="insight-advice" class="muted"></p><button class="text-button" data-go="coach">Préparer la suite →</button></article></div>
+</section>
+<section id="panel-challenges" class="panel" role="tabpanel" aria-labelledby="tab-challenges" hidden>
+ <div class="section-heading"><div><p class="eyebrow">05 / CHALLENGES</p><h2>Petites victoires, vrais efforts.</h2><p class="muted">Les badges reposent sur ton historique enregistré dans ce navigateur. Aucune compétition fictive ni classement global.</p></div></div>
+ <div class="ar6-achievements" id="achievement-grid" aria-live="polite"></div>
 </section>
 <section id="panel-coach" class="panel" role="tabpanel" aria-labelledby="tab-coach" hidden>
  <div class="section-heading"><div><p class="eyebrow">04 / AIM COACH</p><h2>Un coach qui s'appuie sur tes données.</h2><p class="muted">Des recommandations transparentes, fondées sur des règles simples et tes séances comparables — pas une analyse Riot.</p></div></div>
  <div class="two"><article class="surface ar5-coach-card"><span id="coach-confidence" class="ar5-pill">Démarrage</span><h3 id="coach-title">Premiers pas</h3><p id="coach-message" class="muted"></p><button type="button" class="primary" id="coach-build">Préparer une routine adaptée →</button></article><article class="surface"><h3>Comment sont calculés les conseils ?</h3><p class="muted">Le coach compare uniquement tes résultats d'une même compétence et, si choisi, d'un même logiciel. Il attend au moins quatre séances renseignées pour signaler une tendance. Les niveaux de difficulté et scénarios doivent rester comparables.</p><p class="muted">Aucune promesse de gain de rang, aucune donnée Riot et aucun calcul caché.</p></article></div>
 </section>
+<section id="panel-profile" class="panel" role="tabpanel" aria-labelledby="tab-profile" hidden>
+ <div class="section-heading"><div><p class="eyebrow">07 / PLAYER IDENTITY</p><h2>Ton profil joueur.</h2><p class="muted">Tes réglages sont entièrement facultatifs et restent locaux. Ils ne sont pas reliés à ton compte Riot.</p></div></div>
+ <form id="player-form" class="surface ar6-profile-form">
+  <label>Pseudo<input id="player-name" maxlength="24" placeholder="Ton pseudo" autocomplete="nickname"></label>
+  <label>Avatar<select id="player-avatar"><option value="crosshair">Viseur</option><option value="bolt">Éclair</option><option value="shield">Bouclier</option><option value="star">Étoile</option></select></label>
+  <label>Rang déclaré<select id="player-rank"><option value="iron">Fer / Bronze</option><option value="silver">Argent / Or</option><option value="diamond">Platine / Diamant / Ascendant</option><option value="immortal">Immortel / Radiant</option></select></label>
+  <label>Logiciel favori<select id="player-tool"><option>VALORANT</option><option>Aim Lab</option><option>KovaaK’s</option><option>Oblivity</option></select></label>
+  <label>DPI souris<input id="player-dpi" type="number" min="100" max="32000" step="1" inputmode="numeric" placeholder="Ex. 1600"></label>
+  <label>Sensibilité VALORANT<input id="player-sens" type="number" min="0.001" max="10" step="0.001" inputmode="decimal" placeholder="Ex. 0.215"></label>
+  <label>Modèle de souris<input id="player-mouse" maxlength="70" placeholder="Souris utilisée"></label>
+  <label>Objectif personnel<input id="player-goal" maxlength="140" placeholder="Améliorer ma régularité…"></label>
+  <div class="ar6-profile-summary"><span class="ar6-avatar" id="player-avatar-preview" aria-hidden="true">⌖</span><div><strong id="player-display-name">Joueur</strong><small id="player-edpi">eDPI : à renseigner</small></div></div>
+  <button class="primary" type="submit">Enregistrer mon profil</button>
+ </form>
+ <p class="muted" id="profile-status" role="status"></p>
+</section>
 <section id="panel-data" class="panel" role="tabpanel" aria-labelledby="tab-data" hidden>
  <div class="section-heading"><div><p class="eyebrow">05 / PRIVACY FIRST</p><h2>Ma progression m'appartient.</h2></div></div>
+ <div class="surface ar6-portable"><h3>Format portable pour une future application Windows</h3>
+ <p class="muted">Transfert expérimental de tes données au format JSON documenté. L'import et l'export fonctionnent entre navigateurs web ; l'application Windows n'accepte pas encore ce format automatiquement.</p>
+ <div class="controls"><button type="button" class="outline" id="export-portable">Exporter les données portables</button><label class="upload">Importer un échange web<input type="file" id="import-portable" accept=".json,application/json"></label></div>
+ <p id="portable-status" class="muted" role="status"></p></div>
  <div class="two"><article class="surface"><h3>Exporter / importer une sauvegarde</h3><p class="muted">Le JSON contient tes séances, routines favorites et objectif hebdomadaire. L'import conserve les séances existantes et évite les doublons d'identifiant. Les anciennes sauvegardes v1 sont acceptées.</p><div class="controls"><button type="button" id="export-data" class="primary">Exporter le JSON</button><label class="upload">Importer un fichier JSON<input id="import-data" type="file" accept=".json,application/json"></label></div></article><article class="surface"><h3>Effacer toutes mes données</h3><p class="muted">Efface les séances et favoris stockés dans ce navigateur. Pense à exporter tes données avant cette action irréversible.</p><button type="button" class="danger" id="clear-data">Effacer les données locales</button></article></div><p class="muted" id="data-message" role="status"></p>
 </section>
 </main><footer><a href="releases.html">Versions et téléchargements</a><span>© AimRoutine Tracker · Espace web expérimental</span><a href="privacy.html">Confidentialité</a><a href="terms.html">Conditions</a><a href="riot-integration.html">Riot API : projet</a></footer>
