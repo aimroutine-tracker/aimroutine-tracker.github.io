@@ -99,3 +99,12 @@ Docs: https://supabase.com/docs/guides/auth/password-security and https://supaba
 - Until activation, the public Auth API still permits new email accounts. The website `SIGNUPS_READY=false` is **not server enforcement**. Do not claim the beta gate is active based on the function's mere existence.
 
 Official docs: https://supabase.com/docs/guides/auth/auth-hooks/before-user-created-hook
+
+## Gallery image compression — 6 November 2026
+
+- Compressed the Windows 2.9 Dashboard screenshot into `aimroutine-29-dashboard-preview.webp` **50,954 bytes**, compared with the original **504,594 bytes**. The Coach screenshot became **31,456 bytes** compared with **153,608 bytes** original.
+- The homepage uses the previews in gallery cards; the full-resolution originals are preserved and loaded on demand when opening the lightbox via the gallery's enlarged image action.
+- Added browser regression test for both dashboard and coach showing previews and full-size lightbox sources. Chrome suite result: **13 passed**, https://github.com/aimroutine-tracker/aimroutine-tracker.github.io/actions/runs/42238136923
+- Updated the preview generation workflow to regenerate on original screenshot modifications, rather than only on first installation.
+- Lighthouse after earlier responsive art and preload changes (single run): home **84**, training **94**, account **99** performance; gallery compression reduces bytes transferred and may not improve the synthetic page-performance score.
+- GitHub Pages deployment of the optimized gallery: https://github.com/aimroutine-tracker/aimroutine-tracker.github.io/actions/runs/42238136691 — successful.
