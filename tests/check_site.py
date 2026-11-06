@@ -67,6 +67,15 @@ for page in PAGES:
             issues.append(f"{page.name}: official social image missing")
         if 'favicon.svg' in html:
             issues.append(f"{page.name}: outdated favicon reference")
+    if page.name == "changelog.html":
+        source = ROOT / "PATCH-NOTES-AimRoutine-Tracker.md"
+        if not source.exists():
+            issues.append("changelog.html: original Markdown source missing")
+        html = page.read_text(encoding="utf-8")
+        if html.count('class="ar-note-chapter"') != 18:
+            issues.append("changelog.html: expected 18 historical chapters")
+        if "2.9.1" not in html or "Riot Sign On" not in html:
+            issues.append("changelog.html: release status not visible")
     if page.name == "training.html":
         for marker in ['id="panel-dashboard"', 'id="panel-builder"', 'id="panel-insights"', 'id="panel-coach"', 'id="panel-data"', 'training-v5.js', 'training-v5.css']:
             if marker not in page.read_text(encoding="utf-8"):
