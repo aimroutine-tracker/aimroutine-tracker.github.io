@@ -8,14 +8,14 @@
 2. Set Site URL to `https://aimroutine-tracker.github.io/`.
 3. Add allowed redirects `https://aimroutine-tracker.github.io/account.html` and `https://aimroutine-tracker.github.io/account.html?reset=1`.
 4. Verify confirmation and recovery e-mails with real test users, and check Supabase Auth email limits.
-5. Implement full authentication-account deletion and a private contact channel.
+5. Test the already-deployed full account deletion with a disposable account. Private contact: aimroutine-tracker@outlook.fr.
 6. Complete authenticated end-to-end tests with two distinct accounts, including cross-account read/update/delete rejection and offline conflicts.
 7. Only then enable `SIGNUPS_READY` in `account-v7.mjs`.
 
 ## Current implementation
 
 - `cloud-client-v7.mjs` uses Supabase JS SDK v2.119.0 with only the **public publishable** key, no service-role keys.
-- `account.html` provides sign-in, optional sync activation, manual sync, explicit guest-history import, cloud progress deletion (not account deletion), and password-reset/registration screens gated pending auth URL configuration.
+- `account.html` provides sign-in, optional sync activation, manual sync, explicit guest-history import, separate cloud progress and permanent account deletion, plus password-reset/registration screens. Public email registration is gated in the UI, not in the live Auth API.
 - `training-entry-v7.mjs` loads guest/local mode when not authenticated and account-scoped storage when signed in, synchronizing before v5/v6 modules load. Changes queue cloud uploads if opted in.
 - `cloud-sync-v7.mjs` stores sessions and favorites by ID, soft-deletes removed favorites, and handles profile/goal fields. Robust real-world conflict testing still needed; retain JSON exports.
 - Original local keys: `aimroutine_web_training_v2` for sessions, favorites, weekly goal and `aimroutine_player_extensions_v1` for V6 player profile/program. Guest data is not automatically uploaded to a new account.
@@ -26,7 +26,7 @@ Do not state cloud registration is generally available until all steps above are
 
 ## Progress: deletion endpoint
 
-- Edge Function `delete-aim-account` deployed with **verify_jwt true**, `@supabase/server@1.9.2` with `auth:'user'`, and no administrative credentials in public JS. It verifies the validated user identity, checks a fresh sign-in (five minutes), then calls `auth.admin.deleteUser(user.id)` using the server-provisioned admin client. Database foreign keys cascade to all four training tables.
+- Edge Function `delete-aim-account` deployed with **verify_jwt true**, `@supabase/server@1.9.2` with `auth:'user'`, and no administrative credentials in public JS. It validates the user JWT and account identity, bypasses recent-sign-in checks for Google-linked accounts but requires a recent sign-in for password-only accounts, then calls `auth.admin.deleteUser(user.id)` using the server-provisioned admin client. Database foreign keys cascade to all four training tables.
 - Account UI now requires the current password plus typed `SUPPRIMER` and a final confirmation. No account is deleted except by a valid signed-in user explicitly submitting the form.
 - **Needs E2E**: signed-in deletion test must confirm cascading rows, session invalidation, old credentials rejected, and guest data retained. JWT access tokens can remain valid until expiry; short token lifetimes are recommended.
 - Owner said Site URL/redirect allowlist is configured; direct Supabase Auth dashboard settings are not exposed by connected management tools, so actual settings and confirmation email delivery are not independently verified.
@@ -96,6 +96,10 @@ Completed via connected GitHub and Supabase management:
 - The deployed `delete-aim-account` function v2 accepts a validated user JWT and exactly `SUPPRIMER`, never a target user ID from the client. Google-identity accounts no longer need an OAuth step-up. The Google simplified flow remains untested with a new disposable account.
 - Updated the FR/EN privacy page to accurately describe Google sign-in and deletion, browser/device copies, and the server-side password-check limitation.
 - Expanded multi-browser smoke coverage to all public pages and improved service worker static-asset precaching. A repeatable Lighthouse report workflow was added. Check GitHub Actions conclusions, rather than assuming these runs passed.
-- Public email/password sign-up remains gated in the UI. Private support channel, Google OAuth secret rotation, SMTP/confirm/reset delivery, anti-bot settings and two-browser cloud conflict tests are still pending. **Do not enable public registration yet.**
+- Public email/password sign-up remains gated only in the UI. The live Supabase Auth settings endpoint reports `disable_signup=false`: the backend still allows direct API signups. The official private contact is published. Google OAuth secret rotation, SMTP confirmation/reset E2E, bot/rate-limit configuration and real authenticated browser cloud tests are still pending. **Do not enable public registration yet.**
 
 Safety reminder: Do not delete a real user's account as a test. Use an explicitly disposable account, confirm no valuable history, then test deletion with `SUPPRIMER` while signed in. Rotate any Google client secret previously pasted into chat; update Google Cloud and Supabase provider settings without committing or sharing the new secret.
+
+## Latest evidence and operator action
+
+See [PUBLIC_RELEASE_CHECKLIST.md](PUBLIC_RELEASE_CHECKLIST.md) for verified SQL RLS tests across all four tables, live JWT rejection checks, simulated multi-device merge tests, the actual backend signup-policy result and the precise remaining owner-controlled actions. Lighthouse measurements after responsive imagery and image preloading show performance 84/100 (home), 89/100 (training) and 99/100 (account) in one automated run.
