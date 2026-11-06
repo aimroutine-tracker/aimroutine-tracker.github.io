@@ -31,4 +31,14 @@ for(const [name,headers] of [
  assert.ok(result.status>=400&&result.status<500,
   'Unauthenticated account deletion was not rejected');
 }
-console.log('Live authentication and unauthorized deletion smoke checks passed.');
+const resetRpc=origin+'/rest/v1/rpc/aim_reset_my_progress';
+for(const [label,headers] of [
+ ['anonymous',jsonHeaders],
+ ['forged JWT',{...jsonHeaders,'Authorization':'Bearer invalid-test-token'}]
+]){
+ const response=await fetch(resetRpc,{method:'POST',headers,body:'{}'});
+ console.log('Progress reset RPC '+label+': HTTP '+response.status);
+ assert.ok([401,403].includes(response.status),
+  'Account progress reset must reject unauthorized requests');
+}
+console.log('Live authentication, account deletion and progress reset security smoke checks passed.');
