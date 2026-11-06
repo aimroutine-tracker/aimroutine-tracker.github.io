@@ -71,7 +71,9 @@ test('Language switch and responsive navigation',async ({page,isMobile})=>{
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
  expect(overflow).toBeLessThanOrEqual(2);
 });
-test('Offline training works after initial install',async ({page,context,browserName})=>{
+test.describe('PWA cache integration',()=>{
+ test.use({serviceWorkers:'allow'});
+ test('Offline training works after initial install',async ({page,context,browserName})=>{
  test.skip(browserName!=='chromium','Offline service worker tested on Chromium; other engines checked for rendering');
  await page.evaluate(async()=>{if(!('serviceWorker'in navigator))throw Error('No service workers');await navigator.serviceWorker.ready});
  await context.setOffline(true);
@@ -79,6 +81,7 @@ test('Offline training works after initial install',async ({page,context,browser
  await expect(page.locator('#tab-dashboard')).toBeVisible();
  await expect.poll(()=>page.evaluate(()=>Boolean(window.AIMWeb))).toBe(true);
  await context.setOffline(false);
+});
 });
 
 test('Cloud account landing has single-border tags and a compact accessible guest button',async({page})=>{
