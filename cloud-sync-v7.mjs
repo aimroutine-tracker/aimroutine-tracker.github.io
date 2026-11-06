@@ -156,18 +156,14 @@ export function importGuestIntoAccount(uid){
 export async function deleteCloudProgress(client,uid){
  const {data:{user},error}=await client.auth.getUser();
  if(error||!user||user.id!==uid)throw Error('Session non validée.');
- // Remove only this user's AIM data. Auth account deletion is a separate operation.
- // Retain a non-training preferences row carrying a new cloud-reset cursor, so
- // a second device cannot re-upload deleted sessions when it reconnects.
- for(const table of ['aim_sessions','aim_presets','aim_profiles']){
-  const {error:deleteError}=await client.from(table).delete().eq('user_id',uid);
-  if(deleteError)throw deleteError;
- }
- const resetAt=new Date().toISOString();
- const {error:resetError}=await client.from('aim_preferences').upsert({
-   user_id:uid,weekly_goal:3,settings:{format:'aimroutine-web-v2',reset_at:resetAt}
- });
+ // One RLS-protected database transaction: a failed request cannot partially
+ // erase the cloud or leave the reset marker unpublished.
+ const {data:resetValue,error:resetError}=await client.rpc('aim_reset_my_progress');
  if(resetError)throw resetError;
+ if(typeof resetValue!=='string'||!Number.isFinite(Date.parse(resetValue))){
+  throw Error('La suppression cloud a répondu sans accusé de réinitialisation valide.');
+ }
+ const resetAt=new Date(resetValue).toISOString();
  const resetMeta={...freshCloudMeta(),resetAt};
  localStorage.setItem(metaKey(uid),JSON.stringify(resetMeta));
  localStorage.removeItem(scopedKey(TRAINING_KEY,uid));
