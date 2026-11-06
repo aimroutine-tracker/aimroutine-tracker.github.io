@@ -1,6 +1,6 @@
 # AimRoutine Tracker Cloud V7 — Deployment checklist
 
-**Status (November 6, 2026):** Supabase project `lmzswtzboobpokumxzhy` is ACTIVE_HEALTHY, hosted in Paris (`eu-west-3`), under organization AIM Routine Tracker. Free project cost quoted $0/month and approved. Migration `cloud_v7_initial` applied with four owner-only RLS tables; Supabase Security Advisor returned zero security warnings.
+**Status (November 6, 2026):** Supabase project `lmzswtzboobpokumxzhy` is ACTIVE_HEALTHY, hosted in Paris (`eu-west-3`), under organization AIM Routine Tracker. Free project cost quoted $0/month and approved. Migration `cloud_v7_initial` applied with four owner-only RLS tables. The current Supabase Security Advisor reports one **leaked-password protection disabled** warning: native checking requires Pro+, and browser-only screening cannot clear it.
 
 ## Required before public signup
 
@@ -86,3 +86,16 @@ The deployed `delete-aim-account` Edge Function (version 2) maintains `verify_jw
 **Security trade-off:** this is less protective on shared devices or if an authenticated session has been stolen. A signed-in Google session plus the deletion word can now permanently delete the account. Recommend users sign out on shared devices; consider optional step-up authentication if necessary. The original guest data on a device remains local and is not deleted remotely.
 
 **Verification:** the account form and backend have been deployed, but a real self-deletion test for this simplified version has not been performed by the assistant. The earlier 2-step Google self-deletion was tested by the owner. Avoid automatic deletion tests on actual user accounts.
+
+## Release verification checkpoint — 6 November 2026 (afternoon)
+
+Completed via connected GitHub and Supabase management:
+- Two existing Auth accounts are registered: one Google-identity account and one email/password account; both previously signed in. This is *not* a fresh recovery/email-delivery or Google-deletion test.
+- Verified all four cloud tables have RLS enabled, authenticated-owner-only `USING` and `WITH CHECK` restrictions, and `ON DELETE CASCADE` foreign keys to `auth.users`. The anon role has no table grants.
+- In a rolled-back SQL transaction with an `authenticated` role impersonating the *other* account, cross-user profile/preference SELECT, UPDATE, DELETE all affected **zero rows**. This is a database authorization test, not a two-browser E2E result.
+- The deployed `delete-aim-account` function v2 accepts a validated user JWT and exactly `SUPPRIMER`, never a target user ID from the client. Google-identity accounts no longer need an OAuth step-up. The Google simplified flow remains untested with a new disposable account.
+- Updated the FR/EN privacy page to accurately describe Google sign-in and deletion, browser/device copies, and the server-side password-check limitation.
+- Expanded multi-browser smoke coverage to all public pages and improved service worker static-asset precaching. A repeatable Lighthouse report workflow was added. Check GitHub Actions conclusions, rather than assuming these runs passed.
+- Public email/password sign-up remains gated in the UI. Private support channel, Google OAuth secret rotation, SMTP/confirm/reset delivery, anti-bot settings and two-browser cloud conflict tests are still pending. **Do not enable public registration yet.**
+
+Safety reminder: Do not delete a real user's account as a test. Use an explicitly disposable account, confirm no valuable history, then test deletion with `SUPPRIMER` while signed in. Rotate any Google client secret previously pasted into chat; update Google Cloud and Supabase provider settings without committing or sharing the new secret.
