@@ -292,13 +292,13 @@ test('Turnstile-enabled browser form forwards a token on login and password rese
  const calls=[];
  await page.route('https://lmzswtzboobpokumxzhy.supabase.co/auth/v1/token?grant_type=password',route=>{
   const data=JSON.parse(route.request().postData()||'{}');
-  calls.push({type:'login',captcha:data.captcha_token});
+  calls.push({type:'login',captcha:data.gotrue_meta_security?.captcha_token||data.captcha_token});
   return route.fulfill({status:400,contentType:'application/json',
    body:JSON.stringify({code:'invalid_credentials',msg:'Invalid login credentials'})});
  });
  await page.route('https://lmzswtzboobpokumxzhy.supabase.co/auth/v1/recover**',route=>{
   const data=JSON.parse(route.request().postData()||'{}');
-  calls.push({type:'recovery',captcha:data.captcha_token});
+  calls.push({type:'recovery',captcha:data.gotrue_meta_security?.captcha_token||data.captcha_token});
   return route.fulfill({status:200,contentType:'application/json',body:'{}'});
  });
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
