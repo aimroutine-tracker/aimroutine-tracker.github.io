@@ -78,3 +78,24 @@ Docs: https://supabase.com/docs/guides/auth/password-security and https://supaba
 - GitHub Actions: https://github.com/aimroutine-tracker/aimroutine-tracker.github.io/actions/runs/42232428474 — HTTP 422 for a random 11-character password, response explicitly indicated **minimum 12**, and HTTP 200 for 12 characters with no authenticated session issued.
 - One disposable account was created only in the accepted 12-character case. It was deleted with an exact email+UUID+recent creation+no-cloud-data SQL guard; a follow-up count confirmed exactly **two original users remained** and zero matching disposable password-policy accounts.
 - This independently verifies server-side **minimum length**, not server-side compromised-password checking. The native leaked-password security warning remains.
+
+
+## Additional hardening — 6 November 2026
+
+### Atomic progress deletion and offline replay protection
+
+- New migration: `supabase/migrations/20261106150000_cloud_reset_atomic.sql`.
+- New PostgreSQL function `public.aim_reset_my_progress()` executes all per-user training-row deletes plus one reset marker update in a **single transaction**, using `SECURITY INVOKER` with the existing owner-only RLS rules. The function accepts no target user ID and is callable only by `authenticated`.
+- The web client uses `supabase.rpc('aim_reset_my_progress')`; another offline device that reconnects sees the marker and discards old local sessions, presets and legacy V1 state before merging. Post-reset new sessions remain supported.
+- Verified by a real Auth-role SQL call in an explicit transaction that was then rolled back. Inside that test the user's rows were cleared, a valid reset marker appeared, and post-rollback global row counts were unchanged. Live anonymous and invalid-JWT HTTP calls both received **401**.
+- Deterministic two-user/two-device tests additionally cover an offline device retaining stale V1 and V2 sessions: they must not be reuploaded after a reset. **Real two-browser authenticated testing remains pending.**
+
+### Beta signup Auth Hook prepared, but not enabled
+
+- New migration: `supabase/migrations/20261106153000_beta_signup_gate.sql` creates the provider-specific `public.aim_beta_signup_gate(event jsonb)` for Supabase's **Before User Created** Auth Hook.
+- The function returns a **403** for newly created email/phone/unknown providers and allows new Google identities; it does not prevent existing accounts from signing in. It runs as `SECURITY INVOKER`, is callable by `supabase_auth_admin` only, and **cannot** be called by browser `anon`/`authenticated` roles. SQL tests verified those conditions.
+- **It is not active until an authorized owner enables it** in [Supabase → Authentication → Hooks](https://supabase.com/dashboard/project/lmzswtzboobpokumxzhy/auth/hooks), choosing the **Before User Created** Postgres function `public.aim_beta_signup_gate`, then saving and enabling the hook.
+- Once enabled, confirm that a disposable direct email signup is denied (403) while an existing Google user can still sign in. Do not leave an email test user in production. This hook only restricts email onboarding during the Google beta. When opening public email registration, replace/disable the hook as appropriate and complete all other release checks.
+- Until activation, the public Auth API still permits new email accounts. The website `SIGNUPS_READY=false` is **not server enforcement**. Do not claim the beta gate is active based on the function's mere existence.
+
+Official docs: https://supabase.com/docs/guides/auth/auth-hooks/before-user-created-hook
