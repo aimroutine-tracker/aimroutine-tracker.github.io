@@ -57,6 +57,16 @@ for page in PAGES:
         absolute = ROOT / target
         if not absolute.is_file():
             issues.append(f"{page.name}: missing {tag} target {raw}")
+    if page.name in {"index.html", "product.html", "presentation.html", "riot-integration.html", "updates.html", "privacy.html", "terms.html", "404.html", "training.html", "releases.html"}:
+        html = page.read_text(encoding="utf-8")
+        if 'src="aimroutine-logo.png?v=2"' not in html:
+            issues.append(f"{page.name}: official logo missing from header")
+        if 'rel="icon" type="image/png"' not in html:
+            issues.append(f"{page.name}: official browser favicon missing")
+        if 'property="og:image" content="https://aimroutine-tracker.github.io/aimroutine-logo.png?v=2"' not in html:
+            issues.append(f"{page.name}: official social image missing")
+        if 'favicon.svg' in html:
+            issues.append(f"{page.name}: outdated favicon reference")
     if page.name == "training.html":
         for marker in ['id="panel-dashboard"', 'id="panel-builder"', 'id="panel-insights"', 'id="panel-coach"', 'id="panel-data"', 'training-v5.js', 'training-v5.css']:
             if marker not in page.read_text(encoding="utf-8"):
