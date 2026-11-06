@@ -1,0 +1,59 @@
+name: Lighthouse audit
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/lighthouse-audit.yml"
+permissions:
+  contents: read
+jobs:
+  lighthouse:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install pinned Lighthouse
+        run: npm install --no-save lighthouse@13.6.0
+      - name: Start local website
+        run: |
+          nohup python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/aimroutine-lh-http.log 2>&1 &
+          for i in $(seq 1 25); do curl -fsS http://127.0.0.1:8765/account.html >/dev/null && exit 0; sleep 1; done
+          cat /tmp/aimroutine-lh-http.log
+          exit 1
+      - name: Audit home, training and account pages
+        run: |
+          mkdir -p lh-reports
+          for page in index training account; do
+            npx lighthouse "http://127.0.0.1:8765/$page.html" \
+              --chrome-flags="--headless --no-sandbox" \
+              --only-categories=performance,accessibility,best-practices,seo \
+              --output=json --output=html --output-path="lh-reports/$page" --quiet
+          done
+      - name: Summarize Lighthouse scores
+        run: |
+          node --input-type=module <<'NODE' | tee lighthouse-summary.md
+          import {readdirSync,readFileSync} from 'node:fs';
+          const files=readdirSync('lh-reports').filter(f=>f.endsWith('.report.json')).sort();
+          if(files.length!==3)throw Error('Expected 3 Lighthouse reports, got '+files.length);
+          console.log('## Lighthouse — local representative pages');
+          console.log('| Page | Performance | Accessibility | Best practices | SEO |');
+          console.log('|---|---:|---:|---:|---:|');
+          for(const file of files){
+            const r=JSON.parse(readFileSync('lh-reports/'+file,'utf8'));
+            const score=id=>Math.round(100*(r.categories[id]?.score??0));
+            console.log('| '+file.replace('.report.json','')+' | '+score('performance')+' | '+score('accessibility')+' | '+score('best-practices')+' | '+score('seo')+' |');
+          }
+          NODE
+          cat lighthouse-summary.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-aimroutine-reports
+          path: |
+            lh-reports/
+            lighthouse-summary.md
+          if-no-files-found: warn
