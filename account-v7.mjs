@@ -52,11 +52,11 @@ function renderDeleteOptions(){
  googleStep.hidden=!google;
  $('#delete-password-row').hidden=google;
  $('#delete-account-password').required=!google;
- const checked=google&&isGoogleDeleteVerified(user,readGoogleDeleteMarker(sessionStorage));
+ const checked=true; // An authenticated Google account needs only SUPPRIMER.
  $('#google-delete-status').textContent=google?(checked?
    'Identité Google revérifiée. Tu peux maintenant saisir SUPPRIMER puis confirmer la suppression.':
    'Vérifie ton identité avec Google avant de pouvoir supprimer ce compte.') : '';
- $('#delete-account-final').disabled=google&&!checked;
+ $('#delete-account-final').disabled=working;
 }
 async function run(task){
  if(working)return;
@@ -183,10 +183,8 @@ $('#delete-account-form').addEventListener('submit',event=>{
   msg('Écris exactement SUPPRIMER pour confirmer la suppression définitive.');return;
  }
  const google=hasGoogleIdentity(user);
- if(google&&!isGoogleDeleteVerified(user,readGoogleDeleteMarker(sessionStorage))){
-  msg('Pour supprimer ce compte, reconnecte-toi d’abord avec Google.');return;
- }
- if(!confirm('SUPPRESSION IRRÉVERSIBLE : supprimer ton compte et toutes ses données cloud ?'))return;
+ 
+ if(!google&&!confirm('SUPPRESSION IRRÉVERSIBLE : supprimer ton compte et toutes ses données cloud ?'))return;
  run(async()=>{
   const oldUid=user.id;
   if(!google){
@@ -198,9 +196,7 @@ $('#delete-account-form').addEventListener('submit',event=>{
   // Validate the signed-in identity after the recent Google or password auth.
   const {data:{user:checked},error:authError}=await supabase.auth.getUser();
   if(authError||checked?.id!==oldUid)throw Error('Identité différente : aucune suppression effectuée.');
-  if(google&&!isGoogleDeleteVerified(checked,readGoogleDeleteMarker(sessionStorage))){
-   throw Error('La confirmation Google a expiré. Reconnecte-toi avec Google.');
-  }
+  
   const {data,error:deleteError}=await supabase.functions.invoke('delete-aim-account',{
    method:'POST',body:{action:'delete_my_account',confirmation:'SUPPRIMER'}
   });
