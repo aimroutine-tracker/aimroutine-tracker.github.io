@@ -27,7 +27,7 @@ if('serviceWorker' in navigator&&window.isSecureContext){
   },{once:true});
 }
 </script><script src="site.js?v=8" defer></script><script src="site-quality-v34.js?v=1" defer></script>
-<script type="module" src="account-v7.mjs?v=13"></script>
+<script type="module" src="account-v7.mjs?v=14"></script>
 <style id="account-critical-style">
 /* Critical visible layout: independent of older PWA-cached CSS versions. */
 body.site31.site31-account .ar7-account-highlights{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:20px 0}
@@ -122,7 +122,7 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
  </form>
 </section>
 <section class="ar7-account-panel" id="dashboard-panel" aria-labelledby="ar7-dash-title" hidden>
- <div class="ar7-account-heading"><div><span class="ar7-eyebrow">02 / PLAYER CLOUD</span><h2 id="ar7-dash-title"><span class="fr">Mon espace cloud</span><span class="en">My cloud workspace</span></h2></div><button type="button" class="ar7-secondary" id="logout"><span class="fr">Déconnexion</span><span class="en">Sign out</span></button></div>
+ <div class="ar7-account-heading"><div><span class="ar7-eyebrow">02 / PLAYER CLOUD</span><h2 id="ar7-dash-title"><span class="fr">Mon espace cloud</span><span class="en">My cloud workspace</span></h2></div><button type="button" class="ar7-secondary" id="logout" title="Déconnecte toutes tes sessions Supabase sur tous les appareils"><span class="fr">Déconnexion partout</span><span class="en">Sign out everywhere</span></button></div>
  <div class="ar7-email"><span class="fr">Compte connecté :</span><span class="en">Signed-in account:</span> <strong id="user-email">—</strong></div>
  <div class="ar7-service-grid">
   <div><small><span class="fr">ÉTAT DE LA SAUVEGARDE</span><span class="en">BACKUP STATUS</span></small><strong id="cloud-enabled-status">Désactivée</strong></div>
@@ -133,6 +133,10 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
   <button id="cloud-enable" type="button" class="ar7-primary"><span class="fr">Activer la sauvegarde cloud</span><span class="en">Enable cloud backup</span></button>
   <button id="cloud-sync" type="button" class="ar7-secondary"><span class="fr">Synchroniser maintenant</span><span class="en">Sync now</span></button>
   <a href="training.html" class="ar7-secondary"><span class="fr">Accéder à mon espace AIM</span><span class="en">Open AIM workspace</span></a>
+ </div>
+ <div class="ar7-import-guest" id="session-security-panel"><h3><span class="fr">Sécurité de mes connexions</span><span class="en">My account sessions</span></h3>
+  <p><span class="fr">Tu peux révoquer les sessions de tes autres appareils sans te déconnecter ici. Elles seront invalidées lors du renouvellement des jetons. Les copies locales et les exports déjà enregistrés sur ces appareils ne seront pas effacés.</span><span class="en">You can revoke sessions on other devices while remaining signed in here. They will be invalidated when tokens refresh. Locally saved copies and previous exports are not deleted.</span></p>
+  <button type="button" class="ar7-secondary" id="session-revoke-others"><span class="fr">Déconnecter mes autres appareils</span><span class="en">Sign out other devices</span></button>
  </div>
  <div class="ar7-import-guest"><h3><span class="fr">Importer ma progression invitée</span><span class="en">Import my guest progress</span></h3><p><span class="fr">Si tu utilisais AimRoutine sans compte sur cet appareil, copie tes anciennes séances et routines vers ton compte cloud. Les données invitées seront conservées, sans suppression.</span><span class="en">If you trained as a guest on this device, copy your old training history and routines to your account. Original guest data is not deleted.</span></p><button id="cloud-import-guest" type="button" class="ar7-secondary"><span class="fr">Importer mes données invitées</span><span class="en">Import guest data</span></button></div>
  <details class="ar7-delete-cloud">

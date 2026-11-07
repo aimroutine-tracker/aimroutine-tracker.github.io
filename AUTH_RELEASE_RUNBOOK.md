@@ -93,3 +93,12 @@ Les réglages anti-abus et CAPTCHA ont été vérifiés négativement avant ouve
 - **Alerte Supabase restante** : `auth_leaked_password_protection`. Protection serveur réservée au plan Pro, non disponible sur Free. Contrôle HIBP dans le navigateur existant, mais contournable via l'API Auth directe.
 - Les réglages de durée de session, limitations de débit et les secrets des fournisseurs OAuth ne peuvent pas être inspectés ou modifiés via les actions de gestion disponibles ici ; ne pas les déclarer vérifiés.
 - OAuth Google, inscription par e-mail et synchronisation restent intacts ; aucune modification de leur configuration serveur n'a été effectuée lors de cet audit.
+
+## Sécurité des sessions (audit 7 novembre 2026)
+
+- Le `signOut()` JavaScript Supabase sans portée explicite déconnecte **tous les appareils** (portée `global`). La page `Mon compte` conserve ce comportement, désormais explicite dans le libellé et l'appel `{scope:'global'}`.
+- Nouvelle option `Déconnecter mes autres appareils`, portée `{scope:'others'}` : conserve la session en cours, révoque les autres sessions Supabase au renouvellement des jetons. **Elle ne supprime pas les copies locales, ni les exports.**
+- Les jetons d'accès JWT restent utilisables jusqu'à leur expiration même après révocation de refresh tokens. Le contrôle strict par `session_id` serait nécessaire pour une révocation immédiate des endpoints sensibles.
+- Les flux de connexion e-mail/Google, CAPTCHA, récupération de mot de passe et suppression de compte restent inchangés. La suppression Google avec mot `SUPPRIMER` ne nécessite pas de réauthentification comme explicitement décidé par le propriétaire : c'est un compromis de sécurité assumé.
+- Supabase Free : la durée maximale de session, l'inactivité et la politique de session unique au niveau du serveur nécessitent des offres payantes selon la documentation ; les jetons JWT ont un réglage distinct. Ne pas modifier le JWT d'un projet en production sans tester la synchronisation et la reconnection.
+- Les restrictions de débit et la durée de vie actuelle du JWT ne sont pas directement modifiables par les outils connectés ; à contrôler dans Supabase Auth > Rate Limits / Sessions. Aucun paramètre sensible serveur n'a été modifié pendant cet audit.

@@ -57,6 +57,7 @@ riot-integration.html
 riot-presentation-v32.css
 riot.txt
 robots.txt
+session-security-v7.mjs
 site-global-v31.css
 site-layout-v40.css
 site-polish-v33.css
