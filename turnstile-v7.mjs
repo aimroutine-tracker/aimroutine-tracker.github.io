@@ -1,8 +1,8 @@
 /* AimRoutine account Cloudflare Turnstile adapter. Public site key ONLY.
- * Leave SITE_KEY blank until a production widget is configured for
- * aimroutine-tracker.github.io and its secret is entered in Supabase Auth.
+ * Siteverify runs inside Supabase Auth once the project owner enables
+ * Cloudflare Turnstile in Authentication > Attack Protection.
  * Never add the Turnstile secret key to this repository or HTML. */
-export const TURNSTILE_SITE_KEY='';
+export const TURNSTILE_SITE_KEY='0x4AAAAAAF32lny7msT5dyQh';
 export const TURNSTILE_SCRIPT='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 
 let scriptPromise=null;
@@ -32,7 +32,7 @@ export function createAuthCaptcha(siteKey=TURNSTILE_SITE_KEY,{loadApi=loadTurnst
  const widgets=new Map(),tokens=new Map(),pending=new Map();
  async function mount(mode,element){
   if(!enabled)return false;
-  if(!['login','signup','reset'].includes(mode))throw Error('Mode CAPTCHA inconnu');
+  if(!['login','signup','reset','delete'].includes(mode))throw Error('Mode CAPTCHA inconnu');
   if(!element)throw Error('Emplacement Turnstile introuvable.');
   if(widgets.has(mode))return true;
   if(pending.has(mode))return pending.get(mode);
@@ -41,6 +41,7 @@ export function createAuthCaptcha(siteKey=TURNSTILE_SITE_KEY,{loadApi=loadTurnst
    if(!api||typeof api.render!=='function')throw Error('Turnstile indisponible.');
    const widgetId=api.render(element,{
     sitekey:siteKey,
+    action:mode,
     theme:'auto',
     callback:token=>{
      if(typeof token==='string'&&token)tokens.set(mode,token);
