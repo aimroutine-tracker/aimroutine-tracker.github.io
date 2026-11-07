@@ -5,7 +5,7 @@ import {synchronize,isEnabled,setEnabled,readUserLocal,importGuestIntoAccount,de
 import {checkLeakedPassword} from './password-security-v7.mjs';
 import {hasGoogleIdentity} from './google-delete-v7.mjs';
 import {TURNSTILE_SITE_KEY,createAuthCaptcha} from './turnstile-v7.mjs';
-const SIGNUPS_READY=false; // Release gate: verified email confirmation/reset, server-side Auth restrictions, Google secret rotation and security review.
+const SIGNUPS_READY=true; // Email signups: Turnstile enforced by Supabase Auth, confirmation required, provider allowlisted by server hook.
 const GOOGLE_READY=true; // Provider enabled by project owner; live OAuth is in beta until end-to-end testing.
 const RESET_LINKS_CONFIGURED=true; // Redirect allowlist was configured; real email delivery and recovery completion still require confirmation.
 const $=s=>document.querySelector(s);
@@ -78,6 +78,7 @@ async function run(task){
  }
 }
 showCaptcha('login');
+$('#signup-submit').disabled=!SIGNUPS_READY;
 $('#google-signin').disabled=!GOOGLE_READY;
 $('#google-signin').addEventListener('click',()=>{
  if(!GOOGLE_READY){msg('La connexion Google n’est pas encore configurée.');return;}

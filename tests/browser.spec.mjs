@@ -124,13 +124,13 @@ test('Account deletion UI exists but remains inaccessible to guests',async({page
  await expect(section.locator('button[type="submit"]')).toHaveCount(1);
 });
 
-test('Google OAuth beta button is enabled but public email signup stays gated',async({page})=>{
+test('Google OAuth and email signup buttons are enabled with required password policy',async({page})=>{
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#google-login-wrap')).toBeVisible();
  await expect(page.locator('#google-signin')).toBeEnabled();
  await page.locator('#signup-mode').click();
  await expect(page.locator('#signup-password')).toHaveAttribute('minlength','8');
- await expect(page.locator('#signup-submit')).toBeDisabled();
+ await expect(page.locator('#signup-submit')).toBeEnabled();
  await expect(page.locator('#google-signin')).toBeEnabled();
  await page.locator('#login-mode').click();
  await expect(page.locator('#google-signin')).toBeEnabled();
@@ -174,7 +174,32 @@ test('Privacy and account pages describe the real Google self-deletion path',asy
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#delete-account-confirmation')).toHaveAttribute('pattern','SUPPRIMER');
  await expect(page.locator('#google-delete-reauth')).toHaveCount(0);
- await expect(page.locator('#signup-submit')).toBeDisabled();
+ await expect(page.locator('#signup-submit')).toBeEnabled();
+});
+
+test('Email signup sends Turnstile token and requests confirmation (mock Supabase/HIBP)',async({page})=>{
+ let signups=0;
+ await page.route('https://api.pwnedpasswords.com/range/**',route=>
+  route.fulfill({status:200,contentType:'text/plain',body:''}));
+ await page.route('https://lmzswtzboobpokumxzhy.supabase.co/auth/v1/signup**',route=>{
+  signups++;
+  expect(route.request().method()).toBe('POST');
+  const body=JSON.parse(route.request().postData()||'{}');
+  expect(body.email).toBe('new-user@example.invalid');
+  expect(body.gotrue_meta_security?.captcha_token||body.captcha_token).toBe('qa-synthetic-captcha-token');
+  return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({
+   id:'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee',email:body.email,confirmation_sent_at:'2026-11-07T20:00:00Z'
+  })});
+ });
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await page.locator('#signup-mode').click();
+ await expect(page.locator('#signup-submit')).toBeEnabled();
+ await expect(page.locator('#captcha-signup')).toHaveAttribute('data-rendered','yes');
+ await page.locator('#signup-email').fill('new-user@example.invalid');
+ await page.locator('#signup-password').fill('AimRoutine_2026!Strong');
+ await page.locator('#signup-submit').click();
+ await expect(page.locator('#account-status')).toContainText('un e-mail de confirmation');
+ expect(signups).toBe(1);
 });
 
 test('Google deletion UX uses exactly SUPPRIMER without a second Google login (mock account)',async({page})=>{

@@ -5,13 +5,13 @@
 ## Résultats démontrés (ne pas confondre avec les parcours complets)
 
 - 8 caractères minimum, avec minuscule, majuscule, chiffre et symbole : vérifiés par appels réels à Supabase Auth.
-- Before User Created `public.aim_beta_signup_gate` : actif ; nouvelle inscription e-mail refusée par le serveur, HTTP 403. Nouveaux comptes Google autorisés par la logique du hook.
+- Before User Created `public.aim_beta_signup_gate` : **nouveaux comptes e-mail et Google autorisés** après validation négative du CAPTCHA ; les autres fournisseurs restent rejetés.
 - Confirmation et récupération : messages reçus dans Gmail et Outlook, liens pointant vers le bon projet et vers `account.html`. **Aucun lien de confirmation/récupération de compte jetable n'a encore été utilisé jusqu'au bout.**
 - Écrans connexion, récupération et suppression Google `SUPPRIMER` : tests automatisés avec réponses simulées. **Ils ne prouvent pas une suppression réelle d'un compte Google jetable.**
 - Synchronisation : tests unitaires sur deux utilisateurs et deux appareils, y compris hors ligne et propagations de suppressions ; politiques RLS PostgreSQL examinées et testées. **La validation réelle avec deux sessions authentifiées reste à faire.**
 - `delete-aim-account` Edge Function : authentification JWT et texte `SUPPRIMER` exigés ; requêtes anonymes/falsifiées refusées.
 - Déploiement GitHub Pages : artefacts statiques autorisés uniquement, contrôle des secrets et intégrité `riot.txt`.
-- Cloudflare Turnstile : **clé publique du widget existant intégrée au site** et vérification prévue sur connexion, inscription, récupération et réauthentification par mot de passe avant suppression de compte. **Validation côté serveur encore inactive tant que le propriétaire n'a pas activé Turnstile dans Supabase Auth**. La connexion Google OAuth n'est pas soumise à ce widget. La clé secrète n'est jamais conservée dans le dépôt.
+- Cloudflare Turnstile : **clé publique du widget existant intégrée au site** et vérification prévue sur connexion, inscription, récupération et réauthentification par mot de passe avant suppression de compte. **Validation côté serveur activée le 7 novembre 2026**, test réel négatif sans CAPTCHA : récupération HTTP 400 et erreur CAPTCHA. La connexion Google OAuth n'est pas soumise à ce widget. La clé secrète n'est jamais conservée dans le dépôt.
 - Security Advisor Supabase Free : `Leaked Password Protection Disabled` est encore signalé. Le contrôle HIBP côté navigateur n'impose pas la vérification sur les appels directs API.
 - Rotation de l'ancien secret Google OAuth : explicitement reportée par le propriétaire, risque résiduel.
 
@@ -20,7 +20,7 @@
 - **Connexion e-mail : validée côté utilisateur** après activation de Cloudflare Turnstile dans Supabase Auth et mise en ligne de la clé publique : le propriétaire a confirmé réussir à se connecter via le site.
 - Cela vérifie la **continuité du parcours positif** ; cela **ne prouve pas à lui seul** que les requêtes sans jeton ou avec jeton invalide sont refusées. Un test négatif côté API reste à effectuer.
 - **Récupération de mot de passe** : pas encore vérifiée de bout en bout après activation Turnstile (envoi, consommation du lien, changement puis reconnexion).
-- **Inscriptions e-mail** : restent bloquées par le hook bêta côté serveur.
+- **Inscriptions e-mail** : formulaire réactivé et hook permettant `email` et `google`. CAPTCHA côté serveur vérifié négativement, confirmation e-mail exigée. Le parcours réel de création et validation du premier nouveau compte doit encore être testé.
 - Ne pas considérer comme validées la synchronisation entre sessions authentifiées ni la suppression Google par un compte jetable.
 
 ## Finaliser le widget Cloudflare Turnstile existant — actions propriétaire
@@ -31,7 +31,7 @@
 4. **La clé secrète Turnstile ayant été collée dans une conversation**, la **faire tourner dans Cloudflare** puis utiliser exclusivement la **nouvelle clé secrète** pour l'étape suivante. Ne jamais la publier ni la communiquer à un assistant, à GitHub ou au navigateur.
 5. Dans [Supabase → Authentication → Attack Protection](https://supabase.com/dashboard/project/lmzswtzboobpokumxzhy/auth/protection), activer **Enable CAPTCHA protection**, choisir **Cloudflare Turnstile**, saisir la **nouvelle clé secrète uniquement dans Supabase** et enregistrer. Supabase Auth réalise la vérification Siteverify côté serveur pour les opérations Auth ; le site statique n'a pas besoin d'une fonction de vérification supplémentaire.
 6. Tester une connexion e-mail réelle et un envoi de récupération avec un défi réussi. Vérifier aussi qu'un appel à l'API Auth sans jeton valide est rejeté. Une fois activée, la protection peut bloquer les clients utilisant d'anciennes versions du site ; s'assurer que le cache et le Service Worker sont actualisés.
-7. Ne pas ouvrir `SIGNUPS_READY` ni désactiver le hook d'inscription bêta avant les tests de confirmation/récupération, suppression Google et synchronisation avec comptes jetables.
+7. Le bouton d'inscription est désormais ouvert. Surveiller les nouvelles inscriptions et effectuer un test de confirmation e-mail réel avant d'annoncer tous les parcours validés. Conserver le hook de restriction aux fournisseurs `email` et `google`.
 
 Documentation : https://supabase.com/docs/guides/auth/auth-captcha
 
@@ -63,8 +63,8 @@ Documentation : https://supabase.com/docs/guides/auth/auth-captcha
 
 ## Décision d'ouverture
 
-**INTERDITE tant que les tests positifs précédents ne sont pas terminés et consignés.**
+**Ouverture du formulaire d'inscription autorisée avec Turnstile côté serveur, validation négative HTTP 400, e-mail à confirmer et hook limité aux fournisseurs `email` et `google`. La validation de bout en bout des premiers comptes réels reste à consigner avant toute annonce de disponibilité générale sans réserve.**
 
-Après réussite : vérifier les réglages de protection anti-abus, **désactiver ou remplacer** de manière contrôlée `aim_beta_signup_gate` pour permettre les nouveaux e-mails, puis seulement changer `SIGNUPS_READY=false` en `true` dans `account-v7.mjs`, mettre à jour les textes du formulaire, effectuer un déploiement GitHub Pages sécurisé et revérifier un compte e-mail jetable en production. Avant ouverture vérifier confidentialité, conditions, adresse de support, état des déploiements et niveau de logs.
+Les réglages anti-abus et CAPTCHA ont été vérifiés négativement avant ouverture. Le hook `aim_beta_signup_gate` est maintenu mais permet `email` et `google` uniquement. Le site est en `SIGNUPS_READY=true`, et les textes du formulaire et contrôles de déploiement ont été actualisés. Restent la confirmation e-mail d'un vrai compte jetable, la récupération complète et les tests multi-comptes. Avant ouverture vérifier confidentialité, conditions, adresse de support, état des déploiements et niveau de logs.
 
 **Ne jamais** considérer un test simulé comme une preuve d'authentification Google / e-mail réelle, ni annoncer le site « sécurisé à 100 % ».
