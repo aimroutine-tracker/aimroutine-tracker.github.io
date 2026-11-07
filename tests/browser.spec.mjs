@@ -186,6 +186,7 @@ test('Email signup sends Turnstile token and requests confirmation (mock Supabas
   expect(route.request().method()).toBe('POST');
   const body=JSON.parse(route.request().postData()||'{}');
   expect(body.email).toBe('new-user@example.invalid');
+  expect(body.data?.aim_username).toBe('Player_2026');
   expect(body.gotrue_meta_security?.captcha_token||body.captcha_token).toBe('qa-synthetic-captcha-token');
   return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({
    id:'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee',email:body.email,confirmation_sent_at:'2026-11-07T20:00:00Z'
@@ -196,6 +197,7 @@ test('Email signup sends Turnstile token and requests confirmation (mock Supabas
  await expect(page.locator('#signup-submit')).toBeEnabled();
  await expect(page.locator('#captcha-signup')).toHaveAttribute('data-rendered','yes');
  await page.locator('#signup-email').fill('new-user@example.invalid');
+ await page.locator('#signup-username').fill('Player_2026');
  await page.locator('#signup-password').fill('AimRoutine_2026!Strong');
  await page.locator('#signup-submit').click();
  await expect(page.locator('#account-status')).toContainText('un e-mail de confirmation');
@@ -206,6 +208,7 @@ test('Google deletion UX uses exactly SUPPRIMER without a second Google login (m
  const uid='33333333-3333-4333-8333-333333333333';
  const mockUser={id:uid,email:'test-google-delete@example.invalid',
    app_metadata:{provider:'google',providers:['google']},
+   user_metadata:{aim_username:'GooglePlayer'},
    identities:[{provider:'google',id:'test-identity'}],
    aud:'authenticated',role:'authenticated',created_at:'2026-11-06T00:00:00Z'};
  const session={access_token:'mock-google-session-access-token',token_type:'bearer',
@@ -245,10 +248,44 @@ test('Google deletion UX uses exactly SUPPRIMER without a second Google login (m
  expect(dialogCalls).toBe(0);
 });
 
+test('Google account must choose a nickname before cloud dashboard (mock Auth)',async({page})=>{
+ const uid='55555555-5555-4555-8555-555555555555';
+ let mockUser={id:uid,email:'test-google-onboarding@example.invalid',
+  app_metadata:{provider:'google',providers:['google']},
+  user_metadata:{full_name:'Name from Google'},
+  identities:[{provider:'google',id:'google-user-id'}],
+  aud:'authenticated',role:'authenticated',created_at:'2026-11-07T00:00:00Z'};
+ const session={access_token:'mock-google-onboarding-access-token',token_type:'bearer',
+  expires_at:Math.floor(Date.now()/1000)+7200,expires_in:7200,
+  refresh_token:'mock-google-onboarding-refresh',user:mockUser};
+ await page.addInitScript(value=>{
+  localStorage.setItem('sb-lmzswtzboobpokumxzhy-auth-token',JSON.stringify(value));
+ },session);
+ let saved=0;
+ await page.route('https://lmzswtzboobpokumxzhy.supabase.co/auth/v1/user',route=>{
+  if(route.request().method()==='PUT'){
+   const body=JSON.parse(route.request().postData()||'{}');
+   expect(body.data?.aim_username).toBe('NewPlayer');
+   saved++;
+   mockUser={...mockUser,user_metadata:{...mockUser.user_metadata,aim_username:body.data.aim_username}};
+  }
+  return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(mockUser)});
+ });
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#username-panel')).toBeVisible();
+ await expect(page.locator('#dashboard-panel')).toBeHidden();
+ await page.locator('#username-input').fill('NewPlayer');
+ await page.locator('#username-form button[type="submit"]').click();
+ await expect(page.locator('#dashboard-panel')).toBeVisible();
+ await expect(page.locator('#user-username')).toHaveText('NewPlayer');
+ expect(saved).toBe(1);
+});
+
 test('Email account deletion sends Turnstile token during password reauthentication (mock account)',async({page})=>{
  const uid='44444444-4444-4444-8444-444444444444';
  const mockUser={id:uid,email:'test-email-delete@example.invalid',
   app_metadata:{provider:'email',providers:['email']},
+  user_metadata:{aim_username:'EmailPlayer'},
   identities:[{provider:'email',id:'email-identity'}],
   aud:'authenticated',role:'authenticated',created_at:'2026-11-07T00:00:00Z'};
  const session={access_token:'mock-email-session-access-token',token_type:'bearer',
