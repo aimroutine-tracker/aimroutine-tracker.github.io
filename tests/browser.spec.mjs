@@ -426,3 +426,31 @@ test('Turnstile-enabled browser form forwards a token on login and password rese
  expect(calls[1].captcha).toBe('qa-synthetic-captcha-token');
  await expect.poll(()=>page.evaluate(()=>window.__turnstileResetCount)).toBe(2);
 });
+
+test('AIM mini-challenge is playable with mouse and keyboard, and can pause',async ({page})=>{
+ await page.goto('/index.html',{waitUntil:'domcontentloaded'});
+ const game=page.locator('#aim-challenge');
+ await game.scrollIntoViewIfNeeded();
+ await expect(game).toBeVisible();
+ await page.locator('[data-ar11-mode="reflex"]').click();
+ await expect(page.locator('[data-ar11-mode="reflex"]')).toHaveAttribute('aria-pressed','true');
+ await page.locator('[data-ar11-mode="precision"]').click();
+ await expect(page.locator('[data-ar11-mode="precision"]')).toHaveAttribute('aria-pressed','true');
+ await page.locator('[data-ar11-start]').click();
+ await expect(game).toHaveAttribute('data-state','playing');
+ await expect(page.locator('[data-ar11-target]')).toBeVisible();
+ await page.locator('[data-ar11-target]').click();
+ await expect(page.locator('[data-ar11-hits]')).toHaveText('1');
+ await page.locator('[data-ar11-target]').focus();
+ await page.keyboard.press('Enter');
+ await expect(page.locator('[data-ar11-hits]')).toHaveText('2');
+ await page.locator('[data-ar11-pause]').click();
+ await expect(game).toHaveAttribute('data-state','paused');
+ await expect(page.locator('[data-ar11-target]')).toBeHidden();
+ await page.locator('[data-ar11-pause]').click();
+ await expect(game).toHaveAttribute('data-state','playing');
+ await expect(page.locator('[data-ar11-target]')).toBeVisible();
+ await page.locator('[data-ar11-start]').click();
+ await expect(page.locator('[data-ar11-hits]')).toHaveText('0');
+ await expect(page.locator('[data-ar11-time]')).toHaveText('20');
+});
