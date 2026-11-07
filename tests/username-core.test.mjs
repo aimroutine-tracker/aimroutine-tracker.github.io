@@ -5,7 +5,7 @@ import {validateUsername,usernameFromUser,saveUsername} from '../username-v7.mjs
 const read=f=>readFileSync(new URL('../'+f,import.meta.url),'utf8');
 test('pseudo mandatory and safe',()=>{
  for(const value of ['',null,'ab','a'.repeat(25),'bad name','<script>','_bad','àbc'])assert.throws(()=>validateUsername(value));
- assert.equal(validateUsername(' IKAZU_21 '),'IKAZU_21');
+ assert.equal(validateUsername(' NovaFox_21 '),'NovaFox_21');
  assert.equal(validateUsername('x-7'),'x-7');
 });
 test('Google name is not silently accepted as chosen pseudo',()=>{
@@ -43,7 +43,7 @@ test('do not overwrite nickname chosen on another device',async()=>{
 test('no update from a different account',async()=>{
  const auth={getUser:async()=>({data:{user:{id:'wrong',user_metadata:{}}},error:null}),
  updateUser:async()=>{throw Error('unexpected')}};
- await assert.rejects(saveUsername(auth,'u1','IKAZU'),/Session non validée/);
+ await assert.rejects(saveUsername(auth,'u1','NovaFox'),/Session non validée/);
 });
 test('email creation hook validates pseudo server-side but permits Google OAuth',()=>{
  const sql=read('supabase/migrations/20261107225000_require_username_signup.sql');
