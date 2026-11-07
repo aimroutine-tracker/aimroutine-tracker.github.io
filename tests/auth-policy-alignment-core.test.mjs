@@ -36,5 +36,5 @@ test('email signup release is enabled, CAPTCHA remains and offline cache is vers
  assert.match(htmlHasSignupButton(),/id="signup-submit"/);
  assert.doesNotMatch(htmlHasSignupButton(),/id="signup-submit" disabled/);
  assert.match(read('account.html'),/id="captcha-signup"/);
- assert.match(sw,/aimroutine-v7-network-first-single-logout-20261107i/);
+ assert.match(sw,/aimroutine-v8-visual-polish-20261107/);
 });
