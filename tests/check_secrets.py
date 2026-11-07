@@ -14,6 +14,7 @@ PATTERNS = {
     "Riot Games API key": r"RGAPI-[A-Za-z0-9_-]{10,}",
     "Google OAuth client secret": r"GOCSPX-[A-Za-z0-9_-]{10,}",
     "Supabase privileged key": r"sb_secret_[A-Za-z0-9_-]{12,}",
+    "Cloudflare Turnstile secret (long token)": r"(?<![A-Za-z0-9_-])0x4[A-Za-z0-9_-]{30,}(?![A-Za-z0-9_-])",
     "Google private API key": r"AIza[A-Za-z0-9_-]{30,}",
     "GitHub token": r"(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9_]{30,}|github_pat_[A-Za-z0-9_]{30,}",
     "GitLab token": r"glpat-[A-Za-z0-9_-]{15,}",

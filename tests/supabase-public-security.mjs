@@ -19,6 +19,25 @@ console.log('Auth public configuration: '+JSON.stringify({
 assert.equal(publicSettings.external?.google,true,'Google OAuth provider unexpectedly disabled');
 assert.notEqual(publicSettings.mailer_autoconfirm,true,'Email should require confirmation for public registration');
 
+// Read-only production regression: unauthenticated users must not be able to
+// enumerate even one row of player data. Never create, modify or delete data
+// in production from this smoke test.
+const privateTables=['aim_profiles','aim_preferences','aim_sessions','aim_presets'];
+for(const table of privateTables){
+ const response=await fetch(origin+'/rest/v1/'+table+'?select=user_id&limit=1',{
+  headers:{apikey:key,'Accept':'application/json'},redirect:'manual'
+ });
+ if(response.status===200){
+  const rows=await response.json();
+  assert.ok(Array.isArray(rows)&&rows.length===0,
+   'Anonymous access unexpectedly reveals rows from '+table);
+ }else{
+  assert.ok([401,403].includes(response.status),
+   'Unexpected public REST status for '+table+': '+response.status);
+ }
+ console.log('Anonymous '+table+' read: private');
+}
+
 // Check the public OAuth initiation path without authenticating as anyone.
 // This verifies that Supabase can build the Google consent redirect, but is
 // NOT proof of a completed Google sign-in.
