@@ -1,6 +1,6 @@
 # AimRoutine Tracker — authentification et ouverture publique
 
-**État au 6 novembre 2026.** Document interne au dépôt, **non publié sur GitHub Pages**.
+**État au 7 novembre 2026.** Document interne au dépôt, **non publié sur GitHub Pages**.
 
 ## Résultats démontrés (ne pas confondre avec les parcours complets)
 
@@ -11,17 +11,19 @@
 - Synchronisation : tests unitaires sur deux utilisateurs et deux appareils, y compris hors ligne et propagations de suppressions ; politiques RLS PostgreSQL examinées et testées. **La validation réelle avec deux sessions authentifiées reste à faire.**
 - `delete-aim-account` Edge Function : authentification JWT et texte `SUPPRIMER` exigés ; requêtes anonymes/falsifiées refusées.
 - Déploiement GitHub Pages : artefacts statiques autorisés uniquement, contrôle des secrets et intégrité `riot.txt`.
-- Cloudflare Turnstile : **module frontal intégré mais désactivé**, car aucun site key ni secret de widget de production n'a été fourni. Ne pas déclarer CAPTCHA activé ni empêcher la connexion Google.
+- Cloudflare Turnstile : **clé publique du widget existant intégrée au site** et vérification prévue sur connexion, inscription, récupération et réauthentification par mot de passe avant suppression de compte. **Validation côté serveur encore inactive tant que le propriétaire n'a pas activé Turnstile dans Supabase Auth**. La connexion Google OAuth n'est pas soumise à ce widget. La clé secrète n'est jamais conservée dans le dépôt.
 - Security Advisor Supabase Free : `Leaked Password Protection Disabled` est encore signalé. Le contrôle HIBP côté navigateur n'impose pas la vérification sur les appels directs API.
 - Rotation de l'ancien secret Google OAuth : explicitement reportée par le propriétaire, risque résiduel.
 
-## Configuration de Cloudflare Turnstile — actions propriétaire
+## Finaliser le widget Cloudflare Turnstile existant — actions propriétaire
 
-1. Créer un widget **Turnstile** dans [Cloudflare Dashboard](https://dash.cloudflare.com/). Ajouter l'hôte `aimroutine-tracker.github.io` (et `localhost` seulement en test local).
-2. Ne partager avec l'assistant que la **site key publique**. **Ne jamais transmettre la secret key** dans ChatGPT, GitHub, HTML, JavaScript ou un ticket public.
-3. Inscrire la site key dans `turnstile-v7.mjs`, constante `TURNSTILE_SITE_KEY`. Déployer le site et vérifier que le widget est visible et permet la connexion et la récupération d'un compte e-mail existant, sans changer le statut des inscriptions publiques.
-4. Dans [Supabase Auth → Attack Protection](https://supabase.com/dashboard/project/lmzswtzboobpokumxzhy/auth/protection), activer **Enable Captcha protection**, choisir **Cloudflare Turnstile**, saisir la **secret key uniquement dans Supabase** et enregistrer. Faire un test de connexion e-mail et un test de récupération ; vérifier que sans défi valide l'API refuse la requête.
-5. Conserver des limites Supabase Auth raisonnables (les valeurs ont été examinées le 6 novembre). Ne pas activer CAPTCHA avant d'avoir déployé la site key, sinon les parcours e-mail seront bloqués.
+1. Le widget existe déjà. Sa **clé publique** est enregistrée dans `turnstile-v7.mjs` ; aucun secret n'a été écrit dans le dépôt, les scripts publics ou les tests. La protection du formulaire d'inscription est préparée, mais l'inscription reste fermée par le serveur.
+2. Dans [Cloudflare Dashboard → Turnstile](https://dash.cloudflare.com/), vérifier que la liste d'hôtes autorisés contient **`aimroutine-tracker.github.io`** et que le widget est en mode Managed. Ne pas saisir une URL complète, seulement le nom d'hôte.
+3. Ouvrir `https://aimroutine-tracker.github.io/account.html` après déploiement ; vérifier que le défi Turnstile apparaît ou se résout dans les formulaires **connexion e-mail**, **récupération de mot de passe**, et **réauthentification e-mail pour suppression du compte**. Google OAuth n'a pas besoin d'un CAPTCHA de formulaire.
+4. **La clé secrète Turnstile ayant été collée dans une conversation**, la **faire tourner dans Cloudflare** puis utiliser exclusivement la **nouvelle clé secrète** pour l'étape suivante. Ne jamais la publier ni la communiquer à un assistant, à GitHub ou au navigateur.
+5. Dans [Supabase → Authentication → Attack Protection](https://supabase.com/dashboard/project/lmzswtzboobpokumxzhy/auth/protection), activer **Enable CAPTCHA protection**, choisir **Cloudflare Turnstile**, saisir la **nouvelle clé secrète uniquement dans Supabase** et enregistrer. Supabase Auth réalise la vérification Siteverify côté serveur pour les opérations Auth ; le site statique n'a pas besoin d'une fonction de vérification supplémentaire.
+6. Tester une connexion e-mail réelle et un envoi de récupération avec un défi réussi. Vérifier aussi qu'un appel à l'API Auth sans jeton valide est rejeté. Une fois activée, la protection peut bloquer les clients utilisant d'anciennes versions du site ; s'assurer que le cache et le Service Worker sont actualisés.
+7. Ne pas ouvrir `SIGNUPS_READY` ni désactiver le hook d'inscription bêta avant les tests de confirmation/récupération, suppression Google et synchronisation avec comptes jetables.
 
 Documentation : https://supabase.com/docs/guides/auth/auth-captcha
 
