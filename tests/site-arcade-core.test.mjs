@@ -13,12 +13,12 @@ test('home has a playable, accessible, bilingual mini AIM challenge',()=>{
  assert.match(html,/aria-live="polite"/);
  assert.match(html,/data-ar11-mode="precision"/);
  assert.match(html,/data-ar11-mode="reflex"/);
- assert.match(html,/site-arcade-v11.js\?v=1/);
+ assert.match(html,/site-arcade-v12.js\?v=1/);
  assert.match(html,/site-arcade-v11.css\?v=1/);
  assert.match(html,/Graphique illustratif/);
 });
 test('mini-game is local, timed, pausable and maintains honest stats',()=>{
- const js=read('site-arcade-v11.js');
+ const js=read('site-arcade-v12.js');
  assert.match(js,/const DURATION=20000/);
  assert.match(js,/setInterval\(tick,100\)/);
  assert.match(js,/function pause\(\)/);
@@ -40,7 +40,7 @@ test('animated game respects reduced motion and mobile size',()=>{
 test('public deployment allowlist includes new game assets',()=>{
  const m=read('scripts/public-assets.txt');
  const sw=read('sw-v6.js');
- for(const name of ['site-arcade-v11.css','site-arcade-v11.js']){
+ for(const name of ['site-arcade-v11.css','site-arcade-v12.js']){
   assert.ok(m.split(/\r?\n/).includes(name));
   assert.ok(sw.includes("'./"+name+"'"));
  }

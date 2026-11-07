@@ -454,3 +454,24 @@ test('AIM mini-challenge is playable with mouse and keyboard, and can pause',asy
  await expect(page.locator('[data-ar11-hits]')).toHaveText('0');
  await expect(page.locator('[data-ar11-time]')).toHaveText('20');
 });
+
+test('V12 AIM duration, combos and keyboard pause',async ({page})=>{
+ await page.goto('/index.html',{waitUntil:'domcontentloaded'});
+ await page.locator('#aim-challenge').scrollIntoViewIfNeeded();
+ await page.locator('[data-ar12-duration="15000"]').click();
+ await expect(page.locator('[data-ar11-time]')).toHaveText('15');
+ await expect(page.locator('[data-ar11-progress]')).toHaveAttribute('aria-valuemax','15');
+ await page.locator('[data-ar11-start]').click();
+ await page.locator('[data-ar11-target]').click();
+ await expect(page.locator('[data-ar12-combo]')).toHaveText('1');
+ await page.locator('[data-ar11-target]').click();
+ await expect(page.locator('[data-ar12-combo]')).toHaveText('2');
+ await expect(page.locator('[data-ar12-reaction]')).toContainText('ms');
+ await page.keyboard.press('Escape');
+ await expect(page.locator('#aim-challenge')).toHaveAttribute('data-state','paused');
+ await page.locator('[data-ar11-pause]').click();
+ await expect(page.locator('#aim-challenge')).toHaveAttribute('data-state','playing');
+ await expect(page.locator('[data-ar12-duration="20000"]')).toBeDisabled();
+ await page.locator('[data-ar11-start]').click();
+ await expect(page.locator('[data-ar11-hits]')).toHaveText('0');
+});

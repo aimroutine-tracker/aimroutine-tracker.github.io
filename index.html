@@ -48,6 +48,7 @@
 <link rel="stylesheet" href="visual-v8.css?v=2">
 <link rel="stylesheet" href="site-motion-v10.css?v=1">
 <link rel="stylesheet" href="site-arcade-v11.css?v=1">
+<link rel="stylesheet" href="site-arcade-v12.css?v=1">
 </head>
 <body class="v5-landing site31 site31-home">
 <a class="site31-skip" href="#main"><span class="fr">Aller au contenu</span><span class="en">Skip to content</span></a>
@@ -78,6 +79,7 @@
      <a class="v5-btn primary" href="#app-gallery"><span class="fr">Découvrir le logiciel</span><span class="en">Explore the app</span> <span aria-hidden="true">↘</span></a>
      <a class="v5-btn secondary" href="training.html"><span class="fr">Lancer mon espace AIM</span><span class="en">Open AIM workspace</span> <span aria-hidden="true">↗</span></a>
     </div>
+    <a class="ar12-hero-challenge-link" href="#aim-challenge"><span aria-hidden="true">✦</span><span class="fr">Tester mon AIM en 20 secondes</span><span class="en">Test my aim in 20 seconds</span><span aria-hidden="true">↗</span></a>
     <div class="v5-hero-facts"><span><span class="en">Iron → Radiant</span><span class="fr">Fer → Radiant</span></span><span><span class="en">Choose your tools</span><span class="fr">Choisis tes logiciels</span></span><span><span class="en">Free web demo, no account</span><span class="fr">Démo web sans compte</span></span></div>
     <a class="v16-hero-real-link" href="#app-gallery"><span class="v16-hero-real-dot" aria-hidden="true"></span><span class="en">See a real Windows 2.9 screenshot</span><span class="fr">Voir une vraie capture Windows 2.9</span><span aria-hidden="true">↗</span></a>
     <div class="experience-trust"><span class="experience-trust-icon" aria-hidden="true">✓</span><span><span class="en"><strong>Real version 2.9 screenshots</strong> · Fictional web demos · Riot integration pending approval</span><span class="fr"><strong>Captures réelles de la version 2.9</strong> · Démos fictives · Intégration Riot en attente d’autorisation</span></span></div>
@@ -162,11 +164,19 @@
     <button type="button" data-ar11-mode="reflex" aria-pressed="false"><span class="fr">Réflexes</span><span class="en">Reflexes</span></button>
    </div>
    <small><span class="fr">Précision : cible réduite. Réflexes : cible mobile toutes les secondes.</span><span class="en">Precision: smaller target. Reflexes: target moves every second.</span></small>
+   <div class="ar12-duration-picker" role="group" aria-label="Durée du défi / Challenge duration">
+    <span><span class="fr">DURÉE</span><span class="en">DURATION</span></span>
+    <div class="ar12-duration-buttons">
+     <button type="button" data-ar12-duration="15000" aria-pressed="false">15 s</button>
+     <button type="button" data-ar12-duration="20000" aria-pressed="true">20 s</button>
+     <button type="button" data-ar12-duration="30000" aria-pressed="false">30 s</button>
+    </div>
+   </div>
   </div>
  </div>
  <div class="ar11-game-layout">
   <div class="ar11-field-wrap">
-   <div class="ar11-field-top" aria-hidden="true"><span>AR // REACTION ARENA</span><span>20 SEC / NO RANKING</span></div>
+   <div class="ar11-field-top" aria-hidden="true"><span>AR // REACTION ARENA</span><span data-ar12-field-duration>20 SEC / NO RANKING</span></div>
    <div class="ar11-field" data-ar11-field>
     <div class="ar11-cross ar11-cross--tl" aria-hidden="true"></div>
     <div class="ar11-cross ar11-cross--tr" aria-hidden="true"></div>
@@ -179,7 +189,7 @@
      <p data-ar11-overlay-copy><span class="fr">Sélectionne un mode, puis démarre pour faire apparaître les cibles.</span><span class="en">Choose a mode, then start to reveal the targets.</span></p>
     </div>
    </div>
-   <div class="ar11-field-foot"><span><span class="fr">SOURIS · TACTILE · CLAVIER</span><span class="en">MOUSE · TOUCH · KEYBOARD</span></span><span class="ar11-field-sign">AIMROUTINE / ORIGINAL</span></div>
+   <div class="ar11-field-foot"><span><span class="fr">SOURIS · TACTILE · CLAVIER</span><span class="en">MOUSE · TOUCH · KEYBOARD</span></span><span class="ar11-field-sign"><span class="fr">P / ÉCHAP = PAUSE</span><span class="en">P / ESC = PAUSE</span></span></div>
   </div>
   <div class="ar11-control-panel">
    <div class="ar11-stat-grid">
@@ -188,10 +198,17 @@
     <div class="ar11-stat"><span><span class="fr">RATÉS</span><span class="en">MISSES</span></span><strong data-ar11-misses>0</strong></div>
     <div class="ar11-stat"><span><span class="fr">PRÉCISION</span><span class="en">ACCURACY</span></span><strong data-ar11-accuracy>—</strong></div>
    </div>
+   <div class="ar12-extra-stats" aria-label="Statistiques supplémentaires / Additional stats">
+    <div><span><span class="fr">COMBO ACTUEL</span><span class="en">CURRENT STREAK</span></span><strong data-ar12-combo>0</strong></div>
+    <div><span><span class="fr">MEILLEUR SCORE*</span><span class="en">BEST SCORE*</span></span><strong data-ar12-best>—</strong></div>
+    <div><span><span class="fr">RÉACTION MOY.</span><span class="en">AVG. REACTION</span></span><strong data-ar12-reaction>—</strong></div>
+   </div>
+   <p class="ar12-best-note"><span class="fr">* Cette visite seulement, pour le mode et la durée sélectionnés.</span><span class="en">* This visit only, for the selected mode and duration.</span></p>
    <div class="ar11-time-track" role="progressbar" aria-label="Temps restant / Remaining time" aria-valuemin="0" aria-valuemax="20" aria-valuenow="20" data-ar11-progress><span data-ar11-progress-bar></span></div>
    <div class="ar11-control-actions">
     <button class="ar11-start" type="button" data-ar11-start><span class="fr">Démarrer le défi</span><span class="en">Start challenge</span> <span aria-hidden="true">↗</span></button>
     <button class="ar11-pause" type="button" data-ar11-pause hidden><span class="fr">Pause</span><span class="en">Pause</span></button>
+    <button class="ar12-copy" type="button" data-ar12-copy hidden><span class="fr">Copier mon score</span><span class="en">Copy my score</span></button>
    </div>
    <p class="ar11-status" role="status" aria-live="polite" data-ar11-status><span class="fr">Tes résultats s'affichent ici après le défi.</span><span class="en">Your results will appear here after the challenge.</span></p>
    <div class="ar11-disclaimer"><span aria-hidden="true">ⓘ</span><span><span class="fr">Défi ludique indépendant : le score n'est pas sauvegardé et ne mesure pas ton niveau sur VALORANT.</span><span class="en">Independent casual challenge: scores aren't saved and don't measure your VALORANT skill.</span></span></div>
@@ -508,6 +525,6 @@
 </footer>
 <script src="site-quality-v34.js?v=1" defer></script>
 <script src="site-motion-v10.js?v=1" defer></script>
-<script src="site-arcade-v11.js?v=1" defer></script>
+<script src="site-arcade-v12.js?v=1" defer></script>
 </body>
 </html>

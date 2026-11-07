@@ -1,0 +1,95 @@
+/* AimRoutine Arcade V12 — additive, no external assets. */
+body.site31.site31-home .ar12-hero-challenge-link{
+ display:inline-flex;align-items:center;gap:9px;margin-top:12px;padding:10px 13px;min-height:44px;
+ border:1px solid #b77387;border-radius:10px;background:#402939;
+ color:#ffcfda;font-size:12px;font-weight:850;text-decoration:none;
+ transition:transform .19s,background .19s;
+}
+body.site31.site31-home .ar12-hero-challenge-link:hover{
+ transform:translateY(-2px);background:#573046;
+}
+body.site31.site31-home .ar12-duration-picker{
+ display:flex;align-items:center;justify-content:space-between;gap:11px;
+ margin-top:14px;padding-top:13px;border-top:1px solid #486374;
+}
+body.site31.site31-home .ar12-duration-picker>span{
+ font-size:10px;font-weight:850;letter-spacing:.11em;color:#bdd2df;
+}
+body.site31.site31-home .ar12-duration-buttons{
+ display:flex;gap:4px;padding:4px;border:1px solid #456374;border-radius:10px;background:#091b29;
+}
+body.site31.site31-home .ar12-duration-buttons button{
+ min-height:36px;min-width:49px;padding:7px 10px;cursor:pointer;border:1px solid transparent;
+ border-radius:7px;background:transparent;color:#b7cbd8;font-size:12px;font-weight:850;
+ font-variant-numeric:tabular-nums;
+}
+body.site31.site31-home .ar12-duration-buttons button[aria-pressed="true"]{
+ border-color:#c4fcf4;background:#9bece3;color:#0d2031;box-shadow:0 4px 13px #a5faf52c;
+}
+body.site31.site31-home .ar12-duration-buttons button:disabled{opacity:.6;cursor:not-allowed}
+body.site31.site31-home .ar12-extra-stats{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;
+}
+body.site31.site31-home .ar12-extra-stats>div{
+ min-height:83px;min-width:0;padding:11px;border:1px solid #425e70;border-radius:10px;
+ background:linear-gradient(145deg,#163242,#0f2536);
+ display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:9px;
+}
+body.site31.site31-home .ar12-extra-stats>div>span{
+ color:#b8cdd9;font-size:9px;font-weight:850;letter-spacing:.04em;line-height:1.35;
+}
+body.site31.site31-home .ar12-extra-stats strong{
+ color:#a5f5e9;font-size:clamp(17px,2vw,23px);line-height:1;font-variant-numeric:tabular-nums;
+}
+body.site31.site31-home .ar12-best-note{
+ margin:-8px 0 0!important;font-size:10px!important;line-height:1.55!important;color:#a4bdca!important;
+}
+body.site31.site31-home .ar12-copy{
+ min-height:44px;cursor:pointer;padding:11px 14px;border:1px solid #62949b;
+ border-radius:10px;background:#183949;color:#d8fff7;font-size:12px;font-weight:850;
+}
+body.site31.site31-home .ar12-copy:hover{background:#255269}
+body.site31.site31-home .ar12-copy[hidden]{display:none!important}
+body.site31.site31-home .ar12-impact,body.site31.site31-home .ar12-miss-ring{
+ position:absolute;z-index:4;border-radius:50%;pointer-events:none;
+}
+body.site31.site31-home .ar12-impact{
+ width:58px;height:58px;border:2px solid #a4faed;box-shadow:0 0 24px #a4f4e488;
+ animation:ar12-hit .34s ease-out forwards;
+}
+body.site31.site31-home .ar12-miss-ring{
+ width:20px;height:20px;border:2px solid #ff98b0;
+ animation:ar12-miss .32s ease-out forwards;
+}
+@keyframes ar12-hit{from{opacity:.92;transform:translate(-50%,-50%) scale(.5)}to{opacity:0;transform:translate(-50%,-50%) scale(1.65)}}
+@keyframes ar12-miss{from{opacity:.85;transform:translate(-50%,-50%) scale(.5)}to{opacity:0;transform:translate(-50%,-50%) scale(1.8)}}
+body.site31.site31-home .ar12-hit-pop{animation:ar12-pop .24s ease-out}
+@keyframes ar12-pop{0%,100%{transform:scale(1)}50%{transform:scale(1.18);color:#bdfff4}}
+/* Shared visual polish — no impact on control behavior. */
+@media(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+ body.site31 main :is(.v5-feature,.experience-step,.ti-card,.show-features article,.ar7-service-grid>div,.ar5-release-card){
+  transition:transform .24s ease,box-shadow .24s ease,border-color .24s ease;
+ }
+ body.site31 main :is(.v5-feature,.experience-step,.ti-card,.show-features article,.ar7-service-grid>div,.ar5-release-card):hover{
+  transform:translateY(-4px);border-color:#76cec5!important;box-shadow:0 17px 34px #0005;
+ }
+ body.site31.site31-home .ar9-path-card:hover .ar9-path-icon{transform:rotate(-5deg) scale(1.06)}
+}
+@media(max-width:730px){
+ body.site31.site31-home .ar11-control-actions{display:grid;grid-template-columns:minmax(0,1fr) auto}
+ body.site31.site31-home .ar11-start{width:100%}
+ body.site31.site31-home .ar12-copy{grid-column:1/-1}
+}
+@media(max-width:425px){
+ body.site31.site31-home .ar12-duration-picker{flex-direction:column;align-items:stretch;gap:8px}
+ body.site31.site31-home .ar12-duration-buttons button{flex:1;min-width:0}
+ body.site31.site31-home .ar12-extra-stats>div{padding:9px 7px}
+ body.site31.site31-home .ar12-extra-stats>div>span{font-size:8px}
+ body.site31.site31-home .ar12-extra-stats strong{font-size:17px}
+}
+@media(prefers-reduced-motion:reduce){
+ body.site31.site31-home .ar12-hit-pop,body.site31.site31-home .ar12-impact,
+ body.site31.site31-home .ar12-miss-ring{animation:none!important;display:none!important}
+ body.site31.site31-home .ar12-hero-challenge-link{transition:none!important}
+ body.site31.site31-home .ar12-hero-challenge-link:hover{transform:none!important}
+}

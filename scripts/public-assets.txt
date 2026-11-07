@@ -68,6 +68,8 @@ site-motion-v10.css
 site-motion-v10.js
 site-arcade-v11.css
 site-arcade-v11.js
+site-arcade-v12.css
+site-arcade-v12.js
 site-shared-v5.css
 visual-v8.css
 site-v5.css
