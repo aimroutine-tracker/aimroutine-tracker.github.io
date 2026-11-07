@@ -10,14 +10,9 @@ on:
       - "tests/**"
       - "scripts/**"
       - ".github/workflows/site-quality.yml"
+  # Every pull request must run this required check, including docs-only changes.
+  # Path-filtered required checks can remain pending and block the merge.
   pull_request:
-    paths:
-      - "**/*.html"
-      - "**/*.css"
-      - "**/*.js"
-      - "**/*.mjs"
-      - "tests/**"
-      - "scripts/**"
   workflow_dispatch:
 
 permissions:
