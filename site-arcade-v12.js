@@ -1,5 +1,5 @@
 /* AimRoutine Arcade V12 — client-only, original mini AIM challenge.
-   No account state, Supabase, Riot services, tracking, or local persistence. */
+   No account state, network requests, tracking, or local persistence. */
 (()=>{
  'use strict';
  const game=document.querySelector('[data-ar11-game]');
