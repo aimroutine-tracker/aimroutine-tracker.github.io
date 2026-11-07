@@ -19,7 +19,7 @@ test('account signup/recovery enforce 8 chars and all four classes',()=>{
  }
  assert.match(html,/Mot de passe \(8 caractères minimum\)/);
  assert.match(html,/Nouveau mot de passe \(8 caractères minimum\)/);
- assert.match(html,/account-v7\.mjs\?v=10/);
+ assert.match(html,/account-v7\.mjs\?v=11/);
  assert.equal(MIN_PASSWORD_LENGTH,8);
  assert.equal(checkPasswordLength('Ab1!cdef').ok,true);
  assert.equal(checkPasswordLength('Ab1!cde').ok,false);
