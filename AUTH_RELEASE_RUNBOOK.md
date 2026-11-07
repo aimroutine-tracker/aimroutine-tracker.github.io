@@ -109,3 +109,11 @@ Les réglages anti-abus et CAPTCHA ont été vérifiés négativement avant ouve
 - L'unique action appelle explicitement `supabase.auth.signOut({scope:'global'})` : les jetons de renouvellement de toutes les sessions sont révoqués, y compris celui du navigateur courant. Les jetons d'accès déjà émis peuvent rester valides jusqu'à leur expiration.
 - Les copies locales des données ne sont pas effacées et les séances cloud sont préservées.
 - Contrôles unitaires : une seule action et portée `global`, aucune option restante `others`, erreurs propagées.
+
+## Pseudo obligatoire — novembre 2026
+
+- Inscription e-mail : pseudo obligatoire 3 à 24 caractères (lettres ASCII, chiffres, `_` et `-`, premier caractère alphanumérique), transmis à `supabase.auth.signUp({options:{data:{aim_username}}})`.
+- Google OAuth et anciens comptes sans pseudo : étape de saisie avant le tableau de bord cloud. Identité enregistrée via Supabase Auth, indépendamment de la sauvegarde des séances.
+- Pseudo conservé dans `auth.users.raw_user_meta_data.aim_username`, utilisé pour l'affichage uniquement, jamais pour la RLS ou l'autorisation. Aucune unicité garantie.
+- Le hook Auth `aim_beta_signup_gate` valide aussi les nouvelles inscriptions par e-mail côté serveur ; Google reste autorisé.
+- Déploiement sans interruption : publier le nouveau formulaire et l'onboarding avant d'appliquer la migration SQL du hook.
