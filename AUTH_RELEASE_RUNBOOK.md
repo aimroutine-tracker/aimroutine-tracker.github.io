@@ -15,6 +15,14 @@
 - Security Advisor Supabase Free : `Leaked Password Protection Disabled` est encore signalé. Le contrôle HIBP côté navigateur n'impose pas la vérification sur les appels directs API.
 - Rotation de l'ancien secret Google OAuth : explicitement reportée par le propriétaire, risque résiduel.
 
+## Test utilisateur après activation (7 novembre 2026)
+
+- **Connexion e-mail : validée côté utilisateur** après activation de Cloudflare Turnstile dans Supabase Auth et mise en ligne de la clé publique : le propriétaire a confirmé réussir à se connecter via le site.
+- Cela vérifie la **continuité du parcours positif** ; cela **ne prouve pas à lui seul** que les requêtes sans jeton ou avec jeton invalide sont refusées. Un test négatif côté API reste à effectuer.
+- **Récupération de mot de passe** : pas encore vérifiée de bout en bout après activation Turnstile (envoi, consommation du lien, changement puis reconnexion).
+- **Inscriptions e-mail** : restent bloquées par le hook bêta côté serveur.
+- Ne pas considérer comme validées la synchronisation entre sessions authentifiées ni la suppression Google par un compte jetable.
+
 ## Finaliser le widget Cloudflare Turnstile existant — actions propriétaire
 
 1. Le widget existe déjà. Sa **clé publique** est enregistrée dans `turnstile-v7.mjs` ; aucun secret n'a été écrit dans le dépôt, les scripts publics ou les tests. La protection du formulaire d'inscription est préparée, mais l'inscription reste fermée par le serveur.
