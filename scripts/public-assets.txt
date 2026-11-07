@@ -65,6 +65,7 @@ site-presentation-v30.css
 site-quality-v34.css
 site-quality-v34.js
 site-shared-v5.css
+visual-v8.css
 site-v5.css
 site-valorant-v42.css
 site.js
