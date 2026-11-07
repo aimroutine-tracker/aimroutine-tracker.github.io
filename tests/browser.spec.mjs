@@ -475,3 +475,16 @@ test('V12 AIM duration, combos and keyboard pause',async ({page})=>{
  await page.locator('[data-ar11-start]').click();
  await expect(page.locator('[data-ar11-hits]')).toHaveText('0');
 });
+
+test('V13 tactical design loads across routes without hiding interactive elements',async ({page})=>{
+ await page.goto('/index.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.v5-hero .ar13-frame-corners')).toHaveCount(1);
+ await expect(page.locator('.v5-hero .ar13-frame-corners')).toHaveAttribute('aria-hidden','true');
+ await expect(page.locator('.ar9-path-grid .ar9-path-card')).toHaveCount(3);
+ await expect(page.locator('link[href="site-future-v13.css?v=1"]')).toHaveCount(1);
+ await expect(page.locator('#aim-challenge [data-ar11-start]')).toBeAttached();
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.ar7-account-hero .ar13-frame-corners')).toHaveCount(1);
+ await expect(page.locator('#login-form')).toBeVisible();
+ await expect(page.locator('#signup-mode')).toBeVisible();
+});
