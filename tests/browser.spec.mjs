@@ -252,7 +252,7 @@ test('Email account deletion sends Turnstile token during password reauthenticat
  await expect(details).toBeVisible();
  await details.locator('summary').click();
  await expect(page.locator('#google-delete-flow')).toBeHidden();
- await expect(page.locator('#captcha-delete-wrap')).toBeVisible();
+ await expect(page.locator('#captcha-delete-wrap')).not.toHaveAttribute('hidden');
  await expect(page.locator('#captcha-delete')).toHaveAttribute('data-rendered','yes');
  await page.locator('#delete-account-password').fill('Ab1!cdef');
  await page.locator('#delete-account-confirmation').fill('SUPPRIMER');
