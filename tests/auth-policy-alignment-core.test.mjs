@@ -20,7 +20,7 @@ test('account signup/recovery enforce 8 chars and all four classes',()=>{
  }
  assert.match(html,/Mot de passe \(8 caractères minimum\)/);
  assert.match(html,/Nouveau mot de passe \(8 caractères minimum\)/);
- assert.match(html,/account-v7\.mjs\?v=14/);
+ assert.match(html,/account-v7\.mjs\?v=15/);
  assert.equal(MIN_PASSWORD_LENGTH,8);
  assert.equal(checkPasswordLength('Ab1!cdef').ok,true);
  assert.equal(checkPasswordLength('Ab1!cde').ok,false);
@@ -36,5 +36,5 @@ test('email signup release is enabled, CAPTCHA remains and offline cache is vers
  assert.match(htmlHasSignupButton(),/id="signup-submit"/);
  assert.doesNotMatch(htmlHasSignupButton(),/id="signup-submit" disabled/);
  assert.match(read('account.html'),/id="captcha-signup"/);
- assert.match(sw,/aimroutine-v7-network-first-session-protection-20261107h/);
+ assert.match(sw,/aimroutine-v7-network-first-single-logout-20261107i/);
 });
