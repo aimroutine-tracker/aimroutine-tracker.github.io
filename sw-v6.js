@@ -1,7 +1,7 @@
 /* AimRoutine offline shell — V7 cache refresh fix.
    All same-origin static assets are network-first to stop stale CSS from persisting
    across deployments. Offline fallback still supports AIM sessions stored locally. */
-const CACHE='aimroutine-v7-network-first-session-protection-20261107h';
+const CACHE='aimroutine-v7-network-first-single-logout-20261107i';
 const BASE=new URL(self.registration.scope);
 const OFFLINE=[
  './','./index.html','./training.html','./account.html','./product.html','./releases.html',

@@ -4,7 +4,7 @@ import {UID_STORAGE_KEY,validUid,scopedKey,TRAINING_KEY} from './cloud-core-v7.m
 import {synchronize,isEnabled,setEnabled,readUserLocal,importGuestIntoAccount,deleteCloudProgress} from './cloud-sync-v7.mjs';
 import {checkLeakedPassword} from './password-security-v7.mjs';
 import {hasGoogleIdentity} from './google-delete-v7.mjs';
-import {signOutSessions,SCOPE_ALL,SCOPE_OTHER_DEVICES} from './session-security-v7.mjs';
+import {signOutEverywhere} from './session-security-v7.mjs';
 import {TURNSTILE_SITE_KEY,createAuthCaptcha} from './turnstile-v7.mjs';
 const SIGNUPS_READY=true; // Email signups: Turnstile enforced by Supabase Auth, confirmation required, provider allowlisted by server hook.
 const GOOGLE_READY=true; // Provider enabled by project owner; live OAuth is in beta until end-to-end testing.
@@ -154,18 +154,11 @@ $('#new-password-form').addEventListener('submit',e=>{e.preventDefault();run(asy
  msg('Mot de passe mis à jour.');
 })});
 $('#logout').addEventListener('click',()=>run(async()=>{
- // Preserve existing Supabase global logout behavior; never rely on SDK defaults.
- await signOutSessions(supabase.auth,SCOPE_ALL);
+ // A single logout button revokes refresh tokens for ALL sessions, including this browser.
+ await signOutEverywhere(supabase.auth);
  showUser(null);
- msg('Déconnexion de tous tes appareils demandée. Les autres sessions seront invalidées au renouvellement de leur jeton. Les copies locales restent enregistrées.');
+ msg('Tu es déconnecté de ton compte sur tous les appareils. Les jetons d’accès déjà émis restent valides jusqu’à leur expiration. Les copies locales ne sont pas effacées.');
 }));
-$('#session-revoke-others').addEventListener('click',()=>{
- if(!user||!confirm('Déconnecter les autres appareils et navigateurs ? Tu resteras connecté sur celui-ci. Les données sauvegardées localement ailleurs ne seront pas effacées.'))return;
- run(async()=>{
-  await signOutSessions(supabase.auth,SCOPE_OTHER_DEVICES);
-  msg('Autres sessions révoquées : les appareils concernés seront déconnectés au prochain renouvellement de leur jeton. Tu restes connecté ici. Les copies locales restent enregistrées.');
- });
-});
 $('#cloud-enable').addEventListener('click',()=>run(async()=>{
  if(!user||!confirm('Activer la sauvegarde cloud pour ce compte ? Les nouvelles séances de ton espace personnel pourront être envoyées à Supabase.'))return;
  setEnabled(user.id,true);

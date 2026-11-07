@@ -102,3 +102,10 @@ Les réglages anti-abus et CAPTCHA ont été vérifiés négativement avant ouve
 - Les flux de connexion e-mail/Google, CAPTCHA, récupération de mot de passe et suppression de compte restent inchangés. La suppression Google avec mot `SUPPRIMER` ne nécessite pas de réauthentification comme explicitement décidé par le propriétaire : c'est un compromis de sécurité assumé.
 - Supabase Free : la durée maximale de session, l'inactivité et la politique de session unique au niveau du serveur nécessitent des offres payantes selon la documentation ; les jetons JWT ont un réglage distinct. Ne pas modifier le JWT d'un projet en production sans tester la synchronisation et la reconnection.
 - Les restrictions de débit et la durée de vie actuelle du JWT ne sont pas directement modifiables par les outils connectés ; à contrôler dans Supabase Auth > Rate Limits / Sessions. Aucun paramètre sensible serveur n'a été modifié pendant cet audit.
+
+## Simplification de la déconnexion — 7 novembre 2026
+
+- À la demande du propriétaire, l'interface ne conserve **qu'un bouton « Déconnexion »** ; l'option distincte de révocation des « autres appareils » est supprimée.
+- L'unique action appelle explicitement `supabase.auth.signOut({scope:'global'})` : les jetons de renouvellement de toutes les sessions sont révoqués, y compris celui du navigateur courant. Les jetons d'accès déjà émis peuvent rester valides jusqu'à leur expiration.
+- Les copies locales des données ne sont pas effacées et les séances cloud sont préservées.
+- Contrôles unitaires : une seule action et portée `global`, aucune option restante `others`, erreurs propagées.
