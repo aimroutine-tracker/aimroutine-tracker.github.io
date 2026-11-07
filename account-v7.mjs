@@ -12,7 +12,7 @@ const $=s=>document.querySelector(s);
 let user=null,working=false,recovery=false;
 const captcha=createAuthCaptcha(TURNSTILE_SITE_KEY);
 function showCaptcha(mode){
- if(!captcha.enabled||!['login','signup','reset'].includes(mode))return;
+ if(!captcha.enabled||!['login','signup','reset','delete'].includes(mode))return;
  void captcha.mount(mode,document.getElementById('captcha-'+mode))
   .catch(()=>msg('Protection anti-robots indisponible. Réessaie après avoir vérifié ta connexion.'));
 }
@@ -57,7 +57,9 @@ function renderDeleteOptions(){
  const google=hasGoogleIdentity(user);
  $('#google-delete-flow').hidden=!google;
  $('#delete-password-row').hidden=google;
+ $('#captcha-delete-wrap').hidden=google;
  $('#delete-account-password').required=!google;
+ if(!google&&document.querySelector('.ar7-delete-account')?.open)showCaptcha('delete');
  $('#google-delete-status').textContent=google?'Pour supprimer le compte, écris exactement SUPPRIMER en majuscules.':'';
  $('#delete-account-final').disabled=working||(google&&$('#delete-account-confirmation').value!=='SUPPRIMER');
 }
@@ -182,6 +184,9 @@ $('#cloud-delete').addEventListener('click',()=>run(async()=>{
  setEnabled(user.id,false);
  msg('La progression cloud a été supprimée. Le compte existe toujours et les données invitées n’ont pas été modifiées.');
 }));
+document.querySelector('.ar7-delete-account')?.addEventListener('toggle',()=>{
+ if(user&&!hasGoogleIdentity(user)&&document.querySelector('.ar7-delete-account')?.open)showCaptcha('delete');
+});
 $('#delete-account-confirmation').addEventListener('input',renderDeleteOptions);
 $('#delete-account-form').addEventListener('submit',event=>{
  event.preventDefault();
@@ -197,8 +202,11 @@ $('#delete-account-form').addEventListener('submit',event=>{
   if(!google){
    const email=user.email,password=$('#delete-account-password').value;
    if(!email||!password)throw Error('Indique ton mot de passe actuel.');
-   const {error:loginError}=await supabase.auth.signInWithPassword({email,password});
-   if(loginError)throw Error('Mot de passe invalide ou reconnexion impossible.');
+   const captchaOptions=captcha.options('delete');
+   let authResult;
+   try{authResult=await supabase.auth.signInWithPassword({email,password,options:captchaOptions});}
+   finally{captcha.reset('delete')}
+   if(authResult.error)throw Error('Mot de passe invalide ou reconnexion impossible.');
   }
   // Validate the signed-in identity after the recent Google or password auth.
   const {data:{user:checked},error:authError}=await supabase.auth.getUser();
