@@ -30,6 +30,22 @@ assert.ok([302,303,307].includes(authorize.status),'Google OAuth initiation did 
 assert.equal(new URL(destination).hostname,'accounts.google.com','Google OAuth redirect host is not the expected official Google service');
 
 
+// Critical release gate: an email recovery endpoint has no signup-hook
+// dependency, so a bogus address cannot trigger an email and MUST be
+// denied by Supabase Auth when submitted without a Turnstile token.
+// This is a negative production security test, not a real password reset.
+const noCaptchaRecover=await fetch(origin+'/auth/v1/recover',{
+ method:'POST',headers:jsonHeaders,body:JSON.stringify({
+  email:'aimroutine-captcha-negative-20261107@example.invalid',
+  gotrue_meta_security:{captcha_token:''}
+ })
+});
+const noCaptchaResponse=await noCaptchaRecover.text();
+const captchaFailure=/captcha|turnstile/i.test(noCaptchaResponse);
+console.log('Production Auth recovery without CAPTCHA: HTTP '+noCaptchaRecover.status+'; captchaRejected='+captchaFailure);
+assert.ok(noCaptchaRecover.status>=400&&noCaptchaRecover.status<500&&captchaFailure,
+ 'Production Supabase Auth is not rejecting captcha-less recovery requests. Keep email signup gated.');
+
 const url=origin+'/functions/v1/delete-aim-account';
 for(const [name,headers] of [
  ['without user JWT',jsonHeaders],
