@@ -1,6 +1,11 @@
 import {test,expect} from '@playwright/test';
 test.beforeEach(async ({page})=>{
  await page.route('https://cmsassets.rgpub.io/**',route=>route.abort());
+ // Keep browser smoke tests deterministic: real Turnstile is validated only
+ // after Supabase server-side CAPTCHA has been configured by the project owner.
+ await page.route('https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit',route=>
+  route.fulfill({status:200,contentType:'application/javascript',
+   body:"window.__turnstileResetCount=0;window.turnstile={render(element,options){element.dataset.rendered='yes';options.callback('qa-synthetic-captcha-token');return 42},reset(){window.__turnstileResetCount++}};"}));
  const failures=[];
  page.on('pageerror',e=>failures.push(e.message));
  await page.goto('/training.html',{waitUntil:'domcontentloaded'});
@@ -214,6 +219,49 @@ test('Google deletion UX uses exactly SUPPRIMER without a second Google login (m
  expect(googleOAuthCalls).toBe(0);
  expect(dialogCalls).toBe(0);
 });
+
+test('Email account deletion sends Turnstile token during password reauthentication (mock account)',async({page})=>{
+ const uid='44444444-4444-4444-8444-444444444444';
+ const mockUser={id:uid,email:'test-email-delete@example.invalid',
+  app_metadata:{provider:'email',providers:['email']},
+  identities:[{provider:'email',id:'email-identity'}],
+  aud:'authenticated',role:'authenticated',created_at:'2026-11-07T00:00:00Z'};
+ const session={access_token:'mock-email-session-access-token',token_type:'bearer',
+  expires_at:Math.floor(Date.now()/1000)+7200,expires_in:7200,
+  refresh_token:'mock-refresh-token',user:mockUser};
+ await page.addInitScript(value=>{
+  localStorage.setItem('sb-lmzswtzboobpokumxzhy-auth-token',JSON.stringify(value));
+ },session);
+ let reauth=0,deleted=0;
+ page.on('dialog',dialog=>dialog.accept());
+ await page.route('https://lmzswtzboobpokumxzhy.supabase.co/auth/v1/user',route=>
+  route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(mockUser)}));
+ await page.route('https://lmzswtzboobpokumxzhy.supabase.co/auth/v1/token?grant_type=password',route=>{
+  reauth++;
+  const data=JSON.parse(route.request().postData()||'{}');
+  expect(data.gotrue_meta_security?.captcha_token||data.captcha_token).toBe('qa-synthetic-captcha-token');
+  expect(data.email).toBe(mockUser.email);
+  return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(session)});
+ });
+ await page.route('https://lmzswtzboobpokumxzhy.supabase.co/functions/v1/delete-aim-account',route=>{
+  deleted++;
+  return route.fulfill({status:200,contentType:'application/json',body:'{"deleted":true}'});
+ });
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ const details=page.locator('.ar7-delete-account');
+ await expect(details).toBeVisible();
+ await details.locator('summary').click();
+ await expect(page.locator('#google-delete-flow')).toBeHidden();
+ await expect(page.locator('#captcha-delete-wrap')).toBeVisible();
+ await expect(page.locator('#captcha-delete')).toHaveAttribute('data-rendered','yes');
+ await page.locator('#delete-account-password').fill('Ab1!cdef');
+ await page.locator('#delete-account-confirmation').fill('SUPPRIMER');
+ await page.locator('#delete-account-final').click();
+ await expect(page.locator('#account-status')).toContainText('supprimés');
+ expect(reauth).toBe(1);
+ expect(deleted).toBe(1);
+});
+
 test('Password reset UI submits recovery request and reports generic success (mock SMTP)',async({page})=>{
  let sentEmail='';
  await page.route('https://lmzswtzboobpokumxzhy.supabase.co/auth/v1/recover**',route=>{
@@ -281,7 +329,7 @@ test('Turnstile-enabled browser form forwards a token on login and password rese
  await page.route('**/turnstile-v7.mjs',async route=>{
   const result=await route.fetch();
   const body=(await result.text()).replace(
-   "export const TURNSTILE_SITE_KEY='';",
+   "export const TURNSTILE_SITE_KEY='0x4AAAAAAF32lny7msT5dyQh';",
    "export const TURNSTILE_SITE_KEY='qa-test-public-sitekey';");
   expect(body).toContain("TURNSTILE_SITE_KEY='qa-test-public-sitekey'");
   await route.fulfill({response:result,body});
