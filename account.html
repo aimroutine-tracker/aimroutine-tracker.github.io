@@ -27,7 +27,7 @@ if('serviceWorker' in navigator&&window.isSecureContext){
   },{once:true});
 }
 </script><script src="site.js?v=8" defer></script><script src="site-quality-v34.js?v=1" defer></script>
-<script type="module" src="account-v7.mjs?v=10"></script>
+<script type="module" src="account-v7.mjs?v=11"></script>
 <style id="account-critical-style">
 /* Critical visible layout: independent of older PWA-cached CSS versions. */
 body.site31.site31-account .ar7-account-highlights{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:20px 0}
@@ -151,6 +151,7 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
 <form id="delete-account-form" class="ar7-auth-form" autocomplete="off">
 <label id="delete-password-row"><span class="fr">Confirme avec ton mot de passe actuel</span><span class="en">Confirm with your current password</span>
 <input id="delete-account-password" type="password" autocomplete="current-password" required minlength="6"></label>
+<div id="captcha-delete-wrap" hidden><div class="ar7-captcha" id="captcha-delete" aria-label="Vérification anti-robots pour suppression du compte"></div></div>
 <label><span class="fr">Écris exactement SUPPRIMER</span><span class="en">Type exactly SUPPRIMER</span>
 <input id="delete-account-confirmation" type="text" required autocomplete="off" spellcheck="false" maxlength="9" pattern="SUPPRIMER" placeholder="SUPPRIMER"></label>
 <button type="submit" id="delete-account-final" class="ar7-danger"><span class="fr">Supprimer définitivement mon compte</span><span class="en">Permanently delete my account</span></button>
