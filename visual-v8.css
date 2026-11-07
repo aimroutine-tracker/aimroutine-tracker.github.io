@@ -1,0 +1,355 @@
+/* AimRoutine Tracker — Visual polish v8 (Nov 2026).
+   Presentation-only layer: no auth, storage, API, or application logic changes.
+   Intentionally loaded last on every HTML page. */
+:root {
+  --ar8-bg:#08131e;
+  --ar8-surface:#132638;
+  --ar8-surface-deep:#0d1e2d;
+  --ar8-line:rgba(144,185,204,.24);
+  --ar8-line-hover:rgba(154,213,225,.54);
+  --ar8-coral:#ff637b;
+  --ar8-coral-light:#ffb4be;
+  --ar8-mint:#9aece2;
+  --ar8-ink:#f6fafc;
+  --ar8-muted:#bbcfdb;
+  --ar8-ease:cubic-bezier(.2,.75,.2,1);
+}
+html {scroll-padding-top:104px}
+body.site31 {
+  color:var(--ar8-ink);
+  background:
+    radial-gradient(ellipse 720px 430px at 92% 3%,rgba(38,103,126,.17),transparent 75%),
+    radial-gradient(ellipse 650px 400px at -12% 34%,rgba(255,83,105,.055),transparent 74%),
+    linear-gradient(180deg,#0a1723 0%,var(--ar8-bg) 65%,#091521 100%);
+  -webkit-font-smoothing:antialiased;
+}
+body.site31 main :is(h1,h2,h3){text-wrap:balance;letter-spacing:-.035em}
+body.site31 main :is(p,li){color:inherit}
+body.site31 main :is(.muted,.lead,.show-lead){color:var(--ar8-muted)}
+body.site31 main section[id]{scroll-margin-top:110px}
+body.site31 :is(input,textarea,select,button){font:inherit}
+body.site31 :is(a,button,summary,input,select,textarea):focus-visible{
+  outline:3px solid var(--ar8-mint)!important;outline-offset:3px;
+}
+
+/* Navigation: quiet glass chrome with one legible active destination. */
+body.site31 .site31-header{
+  background:rgba(9,20,31,.93)!important;
+  border-bottom:1px solid rgba(160,197,212,.2)!important;
+  box-shadow:0 12px 32px rgba(2,8,16,.28)!important;
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+}
+body.site31 .site31-nav{gap:18px;min-height:78px}
+body.site31 .site31-brand{font-weight:850;letter-spacing:-.025em}
+body.site31 .site31-brand img{filter:drop-shadow(0 0 10px rgba(255,96,123,.18))}
+body.site31 .site31-brand>span{color:#b8cbd7}
+body.site31 .site31-links{gap:7px}
+body.site31 .site31-header .site31-links>a,
+body.site31 .site31-header .site31-links>details>summary{
+  clip-path:none!important;
+  border-radius:10px!important;
+  border:1px solid transparent!important;
+  background:transparent!important;
+  color:#cfdee8!important;
+  padding:10px 12px!important;
+  min-height:42px;
+  font-size:12px!important;
+  font-weight:700!important;
+  line-height:1.3;
+  transition:background .18s ease,border-color .18s ease,color .18s ease,box-shadow .18s ease;
+}
+body.site31 .site31-header .site31-links>a:hover,
+body.site31 .site31-header .site31-links>details>summary:hover,
+body.site31 .site31-header .site31-links .ar5-nav-explore[open] summary{
+  background:#1c3546!important;border-color:#45687a!important;color:white!important;
+}
+body.site31 .site31-header .site31-links>a[aria-current="page"],
+body.site31 .site31-header .site31-links>a[href="account.html"][aria-current="page"]{
+  background:#2b3342!important;
+  border-color:rgba(255,126,148,.49)!important;
+  color:#ffe3e8!important;
+  box-shadow:inset 0 -2px rgba(255,99,123,.8)!important;
+}
+body.site31 .site31-header .site31-links>a[href="training.html"]:not([aria-current="page"]){
+  background:linear-gradient(135deg,#f96d82,#f5506d)!important;
+  border-color:#ff8497!important;
+  color:#101c28!important;
+  font-weight:850!important;
+  box-shadow:0 5px 16px rgba(255,83,105,.14);
+}
+body.site31 .site31-header .site31-links>a[href="training.html"]:hover{
+  background:#ff8da1!important;color:#101c28!important;
+}
+body.site31 .site31-header .site31-links>a[href="account.html"]:not([aria-current="page"]){
+  background:#1b2b3d!important;border-color:#45586b!important;color:#e5f0f6!important;
+}
+body.site31 .ar5-nav-dropdown{
+  border:1px solid #4e697b!important;border-radius:13px!important;
+  background:#102231!important;box-shadow:0 22px 60px rgba(0,0,0,.44)!important;
+  padding:9px!important;
+}
+body.site31 .ar5-nav-dropdown a{border-radius:8px!important;clip-path:none!important}
+body.site31 .site31-mobile-nav summary{
+  border-radius:10px!important;clip-path:none!important;
+  background:#172b3b!important;border:1px solid #496174!important;
+}
+body.site31 .site31-mobile-links{
+  border-radius:13px!important;overflow:hidden;background:#0f2231!important;
+  border:1px solid #496174!important;box-shadow:0 20px 40px #0008!important;
+}
+body.site31 .site31-mobile-links a,
+body.site31 .site31-mobile-links a[href="training.html"]{
+  clip-path:none!important;border-radius:8px!important;
+}
+body.site31 .site31-lang{border-radius:9px!important;clip-path:none!important}
+body.site31 .site31-footer{
+  border-top:1px solid rgba(148,184,204,.2);
+  background:linear-gradient(180deg,rgba(11,26,39,.7),#091520);
+}
+body.site31 .site31-footer-links a:hover{color:var(--ar8-mint)!important}
+body.site31 .site34-top{
+  border-radius:14px;background:#1b3445;border-color:#587d8c;
+  box-shadow:0 12px 32px #0009;
+}
+
+/* Shared editorial hierarchy. Preserve section widths, functional layout and badges. */
+body.site31 main :is(.v5-kicker,.show-kicker,.eyebrow,.ar7-eyebrow,.ar-note-eyebrow,.ar5-kicker){
+  color:var(--ar8-mint);letter-spacing:.14em;
+}
+body.site31 main :is(.v5-section-head,.v16-section-heading,.show-section-head,.section-heading){
+  position:relative;
+}
+body.site31 :is(.v5-btn,.show-button,.ar5-btn-primary,.ar7-primary,.ar7-secondary,
+                 .ar5-workspace .primary,.ar5-workspace .outline){
+  transition:transform .18s var(--ar8-ease),box-shadow .18s ease,
+             background-color .18s ease,border-color .18s ease;
+}
+@media(hover:hover){
+  body.site31 :is(.v5-btn,.show-button,.ar5-btn-primary,.ar7-primary,.ar7-secondary,
+                   .ar5-workspace .primary,.ar5-workspace .outline):not(:disabled):hover{
+    transform:translateY(-2px);
+  }
+}
+/* Home is a showcase: these treatments do not introduce interactions. */
+body.site31.site31-home .v5-hero{
+  position:relative;
+  background-image:
+    radial-gradient(ellipse at 85% 19%,rgba(255,99,123,.095),transparent 48%),
+    radial-gradient(ellipse at 18% 69%,rgba(106,204,212,.095),transparent 60%);
+}
+body.site31.site31-home .v5-hero h1{
+  font-size:clamp(40px,5.6vw,78px);
+  line-height:1.045;
+  letter-spacing:-.058em;
+  text-wrap:balance;
+}
+body.site31.site31-home .v5-gradient-text{
+  background:linear-gradient(105deg,#fff5f6 4%,#ffb0be 38%,#ff647d 96%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+body.site31.site31-home .v5-hero-lead{max-width:58ch;color:#c7d7e1;line-height:1.75}
+body.site31.site31-home .v5-main>section:not(.v5-hero){
+  background-image:linear-gradient(145deg,rgba(31,58,76,.5),rgba(11,25,38,.72));
+  border-color:rgba(144,185,204,.25);
+  box-shadow:0 18px 42px rgba(0,0,0,.16),inset 0 1px rgba(210,234,241,.035);
+}
+body.site31.site31-home .v5-main>section:not(.v5-hero):nth-of-type(2n){
+  background-image:linear-gradient(145deg,rgba(29,49,69,.68),rgba(13,26,39,.76));
+}
+body.site31.site31-home :is(.v5-feature,.experience-step,.ti-card,.v16-gallery-shell){
+  border-color:rgba(145,185,203,.25);
+}
+body.site31.site31-home .v5-feature{
+  background:linear-gradient(150deg,#193145,#102433);
+  box-shadow:inset 0 1px rgba(221,244,248,.045);
+}
+body.site31.site31-home .ar5-home-workspace{
+  border-top-color:var(--ar8-mint);
+}
+
+/* Product: screenshots remain real and are presented like a premium gallery. */
+body.site31.site31-product .show-hero{
+  background-image:radial-gradient(ellipse at 93% 7%,rgba(255,115,139,.12),transparent 62%),
+                   linear-gradient(145deg,#1a3043,#0c1d2a);
+}
+body.site31.site31-product :is(.show-showcase,.show-section){
+  border-color:var(--ar8-line);
+  box-shadow:0 16px 42px rgba(0,0,0,.16);
+}
+body.site31.site31-product :is(.show-features article,.show-screen-panel,.show-facts>div){
+  background:linear-gradient(145deg,#1a3142,#102333);
+  border-color:rgba(139,182,203,.28);
+}
+body.site31.site31-product :is(.show-screen-panel,.show-showcase img){
+  box-shadow:0 14px 32px rgba(0,0,0,.27);
+}
+body.site31.site31-product .show-image-button img{transition:transform .24s var(--ar8-ease)}
+@media(hover:hover){
+  body.site31.site31-product .show-image-button:hover img{transform:scale(1.012)}
+}
+
+/* AIM workspace: display-only refinement; do not change tabs or session states. */
+body.site31.site31-training .ar5-workspace{padding-top:clamp(24px,4vw,48px)}
+body.site31.site31-training .ar5-hero{
+  background:radial-gradient(ellipse at 86% 0%,rgba(255,110,131,.16),transparent 55%),
+             linear-gradient(135deg,#1b3549,#0c2030 75%);
+  border:1px solid rgba(145,188,206,.33);
+  border-top:2px solid var(--ar8-coral);
+  box-shadow:0 20px 50px rgba(0,0,0,.2);
+}
+body.site31.site31-training .ar5-workspace>.panel:not([hidden]){
+  background:linear-gradient(151deg,#172d3f,#0c1d2b);
+  border:1px solid rgba(142,183,203,.32);
+  border-top:2px solid var(--ar8-mint);
+  box-shadow:0 18px 46px rgba(0,0,0,.17);
+}
+body.site31.site31-training .ar5-workspace :is(.surface,.metric,.ar6-stat-box,.ar6-achievement){
+  background:linear-gradient(145deg,#193347,#112435);
+  border-color:rgba(138,184,206,.32);
+  box-shadow:inset 0 1px rgba(223,246,250,.05),0 8px 20px rgba(0,0,0,.075);
+}
+body.site31.site31-training .ar5-workspace .metric{position:relative;overflow:hidden}
+body.site31.site31-training .ar5-workspace .metric::before{
+  content:"";position:absolute;inset:0 auto 0 0;width:3px;
+  background:linear-gradient(var(--ar8-coral),#4db5b2);pointer-events:none;
+}
+body.site31.site31-training .ar5-workspace .metric strong{
+  color:#fff;font-variant-numeric:tabular-nums;letter-spacing:-.05em;
+}
+body.site31.site31-training .ar5-tab-wrap{
+  background:rgba(10,24,36,.96);
+  border:1px solid rgba(141,185,207,.25);border-radius:12px;
+  box-shadow:0 10px 28px rgba(0,0,0,.2);
+}
+body.site31.site31-training .tabs button{
+  border-radius:8px;transition:background-color .16s ease,color .16s ease,border-color .16s ease;
+}
+body.site31.site31-training .ar5-workspace :is(input,select,textarea){
+  background:#0b1c2a;border-color:#516f7e;color:#f5fbff;
+  border-radius:9px;
+}
+body.site31.site31-training .ar5-workspace :is(input,select,textarea):focus-visible{
+  border-color:var(--ar8-mint);box-shadow:0 0 0 3px rgba(154,236,226,.11);
+}
+body.site31.site31-training .ar6-program-day{
+  border-radius:11px;box-shadow:inset 0 1px rgba(255,255,255,.03);
+}
+body.site31.site31-training #cloud-training-status{color:#d1e5eb}
+
+/* Account: clearly grouped secure forms, without changing Supabase or CAPTCHA. */
+body.site31.site31-account .ar7-account-hero{
+  background:radial-gradient(ellipse at 89% 6%,rgba(255,94,123,.13),transparent 60%),
+             linear-gradient(130deg,#1c3449,#0c2030);
+  border-color:rgba(153,192,211,.32);
+  border-top:2px solid var(--ar8-coral);
+  box-shadow:0 24px 56px rgba(0,0,0,.19);
+}
+body.site31.site31-account .ar7-account-panel{
+  background:linear-gradient(155deg,#182f42,#0b1e2c);
+  border:1px solid rgba(143,185,205,.33);
+  border-radius:15px;box-shadow:0 16px 40px #0003;
+}
+body.site31.site31-account .ar7-auth-form label{color:#e0edf3}
+body.site31.site31-account .ar7-auth-form input{
+  background:#0a1d2c;border-color:#537386;border-radius:10px;
+  color:#f6fafc;transition:border-color .16s ease,box-shadow .16s ease;
+}
+body.site31.site31-account .ar7-auth-form input:focus-visible{
+  border-color:var(--ar8-mint);
+  box-shadow:0 0 0 3px rgba(154,236,226,.11);
+}
+body.site31.site31-account .ar7-form-switch{border-radius:11px;background:#0c1f2e}
+body.site31.site31-account .ar7-form-switch button{border-radius:8px}
+body.site31.site31-account .ar7-service-grid>div{
+  background:linear-gradient(140deg,#183348,#0e2433);
+  border-color:rgba(138,185,204,.35);border-radius:10px;
+}
+body.site31.site31-account .ar7-account-chip{border-radius:999px}
+body.site31.site31-account .ar7-primary{
+  background:linear-gradient(135deg,#ff8b9d,#ff6079);
+  border-color:#ff8395;color:#091723;
+}
+body.site31.site31-account .ar7-google-btn{
+  border-radius:11px;background:#1a394a;border-color:#6d8999;
+}
+body.site31.site31-account .ar7-delete-google{border-radius:12px}
+body.site31.site31-account .ar7-danger{border-radius:9px}
+
+/* Secondary pages retain separate chapters and stronger visual grouping. */
+body.site31.site31-overview .detail-hero,
+body.site31.site31-riot .riot32-hero,
+body.site31.site31-updates .updates33-hero,
+body.site31.site31-releases .ar5-release-hero,
+body.site31.site31-changelog .ar-note-hero{
+  background-image:radial-gradient(ellipse at 86% 2%,rgba(255,101,123,.1),transparent 62%),
+                   linear-gradient(150deg,#1b3447,#0e2131);
+  border-color:rgba(150,192,210,.34);
+  box-shadow:0 20px 48px rgba(0,0,0,.15);
+}
+body.site31.site31-overview .detail>.wrap,
+body.site31.site31-riot main>section.wrap,
+body.site31.site31-updates main>section.updates33-section,
+body.site31.site31-legal .legal{
+  box-shadow:0 16px 40px rgba(0,0,0,.14);
+  border-color:rgba(142,184,202,.28);
+}
+body.site31.site31-releases :is(.ar5-release-card,.ar5-release-info),
+body.site31.site31-changelog .ar-note-chapter{
+  border-color:rgba(144,186,204,.3);
+  box-shadow:0 10px 27px rgba(0,0,0,.12);
+}
+body.site31.site31-changelog .ar-note-chapter[open]{
+  border-color:rgba(154,236,226,.5);
+}
+body.site31.site31-legal main .legal :is(h2,h3){color:#f5fafc}
+body.site31.site31-error main{box-shadow:0 20px 45px #0004}
+
+/* Short purposeful interactions. Never animate hidden panels or reduce clarity. */
+@media(hover:hover) and (prefers-reduced-motion:no-preference){
+  body.site31.site31-home :is(.v5-feature,.experience-step,.ti-card),
+  body.site31.site31-product .show-features article,
+  body.site31.site31-training .ar5-workspace .metric,
+  body.site31.site31-account .ar7-service-grid>div,
+  body.site31.site31-releases .ar5-release-card{
+    transition:transform .22s var(--ar8-ease),border-color .22s ease,box-shadow .22s ease;
+  }
+  body.site31.site31-home :is(.v5-feature,.experience-step,.ti-card):hover,
+  body.site31.site31-product .show-features article:hover,
+  body.site31.site31-training .ar5-workspace .metric:hover,
+  body.site31.site31-account .ar7-service-grid>div:hover,
+  body.site31.site31-releases .ar5-release-card:hover{
+    transform:translateY(-3px);
+    border-color:var(--ar8-line-hover);
+    box-shadow:0 15px 30px rgba(0,0,0,.2);
+  }
+}
+@media(max-width:1100px){
+  body.site31 .site31-nav{min-height:70px}
+  body.site31 .site31-links{gap:4px}
+  body.site31 .site31-header .site31-links>a,
+  body.site31 .site31-header .site31-links>details>summary{padding-inline:9px!important}
+}
+@media(max-width:750px){
+  html{scroll-padding-top:78px}
+  body.site31 .site31-nav{min-height:66px}
+  body.site31.site31-home .v5-hero h1{font-size:clamp(39px,10vw,56px)}
+  body.site31.site31-home .v5-main>section:not(.v5-hero){box-shadow:0 10px 25px #0002}
+  body.site31.site31-training .ar5-workspace{padding-top:16px}
+  body.site31.site31-training .ar5-hero{border-radius:13px}
+  body.site31.site31-account .ar7-account-hero,
+  body.site31.site31-account .ar7-account-panel{border-radius:12px}
+  body.site31 .site31-footer-inner{gap:14px}
+}
+@media(max-width:420px){
+  body.site31 .site31-brand{font-size:14px}
+  body.site31 .site31-brand>span{font-size:9px}
+  body.site31.site31-home .v5-hero h1{font-size:39px}
+  body.site31.site31-training .ar5-workspace .metric strong{font-size:27px}
+}
+@media(prefers-reduced-motion:reduce){
+  body.site31 *,body.site31 *::before,body.site31 *::after{
+    scroll-behavior:auto!important;
+    animation-duration:.01ms!important;
+    transition-duration:.01ms!important;
+  }
+}
