@@ -8,6 +8,13 @@ on:
       - "tests/supabase-public-security.mjs"
       - "supabase/migrations/**"
       - "cloud-sync-v7.mjs"
+  pull_request:
+    paths:
+      - ".github/workflows/supabase-public-security.yml"
+      - "tests/supabase-public-security.mjs"
+      - "supabase/migrations/**"
+      - "cloud-sync-v7.mjs"
+      - "cloud-client-v7.mjs"
 permissions:
   contents: read
 jobs:

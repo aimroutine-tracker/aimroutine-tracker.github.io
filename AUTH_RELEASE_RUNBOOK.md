@@ -80,3 +80,16 @@ Les réglages anti-abus et CAPTCHA ont été vérifiés négativement avant ouve
 - **Risque restant Supabase :** l'advisor affiche encore `auth_leaked_password_protection`. Le contrôle HIBP côté navigateur n'empêche pas les accès directs à l'API.
 - **Risque restant secrets :** la clé secrète Cloudflare dévoilée durant l'installation doit être renouvelée puis réenregistrée directement dans Supabase. L'ancien secret Google OAuth partagé antérieurement doit également être remplacé.
 - L'édition concurrente **d'une même routine préexistante** n'est pas encore résolue en temps réel : les routines déjà synchronisées sont traitées comme des instantanés immuables ; créer une nouvelle version plutôt que supposer qu'un conflit d'édition sera fusionné.
+
+## Contrôle Supabase Free et vérification RLS — 7 novembre 2026
+
+- Organisation confirmée sur **free**, sans coût engagé ni migration vers Pro.
+- Quatre tables `aim_profiles`, `aim_preferences`, `aim_sessions`, `aim_presets` : RLS en production, politiques `FOR ALL TO authenticated`, `USING` et `WITH CHECK` verrouillés sur `(select auth.uid()) = user_id`.
+- Les rôles `anon` et `PUBLIC` n'ont pas de droits de lecture/écriture explicites sur ces tables. Les fonctions exposées `aim_beta_signup_gate` et `aim_reset_my_progress` ne sont pas `SECURITY DEFINER` ; le hook n'est pas exécutable par `anon` ou `authenticated`, et la réinitialisation exige un compte authentifié.
+- Test transactionnel PostgreSQL sur les identités A/B : impossible pour B de lire, ajouter, modifier ou supprimer les données de A. Toutes les opérations de simulation ont été annulées (`ROLLBACK`).
+- Contrôle du schéma : clés étrangères avec suppression en cascade vers `auth.users`, limites de taille des payloads JSON, clés primaires composites et vérification de cohérence entre ID et payload.
+- Tests de non-régression sur l'API REST publique : les quatre tables doivent refuser les lectures anonymes ou retourner une liste vide. Aucun compte factice n'est créé et aucun enregistrement réel n'est modifié.
+- Un garde-fou supplémentaire détecte des secrets Turnstile longs accidentellement ajoutés aux fichiers versionnés. Les clés publiques Turnstile restent autorisées.
+- **Alerte Supabase restante** : `auth_leaked_password_protection`. Protection serveur réservée au plan Pro, non disponible sur Free. Contrôle HIBP dans le navigateur existant, mais contournable via l'API Auth directe.
+- Les réglages de durée de session, limitations de débit et les secrets des fournisseurs OAuth ne peuvent pas être inspectés ou modifiés via les actions de gestion disponibles ici ; ne pas les déclarer vérifiés.
+- OAuth Google, inscription par e-mail et synchronisation restent intacts ; aucune modification de leur configuration serveur n'a été effectuée lors de cet audit.
