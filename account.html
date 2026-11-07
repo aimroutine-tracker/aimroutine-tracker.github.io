@@ -27,7 +27,7 @@ if('serviceWorker' in navigator&&window.isSecureContext){
   },{once:true});
 }
 </script><script src="site.js?v=8" defer></script><script src="site-quality-v34.js?v=1" defer></script>
-<script type="module" src="account-v7.mjs?v=15"></script>
+<script type="module" src="account-v7.mjs?v=16"></script>
 <style id="account-critical-style">
 /* Critical visible layout: independent of older PWA-cached CSS versions. */
 body.site31.site31-account .ar7-account-highlights{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:20px 0}
@@ -102,6 +102,8 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
  </form>
  <form id="signup-form" class="ar7-auth-form" hidden>
   <p class="ar7-social-note"><span class="fr">Crée ton compte gratuitement. Un e-mail de confirmation te sera envoyé pour activer l’accès à ta progression.</span><span class="en">Create your free account. We will email you a confirmation link to activate access to your progress.</span></p>
+  <label><span class="fr">Pseudo (obligatoire)</span><span class="en">Username (required)</span><input id="signup-username" type="text" autocomplete="nickname" required minlength="3" maxlength="24" pattern="[A-Za-z0-9][A-Za-z0-9_-]{2,23}" spellcheck="false" placeholder="Ex. IKAZU"></label>
+  <p class="ar7-social-note"><span class="fr">3 à 24 caractères : lettres, chiffres, _ ou -, sans espace. Les pseudos ne sont pas uniques.</span><span class="en">3 to 24 characters: letters, digits, _ or -, no spaces. Usernames are not unique.</span></p>
   <label><span class="fr">Adresse e-mail</span><span class="en">Email address</span><input id="signup-email" type="email" autocomplete="email" required maxlength="254"></label>
   <label><span class="fr">Mot de passe (8 caractères minimum)</span><span class="en">Password (8 characters minimum)</span><input id="signup-password" type="password" autocomplete="new-password" minlength="8" required></label>
   <p class="ar7-social-note"><span class="fr">Minimum 8 caractères : une minuscule, une majuscule, un chiffre et un symbole. Un contrôle gratuit vérifie les mots de passe déjà exposés dans des fuites, sans transmettre le mot de passe complet.</span><span class="en">At least 8 characters: lowercase, uppercase, a number and a symbol. Free screening checks known breaches without sharing your full password.</span></p>
@@ -122,9 +124,21 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
   <button class="ar7-primary" type="submit"><span class="fr">Mettre à jour</span><span class="en">Update</span></button>
  </form>
 </section>
+<section class="ar7-account-panel" id="username-panel" aria-labelledby="username-title" hidden>
+ <span class="ar7-eyebrow">PLAYER PROFILE / USERNAME</span>
+ <h2 id="username-title"><span class="fr">Choisis ton pseudo.</span><span class="en">Choose your username.</span></h2>
+ <p class="ar7-social-note"><span class="fr">Pour terminer la création de ton compte, choisis un pseudo. Il reste enregistré sur tous tes appareils, même sans sauvegarde cloud. Cette étape est aussi proposée aux comptes Google et aux anciens comptes.</span><span class="en">Complete your account by choosing a username. It stays saved across devices even without cloud backup. This step also applies to Google and existing accounts.</span></p>
+ <p class="ar7-social-note"><span class="fr">Compte : </span><span class="en">Account: </span><strong id="username-email">—</strong></p>
+ <form id="username-form" class="ar7-auth-form">
+  <label><span class="fr">Ton pseudo (obligatoire)</span><span class="en">Your username (required)</span><input id="username-input" type="text" autocomplete="nickname" required minlength="3" maxlength="24" pattern="[A-Za-z0-9][A-Za-z0-9_-]{2,23}" spellcheck="false" placeholder="Ex. IKAZU"></label>
+  <p class="ar7-social-note"><span class="fr">3 à 24 caractères, sans espace : lettres, chiffres, _ et -.</span><span class="en">3 to 24 characters, no spaces: letters, digits, _ and -.</span></p>
+  <button type="submit" class="ar7-primary"><span class="fr">Enregistrer mon pseudo</span><span class="en">Save my username</span></button>
+  <button type="button" id="username-signout" class="ar7-secondary"><span class="fr">Déconnexion</span><span class="en">Sign out</span></button>
+ </form>
+</section>
 <section class="ar7-account-panel" id="dashboard-panel" aria-labelledby="ar7-dash-title" hidden>
  <div class="ar7-account-heading"><div><span class="ar7-eyebrow">02 / PLAYER CLOUD</span><h2 id="ar7-dash-title"><span class="fr">Mon espace cloud</span><span class="en">My cloud workspace</span></h2></div><button type="button" class="ar7-secondary" id="logout" title="Déconnecte ton compte de tous les appareils"><span class="fr">Déconnexion</span><span class="en">Sign out</span></button></div>
- <div class="ar7-email"><span class="fr">Compte connecté :</span><span class="en">Signed-in account:</span> <strong id="user-email">—</strong></div>
+ <div class="ar7-email"><span class="fr">Pseudo :</span><span class="en">Username:</span> <strong id="user-username">—</strong> · <span class="fr">Compte connecté :</span><span class="en">Signed-in account:</span> <strong id="user-email">—</strong></div>
  <div class="ar7-service-grid">
   <div><small><span class="fr">ÉTAT DE LA SAUVEGARDE</span><span class="en">BACKUP STATUS</span></small><strong id="cloud-enabled-status">Désactivée</strong></div>
   <div><small><span class="fr">MES SÉANCES LOCALES</span><span class="en">LOCAL SESSIONS</span></small><strong id="cloud-sessions-count">0</strong></div>

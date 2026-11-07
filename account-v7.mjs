@@ -3,6 +3,7 @@ import {supabase,SITE_URL} from './cloud-client-v7.mjs';
 import {UID_STORAGE_KEY,validUid,scopedKey,TRAINING_KEY} from './cloud-core-v7.mjs';
 import {synchronize,isEnabled,setEnabled,readUserLocal,importGuestIntoAccount,deleteCloudProgress} from './cloud-sync-v7.mjs';
 import {checkLeakedPassword} from './password-security-v7.mjs';
+import {validateUsername,usernameFromUser,saveUsername} from './username-v7.mjs';
 import {hasGoogleIdentity} from './google-delete-v7.mjs';
 import {signOutEverywhere} from './session-security-v7.mjs';
 import {TURNSTILE_SITE_KEY,createAuthCaptcha} from './turnstile-v7.mjs';
@@ -30,14 +31,20 @@ function authMode(mode='login'){
 }
 function showUser(next){
  user=next&&validUid(next.id)?next:null;
+ const username=usernameFromUser(user);
+ const needsUsername=Boolean(user&&!username);
  $('#auth-panel').hidden=!!user&&!recovery;
- $('#dashboard-panel').hidden=!user||recovery;
+ $('#username-panel').hidden=!needsUsername||recovery;
+ $('#dashboard-panel').hidden=!user||needsUsername||recovery;
  if(user){
    $('#user-email').textContent=user.email||'Compte AimRoutine';
+   $('#user-username').textContent=username||'—';
+   $('#username-email').textContent=user.email||'ton adresse e-mail';
    localStorage.setItem(UID_STORAGE_KEY,user.id);
    renderCounts();
    renderDeleteOptions();
-   msg('Compte connecté. La sauvegarde cloud est facultative et doit être activée pour ce compte.');
+   msg(needsUsername?'Choisis ton pseudo pour terminer ton inscription AimRoutine.':
+     'Compte connecté. La sauvegarde cloud est facultative et doit être activée pour ce compte.');
  }else{
    localStorage.removeItem(UID_STORAGE_KEY);
    msg('Tu peux te connecter ou continuer à utiliser AimRoutine sans compte.');
@@ -108,7 +115,7 @@ $('#login-form').addEventListener('submit',e=>{e.preventDefault();run(async()=>{
  const {data:{user:validated},error:validationError}=await supabase.auth.getUser();
  if(validationError||!validated)throw validationError||Error('Connexion non validée.');
  showUser(validated);$('#login-password').value='';
- if(isEnabled(validated.id)){
+ if(usernameFromUser(validated)&&isEnabled(validated.id)){
   try{const result=await synchronize(supabase,validated.id);msg('Compte connecté · Synchronisation réussie ('+result.downloadedSessions+' séances).')}
   catch(err){msg('Compte connecté · Sauvegarde en attente : '+err.message)}
  }
@@ -116,6 +123,7 @@ $('#login-form').addEventListener('submit',e=>{e.preventDefault();run(async()=>{
 $('#signup-form').addEventListener('submit',e=>{e.preventDefault();
  if(!SIGNUPS_READY){msg("Les inscriptions par e-mail sont encore fermées pendant les tests de sécurité et de synchronisation.");return}
  run(async()=>{
+ const username=validateUsername($('#signup-username').value);
  const password=$('#signup-password').value;
  msg('Vérification de la sécurité du nouveau mot de passe…');
  const assessment=await checkLeakedPassword(password);
@@ -123,11 +131,12 @@ $('#signup-form').addEventListener('submit',e=>{e.preventDefault();
  const captchaOptions=captcha.options('signup');
  let signupResult;
  try{signupResult=await supabase.auth.signUp({email:$('#signup-email').value.trim(),password,
-  options:{emailRedirectTo:SITE_URL+'account.html',...captchaOptions}});}
+  options:{emailRedirectTo:SITE_URL+'account.html',data:{aim_username:username},...captchaOptions}});}
  finally{captcha.reset('signup')}
  const {error}=signupResult;
  if(error)throw error;
  $('#signup-password').value='';
+ $('#signup-username').value='';
  msg('Si cette adresse est éligible, un e-mail de confirmation sera envoyé. Vérifie aussi tes indésirables.');
  })});
 $('#reset-form').addEventListener('submit',e=>{e.preventDefault();if(!RESET_LINKS_CONFIGURED){msg('Les URL de réinitialisation ne sont pas encore configurées.');return;}run(async()=>{
@@ -153,6 +162,18 @@ $('#new-password-form').addEventListener('submit',e=>{e.preventDefault();run(asy
  showUser(user);
  msg('Mot de passe mis à jour.');
 })});
+$('#username-form').addEventListener('submit',e=>{e.preventDefault();run(async()=>{
+ if(!user)throw Error('Connecte-toi pour enregistrer ton pseudo.');
+ const saved=await saveUsername(supabase.auth,user.id,$('#username-input').value);
+ showUser(saved);
+ $('#username-input').value='';
+ msg('Pseudo enregistré : '+usernameFromUser(saved)+'. Ton compte est prêt.');
+ if(isEnabled(saved.id)){
+  try{const result=await synchronize(supabase,saved.id);msg('Pseudo enregistré · Synchronisation réussie ('+result.downloadedSessions+' séances).')}
+  catch(err){msg('Pseudo enregistré · Sauvegarde en attente : '+err.message)}
+ }
+})});
+$('#username-signout').addEventListener('click',()=>$('#logout').click());
 $('#logout').addEventListener('click',()=>run(async()=>{
  // A single logout button revokes refresh tokens for ALL sessions, including this browser.
  await signOutEverywhere(supabase.auth);
@@ -255,7 +276,7 @@ supabase.auth.onAuthStateChange((event,session)=>{
   const {data:{user:validated},error}=await supabase.auth.getUser();
   if(error||!validated){showUser(null);if(new URLSearchParams(location.search).has('reset'))msg('Ouvre le lien reçu par e-mail pour terminer la réinitialisation.');return;}
   showUser(validated);
-  if(isEnabled(validated.id)){
+  if(usernameFromUser(validated)&&isEnabled(validated.id)){
    try{await synchronize(supabase,validated.id);renderCounts();msg('Compte connecté · Sauvegarde cloud synchronisée.')}
    catch(e){msg('Compte connecté · Cloud indisponible : '+e.message)}
   }
