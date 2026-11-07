@@ -68,3 +68,15 @@ Documentation : https://supabase.com/docs/guides/auth/auth-captcha
 Les réglages anti-abus et CAPTCHA ont été vérifiés négativement avant ouverture. Le hook `aim_beta_signup_gate` est maintenu mais permet `email` et `google` uniquement. Le site est en `SIGNUPS_READY=true`, et les textes du formulaire et contrôles de déploiement ont été actualisés. Restent la confirmation e-mail d'un vrai compte jetable, la récupération complète et les tests multi-comptes. Avant ouverture vérifier confidentialité, conditions, adresse de support, état des déploiements et niveau de logs.
 
 **Ne jamais** considérer un test simulé comme une preuve d'authentification Google / e-mail réelle, ni annoncer le site « sécurisé à 100 % ».
+
+## Actualisation des contrôles — 7 novembre 2026
+
+- Le propriétaire a confirmé les parcours réels de création e-mail, récupération du mot de passe, suppression de compte, Google OAuth et synchronisation entre appareils. Cela ne prouve pas toutes les courses critiques possibles.
+- Les contrôles RLS ont été relus en direct dans PostgreSQL sur les quatre tables. Tests d'identités A/B et sans identité en transactions SQL ; lectures d'autrui invisibles. Tentatives croisées UPDATE et INSERT rejetées, sans modification persistante.
+- `aim_reset_my_progress` est SECURITY INVOKER, réservé aux sessions authentifiées et publie un curseur de suppression. Tests simulés : deux appareils + hors ligne + suppression de favoris + réinitialisation.
+- Pour les nouvelles séances et routines portant le même identifiant, les écritures simultanées utilisent `ignoreDuplicates` et la clé primaire composite afin de conserver le premier enregistrement cloud plutôt que l'écraser. Le client local converge à la synchronisation suivante.
+- Le déploiement GitHub Pages exécute désormais les tests unitaires, la vérification syntaxique et la recherche de secrets **avant** de publier les fichiers statiques.
+- **Risque restant GitHub :** la branche principale `main` n'est pas protégée. L'app GitHub connectée n'a pas d'accès aux paramètres administratifs de protection de branche ; configurer cela depuis le tableau de bord GitHub.
+- **Risque restant Supabase :** l'advisor affiche encore `auth_leaked_password_protection`. Le contrôle HIBP côté navigateur n'empêche pas les accès directs à l'API.
+- **Risque restant secrets :** la clé secrète Cloudflare dévoilée durant l'installation doit être renouvelée puis réenregistrée directement dans Supabase. L'ancien secret Google OAuth partagé antérieurement doit également être remplacé.
+- L'édition concurrente **d'une même routine préexistante** n'est pas encore résolue en temps réel : les routines déjà synchronisées sont traitées comme des instantanés immuables ; créer une nouvelle version plutôt que supposer qu'un conflit d'édition sera fusionné.

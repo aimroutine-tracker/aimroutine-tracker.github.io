@@ -35,9 +35,13 @@ async function fetchAll(client,table,order){
  }
  throw Error('Trop de données pour la synchronisation automatique : contactez le support.');
 }
-async function upsertChunks(client,table,records){
+async function upsertChunks(client,table,records,idColumn){
+ // Concurrent devices may discover the same ID as new before either writes.
+ // First committed record wins: never overwrite an existing cloud entry.
  for(let i=0;i<records.length;i+=80){
-  const {error}=await client.from(table).upsert(records.slice(i,i+80));
+  const {error}=await client.from(table).upsert(records.slice(i,i+80),{
+   onConflict:'user_id,'+idColumn,ignoreDuplicates:true
+  });
   if(error)throw error;
  }
 }
@@ -94,8 +98,8 @@ export async function synchronize(client,uid,{guestImport=false}={}){
  const tombstones=[...pending,...remotePresets.filter(x=>x.deleted_at).map(x=>x.preset_id)];
  const mergedPresets=mergeRecords(local.store.presets,cloudPresets,tombstones).filter(validPreset).slice(-25);
  const newPresets=local.store.presets.filter(p=>!presetById.has(p.id)&&!pending.has(p.id));
- await upsertChunks(client,'aim_sessions',newSessions.map(x=>({user_id:uid,session_id:x.id,payload:x,deleted_at:null})));
- await upsertChunks(client,'aim_presets',newPresets.map(x=>({user_id:uid,preset_id:x.id,payload:x,deleted_at:null})));
+ await upsertChunks(client,'aim_sessions',newSessions.map(x=>({user_id:uid,session_id:x.id,payload:x,deleted_at:null})),'session_id');
+ await upsertChunks(client,'aim_presets',newPresets.map(x=>({user_id:uid,preset_id:x.id,payload:x,deleted_at:null})),'preset_id');
 
  const localProfile=cleanExtension(local.ext);
  const remoteProfile=profileResult.data?.profile?cleanExtension(profileResult.data.profile):null;

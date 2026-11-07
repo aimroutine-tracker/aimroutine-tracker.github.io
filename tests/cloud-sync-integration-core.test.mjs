@@ -30,12 +30,12 @@ function clientFor(db,uid){
   maybeSingle(){return this.exec().then(({data,error})=>({error,data:data[0]??null}))}
   update(values){return new Query(this.table,'update',values)}
   delete(){return new Query(this.table,'delete')}
-  async upsert(values){
+  async upsert(values,options={}){
    for(const source of (Array.isArray(values)?values:[values])){
     if(source.user_id!==uid)return {error:Error('permission denied by RLS')};
     const rows=db[this.table], key=primary(this.table,source);
     const existing=rows.findIndex(x=>primary(this.table,x)===key);
-    if(existing>=0)rows[existing]={...rows[existing],...structuredClone(source)};
+    if(existing>=0){if(!options.ignoreDuplicates)rows[existing]={...rows[existing],...structuredClone(source)};}
     else rows.push(structuredClone(source));
    }
    return {error:null};
@@ -175,5 +175,39 @@ test('authenticated uid mismatch rejects sync and cloud deletion',async()=>{
   setEnabled(USER_A,true);
   await assert.rejects(synchronize(cb,USER_A),/Session non validée/);
   await assert.rejects(deleteCloudProgress(cb,USER_A),/Session non validée/);
+ });
+});
+
+test('concurrent inserts of the same session ID preserve the first database writer',async()=>{
+ const db=makeDb(),storage=new MemoryStorage(),client=clientFor(db,USER_A);
+ let raceInjected=false;
+ const competingClient={
+  ...client,
+  from(table){
+   const query=client.from(table);
+   if(table==='aim_sessions'){
+    const original=query.upsert.bind(query);
+    query.upsert=async(records,options)=>{
+     assert.equal(options?.ignoreDuplicates,true);
+     assert.equal(options?.onConflict,'user_id,session_id');
+     if(!raceInjected){
+      raceInjected=true;
+      const won={...session('same-id'),accuracy:97};
+      db.aim_sessions.push({user_id:USER_A,session_id:won.id,payload:won,deleted_at:null});
+     }
+     return original(records,options);
+    };
+   }
+   return query;
+  }
+ };
+ await use(storage,async()=>{
+  setEnabled(USER_A,true);
+  write(storage,USER_A,[session('same-id')]);
+  await synchronize(competingClient,USER_A);
+  assert.equal(db.aim_sessions.length,1);
+  assert.equal(db.aim_sessions[0].payload.accuracy,97,'Never overwrite a concurrent writer');
+  await synchronize(client,USER_A);
+  assert.equal(readUserLocal(USER_A).store.sessions[0].accuracy,97,'Next sync converges on cloud winner');
  });
 });
