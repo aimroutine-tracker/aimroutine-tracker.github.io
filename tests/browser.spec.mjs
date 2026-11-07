@@ -31,7 +31,7 @@ test('Build, edit, run and save a player session',async ({page})=>{
 });
 test('Profile, program and player achievements',async ({page})=>{
  await page.locator('#tab-profile').click();
- await page.locator('#player-name').fill('IKAZU');
+ await page.locator('#player-name').fill('NovaFox');
  await page.locator('#player-dpi').fill('1600');
  await page.locator('#player-sens').fill('0.215');
  await expect(page.locator('#player-edpi')).toContainText('344.0');

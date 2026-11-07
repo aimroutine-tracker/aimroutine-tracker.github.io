@@ -66,11 +66,11 @@ test('Achievements rely on real recorded sessions and consecutive days',()=>{
 });
 test('Portable export is well-formed and imports profile and programs',()=>{
  const store=normalizeStore({sessions:[ses('2026-11-03T12:00:00Z')],weeklyGoal:5,presets:[{id:'p1',name:'Training',...createRoutine('iron','micro','VALORANT',15,30)}]},null);
- const ext=cleanExtension({profile:{nickname:'IKAZU',rank:'immortal',dpi:1600,sensitivity:.215},program:startProgram(7,'immortal','VALORANT')});
+ const ext=cleanExtension({profile:{nickname:'NovaFox',rank:'immortal',dpi:1600,sensitivity:.215},program:startProgram(7,'immortal','VALORANT')});
  const exported=toInterchange(store,ext);
  assert.equal(exported.format,INTERCHANGE);
  const imported=parseInterchange(exported);
- assert.equal(imported.sessions.length,1);assert.equal(imported.extension.profile.nickname,'IKAZU');
+ assert.equal(imported.sessions.length,1);assert.equal(imported.extension.profile.nickname,'NovaFox');
  assert.equal(imported.extension.program.days,7);assert.equal(imported.weeklyGoal,5);
 });
 test('Portable imports reject malformed or executable structures',()=>{
