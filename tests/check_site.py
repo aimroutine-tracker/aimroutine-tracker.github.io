@@ -67,6 +67,14 @@ for page in PAGES:
             issues.append(f"{page.name}: official social image missing")
         if 'favicon.svg' in html:
             issues.append(f"{page.name}: outdated favicon reference")
+    # V9 design smoke checks: every public route uses the same updated stylesheet.
+    if 'visual-v8.css?v=2' not in page.read_text(encoding='utf-8'):
+        issues.append(f"{page.name}: shared V9 visual stylesheet link missing")
+    if page.name == "index.html":
+        html = page.read_text(encoding="utf-8")
+        for link in ('id="choose-path"', 'class="ar9-path-grid"', 'href="training.html"', 'href="product.html"', 'href="account.html"'):
+            if link not in html:
+                issues.append("index.html: missing V9 navigation destination " + link)
     if page.name == "account.html":
         html = page.read_text(encoding="utf-8")
         for marker in ['id="login-form"', 'id="signup-form"', 'id="dashboard-panel"', 'account-v7.mjs', 'account-v7.css']:
