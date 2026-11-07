@@ -57,3 +57,29 @@ test('Turnstile cannot silently pass when its loader fails',async()=>{
  await assert.rejects(captcha.mount('login',{}),/blocked by extension/);
  assert.throws(()=>captcha.options('login'),/anti-robots/);
 });
+
+test('An aging token is reset before Supabase receives it',async()=>{
+ let time=1000,resetCount=0,challenge;
+ const api={render(_el,opts){challenge=opts;return 'widget-signup'},reset(){resetCount++}};
+ const captcha=createAuthCaptcha('public-sitekey',{loadApi:async()=>api,clock:()=>time});
+ await captcha.mount('signup',{});
+ challenge.callback('fresh-token');
+ assert.deepEqual(captcha.options('signup'),{captchaToken:'fresh-token'});
+ time+=240001;
+ assert.throws(()=>captcha.options('signup'),/expiré/);
+ assert.equal(resetCount,1);
+ assert.throws(()=>captcha.options('signup'),/anti-robots/);
+ challenge.callback('fresh-token-2');
+ assert.deepEqual(captcha.options('signup'),{captchaToken:'fresh-token-2'});
+});
+
+test('Turnstile rejects a response inconsistent with its callback',async()=>{
+ let challenge,liveToken='';
+ const api={render(_el,opts){challenge=opts;return 17},getResponse(){return liveToken},isExpired(){return false},reset(){liveToken=''}};
+ const captcha=createAuthCaptcha('public-sitekey',{loadApi:async()=>api});
+ await captcha.mount('signup',{});
+ challenge.callback('first-token');liveToken='first-token';
+ assert.deepEqual(captcha.options('signup'),{captchaToken:'first-token'});
+ liveToken='different-token';
+ assert.throws(()=>captcha.options('signup'),/expiré/);
+});

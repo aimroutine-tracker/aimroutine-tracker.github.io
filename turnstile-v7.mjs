@@ -26,10 +26,11 @@ function loadTurnstile(){
  return scriptPromise;
 }
 
-export function createAuthCaptcha(siteKey=TURNSTILE_SITE_KEY,{loadApi=loadTurnstile}={}){
+export function createAuthCaptcha(siteKey=TURNSTILE_SITE_KEY,{loadApi=loadTurnstile,clock=()=>Date.now()}={}){
  if(typeof siteKey!=='string')throw TypeError('Site key must be a string');
  const enabled=siteKey.trim().length>0;
  const widgets=new Map(),tokens=new Map(),pending=new Map();
+ const MAX_TOKEN_AGE_MS=240000; // Refresh before Cloudflare's 5-minute server-side validity limit.
  async function mount(mode,element){
   if(!enabled)return false;
   if(!['login','signup','reset','delete'].includes(mode))throw Error('Mode CAPTCHA inconnu');
@@ -43,8 +44,9 @@ export function createAuthCaptcha(siteKey=TURNSTILE_SITE_KEY,{loadApi=loadTurnst
     sitekey:siteKey,
     action:mode,
     theme:'auto',
+    'response-field':false, // Supabase receives the token through its Auth API.
     callback:token=>{
-     if(typeof token==='string'&&token)tokens.set(mode,token);
+     if(typeof token==='string'&&token)tokens.set(mode,{value:token,issuedAt:clock()});
      else tokens.delete(mode);
     },
     'expired-callback':()=>tokens.delete(mode),
@@ -60,9 +62,18 @@ export function createAuthCaptcha(siteKey=TURNSTILE_SITE_KEY,{loadApi=loadTurnst
  }
  function options(mode){
   if(!enabled)return {};
-  const token=tokens.get(mode);
-  if(!token||!widgets.has(mode))throw Error('Valide la vérification anti-robots avant de continuer.');
-  return {captchaToken:token};
+  const token=tokens.get(mode),widget=widgets.get(mode);
+  if(!token||!widget)throw Error('Valide la vérification anti-robots avant de continuer.');
+  let invalid=clock()-token.issuedAt>=MAX_TOKEN_AGE_MS;
+  try{
+   if(typeof widget.api.isExpired==='function'&&widget.api.isExpired(widget.id))invalid=true;
+   if(typeof widget.api.getResponse==='function'&&widget.api.getResponse(widget.id)!==token.value)invalid=true;
+  }catch{invalid=true}
+  if(invalid){
+   reset(mode);
+   throw Error('La vérification anti-robots a expiré. Valide le nouveau contrôle avant de continuer.');
+  }
+  return {captchaToken:token.value};
  }
  function reset(mode){
   tokens.delete(mode);

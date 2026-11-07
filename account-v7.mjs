@@ -68,7 +68,11 @@ async function run(task){
  working=true;
  document.querySelectorAll('.ar7-account-panel button').forEach(x=>{if(x.type==='submit'||x.id?.startsWith('cloud-'))x.disabled=true});
  try{await task()}
- catch(e){msg('Opération impossible : '+(e?.message||String(e)))}
+ catch(e){
+  const detail=String(e?.message||e);
+  const rejected=e?.code==='captcha_failed'||/captcha protection|invalid-input-response|timeout-or-duplicate/i.test(detail);
+  msg(rejected?'Vérification anti-robots refusée par le serveur. Valide le nouveau CAPTCHA puis réessaie. Si le problème persiste, contacte le support.':'Opération impossible : '+detail);
+ }
  finally{
   working=false;
   document.querySelectorAll('.ar7-account-panel button').forEach(x=>{if(x.type==='submit'||x.id?.startsWith('cloud-'))x.disabled=false});
