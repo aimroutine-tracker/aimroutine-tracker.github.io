@@ -7,8 +7,8 @@ language plpgsql
 set search_path to 'pg_catalog'
 as $function$
 declare
-  provider text := pg_catalog.lower(pg_catalog.coalesce(event->'user'->'app_metadata'->>'provider',''));
-  nickname text := pg_catalog.coalesce(event->'user'->'user_metadata'->>'aim_username','');
+  provider text := pg_catalog.lower(coalesce(event->'user'->'app_metadata'->>'provider',''));
+  nickname text := coalesce(event->'user'->'user_metadata'->>'aim_username','');
 begin
   if provider = 'email' and nickname !~ '^[A-Za-z0-9][A-Za-z0-9_-]{2,23}$' then
     return pg_catalog.jsonb_build_object(
