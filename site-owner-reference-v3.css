@@ -1179,3 +1179,49 @@ body.site31.r20 .r17-progress-wrap #v14-p-next .v14-hot-button{
  body.site31.r20 .r17-progress-wrap .r17-progress-bottom-head a{max-width:130px!important;white-space:normal!important;text-align:right!important;}
  body.site31.r20 .r17-progress-wrap .r17-progress-journey-body{flex-wrap:wrap!important;}
 }
+
+
+/* V3 / pass 13 — match owner profile image composition without inventing an
+   identity or avatar: the hero illustration is a decorative branded crop.
+   The original official A logo remains visible as a corner mark. */
+body.site31.r20 .r17-account-wrap .r17-avatar{
+ position:relative!important;overflow:hidden!important;
+ display:block!important;
+ border:2px solid #ff6077!important;
+ border-radius:12px 25px 12px 25px!important;
+ background-color:#382330!important;
+ background-image:linear-gradient(0deg,#0b192555,transparent 70%),url('r17-hero.webp')!important;
+ background-size:100% 100%,320px auto!important;
+ background-position:center center,31% 12%!important;
+ background-repeat:no-repeat!important;
+ box-shadow:0 0 0 2px #a24a6066,0 0 19px #ff5b6931!important;
+}
+body.site31.r20 .r17-account-wrap .r17-avatar img{
+ position:absolute!important;bottom:5px!important;right:5px!important;
+ width:22px!important;height:22px!important;
+ background:#0a1929ba!important;padding:3px!important;
+ border:1px solid #e25a71!important;border-radius:5px!important;
+ filter:drop-shadow(0 2px 4px #000c)!important;
+}
+body.site31.r20 .r17-account-wrap .r17-profile-cloud .ar-v3-symbol,
+body.site31.r20 .r17-account-wrap .r17-cloud-status .ar-v3-symbol{
+ width:38px!important;height:38px!important;color:#37e3dd!important;
+ filter:drop-shadow(0 0 6px #37e3dd77)!important;
+}
+@media(min-width:1350px){
+ body.site31.r20 .r17-account-wrap .r17-account-profile{
+  grid-template-columns:106px minmax(205px,1.35fr) minmax(82px,.5fr) minmax(95px,.65fr) minmax(235px,1.25fr)!important;
+  column-gap:18px!important;min-height:114px!important;
+  padding:7px 24px 7px 45px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-avatar{
+  width:100px!important;height:96px!important;
+ }
+}
+@media(max-width:720px){
+ body.site31.r20 .r17-account-wrap .r17-avatar{
+  width:56px!important;height:60px!important;
+  background-size:100% 100%,220px auto!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-avatar img{width:18px!important;height:18px!important}
+}
