@@ -1034,3 +1034,123 @@ body.site31.r20 .r17-progress-wrap .v14-panel-head .v14-glyph{
   min-width:110px!important;padding:7px 8px!important;
  }
 }
+
+
+/* V3 / pass 11 — Cloud account geometry and functional guest signup.
+   Actual OAuth, form submission, RLS, sessions, and deletion scripts unchanged.
+   Logged-in visitors never see the guest registration advertisement. */
+body.site31.r20 .r17-account-wrap .r17-account-benefits .r17-benefit-copy{
+ display:grid!important;gap:2px!important;min-width:0!important;
+ text-align:left!important;line-height:1.16!important;
+}
+body.site31.r20 .r17-account-wrap .r17-account-benefits .r17-benefit-copy strong{
+ font-size:13px!important;color:#f5f8fc!important;font-weight:750!important;
+ white-space:nowrap!important;
+}
+body.site31.r20 .r17-account-wrap .r17-account-benefits .r17-benefit-copy small{
+ display:block!important;color:#b4c7d4!important;font-size:10.5px!important;
+ white-space:nowrap!important;font-weight:450!important;
+}
+body.site31.r20 .r17-guest-registration{
+ background:linear-gradient(125deg,#1c2a39,#0b1926)!important;
+ border:1px solid #ab5a6d!important;
+ padding:15px 17px 16px!important;margin-top:12px!important;
+}
+body.site31.r20 .r17-guest-registration[hidden]{display:none!important;}
+body.site31.r20 .r17-guest-registration .r17-guest-registration-heading{
+ display:flex!important;align-items:center!important;gap:12px!important;
+}
+body.site31.r20 .r17-guest-registration-heading h2{
+ font-size:21px!important;line-height:1.12!important;margin:0 0 3px!important;
+}
+body.site31.r20 .r17-guest-registration-heading p{
+ margin:0!important;font-size:11px!important;line-height:1.35!important;
+ color:#bcd2dc!important;
+}
+body.site31.r20 .r17-guest-registration ul{
+ margin:13px 0!important;padding:0 0 0 26px!important;
+ display:grid!important;gap:8px!important;list-style:none!important;
+}
+body.site31.r20 .r17-guest-registration li{
+ font-size:12px!important;line-height:1.3!important;color:#ecf6f8!important;
+ position:relative!important;
+}
+body.site31.r20 .r17-guest-registration li::before{
+ content:"✓";position:absolute;left:-25px;top:-2px;
+ color:#37e3dd;font-size:17px;font-weight:800;
+}
+body.site31.r20 .r17-guest-signup-button{
+ background:linear-gradient(115deg,#3c2633,#17212c)!important;
+ border:2px solid #ff6173!important;
+ color:#ff7280!important;min-height:43px!important;
+ width:100%!important;border-radius:3px!important;
+ cursor:pointer!important;font-size:13px!important;font-weight:850!important;
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ gap:10px!important;
+}
+body.site31.r20 .r17-guest-signup-button:hover{
+ background:linear-gradient(115deg,#ff7280,#ff5369)!important;
+ color:#071b28!important;
+}
+body.site31.r20 .r17-guest-signup-button:focus-visible{
+ outline:2px solid #37e3dd!important;outline-offset:3px!important;
+}
+@media(min-width:1350px){
+ body.site31.r20 .r17-account-wrap .r17-account-cols{
+  margin:16px 20px 24px!important;
+  grid-template-columns:minmax(355px,.83fr) minmax(0,2.09fr)!important;
+  gap:19px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-auth #auth-panel{
+  padding:14px 17px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-auth #auth-panel h2{
+  font-size:25px!important;line-height:1.13!important;
+  margin:7px 0 10px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-auth .ar7-form-switch{
+  margin:9px 0!important;padding:4px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-auth .ar7-form-switch button{
+  padding:8px!important;min-height:32px!important;font-size:12px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-auth .ar7-social-login{
+  gap:7px!important;margin:7px 0 11px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-auth .ar7-google-btn{
+  min-height:40px!important;padding:7px 13px!important;font-size:12px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-auth .ar7-social-note{
+  font-size:10px!important;line-height:1.35!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-auth .ar7-auth-form{
+  gap:9px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-auth .ar7-auth-form label{
+  gap:4px!important;font-size:11px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-auth .ar7-auth-form input{
+  min-height:37px!important;padding:8px 11px!important;font-size:12px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-auth .ar7-primary{
+  min-height:39px!important;padding:8px 13px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-right>.r17-panel:first-child{
+  padding:13px 15px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-cloud-split{
+  margin-top:10px!important;gap:12px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-cloud-status,
+ body.site31.r20 .r17-account-wrap .r17-cloud-devices{
+  min-height:118px!important;padding:13px 16px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-right>.r17-panel:last-of-type{
+  padding:14px!important;
+ }
+}
+@media(max-width:720px){
+ body.site31.r20 .r17-guest-registration{padding:14px!important}
+ body.site31.r20 .r17-account-benefits .r17-benefit-copy strong{font-size:11px!important}
+ body.site31.r20 .r17-account-benefits .r17-benefit-copy small{font-size:9px!important}
+}
