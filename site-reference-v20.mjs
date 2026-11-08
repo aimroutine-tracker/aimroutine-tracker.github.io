@@ -236,21 +236,38 @@ function progress(screen){
  const source=$('#v14-source-status');
  const panel=$('#v14-p-skills-panel');
  if(panel){
-  const title=$('.v14-panel-head h2',panel);if(title)title.textContent=words('Résumé de tes entraînements','Your training summary');
-  const caption=$('.v14-panel-head small',panel);if(caption)caption.textContent=words('Répartition des séances par compétence (données réelles)','Real distribution of sessions by skill');
+  bindV3Locale($('.v14-panel-head h2',panel),'Résumé de tes entraînements','Your training summary');
+  bindV3Locale($('.v14-panel-head small',panel),
+   'Répartition des séances par compétence (données réelles)','Real distribution of sessions by skill');
  }
  const btn=$('.v14-progress-toolbar',screen);
- if(btn){const label=document.createElement('span');label.className='ar20-progress-period';label.textContent=words('Mes résultats personnels','My real personal results');btn.append(label)}
- const foot=$('.v14-data-footnote',screen);
- if(foot)foot.textContent=words('Toutes les mesures proviennent de séances enregistrées sur ton compte. La précision moyenne de scénarios différents ne constitue pas un classement VALORANT. Les temps de réaction ne sont pas mesurés par le suivi actuel.','Figures use real recorded account sessions. Accuracy across different scenarios is not a VALORANT rank; reaction time is not measured yet.');
- const notice=document.createElement('section');notice.className='ar20-progress-advanced';
- notice.innerHTML='<div><strong>'+words('Prochaine étape — un résultat comparable','Next step — a comparable result')+'</strong><div class="ar20-profile-note">'+words('Rejoue le même scénario et enregistre sa précision pour suivre ta tendance.','Repeat the same scenario and log accuracy to track your trend.')+'</div></div><a href="training.html#panel-builder">'+words('▶ Lancer une routine ciblée','▶ Start a focused routine')+'</a>';
+ if(btn){
+  const label=document.createElement('span');
+  label.className='ar20-progress-period';
+  bindV3Locale(label,'Mes résultats personnels','My real personal results');
+  btn.append(label);
+ }
+ bindV3Locale($('.v14-data-footnote',screen),
+  'Toutes les mesures proviennent de séances enregistrées sur ton compte. La précision moyenne de scénarios différents ne constitue pas un classement VALORANT. Les temps de réaction ne sont pas mesurés par le suivi actuel.',
+  'Figures use real recorded account sessions. Accuracy across different scenarios is not a VALORANT rank; reaction time is not measured yet.');
+ const notice=document.createElement('section');
+ notice.className='ar20-progress-advanced';
+ notice.innerHTML='<div><strong></strong><div class="ar20-profile-note"></div></div><a href="training.html#panel-builder"></a>';
+ bindV3Locale($('strong',notice),'Prochaine étape — un résultat comparable','Next step — a comparable result');
+ bindV3Locale($('.ar20-profile-note',notice),
+  'Rejoue le même scénario et enregistre sa précision pour suivre ta tendance.',
+  'Repeat the same scenario and log accuracy to track your trend.');
+ bindV3Locale($('a',notice),'▶ Lancer une routine ciblée','▶ Start a focused routine');
  const secondary=$('.r17-secondary-grid',screen);if(secondary)secondary.after(notice);
  const oldCharts=$$('#v14-p-line-panel svg,#v14-p-bars-panel svg');
  oldCharts.forEach(svg=>{svg.style.filter='drop-shadow(0 0 3px rgba(55,227,221,.25))'});
- if(source){new MutationObserver(()=>{const guest=source.textContent.includes('Connecte-toi')||source.textContent.includes('Sign in');screen.classList.toggle('ar20-guest',guest)}).observe(source,{childList:true,subtree:true})}
+ if(source){
+  new MutationObserver(()=>{
+   const guest=source.textContent.includes('Connecte-toi')||source.textContent.includes('Sign in');
+   screen.classList.toggle('ar20-guest',guest);
+  }).observe(source,{childList:true,subtree:true});
+ }
 }
-
 
 /* V3: replace platform-dependent text glyphs with a deterministic local SVG
    set. No remote icon CDN, no new library, no new user data. */
