@@ -409,3 +409,10 @@ body.site31.ar21 .a21-community-preview a{
  body.site31.ar21 main:has(.a21-account) .a21-hero-art{left:700px!important;right:0!important;background-image:url('ar21-reference-hero-account.jpg')!important;background-size:1672px 941px!important;background-position:right -57px!important}
  body.site31.ar21 main:has(.a21-progress) .a21-hero-art{left:710px!important;right:0!important;background-image:url('ar21-reference-hero-progress.jpg')!important;background-size:1672px 941px!important;background-position:right -57px!important}
 }
+
+/* Do not expose reference mockup KPI pixels from artwork at hero foot.
+   The actual KPI strip directly below is generated from the real account. */
+@media(min-width:1500px){
+ body.site31.ar21 .a21-hero-art{bottom:23px!important}
+ body.site31.ar21 .a21-hero{border-bottom:1px solid #ed60737d!important}
+}
