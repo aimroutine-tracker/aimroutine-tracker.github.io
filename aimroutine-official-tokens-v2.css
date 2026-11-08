@@ -1,0 +1,34 @@
+/* AimRoutine Tracker — official design tokens v2, 2026-11-08.
+   Supplied by the project owner; color and typography values preserved. */
+:root {
+  --ar-bg: #080F18;
+  --ar-bg-hero: #07121B;
+  --ar-surface: #10202C;
+  --ar-surface-raised: #142633;
+  --ar-panel: #162733;
+  --ar-border: #315064;
+  --ar-text: #F7F9FC;
+  --ar-muted: #A4BACB;
+  --ar-coral: #FF5B69;
+  --ar-coral-hover: #FF7C88;
+  --ar-cyan: #37E3DD;
+  --ar-purple: #BC86E6;
+  --ar-amber: #FFB453;
+  --ar-success: #38DAB0;
+  --ar-error: #FB5669;
+  --ar-radius-sm: 6px;
+  --ar-radius-md: 10px;
+  --ar-radius-lg: 14px;
+  --ar-space-1: 4px;
+  --ar-space-2: 8px;
+  --ar-space-3: 12px;
+  --ar-space-4: 16px;
+  --ar-space-6: 24px;
+  --ar-space-8: 32px;
+  --ar-space-12: 48px;
+  --ar-gradient-primary: linear-gradient(118deg,#FF6472 0%,#FF5365 100%);
+  --ar-gradient-surface: linear-gradient(155deg,#162835 0%,#0C1924 100%);
+  --ar-gradient-data: linear-gradient(180deg,rgba(55,227,221,.38) 0%,rgba(55,227,221,0) 100%);
+  --ar-glow: 0 0 0 1px rgba(255,91,105,.3),0 0 23px rgba(255,91,105,.20);
+  --ar-font: Inter,"Segoe UI",Arial,sans-serif;
+}
