@@ -17,7 +17,7 @@ function bindV3Locale(node,fr,en){
  node.textContent=words(fr,en);
 }
 function refreshV3Locale(){
- $('[data-r20-fr][data-r20-en]').forEach(node=>{
+ document.querySelectorAll('[data-r20-fr][data-r20-en]').forEach(node=>{
   const expected=isEn()?node.dataset.r20En:node.dataset.r20Fr;
   if(node.textContent!==expected)node.textContent=expected;
  });
