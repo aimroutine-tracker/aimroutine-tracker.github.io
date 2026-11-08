@@ -652,3 +652,29 @@ body.site31.site31-training.r20 main#app>#ar-account-required{
  margin:18px auto 12px!important;
  max-width:calc(100% - 40px)!important;
 }
+
+
+/* V3 / pass 3 — Progress visual containment from browser evidence.
+   On pass 2 progress content was 228px within a 204px art strip and clipped
+   2px of CTA; compact the hierarchy before capture rather than hiding it. */
+@media(min-width:1350px){
+ body.site31.r20 .r17-progress-wrap .r17-hero-content{
+  padding-top:0!important;padding-bottom:0!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-overline{
+  font-size:10px!important;line-height:1.2!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-hero h1{
+  font-size:47px!important;line-height:1!important;
+  margin:5px 0 4px!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-hero-desc{
+  font-size:13px!important;line-height:1.18!important;
+  max-width:630px!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-hero-actions{margin-top:8px!important}
+ body.site31.r20 .r17-progress-wrap .r17-button{
+  min-height:40px!important;height:40px!important;
+  padding:6px 14px!important;
+ }
+}
