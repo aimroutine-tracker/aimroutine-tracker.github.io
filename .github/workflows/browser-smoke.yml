@@ -11,6 +11,7 @@ on:
       - "training.html"
       - "account.html"
       - "progress.html"
+      - "progress-v14.mjs"
       - "tests/browser.spec.mjs"
       - ".github/workflows/browser-smoke.yml"
   push:
