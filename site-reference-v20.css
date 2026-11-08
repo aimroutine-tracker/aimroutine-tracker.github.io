@@ -755,3 +755,41 @@ body.site31.site31-training.r20 main#app>#ar-account-required{
   margin-left:20px!important;margin-right:20px!important;
  }
 }
+
+
+/* V3 / pass 5 — target the actual cause of an 87px late Routines weekline.
+   Chromium measured left sidebar 373 + 12 + 171 = 556px, while the central
+   plan is only 469px. Compact both genuine sidebar panels to 319 + 12 + 130
+   instead of masking the weekly calendar or discarding its functionality. */
+@media(min-width:1350px){
+ body.site31.r20 .r17-training-wrap .r17-train-summary{
+  height:319px!important;min-height:319px!important;max-height:319px!important;
+  overflow-y:auto!important;overflow-x:hidden!important;scrollbar-width:thin;
+ }
+ body.site31.r20 .r17-training-wrap .r17-train-summary .r17-panel-title{
+  padding-bottom:6px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-train-summary .r17-metric{
+  padding-block:6px!important;font-size:12px!important;gap:8px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-train-summary .r17-metric strong{
+  font-size:16px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-train-summary .r17-meter{
+  margin-top:5px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-level-note{
+  height:130px!important;min-height:130px!important;max-height:130px!important;
+  overflow-y:auto!important;scrollbar-width:thin;
+  padding:10px 14px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-level-note h3{
+  margin:4px 0!important;font-size:17px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-level-note p{
+  font-size:10.5px!important;line-height:1.27!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-level-note .r17-meter{
+  margin-top:5px!important;
+ }
+}
