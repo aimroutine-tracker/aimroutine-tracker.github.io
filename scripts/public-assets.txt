@@ -116,4 +116,5 @@ site-interface-v19.css
 site-interface-v19.mjs
 site-reference-v20.css
 site-owner-reference-v3.css
+aimroutine-avatar-reference.svg
 site-reference-v20.mjs
