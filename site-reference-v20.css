@@ -793,3 +793,91 @@ body.site31.site31-training.r20 main#app>#ar-account-required{
   margin-top:5px!important;
  }
 }
+
+
+/* V3 / pass 6 — pixel-reference discrepancies detected against actual
+   1672×941 owner PNGs, not only against the previous deployed website. */
+body.site31.r20 .site31-links>a.r18-navlink:not([aria-current="page"]){
+ background:transparent!important;
+ color:#e9eff4!important;
+ box-shadow:none!important;
+ border:0!important;
+}
+body.site31.r20 .site31-links>a.r18-navlink[aria-current="page"]{
+ background:linear-gradient(120deg,#34212b,#231d28)!important;
+ box-shadow:inset 0 -2px var(--ar-v3-coral),0 4px 16px #ff5b6924!important;
+ color:#fff!important;
+}
+body.site31.r20 .site31-links>a.r18-navlink:not([aria-current="page"]):hover{
+ background:linear-gradient(120deg,#2f222c,#15232e)!important;
+ color:#fff!important;
+}
+body.site31.r20 .r18-actions .r18-account-link[aria-current="page"]{
+ border-color:#d96274!important;background:linear-gradient(130deg,#39222f,#1c2230)!important;
+ box-shadow:inset 0 -2px var(--ar-v3-coral)!important;
+}
+body.site31.r20 .r17-screen .ar-v3-symbol{
+ display:block;width:1em;height:1em;flex:0 0 auto;
+ overflow:visible;pointer-events:none;
+}
+body.site31.r20 .r17-screen .r17-icon .ar-v3-symbol{font-size:30px;}
+body.site31.r20 .r17-screen .r17-stat-icon .ar-v3-symbol{font-size:34px;}
+body.site31.r20 .r17-screen .r17-level-symbol .ar-v3-symbol{font-size:28px;}
+body.site31.r20 .r17-screen .r17-reticle .ar-v3-symbol{font-size:68px;}
+body.site31.r20 .r17-screen .r17-challenge-target .ar-v3-symbol{font-size:88px;}
+body.site31.r20 .r17-home-wrap .r17-path>span:first-child .ar-v3-symbol{font-size:34px;}
+body.site31.r20 .r17-training-wrap .r17-day-card .r17-reticle .ar-v3-symbol{
+ font-size:76px;color:#ff7081!important;
+}
+body.site31.r20 .r17-home-wrap .r17-feature p{font-size:13.6px!important;}
+@media(min-width:1350px){
+ body.site31.r20 .r17-home-wrap .r17-hero h1{
+  margin-top:23px!important;margin-bottom:12px!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-hero-actions{margin-top:21px!important;}
+ body.site31.r20 .r17-home-wrap .r17-hero-actions .r17-button{
+  min-width:248px!important;min-height:49px!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-hero-actions .r17-button--outline{min-width:296px!important;}
+ body.site31.r20 .r17-training-wrap .r17-hero-content{transform:translateY(11px);}
+ body.site31.r20 .r17-account-wrap .r17-hero-content{transform:translateY(-10px);}
+ body.site31.r20 .r17-progress-wrap .r17-hero-content{transform:translateY(-6px);}
+ body.site31.r20 .r17-home-wrap .r17-features{
+  max-width:1542px!important;padding-inline:0!important;margin-inline:auto!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-home-bottom{
+  max-width:1542px!important;padding-inline:0!important;margin:28px auto 22px!important;
+  grid-template-columns:minmax(0,2.07fr) minmax(400px,.96fr)!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-path{
+  display:flex!important;flex-direction:column!important;
+  gap:3px!important;padding:11px 15px 41px!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-path>span:first-child{height:34px!important;line-height:1!important;}
+ body.site31.r20 .r17-home-wrap .r17-path h3{
+  margin:0!important;font-size:17px!important;line-height:1.1!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-path b{align-self:flex-start;padding:3px 6px!important;}
+ body.site31.r20 .r17-home-wrap .r17-path p{
+  margin:3px 0 0!important;min-height:0!important;max-height:38px!important;
+  font-size:12px!important;line-height:1.25!important;
+  overflow:hidden!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-path-foot{
+  height:33px!important;min-height:33px!important;
+  padding:7px 13px!important;align-items:center!important;
+  background:#0b1d2add!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-challenge{
+  min-height:241px!important;padding:15px 19px!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-challenge h3{
+  margin:13px 0 4px!important;font-size:20px!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-challenge p{font-size:13px!important;}
+}
+@media(max-width:1349px){
+ body.site31.r20 .r17-home-wrap .r17-path p{
+  margin:5px 0 22px!important;font-size:12px!important;
+ }
+}
