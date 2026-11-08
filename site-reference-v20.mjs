@@ -174,12 +174,14 @@ function installV3Icons(screen){
   '⚑':'<path d="M6 29V3m0 2c6-4 11 4 21 0v15c-10 4-15-4-21 0"/>',
   '◇':'<path d="m16 3 13 8-13 8-13-8 13-8Zm-13 15 13 8 13-8M3 24l13 7 13-7"/>',
   '♛':'<path d="M6 24 4 9l8 6 4-11 4 11 8-6-2 15H6Zm0 5h20"/>',
+  '♕':'<path d="M4 9 12 15 16 4l4 11 8-6-2 16H6L4 9Zm2 20h20"/>',
+  '⬡':'<path d="M16 2 28 7v11c0 6-5 10-12 13C9 28 4 24 4 18V7L16 2Z"/><path d="m10 16 5 5 8-10"/>',
   '⌄⌄':'<path d="m3 5 13 9L29 5M3 12l13 9 13-9M3 19l13 9 13-9"/>',
   '♨':'<path d="M14 3c0 6-6 8-6 15a8 8 0 0 0 16 0c0-4-2-7-5-10 0 5-4 7-5 10-2-4-1-8 0-15Z"/>',
   '↗':'<path d="M4 25 13 16l5 4 10-13M20 7h8v8"/>',
   '▥▥':'<path d="M5 24v-7m6 7V12m6 12V8m6 16V4" stroke-width="3.5"/>'
  };
- const selectors='.r17-icon,.r17-stat-icon,.r17-level-symbol,.r17-reticle,.r17-challenge-target,.r17-path > span:first-child';
+ const selectors='.r17-icon,.r17-stat-icon,.r17-level-symbol,.r17-reticle,.r17-challenge-target,.r17-path > span:first-child,.r17-progress-wrap .v14-glyph';
  const update=()=>{
   for(const el of $$(selectors,screen)){
    if(el.querySelector('svg'))continue;
@@ -191,6 +193,17 @@ function installV3Icons(screen){
   }
  };
  update();
+ // Preserve both FR and EN account-benefit labels while replacing only their
+ // decorative Unicode glyphs. This never changes account state or Cloud data.
+ for(const label of $('.r17-account-benefits>span',screen)){
+  if(label.querySelector('svg'))continue;
+  const first=label.firstChild;
+  if(!first||first.nodeType!==3)continue;
+  const glyph=(first.nodeValue||'').trim().charAt(0);
+  if(!paths[glyph])continue;
+  first.nodeValue=(first.nodeValue||'').replace(/^\s*[^\s]+\s*/,'');
+  label.insertAdjacentHTML('afterbegin',form(paths[glyph]));
+ }
  // The real training builder rerenders its preview after a level/day change.
  screen.addEventListener('click',event=>{
   if(event.target.closest('[data-r17-level],[data-r17-day]'))queueMicrotask(update);
