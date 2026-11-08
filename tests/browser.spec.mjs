@@ -650,3 +650,21 @@ test('V3 progress composition preserves real live KPI values and all source pane
  const documentWidth=await page.evaluate(()=>document.documentElement.scrollWidth);
  expect(documentWidth).toBeLessThanOrEqual(1675);
 });
+
+
+test('V3 four-reference headers stay clean and original locale control still works',async({page})=>{
+ for(const route of ['index.html','training.html','progress.html','account.html']){
+  await page.goto('/'+route,{waitUntil:'domcontentloaded'});
+  await expect(page.locator('.site31-header [data-switch-lang]')).toHaveCount(0);
+  const switcher=page.locator('.ar-v3-language-footer [data-switch-lang]');
+  await expect(switcher).toHaveCount(1);
+  const before=(await switcher.innerText()).trim();
+  await switcher.click();
+  const after=(await switcher.innerText()).trim();
+  expect(after).not.toEqual(before);
+  const label=page.locator('.ar-v3-language-footer');
+  await expect(label).toBeVisible();
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+  expect(overflow).toBeLessThanOrEqual(3);
+ }
+});
