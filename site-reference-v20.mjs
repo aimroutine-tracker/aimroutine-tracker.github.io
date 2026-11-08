@@ -116,7 +116,19 @@ function routines(screen){
 function account(screen){
  const benefit=$('.r17-account-benefits',screen);
  if(benefit){
-  const items=$$('span',benefit);items.forEach((it,i)=>{if(i===0)it.textContent='☁ '+words('Progression partagée · sur tes appareils','Shared progress across devices');if(i===1)it.textContent='▱ '+words('Paramètres unifiés','Unified preferences');if(i===2)it.textContent='⬡ '+words('Données protégées','Protected data')});
+  const descriptions=[
+   ['☁',words('Progression partagée','Shared progress'),words('Sur tous tes appareils','Across your devices')],
+   ['▱',words('Paramètres unifiés','Unified settings'),words('Une expérience cohérente','Consistent experience')],
+   ['⬡',words('Données protégées','Protected data'),words('Privées et sauvegardées','Private and backed up')]
+  ];
+  $('.r17-account-benefits>span',screen).forEach((it,i)=>{
+   const entry=descriptions[i];if(!entry)return;
+   it.replaceChildren(document.createTextNode(entry[0]+' '));
+   const copy=document.createElement('span');copy.className='r17-benefit-copy';
+   const headline=document.createElement('strong');headline.textContent=entry[1];
+   const detail=document.createElement('small');detail.textContent=entry[2];
+   copy.append(headline,detail);it.append(copy);
+  });
  }
  const note=$('.r17-cloud-status',screen);if(note){
   const p=$('[data-r17-sync-copy]',note);if(p)p.textContent=words('Avec un compte, tes données se synchronisent automatiquement.','With an account, your data syncs automatically.');
