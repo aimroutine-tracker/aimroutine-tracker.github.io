@@ -371,3 +371,23 @@ body.site31.ar21 .a21-account #auth-panel :is(#login-form,#signup-form,#reset-fo
 body.site31.ar21 .a21-account #auth-panel input{height:32px!important;min-height:32px!important}
 body.site31.ar21 .a21-account #auth-panel .ar7-primary{min-height:35px!important}
 @media(max-width:900px){body.site31.ar21 .a21-hero-art{left:0!important;background-size:cover!important;background-position:center!important}}
+/* Owner-asset calibration: screenshot home hero photo is 982x350 and starts
+   663px from the left at the reference 1672px viewport. */
+@media(min-width:901px){
+ body.site31.ar21 main:has(.a21-home) .a21-hero{height:350px!important}
+ body.site31.ar21 main:has(.a21-home) .a21-hero-art{
+   width:auto!important;left:calc(50% - 173px)!important;right:0!important;
+   background-size:982px 350px!important;background-position:left 0!important
+ }
+}
+body.site31.ar21 .a21-community-preview{
+ display:flex;justify-content:space-between;align-items:center;gap:22px;
+ margin:42px 27px 10px;padding:19px 23px;border:1px solid #486476;
+ background:linear-gradient(115deg,#182e3c,#0e1e2a);
+}
+body.site31.ar21 .a21-community-preview h2{font-size:21px;margin:0 0 6px}
+body.site31.ar21 .a21-community-preview p{font-size:12px;color:#b6cbd8;margin:0}
+body.site31.ar21 .a21-community-preview a{
+ font-size:12px;font-weight:850;text-decoration:none;background:#ff6172;color:#091622;padding:10px 15px;border-radius:3px 8px
+}
+@media(max-width:650px){body.site31.ar21 .a21-community-preview{flex-direction:column;align-items:flex-start}}
