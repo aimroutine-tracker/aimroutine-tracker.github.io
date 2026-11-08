@@ -201,7 +201,7 @@ function progress(screen){
    keyboard access and English/French settings. Do not duplicate it. */
 function relocateV3LanguageSwitch(){
  const switcher=document.querySelector('.site31-header [data-switch-lang]');
- const footer=document.querySelector('.site31-footer-inner');
+ const footer=document.querySelector('.site31-footer-inner')||document.querySelector('footer');
  if(!switcher||!footer||footer.querySelector('.ar-v3-language-footer'))return;
  const holder=document.createElement('div');
  holder.className='ar-v3-language-footer';
