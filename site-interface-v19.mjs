@@ -28,8 +28,11 @@ function installWorkspace(){
  const engineTool=$('#tool');
  select.value=engineTool?.value||TOOLS[0];
  picker.append(select);
+ // Keep the genuine game selector in the scrollable controls below
+ // the exercise preview. The reference header remains compact.
+ const footer=$('.r17-training-plan .r17-plan-footer',screen);
  const title=$('.r17-training-plan .r17-panel-title',screen);
- if(title)title.append(picker);
+ if(footer)footer.append(picker);else if(title)title.append(picker);
 
  const extra=document.createElement('div');
  extra.className='r19-plan-summary';
