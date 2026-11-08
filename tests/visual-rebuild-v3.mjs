@@ -52,6 +52,10 @@ try{
      homeStats:measure('.r17-home-wrap .r17-stats'),
      homeFeatures:measure('.r17-home-wrap .r17-features'),
      homeBottom:measure('.r17-home-wrap .r17-home-bottom'),
+     homePaths:measure('.r17-home-wrap .r17-home-paths'),
+     homePathGrid:measure('.r17-home-wrap .r17-path-grid'),
+     homePathCard:measure('.r17-home-wrap .r17-path'),
+     homeChallenge:measure('.r17-home-wrap .r17-challenge'),
      trainGrid:measure('.r17-training-wrap .r17-training-grid'),
      trainPlan:measure('.r17-training-wrap .r17-training-plan'),
      trainLeft:measure('.r17-training-wrap .r17-train-left'),
@@ -91,5 +95,5 @@ try{
  }
 }finally{await browser.close();}
 await writeFile(join(out,'measurements.json'),JSON.stringify(results,null,2));
-for(const x of results)console.log(x.name,x.phase,'hero',JSON.stringify(x.geometry.hero),'content',JSON.stringify(x.geometry.heroContent),'headline',JSON.stringify(x.geometry.heroHeadline),'description',JSON.stringify(x.geometry.heroDescription),'actions',JSON.stringify(x.geometry.heroActions),'notice',JSON.stringify(x.geometry.previewNotice),'layout',JSON.stringify({homeStats:x.geometry.homeStats,homeFeatures:x.geometry.homeFeatures,homeBottom:x.geometry.homeBottom,trainGrid:x.geometry.trainGrid,trainPlan:x.geometry.trainPlan,trainLeft:x.geometry.trainLeft,trainSummary:x.geometry.trainSummary,trainLevelNote:x.geometry.trainLevelNote,trainCenter:x.geometry.trainCenter,trainRight:x.geometry.trainRight,trainChallenge:x.geometry.trainChallenge,trainTools:x.geometry.trainTools,trainWeek:x.geometry.trainWeek,progressKpis:x.geometry.progressKpis,progressCharts:x.geometry.progressCharts,accountBenefits:x.geometry.accountBenefits,accountProfile:x.geometry.accountProfile,navCurrent:x.geometry.navCurrent}),'width',x.geometry.documentWidth,'JS errors',x.javascriptErrors.slice(0,5));
+for(const x of results)console.log(x.name,x.phase,'hero',JSON.stringify(x.geometry.hero),'content',JSON.stringify(x.geometry.heroContent),'headline',JSON.stringify(x.geometry.heroHeadline),'description',JSON.stringify(x.geometry.heroDescription),'actions',JSON.stringify(x.geometry.heroActions),'notice',JSON.stringify(x.geometry.previewNotice),'layout',JSON.stringify({homeStats:x.geometry.homeStats,homeFeatures:x.geometry.homeFeatures,homeBottom:x.geometry.homeBottom,homePaths:x.geometry.homePaths,homePathGrid:x.geometry.homePathGrid,homePathCard:x.geometry.homePathCard,homeChallenge:x.geometry.homeChallenge,trainGrid:x.geometry.trainGrid,trainPlan:x.geometry.trainPlan,trainLeft:x.geometry.trainLeft,trainSummary:x.geometry.trainSummary,trainLevelNote:x.geometry.trainLevelNote,trainCenter:x.geometry.trainCenter,trainRight:x.geometry.trainRight,trainChallenge:x.geometry.trainChallenge,trainTools:x.geometry.trainTools,trainWeek:x.geometry.trainWeek,progressKpis:x.geometry.progressKpis,progressCharts:x.geometry.progressCharts,accountBenefits:x.geometry.accountBenefits,accountProfile:x.geometry.accountProfile,navCurrent:x.geometry.navCurrent}),'width',x.geometry.documentWidth,'JS errors',x.javascriptErrors.slice(0,5));
 if(failed)process.exitCode=1;
