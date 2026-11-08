@@ -371,15 +371,7 @@ body.site31.ar21 .a21-account #auth-panel :is(#login-form,#signup-form,#reset-fo
 body.site31.ar21 .a21-account #auth-panel input{height:32px!important;min-height:32px!important}
 body.site31.ar21 .a21-account #auth-panel .ar7-primary{min-height:35px!important}
 @media(max-width:900px){body.site31.ar21 .a21-hero-art{left:0!important;background-size:cover!important;background-position:center!important}}
-/* Owner-asset calibration: screenshot home hero photo is 982x350 and starts
-   663px from the left at the reference 1672px viewport. */
-@media(min-width:901px){
- body.site31.ar21 main:has(.a21-home) .a21-hero{height:350px!important}
- body.site31.ar21 main:has(.a21-home) .a21-hero-art{
-   width:auto!important;left:calc(50% - 173px)!important;right:0!important;
-   background-size:982px 350px!important;background-position:left 0!important
- }
-}
+/* Reference QA: restore earlier hero crop after measurable visual regression. */
 body.site31.ar21 .a21-community-preview{
  display:flex;justify-content:space-between;align-items:center;gap:22px;
  margin:42px 27px 10px;padding:19px 23px;border:1px solid #486476;
