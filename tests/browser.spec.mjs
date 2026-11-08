@@ -11,6 +11,9 @@ async function useVerifiedTestAccount(page){
 }
 
 test.beforeEach(async ({page})=>{
+ // Legacy functional controls remain tested directly; the V21 visual layer
+ // is independently covered by v21-integrated.spec.mjs on every browser.
+ await page.addInitScript(()=>{window.__aim_test_legacy_ui=true});
  await page.route('https://cmsassets.rgpub.io/**',route=>route.abort());
  // Keep browser smoke tests deterministic: real Turnstile is validated only
  // after Supabase server-side CAPTCHA has been configured by the project owner.

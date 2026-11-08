@@ -116,3 +116,9 @@ site-interface-v19.css
 site-interface-v19.mjs
 site-reference-v20.css
 site-reference-v20.mjs
+aimroutine-reference-v21.css
+aimroutine-reference-v21.mjs
+ar21-reference-hero-home.jpg
+ar21-reference-hero-routines.jpg
+ar21-reference-hero-account.jpg
+ar21-reference-hero-progress.jpg

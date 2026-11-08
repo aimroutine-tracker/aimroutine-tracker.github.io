@@ -1,0 +1,51 @@
+name: V21 reference pixel comparison (branch only)
+on:
+  pull_request:
+    paths:
+      - "aimroutine-reference-v21.*"
+      - "index.html"
+      - "training.html"
+      - "account.html"
+      - "progress.html"
+      - "tests/reference_v21*"
+      - ".reference-v21/**"
+      - ".github/workflows/reference-v21.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install renderer
+        run: |
+          npm install --no-save @playwright/test@1.56.1
+          npx playwright install --with-deps chromium
+          python3 -m pip install --break-system-packages pillow numpy
+      - name: Serve last public baseline and branch in parallel
+        run: |
+          git fetch origin main
+          git worktree add --detach /tmp/aimroutine-v21-before origin/main
+          nohup python3 -m http.server 8766 --bind 127.0.0.1 --directory /tmp/aimroutine-v21-before >/tmp/aim-before.log 2>&1 &
+          nohup python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/aim-after.log 2>&1 &
+          for port in 8765 8766; do
+            for i in $(seq 1 30); do curl -fsS http://127.0.0.1:$port/index.html >/dev/null && break || sleep 1; done
+          done
+      - name: Generate four original/before/after/difference comparisons
+        run: |
+          node tests/reference_v21_capture.mjs
+          python3 tests/reference_v21_compare.py
+      - name: Upload pixel comparisons (review before merge)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aimroutine-v21-reference-comparison
+          path: reference-v21-output/
+          retention-days: 7

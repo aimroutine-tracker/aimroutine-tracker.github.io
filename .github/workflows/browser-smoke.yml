@@ -3,6 +3,9 @@ on:
   pull_request:
     paths:
       - "site-rebuild-v17.*"
+      - "aimroutine-reference-v21.*"
+      - "tests/v21-integrated.spec.mjs"
+      - "tests/playwright.config.mjs"
       - "r17-hero.webp"
       - "index.html"
       - "training.html"
