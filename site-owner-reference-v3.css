@@ -1234,3 +1234,25 @@ body.site31.r20 .ar-v3-language-footer [data-switch-lang]:focus-visible{
   background-position:74% 0%!important;
  }
 }
+
+
+/* V3 / pass 16 — progress-only two-zone registration.
+   Owner image matching established that the character needs a 58.8% crop
+   while the skyline must still reach the right edge. Keep full-sized city
+   underneath, feather only the smaller character into its matching position.
+   The two layers are the SAME local hero artwork; no remote assets. */
+@media(min-width:1350px){
+ body.site31.r20 .r17-progress-wrap .r17-hero-art{
+  background-size:cover!important;
+  background-position:center 40%!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-hero-art::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:url('r17-hero.webp');
+  background-size:58.8% auto;
+  background-position:38% 30%;
+  background-repeat:no-repeat;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,transparent 10%,#000 19%,#000 54%,transparent 60%,transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0%,transparent 10%,#000 19%,#000 54%,transparent 60%,transparent 100%);
+ }
+}
