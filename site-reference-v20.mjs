@@ -216,7 +216,7 @@ function installV3Icons(screen){
   '↗':'<path d="M4 25 13 16l5 4 10-13M20 7h8v8"/>',
   '▥▥':'<path d="M5 24v-7m6 7V12m6 12V8m6 16V4" stroke-width="3.5"/>'
  };
- const selectors='.r17-icon,.r17-stat-icon,.r17-level-symbol,.r17-reticle,.r17-challenge-target,.r17-path > span:first-child,.r17-progress-wrap .v14-glyph';
+ const selectors='.r17-icon,.r17-stat-icon,.r17-level-symbol,.r17-reticle,.r17-challenge-target,.r17-path > span:first-child,.r17-progress-wrap .v14-glyph,.r17-account-wrap .r17-profile-cloud>span,.r17-account-wrap .r17-cloud-status>span';
  const update=()=>{
   for(const el of $$(selectors,screen)){
    if(el.querySelector('svg'))continue;
