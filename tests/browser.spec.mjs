@@ -610,3 +610,15 @@ test('Verified account saves and syncs new sessions automatically without cloud 
  expect(await page.evaluate(()=>localStorage.getItem('aimroutine_web_training_v2'))).toBeNull();
  await expect(page.locator('#cloud-training-status')).toContainText('Cloud automatique');
 });
+
+
+test('V3 Cloud guest registration CTA opens the real mandatory-nickname signup form',async ({page})=>{
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.r17-guest-registration')).toBeVisible();
+ await page.locator('.r17-guest-signup-button').click();
+ await expect(page.locator('#signup-mode')).toHaveAttribute('aria-pressed','true');
+ await expect(page.locator('#signup-form')).toBeVisible();
+ await expect(page.locator('#signup-username')).toHaveAttribute('required','');
+ await expect(page.locator('#signup-password')).toHaveAttribute('minlength','8');
+ await expect(page.locator('#google-signin')).toBeVisible();
+});
