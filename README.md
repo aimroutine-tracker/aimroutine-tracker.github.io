@@ -113,3 +113,13 @@ Security verification on 6 November 2026: owner-only RLS policies and delete cas
 - Cloud synchronization is enabled by default for **every verified account**; no enable/sync button or manual activation. Training syncs after changes (debounced), reconnect/focus, and every 45 seconds while active; the account portal also refreshes periodically.
 - The verified user's browser storage is a scoped offline/retry cache, not a guest backup; failed uploads remain pending and are not presented as uploaded.
 - Server ownership continues to be enforced by existing Supabase RLS. Public Riot APIs are unchanged.
+
+## V20 · Four official mockup screens (8 Nov 2026)
+
+- Official logo A and palette from the supplied design system remain the single source for branding.
+- Home, Routines, Account/Cloud and Analytics now share a stronger compact cinematic layout, consistent card geometry, glow, and UI hierarchy matching the four screen references.
+- Routines data chart tabs use actual saved sessions; reaction-time is correctly marked unavailable and no unsupported metrics are fabricated.
+- Weekday completion highlights correspond only to actually saved sessions; guest state has no artificial results.
+- Automatic Cloud account and auth code stays untouched, and the existing real exercises, goals and graphs remain operational.
+- Responsive layout at wide desktop, tablet and phone; prefers-reduced-motion supported.
+- CI tests verify four page wiring and disallow shadow persistence.
