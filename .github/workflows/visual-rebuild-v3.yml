@@ -6,6 +6,8 @@ on:
       - "site-owner-reference-v3.css"
       - "tests/visual-rebuild-v3.mjs"
       - "tests/compare-visual-v3.py"
+      - "tests/check-source-fidelity-v3.py"
+      - "tests/visual-references/**"
       - ".github/workflows/visual-rebuild-v3.yml"
       - "index.html"
       - "training.html"
@@ -84,3 +86,17 @@ jobs:
           path: candidate/visual-results/
           if-no-files-found: warn
           retention-days: 14
+
+  reference-fidelity-gate:
+    name: Release gate - four verified original PNG comparisons
+    needs: visual-evidence
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: aimroutine-v3-visual-evidence
+          path: visual-results
+      - name: Block release until original screenshots and source diffs verified
+        run: python3 tests/check-source-fidelity-v3.py
