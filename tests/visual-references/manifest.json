@@ -1,0 +1,29 @@
+{
+  "viewport": {
+    "width": 1672,
+    "height": 941
+  },
+  "references": {
+    "home": {
+      "filename": "home.png",
+      "source_file": "Image ChatGPT 8 nov. 2026, 08_18_34(4).png",
+      "sha256": "282d589fbbaa041af05e615334dddfcf72ec10e6245f113927e280f216c94675"
+    },
+    "routines": {
+      "filename": "routines.png",
+      "source_file": "Image ChatGPT 8 nov. 2026, 08_18_31(4).png",
+      "sha256": "fbb08ce2a2fb44ab4e77f8e14478c5ce522ee343ca34f2898b4045a3b0f393b3"
+    },
+    "progress": {
+      "filename": "progress.png",
+      "source_file": "Image ChatGPT 8 nov. 2026, 08_18_36(4).png",
+      "sha256": "93557dd0eb3ae08956e4bde4d767b5a7fd27debf7a07472bdfd52ab5f633d467"
+    },
+    "account": {
+      "filename": "account.png",
+      "source_file": "Image ChatGPT 8 nov. 2026, 08_18_38(4).png",
+      "sha256": "712a1501a530b5573bb17a6c9ba35f81d65b8d406ffcd3a8b4f0cdd9da32dfd2"
+    }
+  },
+  "note": "No synthetic comparison images. CI checks actual original reference bytes only when all four owner PNGs are present."
+}
