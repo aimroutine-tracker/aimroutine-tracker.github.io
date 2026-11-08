@@ -114,3 +114,5 @@ site-interface-v18.css
 site-interface-v18.js
 site-interface-v19.css
 site-interface-v19.mjs
+site-reference-v20.css
+site-reference-v20.mjs
