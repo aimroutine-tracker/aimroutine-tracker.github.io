@@ -102,9 +102,10 @@ function installWorkspace(){
   if(activePanel&&placeholder?.parentNode)placeholder.after(activePanel);
   placeholder?.remove();activePanel=null;placeholder=null;
  }
- dialog.addEventListener('close',restore);
- $('.r19-close',dialog)?.addEventListener('click',()=>dialog.close());
- dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close()});
+ const closePanel=()=>{if(dialog.open)dialog.close();restore();};
+ dialog.addEventListener('close',()=>{if(!dialog.open)restore();});
+ $('.r19-close',dialog)?.addEventListener('click',closePanel);
+ dialog.addEventListener('click',event=>{if(event.target===dialog)closePanel()});
  function openPanel(key){
   if(key==='builder'){
    const openBuilder=$('.r17-hero-actions a[href="#panel-builder"]',screen);
@@ -113,7 +114,7 @@ function installWorkspace(){
   }
   const panel=$('#panel-'+key);
   if(!panel||!names[key])return;
-  if(dialog.open)dialog.close();
+  if(dialog.open)closePanel();else if(activePanel)restore();
   placeholder=document.createComment('Native AIM panel home');
   panel.before(placeholder);
   $('#tab-'+key)?.click();
