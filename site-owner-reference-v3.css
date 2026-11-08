@@ -1214,3 +1214,23 @@ body.site31.r20 .ar-v3-language-footer [data-switch-lang]:focus-visible{
 @media(max-width:720px){
  body.site31.r20 .ar-v3-language-footer{margin:12px 0;gap:9px;}
 }
+
+
+/* V3 / pass 15 — measured hero illustration registration.
+   SIFT + RANSAC matching owner originals to Chromium captures found the
+   art was zoomed ~1.42x (Routines), ~1.70x (Progress), ~1.50x (Cloud).
+   Preserve the already registered Homepage art and the existing hero text. */
+@media(min-width:1350px){
+ body.site31.r20 .r17-training-wrap .r17-hero-art{
+  background-size:70.3% auto!important;
+  background-position:55% 0%!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-hero-art{
+  background-size:58.8% auto!important;
+  background-position:38% 30%!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-hero-art{
+  background-size:66.6% auto!important;
+  background-position:74% 0%!important;
+ }
+}
