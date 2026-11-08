@@ -11,9 +11,14 @@ const make=(tag,text,cls)=>{const el=document.createElement(tag);if(text!==undef
 const id=()=>crypto?.randomUUID?.()||Date.now()+'-'+Math.random().toString(36).slice(2);
 const showMessage=message=>{$('#data-message').textContent=message;};
 function readJSON(key){try{return JSON.parse(localStorage.getItem(storageKey(key))||'null')}catch{return null}}
-let store=normalizeStore(readJSON(STORAGE_KEY),readJSON(LEGACY_KEY));
+let store=activeUid()?normalizeStore(readJSON(STORAGE_KEY),readJSON(LEGACY_KEY)):normalizeStore(null,null);
 let plan=null,active=null,interval=null,remaining=0,deadline=0,running=false;
 function save(next=store){
+  if(!activeUid()){
+    showMessage('Aucune sauvegarde sans compte. Connecte-toi pour enregistrer et synchroniser automatiquement.');
+    alert('Connecte-toi à AimRoutine pour enregistrer ta progression.');
+    return false;
+  }
   try{
     const removed=store.presets.filter(p=>!next.presets.some(n=>n.id===p.id)).map(p=>p.id);
     const uid=activeUid();
@@ -345,6 +350,7 @@ $('#coach-build').addEventListener('click',()=>{
  chooseTab('builder');$('#builder-form').requestSubmit(); 
 });
 $('#export-data').addEventListener('click',()=>{
+ if(!activeUid()){showMessage('Connecte-toi pour exporter ta progression.');return;}
  const payload=exportPayload(store),blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
  const url=URL.createObjectURL(blob),a=document.createElement('a');
  a.href=url;a.download='aimroutine-v5-'+new Date().toISOString().slice(0,10)+'.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
@@ -363,6 +369,7 @@ $('#import-data').addEventListener('change',async event=>{
  finally{event.target.value=''}
 });
 $('#clear-data').addEventListener('click',()=>{
+ if(!activeUid()){showMessage('Aucune donnée invitée n’est enregistrée par cette version. Connecte-toi pour gérer ta sauvegarde.');return}
  if(!confirm('Effacer définitivement toutes tes séances, routines favorites et objectifs locaux ?'))return;
  if(!confirm('Dernière confirmation : as-tu exporté ta sauvegarde ?'))return;
  try{localStorage.removeItem(storageKey(STORAGE_KEY));localStorage.removeItem(storageKey(LEGACY_KEY))}catch{showMessage('Impossible d’effacer le stockage de ce navigateur.');return}
@@ -371,6 +378,12 @@ $('#clear-data').addEventListener('click',()=>{
 });
 window.AIMWeb=Object.freeze({
   getStore:()=>JSON.parse(JSON.stringify(store)),
+  reloadFromCache:()=>{
+    if(!activeUid())return false;
+    store=normalizeStore(readJSON(STORAGE_KEY),readJSON(LEGACY_KEY));
+    renderDashboard();renderInsights();renderCoach();renderFavorites();
+    return true;
+  },
   getPlan:()=>plan?JSON.parse(JSON.stringify(plan)):null,
   setPlan:next=>{
     if(!next||!Object.hasOwn(RANK,next.rank)||!Object.hasOwn(FOCUS,next.focus)||
@@ -396,7 +409,7 @@ window.AIMWeb=Object.freeze({
 window.dispatchEvent(new CustomEvent('aim-v5-ready'));
 window.addEventListener('storage',event=>{
  if([storageKey(STORAGE_KEY),storageKey(LEGACY_KEY)].includes(event.key)){
-  store=normalizeStore(readJSON(STORAGE_KEY),readJSON(LEGACY_KEY));
+  store=activeUid()?normalizeStore(readJSON(STORAGE_KEY),readJSON(LEGACY_KEY)):normalizeStore(null,null);
   renderDashboard();renderInsights();renderCoach();renderFavorites();
  }
 });
