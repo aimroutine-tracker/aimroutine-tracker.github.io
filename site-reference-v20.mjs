@@ -8,6 +8,8 @@ const p=location.pathname.split('/').pop()||'index.html';
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const dateKey=d=>new Date(d).toLocaleDateString('sv-SE',{year:'numeric',month:'2-digit',day:'2-digit'});
 function init(){
+ // The shared locale control exists independently of the dynamically built screen.
+ relocateV3LanguageSwitch();
  const screen=$('.r17-screen');if(!screen)return;
  document.body.classList.add('r20');
  const art=$('.r17-hero-art',screen);
@@ -18,7 +20,6 @@ function init(){
  if(p==='progress.html')progress(screen);
  if(p==='progress.html')installV3ProgressComposition(screen);
  installV3Icons(screen);
- relocateV3LanguageSwitch();
 }
 function home(screen){
  const feature=$$('.r17-feature',screen);
