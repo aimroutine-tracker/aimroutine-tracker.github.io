@@ -49,6 +49,17 @@ try{
      heroDescription:measure('.r17-screen .r17-hero-desc'),
      heroActions:measure('.r17-screen .r17-hero-actions'),
      previewNotice:measure('#ar-account-required'),
+     homeStats:measure('.r17-home-wrap .r17-stats'),
+     homeFeatures:measure('.r17-home-wrap .r17-features'),
+     homeBottom:measure('.r17-home-wrap .r17-home-bottom'),
+     trainGrid:measure('.r17-training-wrap .r17-training-grid'),
+     trainPlan:measure('.r17-training-wrap .r17-training-plan'),
+     trainWeek:measure('.r17-training-wrap .r17-weekline'),
+     progressKpis:measure('.r17-progress-wrap .r17-progress-kpis'),
+     progressCharts:measure('.r17-progress-wrap .r17-chart-grid'),
+     accountBenefits:measure('.r17-account-wrap .r17-account-benefits'),
+     accountProfile:measure('.r17-account-wrap .r17-account-profile'),
+     navCurrent:[...document.querySelectorAll('.site31-links [aria-current="page"]')].map(a=>a.textContent.trim()),
      screen:measure('.r17-screen'),
      title:document.querySelector('.r17-screen .r17-hero h1')?.innerText||'',
      realSessionCount:document.querySelector('[data-v15-stat="sessions"]')?.innerText||null,
@@ -73,5 +84,5 @@ try{
  }
 }finally{await browser.close();}
 await writeFile(join(out,'measurements.json'),JSON.stringify(results,null,2));
-for(const x of results)console.log(x.name,x.phase,'hero',JSON.stringify(x.geometry.hero),'content',JSON.stringify(x.geometry.heroContent),'headline',JSON.stringify(x.geometry.heroHeadline),'description',JSON.stringify(x.geometry.heroDescription),'actions',JSON.stringify(x.geometry.heroActions),'notice',JSON.stringify(x.geometry.previewNotice),'width',x.geometry.documentWidth,'JS errors',x.javascriptErrors.length);
+for(const x of results)console.log(x.name,x.phase,'hero',JSON.stringify(x.geometry.hero),'content',JSON.stringify(x.geometry.heroContent),'headline',JSON.stringify(x.geometry.heroHeadline),'description',JSON.stringify(x.geometry.heroDescription),'actions',JSON.stringify(x.geometry.heroActions),'notice',JSON.stringify(x.geometry.previewNotice),'layout',JSON.stringify({homeStats:x.geometry.homeStats,homeFeatures:x.geometry.homeFeatures,homeBottom:x.geometry.homeBottom,trainGrid:x.geometry.trainGrid,trainPlan:x.geometry.trainPlan,trainWeek:x.geometry.trainWeek,progressKpis:x.geometry.progressKpis,progressCharts:x.geometry.progressCharts,accountBenefits:x.geometry.accountBenefits,accountProfile:x.geometry.accountProfile,navCurrent:x.geometry.navCurrent}),'width',x.geometry.documentWidth,'JS errors',x.javascriptErrors.length);
 if(failed)process.exitCode=1;
