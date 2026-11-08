@@ -123,8 +123,8 @@ async function synchronizeOnce(client,uid,{guestImport=false}={}){
  }
  // Preserve edits made while the network request was in flight.
  // This is essential for rapid consecutive sessions and multiple open tabs.
- const newest=readUserLocal(uid);
- const concurrentMeta=readMeta(uid);
+ const newest=unseenReset?local:readUserLocal(uid); // Do not resurrect stale data after remote reset.
+ const concurrentMeta=unseenReset?meta:readMeta(uid);
  const freshDeletes=concurrentMeta.presetDeletedIds.filter(id=>!pending.has(id));
  const finalStore={...local.store,
    sessions:mergeRecords(newest.store.sessions,mergedSessions,
