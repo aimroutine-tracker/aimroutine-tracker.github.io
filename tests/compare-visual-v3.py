@@ -39,14 +39,34 @@ for name in pages:
                 if ref.size!=after.size:
                     raise SystemExit(f'Wrong reference dimensions for {name}: {ref.size}, expected {after.size}')
                 else:
+                    def mae(diff):
+                        histogram=diff.histogram()
+                        return sum((v%256)*count for v,count in enumerate(histogram))/(after.width*after.height*3)
+                    before_diff=ImageChops.difference(ref,before)
                     ref_diff=ImageChops.difference(ref,after)
+                    before_diff.save(root/f'{name}-source-before-diff.png',optimize=True)
+                    Image.blend(ref,before,.5).save(root/f'{name}-source-before-overlay.png',optimize=True)
                     ref_diff.save(root/f'{name}-source-diff.png',optimize=True)
                     Image.blend(ref,after,.5).save(root/f'{name}-source-overlay.png',optimize=True)
-                    h=ref_diff.histogram()
-                    absolute_error=sum((v%256)*count for v,count in enumerate(h))
-                    record['reference_mae_0_to_255']=round(absolute_error/(after.width*after.height*3),3)
-                    record['comparison_to_owner_reference']='EXECUTED: pixel difference and overlay generated'
+                    old_mae=mae(before_diff)
+                    new_mae=mae(ref_diff)
+                    record['reference_before_mae_0_to_255']=round(old_mae,3)
+                    record['reference_mae_0_to_255']=round(new_mae,3)
+                    record['reference_absolute_error_reduction']=round(old_mae-new_mae,3)
+                    record['reference_relative_error_reduction_percent']=round((1-new_mae/old_mae)*100,2) if old_mae else 0
+                    record['source_visual_regressed']=new_mae>old_mae+0.25
+                    record['source_region_mae']={}
+                    for label, y0, y1 in (('header',0,55),('hero',55,300),('mid',300,650),('lower',650,941)):
+                        h=ImageChops.difference(ref.crop((0,y0,ref.width,y1)),
+                                               after.crop((0,y0,after.width,y1))).histogram()
+                        value=sum((v%256)*count for v,count in enumerate(h))/(after.width*(y1-y0)*3)
+                        record['source_region_mae'][label]=round(value,3)
+                    record['comparison_to_owner_reference']='EXECUTED: source/baseline and source/candidate diffs + overlays + regional metrics'
         records.append(record)
 (root/'comparison-report.json').write_text(json.dumps(records,indent=2,ensure_ascii=False),encoding='utf-8')
 for r in records:
     print(r['page'],r['before_after'],';',r['comparison_to_owner_reference'])
+    if 'reference_relative_error_reduction_percent' in r:
+        print('  RGB MAE before:',r['reference_before_mae_0_to_255'],
+              'after:',r['reference_mae_0_to_255'],
+              'relative reduction:',r['reference_relative_error_reduction_percent'],'%')
