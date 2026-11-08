@@ -881,3 +881,31 @@ body.site31.r20 .r17-home-wrap .r17-feature p{font-size:13.6px!important;}
   margin:5px 0 22px!important;font-size:12px!important;
  }
 }
+
+
+/* V3 / pass 7 — registration against the actual owner source: SIFT finds 380
+   inlier keypoints in the home hero. Its asset is 5.3% smaller on the target
+   and offset 8px left from a right-anchored resize. This is visual geometry,
+   not a changed game asset, data record or authentication flow. */
+@media(min-width:1350px){
+ body.site31.r20 .r17-home-wrap .r17-hero-art{
+  background-size:94.7% auto!important;
+  background-position:calc(100% - 8px) center!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-hero-content{
+  position:relative!important;top:13px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-hero-content{
+  position:relative!important;top:11px!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-hero-content{
+  position:relative!important;top:-6px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-hero-content{
+  position:relative!important;top:-9px!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-chart-grid>.v14-panel::before,
+ body.site31.r20 .r17-progress-wrap .r17-secondary-grid>.v14-panel::before{
+  display:none!important;
+ }
+}
