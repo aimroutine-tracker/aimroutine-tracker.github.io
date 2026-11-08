@@ -147,39 +147,50 @@ function routines(screen){
 function account(screen){
  const benefit=$('.r17-account-benefits',screen);
  if(benefit){
+  // Reuse the same visible elements on a FR/EN switch: never recreate
+  // the profile or any auth control, and never reset entered form values.
   const descriptions=[
-   ['☁',words('Progression partagée','Shared progress'),words('Sur tous tes appareils','Across your devices')],
-   ['▱',words('Paramètres unifiés','Unified settings'),words('Une expérience cohérente','Consistent experience')],
-   ['⬡',words('Données protégées','Protected data'),words('Privées et sauvegardées','Private and backed up')]
+   ['☁','Progression partagée','Shared progress','Sur tous tes appareils','Across your devices'],
+   ['▱','Paramètres unifiés','Unified settings','Une expérience cohérente','Consistent experience'],
+   ['⬡','Données protégées','Protected data','Privées et sauvegardées','Private and backed up']
   ];
-  Array.from(screen.querySelectorAll('.r17-account-benefits>span')).forEach((it,i)=>{
+  $$('.r17-account-benefits>span',screen).forEach((it,i)=>{
    const entry=descriptions[i];if(!entry)return;
    it.replaceChildren(document.createTextNode(entry[0]+' '));
    const copy=document.createElement('span');copy.className='r17-benefit-copy';
-   const headline=document.createElement('strong');headline.textContent=entry[1];
-   const detail=document.createElement('small');detail.textContent=entry[2];
+   const headline=document.createElement('strong');
+   const detail=document.createElement('small');
+   bindV3Locale(headline,entry[1],entry[2]);
+   bindV3Locale(detail,entry[3],entry[4]);
    copy.append(headline,detail);it.append(copy);
   });
  }
- const note=$('.r17-cloud-status',screen);if(note){
-  const p=$('[data-r17-sync-copy]',note);if(p)p.textContent=words('Avec un compte, tes données se synchronisent automatiquement.','With an account, your data syncs automatically.');
- }
  const devices=$('.r17-cloud-devices',screen);
- if(devices){const p=$('p',devices);if(p)p.textContent=words('La liste des appareils n’est pas disponible dans ton compte : aucun appareil fictif n’est affiché.','Device history is unavailable: no fictional devices are displayed.')}
- // Visually match the guest registration card in the owner's Cloud mockup.
- // The CTA switches to the REAL Supabase signup form rather than creating
- // a second form or pretending to create an account.
+ if(devices)bindV3Locale($('p',devices),
+  'La liste des appareils n’est pas disponible dans ton compte : aucun appareil fictif n’est affiché.',
+  'Device history is unavailable: no fictional devices are displayed.');
+ // The guest CTA opens the REAL Supabase registration UI. It does not create
+ // a duplicate account form, touch a password, or write to local storage.
  const loginPanel=$('#auth-panel');
  const authArea=$('.r17-account-auth',screen);
  let registrationCard=$('.r17-guest-registration',screen);
- if(authArea && loginPanel && !registrationCard){
+ if(authArea&&loginPanel&&!registrationCard){
   registrationCard=document.createElement('section');
   registrationCard.className='r17-guest-registration r17-panel';
   registrationCard.setAttribute('aria-labelledby','r17-guest-registration-heading');
   registrationCard.innerHTML=
-   '<div class="r17-guest-registration-heading"><span class="r17-icon" aria-hidden="true">✓</span><div><h2 id="r17-guest-registration-heading">'+words('Créer un compte','Create an account')+'</h2><p>'+words('Rejoins AimRoutine Tracker gratuitement.','Join AimRoutine Tracker for free.')+'</p></div></div>'+
-   '<ul><li>'+words('Sauvegarde et synchronise ta progression','Save and sync your progress')+'</li><li>'+words('Accède à tes routines et tes statistiques','Access your routines and statistics')+'</li><li>'+words('Personnalise ton espace d’entraînement','Customize your training workspace')+'</li></ul>'+
-   '<button type="button" class="r17-guest-signup-button">'+words('Créer un compte gratuitement','Create a free account')+' <span aria-hidden="true">›</span></button>';
+   '<div class="r17-guest-registration-heading"><span class="r17-icon" aria-hidden="true">✓</span><div><h2 id="r17-guest-registration-heading"></h2><p></p></div></div>'+
+   '<ul><li></li><li></li><li></li></ul>'+
+   '<button type="button" class="r17-guest-signup-button"><span class="r17-guest-signup-label"></span> <span aria-hidden="true">›</span></button>';
+  bindV3Locale($('#r17-guest-registration-heading',registrationCard),'Créer un compte','Create an account');
+  bindV3Locale($('.r17-guest-registration-heading p',registrationCard),
+   'Rejoins AimRoutine Tracker gratuitement.','Join AimRoutine Tracker for free.');
+  const items=$$('li',registrationCard);
+  bindV3Locale(items[0],'Sauvegarde et synchronise ta progression','Save and sync your progress');
+  bindV3Locale(items[1],'Accède à tes routines et tes statistiques','Access your routines and statistics');
+  bindV3Locale(items[2],'Personnalise ton espace d’entraînement','Customize your training workspace');
+  bindV3Locale($('.r17-guest-signup-label',registrationCard),
+   'Créer un compte gratuitement','Create a free account');
   loginPanel.after(registrationCard);
   $('.r17-guest-signup-button',registrationCard)?.addEventListener('click',()=>{
    $('#signup-mode')?.click();
@@ -193,13 +204,32 @@ function account(screen){
    const active=!dashboard.hidden;
    if(registrationCard)registrationCard.hidden=active;
    const username=$('[data-r17-username]',screen);
-   if(username && !active) username.textContent=words('Connecte-toi à ton profil','Sign in to your profile');
+   if(username){
+    if(active){
+     // This node may display the authenticated pseudonym: NEVER overwrite it
+     // on subsequent language changes.
+     delete username.dataset.r20Fr;
+     delete username.dataset.r20En;
+    }else{
+     bindV3Locale(username,'Connecte-toi à ton profil','Sign in to your profile');
+    }
+   }
    const sync=$('[data-r17-sync-copy]',screen);
-   if(sync)sync.textContent=active?words('Synchronisation automatique active pour ton compte.','Automatic synchronization active for your account.'):words('Connecte-toi pour synchroniser automatiquement tes données.','Sign in to synchronize your data automatically.');
+   if(active){
+    bindV3Locale(sync,
+     'Compte connecté. Consulte l’état réel de la synchronisation dans ton tableau de bord.',
+     'Account connected. Check the actual synchronization status in your dashboard.');
+   }else{
+    bindV3Locale(sync,
+     'Connecte-toi pour synchroniser automatiquement tes données.',
+     'Sign in to synchronize your data automatically.');
+   }
    const label=$('[data-r17-cloud-label]',screen);
-   if(label)label.textContent=active?words('Sync Cloud · Automatique','Cloud sync · Automatic'):words('Cloud non connecté','Cloud not signed in');
+   if(active)bindV3Locale(label,'Compte connecté','Account connected');
+   else bindV3Locale(label,'Cloud non connecté','Cloud not signed in');
   };
-  new MutationObserver(show).observe(dashboard,{attributes:true,attributeFilter:['hidden']});show();
+  new MutationObserver(show).observe(dashboard,{attributes:true,attributeFilter:['hidden']});
+  show();
  }
 }
 function progress(screen){
