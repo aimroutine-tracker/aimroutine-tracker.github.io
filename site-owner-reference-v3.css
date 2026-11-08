@@ -1189,3 +1189,28 @@ body.site31.r20 .r17-account-wrap .r17-cloud-status .ar-v3-symbol{
  width:38px!important;height:38px!important;color:#37e3dd!important;
  filter:drop-shadow(0 0 6px #37e3dd77)!important;
 }
+
+
+/* V3 / pass 14 — reference header nav without extra locale pill.
+   Switch remains operational in footer (not hidden or duplicated). */
+body.site31.r20 .ar-v3-language-footer{
+ display:inline-flex;align-items:center;justify-content:flex-start;
+ gap:12px;padding:9px 12px;margin:9px 0;
+ border:1px solid #3e6374;background:#0c1c29;
+ color:#c9dae3;font-size:12px;font-weight:600;
+}
+body.site31.r20 .ar-v3-language-footer [data-switch-lang]{
+ min-width:46px;min-height:34px;padding:5px 11px;
+ cursor:pointer;color:#f6f9fd;
+ border:1px solid #7b96a6;border-radius:4px;
+ background:linear-gradient(120deg,#142f3d,#091622);
+}
+body.site31.r20 .ar-v3-language-footer [data-switch-lang]:hover{
+ border-color:#ff6678;color:#fff;
+}
+body.site31.r20 .ar-v3-language-footer [data-switch-lang]:focus-visible{
+ outline:2px solid #37e3dd;outline-offset:3px;
+}
+@media(max-width:720px){
+ body.site31.r20 .ar-v3-language-footer{margin:12px 0;gap:9px;}
+}
