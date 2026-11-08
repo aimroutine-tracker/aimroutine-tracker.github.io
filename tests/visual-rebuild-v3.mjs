@@ -136,6 +136,60 @@ try{
    }finally{await context.close();}
   }
  }
+
+ // English desktop + mobile visual QA; independent from the four official
+ // French source-image comparisons and without synthetic login or statistics.
+ for(const item of pages){
+  for(const viewportWidth of [1672,390]){
+   const context=await browser.newContext({
+    viewport:{width:viewportWidth,height:viewportWidth===1672?941:850},
+    locale:'en-GB',deviceScaleFactor:1,colorScheme:'dark',
+    reducedMotion:'reduce',serviceWorkers:'block'
+   });
+   try{
+    const page=await context.newPage();
+    const errors=[];
+    page.on('pageerror',e=>errors.push(String(e.message||e)));
+    const response=await page.goto('http://127.0.0.1:8766/'+item.filename,{
+     waitUntil:'domcontentloaded',timeout:35000
+    });
+    await page.waitForFunction(()=>document.body.classList.contains('r20'),null,{timeout:30000});
+    await page.evaluate(()=>document.fonts.ready);
+    await page.waitForTimeout(350);
+    const geometry=await page.evaluate((id)=>{
+     const expected={
+      home:['.r17-challenge h3','Mini challenge: 1-minute accuracy'],
+      routines:['.r17-train-left .r17-panel-title h2','My training'],
+      progress:['.r17-progress-streak .v14-panel-head h2','Training streaks'],
+      account:['#r17-guest-registration-heading','Create an account']
+     };
+     const [selector,text]=expected[id];
+     return {
+      documentWidth:document.documentElement.scrollWidth,
+      language:document.documentElement.lang,
+      localizedElement:document.querySelector(selector)?.textContent?.trim()||null,
+      localizedExpected:text,
+      screenPresent:Boolean(document.querySelector('.r17-screen')),
+      hasAccountForm:Boolean(document.querySelector('#login-form'))
+     };
+    },item.id);
+    const filename=item.id+'-en-'+viewportWidth+'.png';
+    await page.screenshot({path:join(out,filename),fullPage:false,animations:'disabled'});
+    const record={
+     name:item.id,phase:'english-'+viewportWidth,
+     screenshot:join(out,filename),httpStatus:response?.status()??null,
+     viewport:{width:viewportWidth,height:viewportWidth===1672?941:850},
+     geometry,uncaughtRuntimeErrors:errors
+    };
+    if(response?.status()!==200 || geometry.documentWidth>viewportWidth+3
+       || geometry.language!=='en' || !geometry.screenPresent
+       || geometry.localizedElement!==geometry.localizedExpected || errors.length){
+     failed=true;record.failure='English locale, layout, page runtime or required translated text failed';
+    }
+    results.push(record);
+   }finally{await context.close();}
+  }
+ }
 }finally{await browser.close();}
 await writeFile(join(out,'measurements.json'),JSON.stringify(results,null,2));
 for(const x of results)console.log(x.name,x.phase,'hero',JSON.stringify(x.geometry.hero),'content',JSON.stringify(x.geometry.heroContent),'headline',JSON.stringify(x.geometry.heroHeadline),'description',JSON.stringify(x.geometry.heroDescription),'actions',JSON.stringify(x.geometry.heroActions),'notice',JSON.stringify(x.geometry.previewNotice),'layout',JSON.stringify({homeStats:x.geometry.homeStats,homeFeatures:x.geometry.homeFeatures,homeBottom:x.geometry.homeBottom,homePaths:x.geometry.homePaths,homePathGrid:x.geometry.homePathGrid,homePathCard:x.geometry.homePathCard,homeChallenge:x.geometry.homeChallenge,trainGrid:x.geometry.trainGrid,trainPlan:x.geometry.trainPlan,trainLeft:x.geometry.trainLeft,trainSummary:x.geometry.trainSummary,trainLevelNote:x.geometry.trainLevelNote,trainCenter:x.geometry.trainCenter,trainRight:x.geometry.trainRight,trainChallenge:x.geometry.trainChallenge,trainTools:x.geometry.trainTools,trainWeek:x.geometry.trainWeek,progressKpis:x.geometry.progressKpis,progressCharts:x.geometry.progressCharts,accountBenefits:x.geometry.accountBenefits,accountProfile:x.geometry.accountProfile,navCurrent:x.geometry.navCurrent,navDetails:x.geometry.navDetails}),'width',x.geometry.documentWidth,'JS errors',x.javascriptErrors?.slice(0,5)||[]);
