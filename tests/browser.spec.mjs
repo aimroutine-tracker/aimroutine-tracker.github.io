@@ -553,3 +553,16 @@ test('V15 cloud shows real status without listing fictitious devices',async ({pa
  await expect(page.locator('#signup-form')).toBeVisible();
  await expect(page.locator('#signup-username')).toBeVisible();
 });
+
+test('V16 official A logo renders in every flagship navigation and semantic colors match uploaded charter', async ({page})=>{
+ for(const route of ['index.html','training.html','account.html','progress.html']){
+  await page.goto('/'+route,{waitUntil:'domcontentloaded'});
+  const logo=page.locator('.site31-brand img[src="aimroutine-brand-a-v2.svg?v=1"]');
+  await expect(logo).toHaveCount(1);
+  await expect.poll(()=>logo.evaluate(img=>img.complete && img.naturalWidth>0)).toBe(true);
+  await expect(page.locator('link[href="site-official-v16.css?v=1"]')).toHaveCount(1);
+  await expect(page.locator('link[href="aimroutine-official-tokens-v2.css?v=1"]')).toHaveCount(1);
+  expect(await page.evaluate(()=>getComputedStyle(document.documentElement).getPropertyValue('--ar-coral').trim())).toBe('#FF5B69');
+  expect(await page.evaluate(()=>getComputedStyle(document.documentElement).getPropertyValue('--ar-cyan').trim())).toBe('#37E3DD');
+ }
+});
