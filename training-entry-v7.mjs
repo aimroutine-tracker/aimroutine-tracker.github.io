@@ -27,6 +27,7 @@ try{
  }
 }catch(e){report('Connexion non vérifiée · Aucune nouvelle sauvegarde : '+e.message)}
 if(!uid){
+ document.body.classList.add('ar-guest-preview');
  document.getElementById('ar-account-required')?.removeAttribute('hidden');
  window.__aimCloudUserId=null;
  localStorage.removeItem(UID_STORAGE_KEY);
