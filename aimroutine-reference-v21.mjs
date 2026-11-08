@@ -15,7 +15,7 @@ const box=(title,sub,content,cls='')=>`<section class="a21-panel ${cls}"><div cl
 const key=()=>new Date().toLocaleDateString('sv-SE');
 const dayKey=d=>new Date(d).toLocaleDateString('sv-SE');
 let screen;
-function header(){const nav=document.createElement('header');nav.className='a21-header';nav.innerHTML=`<a class="a21-brand" href="index.html"><img src="aimroutine-brand-a-v2.svg" alt="" width="43" height="43"><b>AimRoutine <span>Tracker</span></b></a><nav class="a21-navlinks" aria-label="Navigation principale">${[['index','Accueil'],['training','Routines'],['challenge','Défis AIM'],['progress','Suivi de progression'],['community','Communauté']].map(([id,title])=>`<a href="${id==='challenge'?'index.html#aim-challenge':id==='community'?'index.html#community':id+'.html'}" ${page===id?'aria-current="page"':''}>${title}</a>`).join('')}</nav><div class="a21-nav-actions"><a class="a21-cloud" href="account.html#dashboard-panel">☁ <span>Sync Cloud</span> <i id="a21-cloud-dot"></i></a><a class="a21-nav-login" href="account.html#auth-panel">Se connecter</a><a class="a21-nav-create" href="account.html?mode=signup#auth-panel">Créer un compte</a></div><button class="a21-menu" aria-label="Ouvrir le menu" aria-expanded="false" type="button">☰</button>`;
+function header(){const nav=document.createElement('header');nav.className='a21-header';nav.innerHTML=`<a class="a21-brand" href="index.html"><img src="aimroutine-brand-a-v2.svg" alt="" width="43" height="43"><b>AimRoutine <span>Tracker</span></b></a><nav class="a21-navlinks" aria-label="Navigation principale">${[['index','Accueil'],['training','Routines'],['challenge','Défis AIM'],['progress','Suivi de progression'],['community','Communauté']].map(([id,title])=>`<a href="${id==='challenge'?'index.html#aim-challenge':id==='community'?'index.html#a21-community':id+'.html'}" ${page===id?'aria-current="page"':''}>${title}</a>`).join('')}</nav><div class="a21-nav-actions"><a class="a21-cloud" href="account.html#dashboard-panel">☁ <span>Sync Cloud</span> <i id="a21-cloud-dot"></i></a><a class="a21-nav-login" href="account.html#auth-panel">Se connecter</a><a class="a21-nav-create" href="account.html?mode=signup#auth-panel">Créer un compte</a></div><button class="a21-menu" aria-label="Ouvrir le menu" aria-expanded="false" type="button">☰</button>`;
  document.body.prepend(nav);
  $('.a21-menu',nav)?.addEventListener('click',e=>{let active=nav.classList.toggle('a21-menu-open');e.currentTarget.setAttribute('aria-expanded',String(active))});
  const display=()=>{const active=page==='account'&&!$('#dashboard-panel')?.hidden;$('.a21-cloud',nav).classList.toggle('a21-cloud-connected',active);};display();const dashboard=$('#dashboard-panel');if(dashboard)new MutationObserver(display).observe(dashboard,{attributes:true,attributeFilter:['hidden']});
@@ -110,7 +110,16 @@ function makeProgress(){screen.innerHTML=`${hero('<em>Suivi de</em> <strong>prog
  const src=$('.v14-progress-notice');if(src){const source=$('#a21-data-source');const update=()=>source.textContent=src.textContent.trim()||source.textContent;new MutationObserver(update).observe(src,{childList:true,subtree:true,characterData:true});update()}
  mirror();
 }
-function init(){if(!['index','training','account','progress'].includes(page))return;const root=installRoot();if(!root)return;if(page==='index')makeHome();if(page==='training')makeRoutines();if(page==='account')makeAccount();if(page==='progress')makeProgress();
+function init(){if(!['index','training','account','progress'].includes(page))return;const root=installRoot();if(!root)return;if(page==='index'){
+ makeHome();
+ const community=document.createElement('section');
+ community.id='a21-community';
+ community.className='a21-community-preview';
+ community.innerHTML='<div><h2>Communauté AimRoutine</h2><p>La communauté est en préparation. Découvre le projet et ses prochaines évolutions.</p></div><a href="presentation.html">Découvrir le projet ↗</a>';
+ screen.append(community);
+ if(location.hash==='#aim-challenge')setTimeout(()=>{const a=$('[href="#aim-challenge"]',screen);a?.click()},250);
+}
+if(page==='training'){makeRoutines();$('[href="#aim-challenge"]',screen).forEach(a=>a.href='index.html#aim-challenge')}if(page==='account')makeAccount();if(page==='progress')makeProgress();
  // The original controllers are still active and receive user actions from UI.
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
