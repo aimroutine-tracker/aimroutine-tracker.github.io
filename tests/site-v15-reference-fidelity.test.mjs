@@ -43,5 +43,5 @@ test('V15 all pages load new stylesheet and script and deploy all assets',()=>{
   assert.ok(a.includes(name),name);
   assert.ok(sw.includes("'./"+name+"'"),name);
  }
- assert.match(sw,/aimroutine-v8-required-username-20261107/);
+ assert.match(sw,/aimroutine-v9-account-cloud-auto-20261108/);
 });
