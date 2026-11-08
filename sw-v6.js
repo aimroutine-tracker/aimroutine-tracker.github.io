@@ -10,7 +10,7 @@ const OFFLINE=[
  './training-entry-v7.mjs','./cloud-core-v7.mjs','./cloud-sync-v7.mjs',
  './training-i18n-v6.js','./pwa-v6.js','./cloud-client-v7.mjs',
  './google-delete-v7.mjs','./password-security-v7.mjs','./session-security-v7.mjs','./username-v7.mjs','./turnstile-v7.mjs','./account-v7.mjs',
- './site-global-v31.css','./site-shared-v5.css','./visual-v8.css','./site-quality-v34.js','./site-motion-v10.css','./site-motion-v10.js','./site-arcade-v11.css','./site-arcade-v11.js','./site-arcade-v12.css','./site-arcade-v12.js','./site-future-v13.css','./site-future-v13.js','./site-v14-gallery.css','./site-v14-gallery.js','./progress-v14.mjs','./progress.html','./site.js',
+ './site-global-v31.css','./site-shared-v5.css','./visual-v8.css','./site-quality-v34.js','./site-motion-v10.css','./site-motion-v10.js','./site-arcade-v11.css','./site-arcade-v11.js','./site-arcade-v12.css','./site-arcade-v12.js','./site-future-v13.css','./site-future-v13.js','./site-v14-gallery.css','./site-v14-gallery.js','./progress-v14.mjs','./progress.html','./mockup-hero-v15.webp','./site-v15-fidelity.css','./site-v15-fidelity.js','./site-v15-data.mjs','./site.js',
  './favicon.svg','./manifest.webmanifest','./aimroutine-logo.png'
 ].map(x=>new URL(x,BASE).toString());
 
