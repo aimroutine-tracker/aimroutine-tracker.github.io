@@ -7,6 +7,28 @@ const words=(fr,en)=>isEn()?en:fr;
 const p=location.pathname.split('/').pop()||'index.html';
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const dateKey=d=>new Date(d).toLocaleDateString('sv-SE',{year:'numeric',month:'2-digit',day:'2-digit'});
+
+/* Live FR/EN support for V3-created labels. Never re-run a form or
+   re-create authentication controls when the user changes language. */
+function bindV3Locale(node,fr,en){
+ if(!node)return;
+ node.dataset.r20Fr=fr;
+ node.dataset.r20En=en;
+ node.textContent=words(fr,en);
+}
+function refreshV3Locale(){
+ $('[data-r20-fr][data-r20-en]').forEach(node=>{
+  const expected=isEn()?node.dataset.r20En:node.dataset.r20Fr;
+  if(node.textContent!==expected)node.textContent=expected;
+ });
+ window.dispatchEvent(new Event('aim-v3-locale-changed'));
+}
+function watchV3Locale(){
+ new MutationObserver(refreshV3Locale).observe(document.documentElement,{
+  attributes:true,attributeFilter:['lang']
+ });
+}
+
 function init(){
  // The shared locale control exists independently of the dynamically built screen.
  relocateV3LanguageSwitch();
@@ -20,6 +42,7 @@ function init(){
  if(p==='progress.html')progress(screen);
  if(p==='progress.html')installV3ProgressComposition(screen);
  installV3Icons(screen);
+ watchV3Locale();
 }
 function home(screen){
  const feature=$$('.r17-feature',screen);
@@ -29,7 +52,7 @@ function home(screen){
   '<svg viewBox="0 0 94 76" width="93" height="80" aria-hidden="true"><path d="M10 70V59h12v11m8 0V49h12v21m8 0V37h12v33m8 0V23h12v47" fill="#37e3dd" fill-opacity=".42"/><path d="m6 49 24-11 20-5 29-19m-11 0h11v11" stroke="#37e3dd" stroke-width="3" fill="none"/></svg>'
  ];
  feature.forEach((el,i)=>{const t=$('.r17-feature-art',el);if(t)t.innerHTML=art[i]||''});
- const challenge=$('.r17-challenge h3',screen);if(challenge)challenge.textContent=words('Mini Défi : Précision 1 min','Mini challenge: 1-minute accuracy');
+ const challenge=$('.r17-challenge h3',screen);bindV3Locale(challenge,'Mini Défi : Précision 1 min','Mini challenge: 1-minute accuracy');
  const target=$('.r17-challenge-target',screen);if(target)target.textContent='◎';
  const chip=$('.r17-challenge .r17-chipbar span:first-child',screen);if(chip)chip.textContent=words('◷ 1 minute','◷ 1 minute');
  const link=$('.r17-challenge .r17-button',screen);
@@ -39,10 +62,10 @@ function home(screen){
  });
 }
 function routines(screen){
- const title=$('.r17-training-grid .r17-train-left .r17-panel-title h2',screen);if(title)title.textContent=words('Mon entraînement','My training');
+ const title=$('.r17-training-grid .r17-train-left .r17-panel-title h2',screen);bindV3Locale(title,'Mon entraînement','My training');
  const sidebar=$$('.r17-train-left .r17-metric',screen);
- const labels=[words('Durée moyenne','Average session duration'),words('Séances terminées','Completed sessions'),words('Précision moyenne','Average accuracy'),words('Jours consécutifs','Current streak'),words('Objectif hebdo','Weekly goal')];
- sidebar.forEach((el,i)=>{const span=$('span',el);if(span)span.textContent=labels[i]});
+ const labels=[['Durée moyenne','Average session duration'],['Séances terminées','Completed sessions'],['Précision moyenne','Average accuracy'],['Jours consécutifs','Current streak'],['Objectif hebdo','Weekly goal']];
+ sidebar.forEach((el,i)=>{const span=$('span',el);if(span&&labels[i])bindV3Locale(span,...labels[i]);});
  const stats=()=>window.AIMWeb?.getStore?.();
  const update=()=>{
   const store=stats();if(!store)return;
@@ -114,6 +137,11 @@ function routines(screen){
  window.addEventListener('aim-store-updated',update);
  window.addEventListener('aim-cloud-data-changed',update);
  window.addEventListener('aim-sync-applied',update);
+ window.addEventListener('aim-v3-locale-changed',()=>{
+  const tabbar=$('.ar20-tabbar',screen);
+  if(tabbar)tabbar.setAttribute('aria-label',words('Mesure affichée','Displayed metric'));
+  update();
+ });
  update();
 }
 function account(screen){
