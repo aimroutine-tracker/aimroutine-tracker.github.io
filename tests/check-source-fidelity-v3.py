@@ -43,6 +43,12 @@ for name in names:
         errors.append(f'{name}: source overlay artifact is missing.')
     if row and not isinstance(row.get('reference_mae_0_to_255'),(int,float)):
         errors.append(f'{name}: quantitative source pixel error missing.')
+    if row and not isinstance(row.get('reference_before_mae_0_to_255'),(int,float)):
+        errors.append(f'{name}: source-to-baseline error missing; cannot prove before/after improvement.')
+    if row and row.get('source_visual_regressed') is True:
+        errors.append(f'{name}: candidate visually regressed by more than 0.25 RGB MAE against original.')
+    if row and set(row.get('source_region_mae',{}))!={'header','hero','mid','lower'}:
+        errors.append(f'{name}: regional source comparison is missing or incomplete.')
 if errors:
     print('BLOCKED: release cannot claim reference fidelity.')
     for e in errors: print(' -',e)
