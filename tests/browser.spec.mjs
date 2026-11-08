@@ -751,3 +751,22 @@ test('V3 Progress FR/EN switch localizes live cards and radar without changing d
  await expect(axes.nth(2)).toHaveText('Micro-correction');
  expect(await sourceKpi.textContent()).toBe(before);
 });
+
+
+test('V3 mobile Cloud profile keeps decorative portrait clear of real account title',async({page})=>{
+ for(const width of [390,375]){
+  await page.setViewportSize({width,height:850});
+  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+  const avatar=page.locator('.r17-account-profile>.r17-avatar');
+  const details=page.locator('.r17-account-profile>div:nth-child(2)');
+  await expect(avatar).toBeVisible();
+  await expect(details).toBeVisible();
+  const a=await avatar.boundingBox();
+  const b=await details.boundingBox();
+  expect(a).toBeTruthy();expect(b).toBeTruthy();
+  expect(a.x+a.width).toBeLessThanOrEqual(b.x-2);
+  const over=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+  expect(over).toBeLessThanOrEqual(3);
+  await expect(page.locator('[data-r17-username]')).toBeVisible();
+ }
+});
