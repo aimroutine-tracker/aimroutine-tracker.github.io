@@ -44,10 +44,10 @@ function showUser(next){
    renderCounts();
    renderDeleteOptions();
    msg(needsUsername?'Choisis ton pseudo pour terminer ton inscription AimRoutine.':
-     'Compte connecté. La sauvegarde cloud est facultative et doit être activée pour ce compte.');
+     'Compte connecté · Synchronisation cloud automatique activée.');
  }else{
    localStorage.removeItem(UID_STORAGE_KEY);
-   msg('Tu peux te connecter ou continuer à utiliser AimRoutine sans compte.');
+   msg('Connecte-toi pour sauvegarder ta progression. Le mode aperçu sans compte ne conserve aucune séance.');
  }
 }
 function renderCounts(){
@@ -56,9 +56,10 @@ function renderCounts(){
  $('#cloud-sessions-count').textContent=String(store.sessions.length);
  $('#cloud-routines-count').textContent=String(store.presets.length);
  const enabled=isEnabled(user.id);
- $('#cloud-enabled-status').textContent=enabled?'Activée':'Désactivée';
- $('#cloud-enable').hidden=enabled;
- $('#cloud-sync').disabled=!enabled||working;
+ $('#cloud-enabled-status').textContent=enabled?'Automatique':'Connexion nécessaire';
+ $('#cloud-enable').hidden=true;
+ $('#cloud-sync').hidden=true;
+ $('#cloud-sync').disabled=true;
 }
 function renderDeleteOptions(){
  if(!user)return;
@@ -181,7 +182,7 @@ $('#logout').addEventListener('click',()=>run(async()=>{
  msg('Tu es déconnecté de ton compte sur tous les appareils. Les jetons d’accès déjà émis restent valides jusqu’à leur expiration. Les copies locales ne sont pas effacées.');
 }));
 $('#cloud-enable').addEventListener('click',()=>run(async()=>{
- if(!user||!confirm('Activer la sauvegarde cloud pour ce compte ? Les nouvelles séances de ton espace personnel pourront être envoyées à Supabase.'))return;
+ if(!user)return; // Automatic sync has no opt-in confirmation.
  setEnabled(user.id,true);
  try{const result=await synchronize(supabase,user.id);
   msg('Sauvegarde cloud activée. '+result.downloadedSessions+' séances dans ton espace. Les nouvelles séances seront sauvegardées automatiquement lorsque tu seras connecté.');
@@ -209,8 +210,8 @@ $('#cloud-delete').addEventListener('click',()=>run(async()=>{
  if(!confirm('Supprimer définitivement toute ta progression cloud pour ce compte ?'))return;
  if(!confirm('Dernière confirmation : tu as exporté une copie de tes données ?'))return;
  await deleteCloudProgress(supabase,user.id);
- setEnabled(user.id,false);
- msg('La progression cloud a été supprimée. Le compte existe toujours et les données invitées n’ont pas été modifiées.');
+ setEnabled(user.id,true);
+ msg('Progression cloud supprimée. La sauvegarde automatique reste active pour tes prochaines séances ; les anciennes données invitées sont conservées pour un import manuel.');
 }));
 document.querySelector('.ar7-delete-account')?.addEventListener('toggle',()=>{
  if(user&&!hasGoogleIdentity(user)&&document.querySelector('.ar7-delete-account')?.open)showCaptcha('delete');
@@ -263,6 +264,24 @@ $('#delete-account-form').addEventListener('submit',event=>{
   msg('Ton compte et ses données cloud ont été supprimés. Les copies invitées restent présentes.');
  });
 });
+// Sync account data on reconnect and periodically while the account page is active.
+let automaticSync=null;
+async function autoSync(){
+ if(!user||!usernameFromUser(user)||recovery||document.hidden||!navigator.onLine)return;
+ if(automaticSync)return automaticSync;
+ const id=user.id;
+ automaticSync=(async()=>{
+  try{
+   await synchronize(supabase,id);
+   if(user?.id===id){renderCounts();msg('Compte connecté · Synchronisation automatique à jour ✓')}
+  }catch(e){if(user?.id===id)msg('Synchronisation cloud en attente : '+e.message)}
+ })().finally(()=>{automaticSync=null});
+ return automaticSync;
+}
+window.addEventListener('online',()=>void autoSync());
+window.addEventListener('focus',()=>void autoSync());
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)void autoSync()});
+setInterval(()=>{if(!document.hidden)void autoSync()},45000);
 supabase.auth.onAuthStateChange((event,session)=>{
  if(event==='PASSWORD_RECOVERY'){
    recovery=true;authMode('new-password');
