@@ -398,3 +398,14 @@ body.site31.ar21 .a21-community-preview a{
  body.site31.ar21 .a21-root{max-width:100vw!important;min-width:0!important;overflow-x:clip!important}
  body.site31.ar21 .a21-content{min-width:0!important;max-width:100vw!important}
 }
+
+/* Exact owner mockup art is cropped to the hero background only;
+   buttons, labels, KPIs and forms remain native live HTML controls. */
+@media(min-width:1500px){
+ body.site31.ar21 .a21-hero:before{background:linear-gradient(90deg,#07121b 0%,#07121bea 26%,#07121b7a 37%,transparent 48%)!important}
+ body.site31.ar21 .a21-hero-art{background-size:1672px 941px!important;background-position:right -57px!important;filter:none!important;opacity:1!important}
+ body.site31.ar21 main:has(.a21-home) .a21-hero-art{left:710px!important;right:0!important;background-image:url('ar21-reference-hero-home.jpg')!important;background-size:1672px 941px!important;background-position:right -57px!important}
+ body.site31.ar21 main:has(.a21-training) .a21-hero-art{left:810px!important;right:0!important;background-image:url('ar21-reference-hero-routines.jpg')!important;background-size:1672px 941px!important;background-position:right -57px!important}
+ body.site31.ar21 main:has(.a21-account) .a21-hero-art{left:700px!important;right:0!important;background-image:url('ar21-reference-hero-account.jpg')!important;background-size:1672px 941px!important;background-position:right -57px!important}
+ body.site31.ar21 main:has(.a21-progress) .a21-hero-art{left:710px!important;right:0!important;background-image:url('ar21-reference-hero-progress.jpg')!important;background-size:1672px 941px!important;background-position:right -57px!important}
+}
