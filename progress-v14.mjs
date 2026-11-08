@@ -62,9 +62,30 @@ function distribution(items){
  const counts=keys.map(k=>items.filter(s=>s.focus===k).length);
  const total=items.length;
  if(!total){
-  const empty=document.createElement('p');empty.className='v14-chart-empty';
-  empty.textContent=tr('Enregistre tes séances pour afficher la répartition.','Record sessions to see the distribution.');
-  root.append(empty);return;
+  // The owner's visual references use a radar chart. Draw only a neutral
+  // FOUR-axis wireframe for the four actually tracked training focuses.
+  // No data polygon, percentage, ranking or additional skill is invented.
+  const preview=document.createElement('div');preview.className='v3-empty-radar';
+  const svg=svgEl('svg',{viewBox:'0 0 320 215','aria-hidden':'true',focusable:'false'});
+  const cx=160,cy=102,r=62;
+  const point=(i,factor)=>{
+   const angle=-Math.PI/2+i*Math.PI/2;
+   return [cx+Math.cos(angle)*r*factor,cy+Math.sin(angle)*r*factor];
+  };
+  const polygon=factor=>keys.map((_,i)=>point(i,factor).map(n=>n.toFixed(1)).join(',')).join(' ');
+  for(const amount of [.25,.5,.75,1])
+   svg.append(svgEl('polygon',{points:polygon(amount),fill:'none',stroke:amount===1?'#bc5b6a':'#315665','stroke-width':amount===1?1.5:1}));
+  keys.forEach((_,i)=>{
+   const [x,y]=point(i,1);
+   svg.append(svgEl('line',{x1:cx,y1:cy,x2:x,y2:y,stroke:'#4a6977','stroke-dasharray':'2 5'}));
+   const [lx,ly]=point(i,1.35);
+   const label=svgEl('text',{x:lx,y:ly+3,'text-anchor':'middle','font-size':10,fill:'#bdcbd9'});
+   label.textContent=labels[i];svg.append(label);
+  });
+  preview.append(svg);
+  const empty=document.createElement('p');empty.className='v14-chart-empty v3-empty-radar-caption';
+  empty.textContent=tr('Aucune séance enregistrée : aucun score disponible.','No recorded sessions: no score available.');
+  root.append(preview,empty);return;
  }
  const chart=document.createElement('div');chart.className='v15-radar';
  const svg=svgEl('svg',{viewBox:'0 0 320 255','aria-hidden':'true'});
