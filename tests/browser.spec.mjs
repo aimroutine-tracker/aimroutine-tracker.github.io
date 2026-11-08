@@ -681,3 +681,15 @@ test('V3 empty Progress radar shows tracked focus axes but no fabricated score',
  await expect(page.locator('#v14-p-average')).toContainText('—');
  await expect(page.locator('#v14-p-sessions')).toContainText('0');
 });
+
+
+test('V3 account guest portrait uses the owner artwork asset without exposing a fake identity',async({page})=>{
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.r17-account-profile .r17-avatar')).toBeVisible();
+ const actual=await page.locator('.r17-account-profile .r17-avatar').evaluate(el=>getComputedStyle(el).backgroundImage);
+ expect(actual).toContain('aimroutine-avatar-reference.svg');
+ const source=await page.request.get('/aimroutine-avatar-reference.svg');
+ expect(source.status()).toBe(200);
+ expect(await source.text()).toContain('data:image/webp;base64,');
+ await expect(page.locator('.r17-account-profile')).toContainText('Connecte-toi');
+});
