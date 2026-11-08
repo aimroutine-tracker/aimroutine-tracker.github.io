@@ -519,3 +519,37 @@ test('V14 truthful analytics and signup controls',async ({page})=>{
  await page.locator('#login-mode').click();
  await expect(page.locator('#login-form')).toBeVisible();
 });
+
+test('V15 screenshot hero assets load and homepage stats do not invent numbers',async ({page})=>{
+ await page.goto('/index.html',{waitUntil:'domcontentloaded'});
+ const img=page.locator('.ar42-hero-poster img[src="mockup-hero-v15.webp"]');
+ await expect(img).toHaveCount(1);
+ await expect.poll(()=>img.evaluate(el=>el.complete&&el.naturalWidth>0),{timeout:10000}).toBe(true);
+ await expect(page.locator('.v14-signal-strip [data-v15-stat]')).toHaveCount(4);
+ await expect(page.locator('[data-v15-stat="sessions"]')).toHaveText('0');
+ await expect(page.locator('[data-v15-stat="accuracy"]')).toHaveText('—');
+ await expect(page.locator('.v15-header-actions a')).toHaveCount(3);
+ await expect(page.locator('.v15-community-nav')).toHaveAttribute('href','index.html#community');
+});
+test('V15 training day navigation uses real builder and keeps old tabs',async ({page})=>{
+ await page.goto('/training.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.ar5-art img[src="mockup-hero-v15.webp"]')).toHaveCount(1);
+ await expect(page.locator('.v14-day-pills [data-v15-day]')).toHaveCount(5);
+ await expect(page.locator('.v15-training-week [data-v15-weekday]')).toHaveCount(5);
+ await page.locator('[data-v15-weekday="5"]').click();
+ await expect(page.locator('[data-v15-day="5"]')).toHaveAttribute('aria-pressed','true');
+ await expect(page.locator('[data-v15-weekday="5"]')).toHaveAttribute('aria-pressed','true');
+ await page.locator('[data-v15-weekday="2"]').click();
+ await expect(page.locator('[data-v15-day="2"]')).toHaveAttribute('aria-pressed','true');
+ await expect(page.locator('#tab-builder')).toBeVisible();
+});
+test('V15 cloud shows real status without listing fictitious devices',async ({page})=>{
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.v15-cloud-portal')).toBeVisible();
+ await expect(page.locator('[data-v15-cloud-status]')).toContainText(/Connexion nécessaire|Sign-in required/);
+ await expect(page.locator('[data-v15-lang]')).toHaveValue(/fr|en/);
+ await expect(page.locator('#login-form')).toBeVisible();
+ await page.goto('/account.html?mode=signup',{waitUntil:'load'});
+ await expect(page.locator('#signup-form')).toBeVisible();
+ await expect(page.locator('#signup-username')).toBeVisible();
+});

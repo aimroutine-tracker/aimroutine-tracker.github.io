@@ -1,0 +1,218 @@
+/* V15 — closer visual recreation of the four supplied reference screenshots.
+   Dynamic data, account forms and working training behavior remain underneath. */
+:root{--v15-red:#ff6475;--v15-cyan:#52eddd;--v15-stroke:#49606f}
+html{scroll-behavior:smooth}
+body.site31{background:#07131e!important}
+body.site31 main .v14-kicker{letter-spacing:.115em}
+body.site31 .site31-header{min-height:55px!important;background:#07101bed!important}
+body.site31 .site31-nav{max-width:1610px!important;min-height:55px!important;gap:12px!important}
+body.site31 .site31-brand{font-size:21px!important;letter-spacing:-.07em!important;font-weight:950!important}
+body.site31 .site31-brand span{text-transform:none!important;color:#ff6575!important;font-weight:800!important}
+body.site31 .site31-brand img{width:31px;height:31px}
+body.site31 .site31-links>a{font-size:12px!important;font-weight:750!important}
+body.site31 .site31-links>a[aria-current="page"]{box-shadow:0 6px 20px #ff66752a!important}
+body.site31 .v15-header-actions{display:flex;gap:10px;align-items:center;flex:none}
+body.site31 .v15-header-actions a{display:inline-flex;min-height:36px;align-items:center;gap:8px;
+ justify-content:center;padding:8px 15px;text-decoration:none;font-size:11px;font-weight:850;color:#f5fafb;
+ border-radius:4px 10px 4px 10px;border:1px solid #637987;background:#0c1b29;white-space:nowrap}
+body.site31 .v15-header-actions a:last-child{background:#ff6b7f;border-color:#ff7086;color:#111925}
+body.site31 .v15-header-actions a:hover{box-shadow:0 0 20px #ff577943;transform:translateY(-1px)}
+body.site31 .v15-header-actions a.v15-cloud-action{border-color:#36505f;color:#8df7e9}
+body.site31 .v15-cyan{color:#55ecdb!important}
+body.site31 .v14-glyph{border-radius:3px 10px 3px 10px!important}
+body.site31 main :is(.v14-panel,.v14-card,.v14-kpi){border-color:#465f6f!important;
+ box-shadow:0 8px 24px #0005,inset 0 1px 0 #7d9bb51a!important}
+body.site31 main :is(.v14-panel,.v14-card,.v14-kpi):before{content:"";position:absolute;inset:-1px;
+ border-radius:inherit;clip-path:polygon(0 0,25px 0,0 25px);background:#ff6078;pointer-events:none;z-index:0;opacity:.8}
+body.site31 main :is(.v14-panel,.v14-card,.v14-kpi) > *{position:relative;z-index:1}
+body.site31 main .v14-hot-button{background:linear-gradient(120deg,#ff7b88,#ff536b)!important;
+ border-color:#ff8da0!important;color:#111923!important;border-radius:3px 10px 3px 10px!important}
+body.site31 main .v14-outline-button{border-radius:4px 11px 4px 11px!important;background:#101c29e6!important}
+body.site31 main .v14-hot-button:hover{box-shadow:0 0 24px #ff536754!important}
+body.site31 main .v14-panel-head h2{font-size:17px!important}
+body.site31.site31-home .v5-hero{min-height:351px!important;margin:0!important;border-radius:0!important}
+body.site31.site31-home .v5-hero-layout{min-height:351px!important;max-width:1620px!important}
+body.site31.site31-home .v5-hero-copy{padding:23px 0!important;width:55%!important}
+body.site31.site31-home .v5-hero h1{font-size:clamp(44px,4.2vw,73px)!important;
+ font-style:italic!important;letter-spacing:-.064em!important;line-height:.94!important;
+ margin:15px 0!important}
+body.site31.site31-home .v5-hero-lead{margin:10px 0 14px!important}
+body.site31.site31-home .v5-preview-wrap{right:-34px!important;width:61%!important;opacity:1!important;z-index:0!important}
+body.site31.site31-home .v5-preview-wrap .ar42-hero-poster{border:0!important}
+body.site31.site31-home .ar42-hero-poster img{object-position:52% 34%!important;
+ object-fit:cover!important;filter:saturate(1.18) contrast(1.04)!important;opacity:1!important}
+body.site31.site31-home .v5-hero::before{background:linear-gradient(90deg,#07131f 0%,#07131ff2 30%,#081725c9 44%,transparent 66%)!important}
+body.site31.site31-home .v5-hero::after{content:"";position:absolute;inset:0;pointer-events:none;
+ background:linear-gradient(135deg,transparent 51%,#fd586b10 70%,transparent 83%);
+ opacity:.9;z-index:0}
+body.site31.site31-home .v14-signal-strip{margin:-4px auto 16px!important;
+ padding:11px 0!important;border-color:#e66579!important;box-shadow:0 0 17px #ee476c35!important}
+body.site31.site31-home .v14-strip-icon{font-size:31px!important}
+body.site31.site31-home .v14-signal-strip strong{font-size:17px!important;line-height:1.2}
+body.site31.site31-home .v14-signal-strip small{font-size:9px!important;letter-spacing:.045em;font-weight:800!important}
+body.site31.site31-home .v14-feature{min-height:119px!important;border-radius:3px 12px 3px 12px!important}
+body.site31.site31-home .v14-home-features{gap:18px!important;margin:14px auto 22px!important}
+body.site31.site31-home .v14-feature strong{font-size:clamp(17px,1.15vw,22px)!important}
+body.site31.site31-home .v14-feature p{font-size:12px!important;line-height:1.5}
+body.site31.site31-home .v14-path-section .ar9-wayfinder-head{margin:0 0 13px!important}
+body.site31.site31-home .v14-path-section .ar9-wayfinder-head h2{font-size:clamp(23px,1.7vw,30px)!important}
+body.site31.site31-home .v14-path-section .ar9-path-grid{padding:0!important}
+body.site31.site31-home .v14-path-section .v14-path{min-height:161px!important;padding:15px 14px!important;gap:4px!important}
+body.site31.site31-home .v14-rank-beginner{background:
+ linear-gradient(115deg,#11313be8,#14243788),url("aimroutine-arena.svg") center/cover!important}
+body.site31.site31-home .v14-rank-middle{background:
+ linear-gradient(115deg,#271f3cdd,#221b35a8),url("aimroutine-arena.svg") center/cover!important}
+body.site31.site31-home .v14-rank-pro{background:
+ linear-gradient(115deg,#2a2323db,#102532a0),url("aimroutine-arena.svg") center/cover!important}
+body.site31.site31-home .v14-featured-challenge{min-height:239px!important;
+ background:linear-gradient(112deg,#351e2add,#102231b8),
+ url("aimroutine-arena.svg") right center/cover!important}
+body.site31.site31-home .v14-featured-challenge h3{font-size:22px}
+body.site31.site31-home .v14-challenge-chips span{background:#132431e8}
+body.site31.site31-home .v14-path-section{grid-template-columns:minmax(0,2fr) minmax(340px,.94fr)!important;
+ gap:23px!important}
+body.site31.site31-home .v15-community-summary{width:calc(100% - 60px);max-width:1540px;margin:28px auto;
+ padding:20px 25px;border:1px solid #395c6c;background:#0d2535;border-radius:5px 14px 5px 14px}
+body.site31.site31-home .v15-community-summary h2{font-size:21px}
+body.site31.site31-home .v15-community-summary p{font-size:12px;color:#bcd2d9}
+body.site31.site31-home .v15-community-summary a{color:#7ce9df;text-decoration:underline}
+body.site31.site31-training .ar5-workspace.shell{max-width:1630px!important;width:calc(100% - 36px)!important}
+body.site31.site31-training .ar5-hero{min-height:244px!important;margin:0!important;
+ padding:24px 50px!important;border-radius:0!important;border:0!important;border-bottom:1px solid #576d7d!important}
+body.site31.site31-training .ar5-hero h1{font-size:clamp(36px,3.5vw,56px)!important;font-style:italic!important}
+body.site31.site31-training .ar5-art{width:57%!important;opacity:1!important}
+body.site31.site31-training .ar5-art::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+ background:linear-gradient(90deg,#091725b8,transparent 58%)}
+body.site31.site31-training .ar5-art img{object-position:50% 22%!important;opacity:1!important}
+body.site31.site31-training .ar5-hero::before{background:linear-gradient(90deg,#07131f 0%,#091622e9 39%,transparent 75%)!important}
+body.site31.site31-training .v14-training-stage{grid-template-columns:minmax(240px,.79fr) minmax(510px,1.9fr) minmax(240px,.93fr)!important;
+ gap:15px!important;margin-top:15px!important}
+body.site31.site31-training .v14-training-stage .v14-panel{padding:15px!important}
+body.site31.site31-training .v14-day-pills{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+body.site31.site31-training .v14-day-pills button{min-height:49px!important}
+body.site31.site31-training .v14-day-pills button span{display:block;font-weight:900}
+body.site31.site31-training .v14-day-pills button small{display:block;font-size:9px;font-weight:450;margin-top:2px}
+body.site31.site31-training .v14-day-pills button[aria-pressed="true"]{background:#ff7181!important}
+body.site31.site31-training .v14-workout-plan{min-height:383px!important}
+body.site31.site31-training .v14-exercise-list{gap:6px!important}
+body.site31.site31-training .v14-exercise{min-height:59px!important}
+body.site31.site31-training .v14-exercise-time{border-left:1px solid #4e6d7d;padding-left:7px}
+body.site31.site31-training .v15-training-week{
+ margin:0 0 24px;padding:14px 20px!important;display:grid;
+ grid-template-columns:minmax(170px,1.15fr) repeat(5,minmax(0,1fr)) minmax(160px,.9fr);gap:10px;align-items:center}
+body.site31.site31-training .v15-training-week h2{font-size:18px!important;margin:3px 0}
+body.site31.site31-training .v15-training-week p{color:#bacdd7;font-size:11px;margin:0}
+body.site31.site31-training .v15-week-button{background:#172c39;color:#e8f7f8;display:grid;text-align:left;
+ min-height:54px;padding:9px 10px;gap:4px;border:1px solid #627788;border-radius:4px 10px 4px 10px;cursor:pointer}
+body.site31.site31-training .v15-week-button[aria-pressed="true"]{background:#1a3d45;border-color:#59e9db;box-shadow:inset 0 -2px #5df1df}
+body.site31.site31-training .v15-week-button strong{font-size:12px}
+body.site31.site31-training .v15-week-button small{font-size:10px;color:#bdccd2}
+body.site31.site31-training .v15-week-goal{border-left:1px solid #557081;padding-left:15px}
+body.site31.site31-training .v15-week-goal strong{display:block;font-size:17px;color:#f5fbff}
+body.site31.site31-training .v15-week-goal small{display:block;color:#b7ced8;font-size:10px;margin-bottom:9px}
+body.site31.site31-account .ar7-account-hero{min-height:238px!important;border:0!important;border-radius:0!important}
+body.site31.site31-account .ar7-account-hero::before{background-image:
+ linear-gradient(90deg,#081624 0%,#081624eb 38%,transparent 72%),
+ url("mockup-hero-v15.webp")!important;
+ background-size:cover,60% 100%!important;background-position:center,right center!important;
+ background-repeat:no-repeat!important;opacity:1!important}
+body.site31.site31-account .ar7-account-hero h1{font-size:clamp(40px,4vw,67px)!important;font-style:italic!important}
+body.site31.site31-account .ar7-account-hero figure{display:none!important}
+body.site31.site31-account .v14-cloud-benefits{margin-top:0}
+body.site31.site31-account .v15-cloud-portal{grid-column:2;grid-row:1;min-width:0}
+body.site31.site31-account .v15-cloud-portal .v14-panel{padding:19px}
+body.site31.site31-account .v15-cloud-portal h2{font-size:20px!important}
+body.site31.site31-account .v15-cloud-top{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.15fr);gap:12px;margin-top:14px}
+body.site31.site31-account .v15-cloud-state{border:1px solid #3b8a91;background:linear-gradient(120deg,#0b303d,#173d4a);
+ border-radius:5px 14px 5px 14px;padding:22px 14px;display:flex;align-items:center;gap:15px}
+body.site31.site31-account .v15-cloud-state .v15-cloud-icon{font-size:54px;color:#52e9db;line-height:1}
+body.site31.site31-account .v15-cloud-state strong{font-size:16px;color:#eaffff}
+body.site31.site31-account .v15-cloud-state small{display:block;font-size:11px;color:#c5e6e7;line-height:1.45}
+body.site31.site31-account .v15-cloud-privacy{border:1px solid #627b8b;border-radius:4px 14px 4px 14px;padding:15px;
+ background:#102638}
+body.site31.site31-account .v15-cloud-privacy h3{font-size:14px;margin:0 0 7px}
+body.site31.site31-account .v15-cloud-privacy p{font-size:11px;color:#bfdae2;line-height:1.6;margin:0}
+body.site31.site31-account .v15-cloud-actions{display:flex;gap:9px;margin-top:15px;flex-wrap:wrap}
+body.site31.site31-account .v15-cloud-actions a{font-size:11px;text-decoration:none;color:#e1f7f9;
+ border:1px solid #78919f;border-radius:5px;padding:10px 12px;background:#142939}
+body.site31.site31-account .v15-account-settings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin-top:11px}
+body.site31.site31-account .v15-account-setting{padding:15px;border:1px solid #556d7b;background:#142737;
+ border-radius:5px 12px 5px 12px}
+body.site31.site31-account .v15-account-setting h3{font-size:14px;margin:6px 0}
+body.site31.site31-account .v15-account-setting p{font-size:11px;line-height:1.5;color:#bbd0dd}
+body.site31.site31-account .v15-account-setting a{font-size:11px;color:#78ecdb}
+body.site31.site31-account .v15-account-setting select{width:100%;background:#0a1d2a;color:#fff;border:1px solid #81939f;padding:9px;border-radius:4px}
+body.site31.site31-account .v14-account-layout{grid-template-columns:minmax(300px,.82fr) minmax(0,1.62fr)!important}
+body.site31.site31-account .v14-account-help{grid-column:1!important;grid-row:2!important}
+body.site31.site31-account #auth-panel{grid-column:1!important;grid-row:1!important}
+body.site31.site31-account #dashboard-panel:not([hidden]){grid-column:1/-1!important;grid-row:auto!important}
+body.site31.site31-account .v14-account-layout .v15-cloud-portal{display:grid;gap:11px}
+body.site31.site31-progress .v14-progress-hero{min-height:209px!important}
+body.site31.site31-progress .v14-scene h1{font-size:clamp(41px,3.65vw,59px)!important;font-style:italic!important}
+body.site31.site31-progress .v14-scene-art{background:
+ linear-gradient(90deg,#0c1b2cbf,transparent 52%),
+ url("mockup-hero-v15.webp") center center/cover!important;inset:0 0 0 40%!important;opacity:1!important}
+body.site31.site31-progress .v14-progress-hero::before{background:linear-gradient(90deg,#081522 0%,#0c1b2be6 40%,transparent 72%)!important}
+body.site31.site31-progress .v14-progress-kpis{gap:0!important;margin-top:-2px!important}
+body.site31.site31-progress .v14-progress-kpis .v14-kpi{border-color:#ac536a!important;border-radius:0!important;
+ min-height:85px!important;padding:13px 18px!important}
+body.site31.site31-progress .v14-progress-grid{gap:12px!important;grid-template-columns:minmax(0,1.08fr) minmax(0,1.08fr) minmax(240px,.87fr)!important}
+body.site31.site31-progress .v14-progress-grid .v14-panel{min-height:280px!important}
+body.site31.site31-progress .v14-progress-secondary{grid-template-columns:1fr .82fr 1.04fr!important;gap:12px!important}
+body.site31.site31-progress .v14-personal-grid{margin-top:20px}
+body.site31.site31-progress #v14-p-distribution{margin-top:9px!important}
+body.site31.site31-progress .v15-radar{display:flex;gap:8px;align-items:center;justify-content:center}
+body.site31.site31-progress .v15-radar svg{width:100%;height:215px;max-width:325px}
+body.site31.site31-progress .v15-radar-summary{font-size:11px;color:#a9f5ef;white-space:nowrap}
+@media(max-width:1350px){
+ body.site31 .v15-header-actions a{padding:8px 9px!important;font-size:10px}
+ body.site31.site31-training .v14-training-stage{grid-template-columns:minmax(215px,.75fr) minmax(440px,1.65fr)!important}
+ body.site31.site31-training .v14-training-aside{grid-column:1/-1;grid-template-columns:repeat(2,1fr)}
+ body.site31.site31-home .v14-path-section{grid-template-columns:1fr!important}
+}
+@media(max-width:1050px){
+ body.site31 .v15-header-actions{display:none!important}
+ body.site31.site31-account .v14-account-layout{grid-template-columns:1fr!important}
+ body.site31.site31-account .v14-account-layout .v15-cloud-portal{grid-column:1!important;grid-row:auto!important}
+ body.site31.site31-account .v14-account-help{grid-column:1!important;grid-row:auto!important}
+ body.site31.site31-training .v15-training-week{grid-template-columns:repeat(5,1fr)}
+ body.site31.site31-training .v15-training-week>div:first-child,
+ body.site31.site31-training .v15-week-goal{grid-column:1/-1}
+ body.site31.site31-progress .v14-progress-grid{grid-template-columns:1fr 1fr!important}
+ body.site31.site31-progress #v14-p-skills-panel{grid-column:1/-1}
+ body.site31.site31-progress .v14-progress-secondary{grid-template-columns:1fr 1fr!important}
+ body.site31.site31-progress .v14-nextstep{grid-column:1/-1}
+}
+@media(max-width:760px){
+ body.site31.site31-home .v5-hero,.site31.site31-home .v5-hero-layout{min-height:390px!important}
+ body.site31.site31-home .v5-hero-copy{width:100%!important;max-width:none!important;padding:35px 8px!important}
+ body.site31.site31-home .v5-hero h1{font-size:clamp(36px,8vw,55px)!important}
+ body.site31.site31-home .v5-preview-wrap{width:80%!important;right:-90px!important;opacity:.44!important}
+ body.site31.site31-home .v14-path-section{grid-template-columns:1fr!important}
+ body.site31.site31-home .v14-signal-strip strong{font-size:12px!important}
+ body.site31.site31-home .v15-community-summary{width:calc(100% - 28px)}
+ body.site31.site31-training .ar5-workspace.shell{width:calc(100% - 20px)!important}
+ body.site31.site31-training .ar5-hero{padding:21px 15px!important}
+ body.site31.site31-training .ar5-art{width:100%!important;opacity:.28!important}
+ body.site31.site31-training .v14-training-stage{grid-template-columns:1fr!important}
+ body.site31.site31-training .v14-training-aside{grid-column:auto;grid-template-columns:1fr}
+ body.site31.site31-training .v14-training-side{grid-template-columns:1fr}
+ body.site31.site31-training .v15-training-week{grid-template-columns:repeat(2,minmax(0,1fr))}
+ body.site31.site31-training .v15-training-week>div:first-child,
+ body.site31.site31-training .v15-week-goal{grid-column:1/-1}
+ body.site31.site31-training .v14-day-pills{grid-template-columns:repeat(2,1fr)!important}
+ body.site31.site31-training .v14-day-pills button:last-child{grid-column:1/-1}
+ body.site31.site31-account .ar7-account-hero::before{background-size:cover,90% auto!important;opacity:.5!important}
+ body.site31.site31-account .v15-cloud-top,
+ body.site31.site31-account .v15-account-settings{grid-template-columns:1fr}
+ body.site31.site31-progress .v14-progress-grid,.site31.site31-progress .v14-progress-secondary{grid-template-columns:1fr!important}
+ body.site31.site31-progress #v14-p-skills-panel,.site31.site31-progress .v14-nextstep{grid-column:1!important}
+ body.site31.site31-progress .v14-scene-art{inset:0!important;opacity:.3!important}
+}
+@media(prefers-reduced-motion:reduce){body.site31 .v15-header-actions a{transition:none!important;transform:none!important}}
+
+/* A connected player sees the real account dashboard before the cloud portal, with no overlap. */
+body.site31.site31-account.v15-account-logged .v14-account-layout{grid-template-columns:1fr!important}
+body.site31.site31-account.v15-account-logged #dashboard-panel:not([hidden]){grid-column:1/-1!important;grid-row:1!important}
+body.site31.site31-account.v15-account-logged .v14-account-layout .v15-cloud-portal{grid-column:1/-1!important;grid-row:2!important}
+body.site31.site31-account.v15-account-logged .v14-account-layout .v14-account-help{grid-column:1/-1!important;grid-row:3!important}

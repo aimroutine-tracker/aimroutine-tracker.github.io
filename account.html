@@ -41,6 +41,7 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
 <link rel="stylesheet" href="site-arcade-v12.css?v=1">
 <link rel="stylesheet" href="site-future-v13.css?v=1">
 <link rel="stylesheet" href="site-v14-gallery.css?v=1">
+<link rel="stylesheet" href="site-v15-fidelity.css?v=1">
 </head><body class="site31 site31-account">
 <a class="site31-skip" href="#main"><span class="fr">Aller au contenu</span><span class="en">Skip to content</span></a>
 <header class="site31-header"><nav class="site31-nav" aria-label="Navigation principale / Main navigation">
@@ -197,7 +198,17 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
 </form>
 </details>
 </section>
-<aside class="ar7-account-help v14-account-help">
+<div class="v15-cloud-portal" aria-label="Tableau de bord Cloud / Cloud dashboard">
+<article class="v14-panel"><div class="v14-panel-head"><span class="v14-glyph v15-cyan">☁</span><div><h2><span class="fr">Synchronisation cloud</span><span class="en">Cloud synchronization</span></h2><small><span class="fr">Tes routines et tes séances, sur tes appareils lorsque tu actives la sauvegarde.</span><span class="en">Your routines and sessions across devices when backup is enabled.</span></small></div></div>
+<div class="v15-cloud-top"><div class="v15-cloud-state"><span class="v15-cloud-icon">☁</span><div><strong data-v15-cloud-status><span class="fr">Connexion nécessaire</span><span class="en">Sign-in required</span></strong><small data-v15-cloud-details><span class="fr">Connecte-toi pour gérer ta sauvegarde.</span><span class="en">Sign in to manage cloud backup.</span></small></div></div>
+<div class="v15-cloud-privacy"><h3><span class="fr">Données et appareils</span><span class="en">Data and devices</span></h3><p><span class="fr">Tes séances sont privées. La liste des appareils synchronisés n’est pas encore disponible ; aucun appareil fictif n’est affiché.</span><span class="en">Your sessions are private. A synchronized-device list is not available yet; we do not display fake devices.</span></p></div></div>
+<div class="v15-cloud-actions"><a href="training.html"><span class="fr">Accéder à mes routines</span><span class="en">Open my routines</span> ↗</a><a href="#dashboard-panel"><span class="fr">Gérer ma sauvegarde</span><span class="en">Manage my backup</span> ↗</a></div>
+</article>
+<div class="v15-account-settings">
+<article class="v15-account-setting"><span class="v14-kicker">01 / LANGUAGE</span><h3><span class="fr">Langue</span><span class="en">Language</span></h3><p><span class="fr">Préférence du site</span><span class="en">Site preference</span></p><label><span class="fr">Langue de l’interface</span><span class="en">Interface language</span><select data-v15-lang aria-label="Langue de l’interface"><option value="fr">Français (FR)</option><option value="en">English (EN)</option></select></label></article>
+<article class="v15-account-setting"><span class="v14-kicker">02 / PRIVACY</span><h3><span class="fr">Confidentialité</span><span class="en">Privacy</span></h3><p><span class="fr">Sauvegarde facultative, données privées.</span><span class="en">Optional backup, private account data.</span></p><a href="privacy.html"><span class="fr">Lire la politique</span><span class="en">Privacy policy</span> ↗</a></article>
+<article class="v15-account-setting"><span class="v14-kicker">03 / TRAINING</span><h3><span class="fr">Préférences AIM</span><span class="en">AIM preferences</span></h3><p><span class="fr">Choisis tes exercices et tes objectifs.</span><span class="en">Choose exercises and your goals.</span></p><a href="training.html#panel-profile"><span class="fr">Paramètres joueur</span><span class="en">Player settings</span> ↗</a></article>
+</div></div><aside class="ar7-account-help v14-account-help">
  <span class="ar7-eyebrow">SECURITY / PRIVACY</span><h3><span class="fr">Ton entraînement. Tes données.</span><span class="en">Your training. Your data.</span></h3>
  <p><span class="fr">La sauvegarde cloud est facultative. Elle utilise une base Supabase avec des règles qui limitent l'accès aux données du propriétaire du compte.</span><span class="en">Cloud backup is optional. Supabase database access rules restrict training data to its account owner.</span></p>
  <p><span class="fr">Pour un meilleur respect de la vie privée, évite de te connecter sur un ordinateur partagé : une copie locale par compte peut y rester enregistrée.</span><span class="en">Avoid logging in on shared computers: each account can leave local cached data on that device.</span></p>
@@ -210,4 +221,5 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
 <script src="site-motion-v10.js?v=1" defer></script>
 <script src="site-future-v13.js?v=1" defer></script>
 <script src="site-v14-gallery.js?v=1" defer></script>
+<script src="site-v15-fidelity.js?v=1" defer></script>
 </body></html>

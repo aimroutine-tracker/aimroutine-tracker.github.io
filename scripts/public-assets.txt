@@ -100,3 +100,7 @@ progress.html
 progress-v14.mjs
 site-v14-gallery.css
 site-v14-gallery.js
+mockup-hero-v15.webp
+site-v15-fidelity.css
+site-v15-fidelity.js
+site-v15-data.mjs
