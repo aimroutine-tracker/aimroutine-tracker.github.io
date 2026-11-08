@@ -909,3 +909,26 @@ body.site31.r20 .r17-home-wrap .r17-feature p{font-size:13.6px!important;}
   display:none!important;
  }
 }
+
+
+/* V3 / pass 8 — source-image aligned card spacing and trustworthy real-data
+   vector iconography in progress/account. No hidden guest disclosures. */
+body.site31.r20 .r17-account-wrap .r17-account-benefits>span{
+ display:inline-flex!important;align-items:center!important;
+ gap:10px!important;justify-content:flex-start!important;
+}
+body.site31.r20 .r17-account-wrap .r17-account-benefits .ar-v3-symbol{
+ font-size:24px!important;color:#ff5b69!important;
+ width:24px!important;height:24px!important;flex:0 0 24px!important;
+}
+body.site31.r20 .r17-progress-wrap .v14-glyph .ar-v3-symbol{
+ font-size:27px!important;
+}
+@media(min-width:1350px){
+ body.site31.r20 .r17-home-wrap .r17-features{
+  margin-top:29px!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-icon .ar-v3-symbol{
+  font-size:34px!important;
+ }
+}
