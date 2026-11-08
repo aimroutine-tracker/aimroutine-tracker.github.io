@@ -168,7 +168,7 @@ function installAccountActions(){
  controls.innerHTML='<div class="r19-cloud-head">'+tag('Actions sur ton vrai compte','Your real account actions')+'</div>'+
  '<div class="r19-cloud-commands">'+
  '<button type="button" data-r19-cloud="cloud-enable">'+tag('Gérer la sauvegarde','Manage backup')+'</button>'+
- '<button type="button" data-r19-cloud="cloud-sync">'+tag('Synchroniser maintenant','Sync now')+'</button>'+
+ '<span class="r19-cloud-auto">'+tag('☁ Synchronisation cloud automatique','☁ Automatic cloud synchronization')+'</span>'+
  '<button type="button" data-r19-cloud="cloud-import-guest">'+tag('Importer mon historique','Import guest history')+'</button>'+
  '<a href="#auth-panel" class="r19-cloud-login">'+tag('Se connecter pour utiliser le cloud','Sign in to use cloud')+' ↗</a>'+
  '</div>';
@@ -177,7 +177,7 @@ function installAccountActions(){
  const login=$('.r19-cloud-login',controls);
  function render(){
   const logged=!dashboard.hidden;
-  for(const button of actions){button.hidden=!logged;button.disabled=!logged;}
+  for(const button of actions){const manual=['cloud-enable','cloud-sync'].includes(button.dataset.r19Cloud);button.hidden=!logged||manual;button.disabled=!logged||manual;}
   if(login)login.hidden=logged;
   const state=$('#cloud-enabled-status')?.textContent?.trim();
   const label=controls.querySelector('[data-r19-cloud="cloud-enable"]');
