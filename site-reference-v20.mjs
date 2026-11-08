@@ -131,7 +131,7 @@ function account(screen){
    const sync=$('[data-r17-sync-copy]',screen);
    if(sync)sync.textContent=active?words('Synchronisation automatique active pour ton compte.','Automatic synchronization active for your account.'):words('Connecte-toi pour synchroniser automatiquement tes données.','Sign in to synchronize your data automatically.');
    const label=$('[data-r17-cloud-label]',screen);
-   if(label)label.textContent=active?words('Sync Cloud · Automatique','Cloud sync · Automatic'):words('Compte non connecté','Not signed in');
+   if(label)label.textContent=active?words('Sync Cloud · Automatique','Cloud sync · Automatic'):words('Cloud non connecté','Cloud not signed in');
   };
   new MutationObserver(show).observe(dashboard,{attributes:true,attributeFilter:['hidden']});show();
  }
