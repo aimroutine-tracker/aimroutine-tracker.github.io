@@ -69,7 +69,7 @@
   function drawTrainingChart(){const store=getStore(),sessions=byDays(store?.sessions||[],7);const root=$('#ar21-training-chart',APP);if(metric==='reaction'){root.innerHTML=placeholderSvg(390,140,'Temps de réaction non mesuré');setText('ar21-chart-value','—');return}if(metric==='regularity'){const seven=Array.from({length:7},(_,i)=>{const d=new Date();d.setDate(d.getDate()-6+i);return sessions.filter(s=>dayKey(s.date)===dayKey(d)).length});root.innerHTML=barChart(seven,390,140);setText('ar21-chart-value',sessions.length?String(sessions.length):'—');return}const subset=metric==='tracking'?sessions.filter(s=>s.focus==='tracking'):sessions;root.innerHTML=lineChart(subset,390,140,'#ff6375');const values=subset.filter(s=>Number.isFinite(s.accuracy));setText('ar21-chart-value',values.length?fmt(values.reduce((n,s)=>n+s.accuracy,0)/values.length,' %'):'—')}
   $$('[data-ar-rank]',APP).forEach(b=>b.addEventListener('click',()=>{rank=b.dataset.arRank;drawPlan()}));$$('[data-ar-day]',APP).forEach(b=>b.addEventListener('click',()=>{day=+b.dataset.arDay;drawPlan()}));$$('[data-ar-weekday]',APP).forEach(b=>b.addEventListener('click',()=>{day=+b.dataset.arWeekday;drawPlan()}));$$('[data-ar-chart]',APP).forEach(b=>b.addEventListener('click',()=>{metric=b.dataset.arChart;$$('[data-ar-chart]',APP).forEach(t=>{t.classList.toggle('active',t===b);t.setAttribute('aria-pressed',String(t===b))});drawTrainingChart()}));const custom=$('#ar21-custom',APP);custom?.addEventListener('click',e=>{e.preventDefault();openWorkspace('builder')});APP.querySelector('a[href="#ar21-custom"]')?.addEventListener('click',e=>{e.preventDefault();openWorkspace('builder')});for(const event of ['aim-v5-ready','aim-store-updated','aim-cloud-data-changed','aim-sync-applied'])window.addEventListener(event,()=>{drawPlan();updateMetrics()});drawPlan();updateMetrics();}
  function escapeHtml(v){return String(v).replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]))}
- function accountInit(){const preview=$('#ar21-preview-login',APP);preview?.addEventListener('submit',e=>{e.preventDefault();if(standalone)return;document.querySelector('#login-form')?.requestSubmit()});if(!standalone){const auth=document.getElementById('auth-panel');if(auth){const mount=$('#ar21-native-auth',APP);if(mount){mount.replaceChildren(auth)}}}
+ function accountInit(){const preview=$('#ar21-preview-login',APP);preview?.addEventListener('submit',e=>{e.preventDefault();if(standalone)return;document.querySelector('#login-form')?.requestSubmit()});if(!standalone){const mount=$('#ar21-native-auth',APP);if(mount){const panels=['auth-panel','username-panel','dashboard-panel'].map(id=>document.getElementById(id)).filter(Boolean);if(panels.length)mount.replaceChildren(...panels)}}
   const signup=$('#ar21-open-signup',APP);signup?.addEventListener('click',()=>{const control=document.getElementById('signup-mode');if(control){control.click();document.getElementById('ar21-native-auth')?.scrollIntoView({behavior:'smooth',block:'center'})}else location.href='account.html?mode=signup#auth-panel'});
   const reset=APP.querySelector('[data-ar-auth-reset]');reset?.addEventListener('click',e=>{if(standalone)return;e.preventDefault();document.getElementById('reset-link')?.click()});const lang=$('#ar21-language',APP);lang?.addEventListener('change',()=>{const current=document.documentElement.lang||'fr';if(lang.value!==current){const toggle=document.querySelector('[data-switch-lang]');if(toggle)toggle.click();else document.documentElement.lang=lang.value}});
   $$('[data-ar-setting]',APP).forEach(c=>{c.disabled=true;c.setAttribute('title','Fonction non disponible actuellement')});const pref=$('#ar21-pref-level',APP);pref?.addEventListener('change',()=>{const rank=document.getElementById('rank');if(rank)rank.value=pref.value});const dur=$('#ar21-pref-duration',APP);dur?.addEventListener('change',()=>{const sel=document.getElementById('duration');if(sel)sel.value=dur.value});
@@ -117,4 +117,16 @@
   }
  }
  if(page==='account')accountInit();if(page==='progress')progressInit();
+ // Keep every first-party reference-screen link inside the preview build.
+ // The production pages retain their existing canonical URLs.
+ if(!standalone){
+  const pages=new Set(['/','/index.html','/training.html','/account.html','/progress.html']);
+  for(const a of APP.querySelectorAll('a[href]')){
+   const raw=a.getAttribute('href');if(!raw||raw.startsWith('#'))continue;
+   const link=new URL(raw,location.href);
+   if(link.origin!==location.origin||!pages.has(link.pathname))continue;
+   link.searchParams.set('ar21','preview');
+   a.href=link.pathname+link.search+link.hash;
+  }
+ }
 })();

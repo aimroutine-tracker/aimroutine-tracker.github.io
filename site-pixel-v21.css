@@ -112,3 +112,11 @@ body.ar21-production>.ar21{display:block!important;isolation:isolate}
 #ar21-feature-dialog{width:min(1050px,calc(100vw - 28px));max-height:90vh;background:#0b1b28;color:white;border:1px solid #698594;border-radius:6px 12px 6px 12px;overflow:auto;padding:15px}
 #ar21-feature-dialog::backdrop{background:#010814d9;backdrop-filter:blur(6px)}
 #ar21-feature-dialog .ar21-feature-host{padding:10px}
+
+/* Preserve the real Supabase authentication states within the rebuilt account card. */
+body.ar21-production #ar21-native-auth #auth-panel[hidden],
+body.ar21-production #ar21-native-auth #username-panel[hidden],
+body.ar21-production #ar21-native-auth #dashboard-panel[hidden]{display:none!important}
+body.ar21-production #ar21-native-auth :is(#username-panel,#dashboard-panel):not([hidden]){display:block!important;position:static!important;width:100%!important;min-height:0!important;height:auto!important;padding:12px!important;margin:0!important;border:1px solid #4b6b80!important;background:#0e2230!important;color:#eaf7fb!important;border-radius:4px 10px 4px 10px!important;box-shadow:none!important}
+body.ar21-production #ar21-native-auth :is(#username-panel,#dashboard-panel):not([hidden]) :is(input,select){background:#071b28!important;color:#fff!important;border-color:#4c768a!important}
+body.ar21-production #ar21-native-auth :is(#username-panel,#dashboard-panel):not([hidden]) button{cursor:pointer}

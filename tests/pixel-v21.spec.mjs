@@ -84,3 +84,29 @@ test('Capture all four reference comparisons at their exact desktop resolution',
  }
  await context.close();
 });
+
+
+test('Preview navigation stays within the four rebuilt screens',async({page})=>{
+ await page.goto('/index.html?ar21=preview',{waitUntil:'domcontentloaded'});
+ await page.locator('.ar21-nav a').filter({hasText:'Routines'}).click();
+ await expect(page).toHaveURL(/training\.html\?ar21=preview/);
+ await expect(page.locator('#ar21-app.ar21-training')).toBeVisible();
+ await page.locator('.ar21-nav a').filter({hasText:'Suivi de progression'}).click();
+ await expect(page).toHaveURL(/progress\.html\?ar21=preview/);
+ await expect(page.locator('#ar21-app.ar21-progress')).toBeVisible();
+});
+
+test('Account rebuild preserves real sign-in, mandatory username and dashboard states',async({page})=>{
+ await page.goto('/account.html?ar21=preview',{waitUntil:'domcontentloaded'});
+ for(const id of ['auth-panel','username-panel','dashboard-panel'])
+  await expect(page.locator('#ar21-native-auth #'+id)).toBeAttached();
+ await expect(page.locator('#auth-panel')).toBeVisible();
+ await expect(page.locator('#dashboard-panel')).toBeHidden();
+ await page.evaluate(()=>{
+  document.getElementById('auth-panel').hidden=true;
+  document.getElementById('dashboard-panel').hidden=false;
+ });
+ await expect(page.locator('#auth-panel')).toBeHidden();
+ await expect(page.locator('#dashboard-panel')).toBeVisible();
+ await expect(page.locator('#ar21-sync-state')).toHaveText('Automatique');
+});
