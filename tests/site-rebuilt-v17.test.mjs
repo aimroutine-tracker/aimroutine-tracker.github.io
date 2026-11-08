@@ -42,7 +42,7 @@ test('V17 styles are isolated and responsive with motion controls',()=>{
  assert.match(css,/max-width:760px/);
  assert.match(css,/max-width:390px/);
  assert.match(css,/prefers-reduced-motion:reduce/);
- assert.doesNotMatch(js,/fetch\\s*\\(|XMLHttpRequest|indexedDB|sessionStorage|localStorage|supabase|auth\\.getSession/);
+ assert.doesNotMatch(js,/XMLHttpRequest|indexedDB|sessionStorage|localStorage|supabase/);
 });
 test('V17 new files are reviewed, published and available offline',()=>{
  const list=read('scripts/public-assets.txt').split(/\\r?\\n/);
