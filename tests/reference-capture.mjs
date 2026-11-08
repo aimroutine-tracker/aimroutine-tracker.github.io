@@ -15,6 +15,8 @@ for(const [name,uri] of targets){
   await page.goto('http://127.0.0.1:'+port+'/'+uri,{waitUntil:'domcontentloaded'});
   try{await page.waitForSelector(kind==='after'?'#aim-reference':'.r17-screen',{timeout:20000})}catch(e){errors.push(String(e))}
   await page.waitForTimeout(1400);
+  const layout=await page.evaluate(()=>{const els=['.a21-hero','.a21-hero h1','.a21-hero h1 em','.a21-hero h1 strong','.a21-hero p','.a21-benefits','.a21-content'];return Object.fromEntries(els.map(s=>{const e=document.querySelector('#aim-reference '+s);if(!e)return[s,null];const r=e.getBoundingClientRect(),st=getComputedStyle(e);return[s,{text:e.textContent.trim().slice(0,70),x:Math.round(r.x),y:Math.round(r.y),w:Math.round(r.width),h:Math.round(r.height),font:st.fontSize,color:st.color,display:st.display,visibility:st.visibility}]}))});
+  console.log('V21_LAYOUT_'+kind+'_'+name+'='+JSON.stringify(layout));
   await page.screenshot({path:path+'/'+kind+'/'+name+'.png',fullPage:false,animations:'disabled'});
   const width=await page.evaluate(()=>document.documentElement.scrollWidth);
   result.screens.push({kind,name,url:uri,scrollWidth:width,visibleReference:await page.locator('#aim-reference').count(),errors});
