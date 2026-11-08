@@ -1,0 +1,49 @@
+name: Reference screenshot comparisons — draft only
+on:
+  pull_request:
+    paths:
+      - "site-reference-v21.*"
+      - "index.html"
+      - "training.html"
+      - "account.html"
+      - "progress.html"
+      - ".github/workflows/reference-compare.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: aimroutine-reference-visual-validation
+  cancel-in-progress: true
+jobs:
+  capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Prepare Chromium and screenshot libraries
+        run: |
+          npm install --no-save playwright@1.56.1 sharp@0.34.5
+          npx playwright install --with-deps chromium
+      - name: Run baseline and candidate servers without publishing either
+        run: |
+          git worktree add --detach /tmp/aimroutine-baseline origin/main
+          nohup python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/aimroutine-new.log 2>&1 &
+          nohup python3 -m http.server 8766 --bind 127.0.0.1 --directory /tmp/aimroutine-baseline > /tmp/aimroutine-before.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8765/index.html >/dev/null && curl -fsS http://127.0.0.1:8766/index.html >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          exit 1
+      - name: Produce four before / after desktop comparisons at original 1672x941
+        run: node tests/reference-capture.mjs
+      - name: Upload screenshots and before / after comparisons
+        uses: actions/upload-artifact@v4
+        with:
+          name: aimroutine-reference-v21-comparisons
+          path: visual-comparisons/**
+          retention-days: 30

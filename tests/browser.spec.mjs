@@ -103,24 +103,14 @@ test.describe('PWA cache integration',()=>{
 });
 });
 
-test('Cloud account landing has single-border tags and a compact accessible guest button',async({page})=>{
+test('Account landing uses real Auth and has no guest-save action',async({page})=>{
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
- const chips=page.locator('.ar7-account-highlights > .ar7-account-chip');
- await expect(chips).toHaveCount(3);
- await expect(page.locator('.ar7-guest-link')).toBeVisible();
- const check=await page.evaluate(()=>{
-   const badges=[...document.querySelectorAll('.ar7-account-highlights > .ar7-account-chip')];
-   const borders=badges.map(chip=>({
-     outer:getComputedStyle(chip).borderTopWidth,
-     inner:getComputedStyle(chip.querySelector('span')).borderTopWidth,
-     innerPadding:getComputedStyle(chip.querySelector('span')).paddingLeft
-   }));
-   const button=document.querySelector('.ar7-guest-link').getBoundingClientRect();
-   return {borders,buttonWidth:button.width,overflow:document.documentElement.scrollWidth-window.innerWidth};
- });
- expect(check.borders.every(x=>x.outer==='1px'&&x.inner==='0px'&&x.innerPadding==='0px')).toBe(true);
- expect(check.buttonWidth).toBeLessThanOrEqual(page.viewportSize().width);
- expect(check.overflow).toBeLessThanOrEqual(2);
+ await expect(page.locator('#aim-reference .a21-profile')).toBeVisible();
+ await expect(page.locator('#aim-reference .a21-benefits > span')).toHaveCount(3);
+ await expect(page.locator('#login-form')).toBeVisible();
+ await expect(page.locator('#signup-mode')).toBeVisible();
+ await expect(page.locator('#cloud-sync')).toBeHidden();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(2);
 });
 
 test('Account deletion UI exists but remains inaccessible to guests',async({page})=>{
@@ -164,15 +154,9 @@ test('All public pages render without overflow or script errors',async({page,isM
   expect(overflow,path+' causes horizontal scrolling').toBeLessThanOrEqual(2);
   if(isMobile)await expect(page.locator('details.site31-mobile-nav > summary'),path).toBeVisible();
   if(isMobile&&path==='index.html'){
-   const carousel=page.locator('.v15-focus-grid');
+   const carousel=page.locator('.a21-feature-grid');
    await expect(carousel).toBeVisible();
-   const scroll=await carousel.evaluate(el=>{
-    const available=el.scrollWidth-el.clientWidth;
-    el.scrollLeft=100;
-    return {available,offset:el.scrollLeft};
-   });
-   expect(scroll.available).toBeGreaterThan(20);
-   expect(scroll.offset).toBeGreaterThan(0);
+   await expect(carousel.locator('.a21-feature')).toHaveCount(3);
   }
  }
  expect(jsErrors).toEqual([]);
@@ -503,39 +487,40 @@ test('V13 tactical design loads across routes without hiding interactive element
  await expect(page.locator('#signup-mode')).toBeVisible();
 });
 
-test('V17 recreates the landing with real metrics and user-provided concept hero',async ({page})=>{
+test('V21 landing recreates source structure without fake metrics',async({page})=>{
  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.r17-home-wrap .r17-hero')).toBeVisible();
- await expect(page.locator('.r17-features .r17-feature')).toHaveCount(3);
- await expect(page.locator('.r17-path-grid .r17-path')).toHaveCount(3);
- await expect(page.locator('.r17-challenge .r17-button')).toHaveAttribute('href','#aim-challenge');
- await expect(page.locator('.r17-stats [data-v15-stat]')).toHaveCount(4);
- await expect.poll(()=>page.locator('.r17-stats [data-v15-stat="sessions"]').textContent(),{timeout:15000}).toBe('—');
- await expect(page.locator('.r17-stats [data-v15-stat="accuracy"]')).toHaveText('—');
- await expect(page.locator('.r17-nav-actions a')).toHaveCount(3);
- await expect(page.locator('.r17-hero-art')).toHaveCSS('background-image',/r17-hero\.webp/);
+ await expect(page.locator('#aim-reference .a21-hero')).toBeVisible();
+ await expect(page.locator('.a21-feature-grid .a21-feature')).toHaveCount(3);
+ await expect(page.locator('.a21-paths .a21-path')).toHaveCount(3);
+ await expect(page.locator('.a21-challenge .a21-cta')).toHaveAttribute('href','index.html#aim-challenge');
+ await expect(page.locator('[data-a21-home]')).toHaveCount(4);
+ await expect.poll(()=>page.locator('[data-a21-home="sessions"]').textContent(),{timeout:15000}).toBe('—');
+ await expect(page.locator('[data-a21-home="accuracy"]')).toHaveText('—');
+ await expect(page.locator('.a21-hero-art')).toHaveCSS('background-image',/r17-hero\.webp/);
 });
-test('V17 training five days and skill choices prepare the actual routine builder',async ({page})=>{
+
+test('V21 training days and levels invoke actual editable routine builder',async({page})=>{
  await page.goto('/training.html?level=iron',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.r17-training-grid')).toBeVisible();
- await expect(page.locator('.r17-level-options .r17-level')).toHaveCount(3);
- await expect(page.locator('.r17-days [data-r17-day]')).toHaveCount(5);
- await expect(page.locator('[data-r17-level="iron"]')).toHaveAttribute('aria-pressed','true');
- await page.locator('.r17-days [data-r17-day="1"]').click();
- await expect(page.locator('.r17-weekdays [data-r17-day="1"]')).toHaveAttribute('aria-pressed','true');
- await page.locator('.r17-plan-footer [data-r17-create]').click();
+ await expect(page.locator('.a21-training-grid')).toBeVisible();
+ await expect(page.locator('.a21-levels [data-a21-level]')).toHaveCount(3);
+ await expect(page.locator('.a21-days [data-a21-day]')).toHaveCount(5);
+ await expect(page.locator('[data-a21-level="iron"]')).toHaveAttribute('aria-pressed','true');
+ await page.locator('[data-a21-day="1"]').click();
+ await expect(page.locator('[data-a21-day="1"]')).toHaveAttribute('aria-pressed','true');
+ await page.locator('.a21-exercise [data-a21-run]').first().click();
  await expect(page.locator('#rank')).toHaveValue('iron');
  await expect(page.locator('#focus')).toHaveValue('tracking');
  await expect(page.locator('#panel-builder')).toBeVisible();
 });
-test('V17 honest progress and unchanged authentication forms',async ({page})=>{
+
+test('V21 analytics and account retain truthful data and native Auth forms',async({page})=>{
  await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.r17-progress-wrap .r17-hero')).toBeVisible();
- await expect(page.locator('.r17-chart-grid .v14-panel')).toHaveCount(3);
+ await expect(page.locator('.a21-progress-kpis')).toBeVisible();
+ await expect(page.locator('.a21-analytics-grid .a21-chart')).toHaveCount(3);
  await expect(page.locator('#v14-p-sessions')).toHaveText('0');
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.r17-account-cols')).toBeVisible();
- await expect(page.locator('[data-r17-cloud-label]')).toContainText(/Cloud non connecté|Cloud not signed in/);
+ await expect(page.locator('.a21-account-grid')).toBeVisible();
+ await expect(page.locator('[data-a21-cloudstatus]')).toContainText('Connexion nécessaire');
  await expect(page.locator('#login-form')).toBeVisible();
  await page.locator('#signup-mode').click();
  await expect(page.locator('#signup-form')).toBeVisible();
@@ -558,46 +543,41 @@ test('V16 official A logo renders in every flagship navigation and semantic colo
 });
 
 
-test('V19 training preview uses the actual generator and every tool is reachable',async ({page})=>{
+test('V21 routine preview uses native generator and modal tools stay reachable',async({page})=>{
  await page.goto('/training.html',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.r19-tool-grid button')).toHaveCount(8);
- await expect(page.locator('.r17-exercise strong').first()).toContainText('Stand de tir');
- await page.locator('.r19-tool-select').selectOption('Aim Lab');
- await expect(page.locator('.r17-exercise strong').first()).toContainText('Gridshot');
- await page.locator('[data-r19-panel="program"]').click();
- await expect(page.locator('.r19-workspace-dialog')).toBeVisible();
- await expect(page.locator('#program-form')).toBeVisible();
- await page.locator('.r19-close').click();
- await expect(page.locator('.r19-workspace-dialog')).not.toBeVisible();
- await page.locator('[data-r19-panel="insights"]').click();
- await expect(page.locator('#analysis-range')).toBeVisible();
+ await expect(page.locator('.a21-exercises .a21-exercise')).toHaveCount(3);
+ await expect(page.locator('.a21-exercise b').first()).toContainText('Stand de tir');
+ await page.locator('.a21-exercise [data-a21-run]').first().click();
+ await expect(page.locator('#panel-builder')).toBeVisible();
+ await expect(page.locator('#tool')).toBeVisible();
+ await page.locator('#tool').selectOption('Aim Lab');
+ await expect(page.locator('#tool')).toHaveValue('Aim Lab');
 });
-test('V19 cloud screen is guest-safe and progress buttons drive real range',async ({page})=>{
+
+test('V21 cloud guest safe and progress period controls drive real renderer',async({page})=>{
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.r19-cloud-actions')).toBeVisible();
- await expect(page.locator('.r19-cloud-login')).toBeVisible();
- await expect(page.locator('[data-r19-cloud="cloud-sync"]')).toBeHidden();
+ await expect(page.locator('.a21-cloud-grid')).toBeVisible();
+ await expect(page.locator('[data-a21-cloudstatus]')).toContainText('Connexion nécessaire');
+ await expect(page.locator('#cloud-sync')).toBeHidden();
  await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
- await page.locator('[data-r19-range="7"]').click();
+ await page.locator('[data-a21-period]').selectOption('7');
  await expect(page.locator('#v14-progress-range')).toHaveValue('7');
- await expect(page.locator('[data-r19-range="7"]')).toHaveAttribute('aria-pressed','true');
 });
 
-
-test('Guest can explore routines but cannot save results or create guest storage',async({page})=>{
- await expect(page.locator('#ar-account-required')).toBeVisible();
+test('Guest can explore new routine UI but cannot save or create local guest storage',async({page})=>{
+ await page.goto('/training.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.a21-summary .a21-card-head p')).toContainText('Mode aperçu');
  const state=await page.evaluate(()=>{
-  const old={id:'guest-would-save',date:new Date().toISOString(),rank:'silver',focus:'flick',tool:'VALORANT',scenario:'Test',
-   minutes:15,accuracy:90,feeling:'good',notes:''};
+  const old={id:'guest-would-save',date:new Date().toISOString(),rank:'silver',focus:'flick',tool:'VALORANT',scenario:'Test',minutes:15,accuracy:90,feeling:'good',notes:''};
   let rejected=false;
   try{window.AIMWeb.mergeData({sessions:[old],presets:[],weeklyGoal:3})}catch{rejected=true}
-  return {rejected,uid:window.__aimCloudUserId,local:localStorage.getItem('aimroutine_web_training_v2'),
-   count:window.AIMWeb.getStore().sessions.length};
+  return {rejected,uid:window.__aimCloudUserId,local:localStorage.getItem('aimroutine_web_training_v2'),count:window.AIMWeb.getStore().sessions.length};
  });
  expect(state).toEqual({rejected:true,uid:null,local:null,count:0});
  await page.reload({waitUntil:'domcontentloaded'});
- await expect(page.locator('#total-sessions')).toHaveText('0');
+ await expect(page.locator('[data-a21-train="sessions"]')).toHaveText('0');
 });
+
 test('Verified account saves and syncs new sessions automatically without cloud buttons',async({page})=>{
  await useVerifiedTestAccount(page);
  const add=await page.evaluate(()=>{
@@ -609,4 +589,23 @@ test('Verified account saves and syncs new sessions automatically without cloud 
  await expect.poll(()=>page.evaluate(()=>window.__testCloudWrites.some(v=>v.table==='aim_sessions'&&v.items.some(x=>x.session_id==='auto-case'))),{timeout:15000}).toBe(true);
  expect(await page.evaluate(()=>localStorage.getItem('aimroutine_web_training_v2'))).toBeNull();
  await expect(page.locator('#cloud-training-status')).toContainText('Cloud automatique');
+});
+
+test('V21 rebuilt four screenshots stay live and support controls',async({page})=>{
+ for(const url of ['/index.html','/training.html','/account.html','/progress.html']){
+  await page.goto(url,{waitUntil:'domcontentloaded'});
+  await expect(page.locator('#aim-reference .a21-hero')).toBeVisible();
+ }
+ await page.goto('/training.html',{waitUntil:'domcontentloaded'});
+ await page.locator('[data-a21-level="iron"]').click();
+ await expect(page.locator('[data-a21-rank]')).toHaveText('DÉBUTANT');
+ await page.locator('[data-a21-day="2"]').click();
+ await expect(page.locator('[data-a21-daylabel]')).toHaveText('Jour 3');
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#login-form')).toBeVisible();
+ await expect(page.locator('#signup-form')).toBeHidden();
+ await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('[data-a21-chartnative="line"] #v14-p-line')).toBeVisible();
+ await page.locator('[data-a21-period]').selectOption('7');
+ await expect(page.locator('#v14-progress-range')).toHaveValue('7');
 });
