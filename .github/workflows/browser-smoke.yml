@@ -12,6 +12,16 @@ on:
       - "tests/browser.spec.mjs"
       - "tests/playwright.config.mjs"
       - ".github/workflows/browser-smoke.yml"
+  pull_request:
+    paths:
+      - "index.html"
+      - "account.html"
+      - "progress.html"
+      - "training.html"
+      - "site-rebuilt-v17.css"
+      - "site-rebuilt-v17.js"
+      - "tests/browser.spec.mjs"
+      - ".github/workflows/browser-smoke.yml"
   workflow_dispatch:
 permissions:
   contents: read
