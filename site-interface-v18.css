@@ -1,0 +1,77 @@
+/* AimRoutine Tracker V18 — single UI, primary surfaces + every secondary route. */
+:root{--r18-bg:#080F18;--r18-ink:#F7F9FC;--r18-coral:#FF5B69;--r18-cyan:#37E3DD;--r18-border:#315064}
+body.site31.r18{background:var(--r18-bg)!important;color:var(--r18-ink)!important}
+body.site31.r18 .site31-header{min-height:58px!important;background:linear-gradient(105deg,#07121bf5,#0c1b27f5)!important;border-bottom:1px solid #344b5d!important;box-shadow:0 9px 26px #0006!important}
+body.site31.r18 .site31-header:before{content:"";position:absolute;inset:0 auto 0 0;width:min(480px,35vw);opacity:.19;background:repeating-linear-gradient(112deg,transparent 0 47px,#7d98a9 48px,transparent 49px,transparent 87px);pointer-events:none}
+body.site31.r18 .site31-nav{width:min(1650px,calc(100% - 40px))!important;max-width:1650px!important;min-height:57px!important;height:auto!important;padding:0 12px!important;display:flex!important;align-items:center!important;gap:clamp(8px,1vw,20px)!important}
+body.site31.r18 .site31-brand{font-weight:900!important;font-size:clamp(17px,1.3vw,22px)!important;letter-spacing:-.05em!important;gap:9px!important;line-height:1.12!important}
+body.site31.r18 .site31-brand img{width:36px!important;height:36px!important;filter:drop-shadow(0 0 10px #ff5b6960)}
+body.site31.r18 .site31-brand span{color:var(--r18-coral)!important;font-size:inherit!important;letter-spacing:inherit!important}
+body.site31.r18 .site31-links{display:flex!important;flex:none;gap:2px!important;align-items:center!important;margin-left:auto!important}
+body.site31.r18 .site31-links>a.r18-navlink{display:inline-flex;align-items:center;white-space:nowrap;text-decoration:none;min-height:39px;padding:10px clamp(7px,.7vw,13px)!important;color:#dfeef4!important;font-weight:750!important;font-size:clamp(10px,.75vw,13px)!important;letter-spacing:0!important;border:1px solid transparent!important;border-radius:5px 9px 3px 3px!important;background:transparent!important}
+body.site31.r18 .site31-links>a.r18-navlink:hover{color:#fff!important;background:#2b2330!important;border-color:#614555!important}
+body.site31.r18 .site31-links>a.r18-navlink[aria-current="page"]{color:#fff!important;background:linear-gradient(140deg,#442431,#211d2c)!important;box-shadow:inset 0 -2px var(--r18-coral),0 0 16px #ff5b692f!important}
+body.site31.r18 .v15-header-actions,body.site31.r18 .r17-nav-actions{display:none!important}
+body.site31.r18 .r18-actions{display:flex;gap:8px;align-items:center;flex:none;margin-left:auto}
+body.site31.r18 .r18-actions a{display:inline-flex;align-items:center;gap:7px;min-height:37px;padding:8px 12px;border:1px solid #527084;border-radius:4px 10px 4px 10px;background:#101e2a;color:#e9f4f9;text-decoration:none;font-size:11px;white-space:nowrap;font-weight:800}
+body.site31.r18 .r18-actions a:hover{border-color:var(--r18-coral);box-shadow:0 0 18px #ff5b692c}
+body.site31.r18 .r18-actions .r18-cloud{border-color:#365368;color:#dff8f4}
+body.site31.r18 .r18-actions .r18-register{background:linear-gradient(120deg,#ff7b87,#ff5b69);border-color:#ff8494;color:#07131d}
+body.site31.r18 .r18-actions a[hidden]{display:none!important}
+body.site31.r18 .r18-cloud-icon{color:var(--r18-cyan);font-size:16px}
+body.site31.r18 .r18-cloud-indicator{width:6px;height:6px;border-radius:50%;border:1px solid #7e9eaa;background:#576d7a}
+body.site31.r18 .r18-cloud.r18-connected .r18-cloud-indicator{background:var(--r18-cyan);border-color:var(--r18-cyan);box-shadow:0 0 9px #37e3dd88}
+body.site31.r18 .site31-controls{margin:0!important;gap:8px!important}
+body.site31.r18 .site31-lang{border-radius:6px!important;background:#102533!important;color:#eaf6fa!important;border-color:#45657b!important;padding:8px!important}
+body.site31.r18 .site31-mobile-links{background:#0d1d2a;border:1px solid #38566a;box-shadow:0 20px 60px #000b}
+body.site31.r18 .site31-mobile-links a{border-left:2px solid transparent!important;color:#ecf6fa!important}
+body.site31.r18 .site31-mobile-links a[aria-current="page"]{background:#342431!important;color:#ffb5c0!important;border-color:var(--r18-coral)!important}
+body.site31.r18 .r18-menu-rule{width:100%;border:0;border-top:1px solid #355063;margin:5px 0}
+body.site31.r18 .site31-footer{background:#08131f!important;border-top:1px solid #314a5e!important}
+body.site31.r18 .site31-footer a:hover{color:#ffb1ba!important}
+/* Design continuity on secondary informational pages. */
+body.site31.r18:not(.r17) main{color:var(--r18-ink)}
+body.site31.r18:not(.r17) main :is(.wrap,.shell,.container){max-width:1380px}
+body.site31.r18:not(.r17) main :is(.surface,.card,.panel,.feature-card,.detail-card,.ar-note-chapter,.release-card){border-color:#3a586a;box-shadow:0 9px 26px #0004,inset 0 1px #ffffff10;border-radius:6px 13px 6px 13px}
+body.site31.r18:not(.r17) main :is(h1,h2){letter-spacing:-.035em}
+body.site31.r18:not(.r17) main :is(.detail-hero,.flow-hero){background:radial-gradient(ellipse at 80% 45%,#28324180,transparent 55%),linear-gradient(125deg,#07131d,#101f2b);border-bottom:1px solid #45556a}
+body.site31.r18:not(.r17) main :is(.detail-hero,.flow-hero) h1{font-weight:900}
+body.site31.r18:not(.r17) main :is(.primary,.button-primary,.btn-primary){background:linear-gradient(115deg,#ff7687,var(--r18-coral));color:#07131b;border-color:var(--r18-coral)}
+/* Real routine engine displayed in the same UI — never an iframe or image mockup. */
+body.site31.r18 .r18-training-dialog{position:fixed;inset:0;max-height:min(92vh,970px);height:auto;max-width:min(1100px,calc(100vw - 28px));width:100%;padding:0;border:1px solid #5a7a90;border-radius:8px 20px 8px 20px;background:#0a1825;color:#effaff;box-shadow:0 35px 150px #000c,0 0 35px #ff5b6924;overflow-y:auto}
+body.site31.r18 .r18-training-dialog::backdrop{background:#020914d9;backdrop-filter:blur(8px)}
+body.site31.r18 .r18-dialog-frame{padding:clamp(15px,2vw,28px)}
+body.site31.r18 .r18-dialog-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;border-bottom:1px solid #375568;padding-bottom:19px;margin-bottom:20px}
+body.site31.r18 .r18-dialog-head small{color:#ff8594;font-size:10px;letter-spacing:.14em;font-weight:800}
+body.site31.r18 .r18-dialog-head h2{font-size:clamp(22px,2.4vw,32px);margin:8px 0 7px;color:#fff;font-weight:900}
+body.site31.r18 .r18-dialog-head p{color:#b9cbd8;max-width:68ch;font-size:13px;margin:0}
+body.site31.r18 .r18-dialog-close{flex:none;width:39px;height:39px;border-radius:6px;background:#152a38;border:1px solid #527083;color:#fff;cursor:pointer;font-size:17px}
+body.site31.r18 .r18-dialog-close:hover{border-color:#ff6879;background:#452633}
+body.site31.r18 .r18-dialog-content{min-height:170px}
+body.site31.r18 .r18-dialog-content #panel-builder{display:block!important;position:relative!important;opacity:1!important;visibility:visible!important;max-width:none!important;width:100%!important;margin:0!important;transform:none!important}
+body.site31.r18 .r18-dialog-content :is(.surface,.ar5-card){background:#102431;border-color:#416074}
+body.site31.r18 .r18-dialog-content :is(input,select,textarea){background:#091a26;color:#f1fafb;border-color:#557184}
+body.site31.r18 :is(a,button,input,select,textarea,summary):focus-visible{outline:2px solid var(--r18-cyan)!important;outline-offset:3px!important}
+@media(max-width:1330px){
+ body.site31.r18 .site31-nav{width:calc(100% - 20px)!important;padding-inline:8px!important}
+ body.site31.r18 .r18-actions{gap:4px}
+ body.site31.r18 .r18-actions a{padding:8px 9px;font-size:10px}
+}
+@media(max-width:1130px){
+ body.site31.r18 .site31-links{display:none!important}
+ body.site31.r18 .site31-mobile-nav{display:block!important}
+ body.site31.r18 .r18-actions{margin-left:auto}
+}
+@media(max-width:700px){
+ body.site31.r18 .site31-nav{width:calc(100% - 12px)!important;padding:4px!important;gap:6px!important}
+ body.site31.r18 .site31-brand{font-size:15px!important}
+ body.site31.r18 .site31-brand img{height:30px!important;width:30px!important}
+ body.site31.r18 .r18-actions{margin-left:auto}
+ body.site31.r18 .r18-actions .r18-signin,body.site31.r18 .r18-actions .r18-register{display:none}
+ body.site31.r18 .r18-actions .r18-cloud{min-height:34px;padding:6px;font-size:10px}
+ body.site31.r18 .site31-lang{min-width:34px!important}
+ body.site31.r18 .r18-dialog-frame{padding:12px}
+ body.site31.r18 .r18-dialog-head h2{font-size:22px}
+}
+@media(max-width:390px){body.site31.r18 .r18-cloud-icon,body.site31.r18 .r18-cloud-indicator{display:none}}
+@media(prefers-reduced-motion:reduce){body.site31.r18 *{scroll-behavior:auto!important}body.site31.r18 .r18-actions a{transition:none!important}}
