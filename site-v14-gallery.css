@@ -1,0 +1,596 @@
+/* AimRoutine V14 — full mockup-inspired tactical esports interface.
+   Independent original website UI; retained training/Auth and visible attribution.
+   Main art is existing explicitly attributed VALORANT media-kit imagery. */
+:root{--v14-ink:#08131e;--v14-panel:#101f2d;--v14-panel2:#172b3a;--v14-line:#476174;--v14-red:#ff6478;--v14-hot:#ff526b;--v14-cyan:#53ebdc;--v14-text:#f4f9fc;--v14-soft:#b7c9d6}
+body.site31{background:radial-gradient(circle at 30% 0%,#17304644,transparent 42%),linear-gradient(#09131f,#070e18)!important;color:var(--v14-text);font-family:Inter,"Segoe UI",Arial,sans-serif}
+body.site31 main{max-width:none!important}
+body.site31 main :is(h1,h2,h3){letter-spacing:-.045em}
+body.site31 main :is(.v14-kicker,.ar9-wayfinder-kicker){color:#ffb5c3!important;letter-spacing:.15em;font-size:11px;font-weight:900}
+body.site31 .site31-header{background:#07111bf7!important;box-shadow:0 12px 28px #0005!important;border-bottom:1px solid #385064!important}
+body.site31 .site31-nav{max-width:1670px!important}
+body.site31 .site31-brand{white-space:nowrap;font-size:clamp(15px,1.4vw,22px)!important}
+body.site31 .site31-brand span{color:#ff6880!important}
+body.site31 .site31-links{gap:clamp(4px,0.6vw,11px)!important}
+body.site31 .site31-links>a{font-weight:800!important;font-size:clamp(10px,.75vw,12px)!important;white-space:nowrap;border-color:transparent!important;padding:11px 10px!important;letter-spacing:-.015em!important;text-transform:none!important;background:transparent!important;color:#f5f8fb!important}
+body.site31 .site31-links>a:hover{color:#ffbac6!important;background:#19212f!important}
+body.site31 .site31-links>a[aria-current="page"]{background:linear-gradient(115deg,#2c202f,#1a1824)!important;border-bottom:2px solid #ff7187!important;border-radius:8px 8px 2px 2px!important;box-shadow:0 0 25px #ff728c18!important;color:#fff!important}
+body.site31 .site31-links>a[href="training.html"]:not([aria-current="page"]){background:transparent!important;border-color:transparent!important;color:#e4eef3!important;box-shadow:none!important}
+body.site31 .site31-controls .lang{background:#162838!important;color:#edffff!important;border:1px solid #506679!important;border-radius:3px 9px 3px 9px!important}
+body.site31 .v14-nav-secondary{display:none!important}
+body.site31 .v14-nav-link[data-v14-nav="challenge"]{color:#c7f1e9!important}
+body.site31 .v14-nav-link[data-v14-nav="progress"]{color:#dbeffc!important}
+body.site31 .site31-footer{margin-top:52px}
+body.site31 main :is(.v14-panel,.v14-card,.v14-kpi){
+ position:relative;isolation:isolate;min-width:0;
+ border:1px solid #4c6678;border-radius:5px 16px 5px 16px;
+ background:
+  linear-gradient(90deg,rgba(135,196,215,.024) 1px,transparent 1px),
+  linear-gradient(rgba(135,196,215,.026) 1px,transparent 1px),
+  linear-gradient(140deg,rgba(43,77,95,.43),rgba(9,26,39,.96) 74%);
+ background-size:42px 42px,42px 42px,100% 100%;
+ box-shadow:inset 0 1px #c8f5f611,0 14px 27px #0004;
+}
+body.site31 main :is(.v14-panel,.v14-card,.v14-kpi)::after{
+ content:"";position:absolute;right:0;bottom:0;width:15px;height:15px;
+ border-bottom:2px solid var(--v14-red);border-right:2px solid var(--v14-red);
+ pointer-events:none;opacity:.95;
+}
+body.site31 main .v14-glyph{
+ display:grid;place-items:center;flex:none;width:48px;height:48px;
+ border:1px solid #bc5c6b;border-radius:4px 10px 4px 10px;background:#55233153;
+ box-shadow:inset 0 1px #ffb7c31c;color:#ff778b;font-size:27px;font-weight:600;line-height:1;
+}
+body.site31 main .v14-panel-head{display:flex;align-items:center;gap:11px;padding-bottom:14px;border-bottom:1px solid #4b617050;min-width:0}
+body.site31 main .v14-panel-head h2{font-size:clamp(16px,1.15vw,21px);letter-spacing:-.045em;margin:0;color:#f8fafd!important;font-weight:900}
+body.site31 main .v14-panel-head small{color:#b6cbd8;font-size:11px;line-height:1.5;display:block;margin-top:3px}
+body.site31 main :is(.v14-hot-button,.v14-outline-button){
+ display:inline-flex;align-items:center;justify-content:center;gap:9px;
+ min-height:44px;padding:11px 18px;border:1px solid #ff9eae;
+ border-radius:4px 10px 4px 10px;font-weight:900;font-size:13px;
+ text-decoration:none;cursor:pointer;line-height:1.25;text-align:center;
+}
+body.site31 main .v14-hot-button{background:linear-gradient(115deg,#ff8896,#ff5c77);color:#101a25!important;box-shadow:0 7px 22px #ff527021}
+body.site31 main .v14-hot-button:hover{background:linear-gradient(115deg,#ffb1bd,#ff718a);box-shadow:0 10px 29px #ff557444}
+body.site31 main .v14-outline-button{background:#0d1925;color:#f5f9fb;border-color:#96adbb}
+body.site31 main .v14-outline-button:hover{background:#213144;color:#fff}
+body.site31 main .v14-meter{height:10px;border:1px solid #466175;background:#0a1826;border-radius:50px;overflow:hidden;width:100%}
+body.site31 main .v14-meter>span{display:block;height:100%;background:linear-gradient(90deg,#ff9bad,#ff5a74);border-radius:inherit;width:0}
+body.site31 .v14-cyan{color:var(--v14-cyan)!important}
+body.site31 .v14-hot-button:focus-visible,
+body.site31 .v14-outline-button:focus-visible{outline:3px solid #a5fff1!important;outline-offset:4px!important}
+
+/* SCREEN 01 — cinematic hero, features, progression paths and challenge */
+body.site31.site31-home .v5-main{max-width:none!important}
+body.site31.site31-home .v5-hero{
+ position:relative;overflow:hidden;isolation:isolate;margin:0!important;
+ padding:0!important;min-height:365px!important;
+ border-bottom:1px solid #713f50;
+ background:linear-gradient(110deg,#0b1724 0%,#102032 50%,#121c2d 100%)!important;
+}
+body.site31.site31-home .v5-hero::before{
+ content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+ background:linear-gradient(90deg,#09121f 0%,rgba(9,18,31,.98) 33%,rgba(9,18,31,.62) 52%,transparent 74%),
+ linear-gradient(145deg,transparent 57%,rgba(255,92,117,.15) 100%);
+}
+body.site31.site31-home .v5-hero-layout{
+ width:calc(100% - clamp(36px,6vw,120px))!important;max-width:1620px!important;
+ min-height:370px;display:flex!important;align-items:center!important;
+ position:relative;margin-inline:auto!important;isolation:isolate;gap:0!important;
+}
+body.site31.site31-home .v5-hero-copy{
+ width:57%!important;max-width:780px!important;position:relative;z-index:4!important;
+ padding:36px 0 33px 5px!important;animation:none!important;
+}
+body.site31.site31-home .v5-hero h1{
+ font-size:clamp(42px,4.25vw,73px)!important;font-weight:1000!important;line-height:.98!important;
+ letter-spacing:-.065em!important;margin:15px 0 18px!important;text-transform:none;
+ text-wrap:balance;
+}
+body.site31.site31-home .v5-gradient-text{color:#ff697e!important;-webkit-text-fill-color:#ff697e!important;background:none!important;font-style:italic;font-weight:1000}
+body.site31.site31-home .v5-eyebrow{
+ border:0!important;padding:0!important;background:none!important;
+ color:#bccbd9!important;font-size:10px!important;letter-spacing:.13em!important;
+}
+body.site31.site31-home .v5-eyebrow::before{display:none!important}
+body.site31.site31-home .v5-hero-lead{
+ max-width:57ch!important;font-size:clamp(13px,.97vw,16px)!important;
+ line-height:1.5!important;color:#f1f5f9!important;
+ padding-left:15px;border-left:3px solid #ff647b;
+}
+body.site31.site31-home .v5-cta-row{gap:12px!important;margin-top:20px!important;flex-wrap:wrap}
+body.site31.site31-home .v5-cta-row .v5-btn{
+ padding:12px clamp(15px,1.7vw,28px)!important;min-height:49px!important;
+ font-size:13px!important;min-width:0!important;
+ transform:skewX(-8deg);border-radius:4px 10px 4px 10px!important;
+}
+body.site31.site31-home .v5-cta-row .v5-btn>*{transform:skewX(8deg)}
+body.site31.site31-home .v5-cta-row .v5-btn.secondary{
+ border-color:#a5b5c4!important;color:#f2faff!important;background:#101b28d9!important;
+}
+body.site31.site31-home .v5-preview-wrap{
+ position:absolute!important;z-index:0!important;top:0;bottom:0;right:-4vw;width:min(69%,1050px)!important;
+ display:block!important;align-self:stretch!important;margin:0!important;
+ min-width:0!important;animation:none!important;
+}
+body.site31.site31-home .ar42-hero-poster{
+ position:absolute!important;inset:0!important;height:100%!important;width:100%!important;
+ min-height:0!important;max-height:none!important;margin:0!important;aspect-ratio:auto!important;
+ border:0!important;border-radius:0!important;box-shadow:none!important;
+ background:linear-gradient(110deg,#1c2335,#1b3346)!important;
+}
+body.site31.site31-home .ar42-hero-poster img{
+ width:100%;height:100%;object-fit:cover;object-position:55% 37%;opacity:.95;
+ filter:saturate(1.12) contrast(1.04);
+}
+body.site31.site31-home .ar42-hero-poster::before{
+ content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+ background:linear-gradient(120deg,transparent 33%,rgba(255,77,104,.38) 34%,rgba(255,77,104,.01) 39%,transparent 41%);
+}
+body.site31.site31-home .ar42-hero-poster::after{
+ background:linear-gradient(90deg,#0b192ce0,transparent 57%)!important;
+}
+body.site31.site31-home .ar42-hero-poster figcaption{
+ z-index:2!important;left:auto!important;right:17px!important;bottom:6px!important;max-width:320px!important;
+ padding:6px!important;align-items:end!important;opacity:.88;
+}
+body.site31.site31-home .ar42-hero-poster figcaption :is(strong,.ar42-label){display:none!important}
+body.site31.site31-home .ar42-hero-poster figcaption small{font-size:9px!important;text-align:right;color:#c5d5db!important}
+body.site31.site31-home .ar9-poster-stamp{display:none!important}
+body.site31.site31-home .v5-hero :is(.v5-hero-facts,.v16-hero-real-link,.experience-trust){display:none!important}
+body.site31.site31-home .ar12-hero-challenge-link{display:none!important}
+body.site31.site31-home .v14-signal-strip{
+ position:relative;z-index:2;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+ max-width:1520px!important;width:calc(100% - 60px)!important;
+ margin:-7px auto 17px!important;
+ border:1px solid #bf596b;border-radius:3px 12px 3px 12px;
+ background:linear-gradient(112deg,#261f2d,#121d29 62%,#162331)!important;
+ box-shadow:0 0 25px #ff45631d,0 12px 26px #0005;padding:12px 0!important;
+}
+body.site31.site31-home .v14-signal-strip>div{
+ min-height:48px;display:grid;grid-template-columns:44px 1fr;grid-template-rows:auto auto;
+ column-gap:8px;align-content:center;padding:0 clamp(12px,1.45vw,24px);
+ border-right:1px solid #66717c;
+}
+body.site31.site31-home .v14-signal-strip>div:last-child{border:0}
+body.site31.site31-home .v14-strip-icon{grid-row:span 2;align-self:center;justify-self:center;font-size:30px;line-height:1;color:#ff758b}
+body.site31.site31-home .v14-signal-strip strong{font-size:12px;font-weight:900;letter-spacing:.03em;color:#fff}
+body.site31.site31-home .v14-signal-strip small{font-size:10px;color:#bfcfd8}
+body.site31.site31-home .v14-home-features{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;
+ width:calc(100% - 60px)!important;max-width:1540px!important;margin:16px auto 22px!important;
+}
+body.site31.site31-home .v14-feature{
+ min-height:128px;padding:19px 18px!important;display:grid;grid-template-columns:56px minmax(0,1fr) 60px;
+ gap:12px;align-items:start;text-decoration:none!important;color:#f5fbfe!important;
+ transition:transform .23s ease,border-color .23s ease,box-shadow .23s ease;
+}
+body.site31.site31-home .v14-feature:hover{transform:translateY(-4px);border-color:#ff748b;box-shadow:0 15px 34px #0007}
+body.site31.site31-home .v14-feature-icon{
+ display:grid;place-items:center;width:54px;height:54px;border:1px solid #b76375;
+ border-radius:4px 11px 4px 11px;font-size:32px;color:#ff7689;background:#602a3a55;
+}
+body.site31.site31-home .v14-feature strong{display:block;font-size:clamp(16px,1.2vw,21px);letter-spacing:-.035em;line-height:1.2}
+body.site31.site31-home .v14-feature p{margin:7px 0 0;font-size:12px;line-height:1.5;color:#cbd9e1!important}
+body.site31.site31-home .v14-feature-art{align-self:center;justify-self:center;color:#59ecdc;font-size:37px;opacity:.8;text-shadow:0 0 15px #45e8d233}
+body.site31.site31-home .v14-reticle{width:62px;height:62px;border:1px solid #73c7cc;border-radius:50%;position:relative}
+body.site31.site31-home .v14-reticle::after{content:"";position:absolute;top:50%;left:50%;width:5px;height:5px;transform:translate(-50%,-50%);background:#ff8496;border-radius:50%;box-shadow:0 0 0 18px #ff859811}
+body.site31.site31-home .v14-stack{font-size:24px;line-height:.75;text-align:center}
+body.site31.site31-home .v14-bars{font-size:26px;letter-spacing:-.17em}
+body.site31.site31-home .v14-path-section{
+ width:calc(100% - 60px)!important;max-width:1540px!important;
+ display:grid!important;grid-template-columns:minmax(0,2.1fr) minmax(310px,.95fr)!important;
+ gap:21px;margin:15px auto 25px!important;padding:0!important;
+ border:0!important;background:transparent!important;box-shadow:none!important;
+}
+body.site31.site31-home .v14-path-section .ar9-wayfinder-head{margin-bottom:14px!important;padding:0!important;border:0!important;display:block!important}
+body.site31.site31-home .v14-path-section .ar9-wayfinder-head h2{
+ font-size:clamp(24px,2vw,32px)!important;line-height:1.12!important;margin:5px 0!important;
+}
+body.site31.site31-home .v14-path-section .ar9-wayfinder-head p{font-size:12px!important;color:#bfced8!important;margin:5px 0!important}
+body.site31.site31-home .v14-rank-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important;margin:0!important}
+body.site31.site31-home .v14-path{
+ display:flex!important;flex-direction:column!important;gap:6px!important;min-height:165px;
+ padding:15px 13px 20px!important;border:1px solid #587183!important;
+ border-radius:4px 12px 4px 12px!important;overflow:hidden;
+ background:linear-gradient(145deg,#204052,#102132 58%,#0b1c29)!important;
+}
+body.site31.site31-home .v14-rank-middle{background:linear-gradient(145deg,#392f4a,#18263a 68%,#0d1b28)!important;border-color:#a96b8e!important}
+body.site31.site31-home .v14-rank-pro{background:linear-gradient(145deg,#332e37,#182d3c)!important}
+body.site31.site31-home .v14-path .ar9-path-icon{
+ font-size:27px;min-width:0;width:39px;height:37px;padding:0!important;
+ border:0!important;background:none!important;color:#84eadd!important;
+}
+body.site31.site31-home .v14-rank-middle .ar9-path-icon{color:#ff92b7!important}
+body.site31.site31-home .v14-rank-pro .ar9-path-icon{color:#ffbe83!important}
+body.site31.site31-home .v14-path .ar9-path-number{font-size:9px!important;color:#92e7db!important;margin:0!important}
+body.site31.site31-home .v14-path strong{font-size:20px!important;line-height:1.15!important}
+body.site31.site31-home .v14-path .ar9-path-description{font-size:11px!important;color:#d6e3ea!important}
+body.site31.site31-home .v14-path-meta{display:block;margin-top:auto;border-top:1px solid #59718280;padding-top:8px;font-size:10px;color:#c5d7dd}
+body.site31.site31-home .v14-path .ar9-path-arrow{
+ display:grid!important;place-items:center;position:absolute;right:0;bottom:0;
+ width:37px;height:36px;background:#ff647b!important;color:#091520!important;font-size:22px;
+}
+body.site31.site31-home .v14-featured-challenge{padding:21px 22px;min-height:234px;border-color:#c85f76!important;background:linear-gradient(120deg,#35232e,#111d2c 60%,#162d3e)!important}
+body.site31.site31-home .v14-featured-challenge .v14-big-reticle{
+ position:absolute;right:19px;top:35px;font-size:107px;opacity:.24;color:#ff6a7e;
+}
+body.site31.site31-home .v14-featured-challenge h3{font-size:clamp(19px,1.45vw,25px);margin:20px 0 6px;position:relative;z-index:1}
+body.site31.site31-home .v14-featured-challenge p{max-width:34ch;color:#e2e8ed;font-size:12px;line-height:1.55;margin:0 0 16px;position:relative;z-index:1}
+body.site31 .v14-challenge-chips{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}
+body.site31 .v14-challenge-chips span{font-size:10px;color:#d7e5ec;background:#102432;border:1px solid #405a69;border-radius:5px;padding:8px 9px}
+body.site31.site31-home .v14-featured-challenge>.v14-hot-button{width:100%;position:relative;z-index:2}
+body.site31.site31-home .v14-path-section .ar9-wayfinder-head::after{display:none!important}
+/* Preserve existing original game and software sections below the redesigned fold. */
+body.site31.site31-home #workspace,
+body.site31.site31-home #aim-challenge{max-width:1540px!important;width:calc(100% - 60px)!important;margin-inline:auto!important}
+
+/* SCREEN 02 — actual routines workspace preview */
+body.site31.site31-training .ar5-workspace.shell{
+ max-width:1700px!important;width:calc(100% - 42px)!important;
+ margin-inline:auto!important;padding-inline:0!important;
+}
+body.site31.site31-training .ar5-hero{
+ min-height:265px!important;padding:26px clamp(26px,4.6vw,70px)!important;margin-top:10px!important;
+ border-radius:4px 17px 4px 17px!important;border:1px solid #a95872!important;
+ position:relative;overflow:hidden!important;
+ background:linear-gradient(100deg,#091825 0%,#101e2b 55%,#1b2d3d)!important;
+}
+body.site31.site31-training .ar5-hero::before{
+ content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+ background:linear-gradient(90deg,#091622 0%,rgba(9,22,34,.95) 43%,transparent 86%)!important;
+}
+body.site31.site31-training .ar5-hero-copy{position:relative;z-index:2!important;max-width:670px!important}
+body.site31.site31-training .ar5-hero h1{font-size:clamp(36px,3.7vw,61px)!important;line-height:1.02!important;margin:10px 0!important}
+body.site31.site31-training .ar5-hero h1 em{color:#ff7188!important;font-style:italic}
+body.site31.site31-training .ar5-hero-copy>p:not(.eyebrow){font-size:13px;max-width:64ch;color:#dce6ee}
+body.site31.site31-training .ar5-art{
+ position:absolute!important;right:0!important;top:0!important;bottom:0!important;
+ width:56%!important;height:100%!important;z-index:0!important;
+ border:0!important;border-radius:0!important;opacity:.83;
+}
+body.site31.site31-training .ar5-art img{width:100%;height:100%;object-fit:cover;object-position:57% 30%}
+body.site31.site31-training .ar5-art figcaption{position:absolute;bottom:3px;right:10px;font-size:9px;text-shadow:0 2px 5px #000}
+body.site31.site31-training .ar5-hero-actions button{min-height:42px!important;padding:10px 16px!important}
+body.site31.site31-training .ar5-proof{opacity:.8}
+body.site31.site31-training .v14-training-stage{
+ display:grid;grid-template-columns:minmax(218px,.76fr) minmax(510px,1.95fr) minmax(235px,.91fr);
+ align-items:start;gap:14px;margin:17px 0 22px;
+}
+body.site31.site31-training .v14-training-side,
+body.site31.site31-training .v14-training-center,
+body.site31.site31-training .v14-training-aside{min-width:0;display:grid;gap:13px}
+body.site31.site31-training .v14-panel{padding:17px 15px}
+body.site31.site31-training .v14-panel-head .v14-glyph{width:43px;height:43px;font-size:26px}
+body.site31.site31-training .v14-metric-line{
+ display:flex;justify-content:space-between;align-items:center;gap:8px;
+ border-bottom:1px solid #48617778;padding:15px 0;font-size:12px;color:#cddde7;
+}
+body.site31.site31-training .v14-metric-line span{display:flex;gap:7px;align-items:center}
+body.site31.site31-training .v14-metric-line strong{font-size:18px;color:#fff;font-variant-numeric:tabular-nums}
+body.site31.site31-training .v14-goal-line{border-bottom:0;padding-bottom:8px}
+body.site31.site31-training .v14-train-progress{background:linear-gradient(135deg,#241f30,#101e2c)!important}
+body.site31.site31-training .v14-train-progress h3{font-size:19px;margin:14px 0 8px}
+body.site31.site31-training .v14-train-progress p{font-size:12px;color:#c4d4df}
+body.site31.site31-training .v14-train-progress .v14-outline-button{width:100%;margin-top:8px}
+body.site31.site31-training .v14-level-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+body.site31.site31-training .v14-level-tabs button{
+ min-height:70px;display:flex;gap:10px;align-items:center;text-align:left;
+ padding:12px;border:1px solid #627b8c;border-radius:4px 12px 4px 12px;
+ background:linear-gradient(135deg,#162a39,#101e2b);color:#fff;cursor:pointer;
+}
+body.site31.site31-training .v14-level-tabs button[aria-pressed="true"]{
+ background:linear-gradient(135deg,#49303d,#251d2d)!important;
+ border:1px solid #ff8095!important;box-shadow:inset 0 -2px #ff7b90,0 0 19px #fb5f8235;
+}
+body.site31.site31-training .v14-level-tabs button .v14-symbol{font-size:31px;line-height:1;color:#67e0de}
+body.site31.site31-training .v14-level-tabs button[aria-pressed="true"] .v14-symbol{color:#ff8da2}
+body.site31.site31-training .v14-level-tabs button strong{font-size:13px;display:block}
+body.site31.site31-training .v14-level-tabs button small{font-size:10px;color:#b7ccd9;line-height:1.4}
+body.site31.site31-training .v14-workout-plan{min-height:395px}
+body.site31.site31-training .v14-workout-plan>.v14-panel-head{align-items:center}
+body.site31.site31-training .v14-plan-duration{margin-left:auto;border:1px solid #4d7387;padding:8px 12px;color:#def8fa;font-size:12px;border-radius:5px;white-space:nowrap}
+body.site31.site31-training .v14-day-pills{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:12px 0}
+body.site31.site31-training .v14-day-pills button{
+ min-height:38px;padding:8px 3px;border:1px solid #567587;border-radius:5px;
+ background:#162a38;color:#e4edf2;font-weight:800;font-size:11px;cursor:pointer;
+}
+body.site31.site31-training .v14-day-pills button[aria-pressed="true"]{
+ background:linear-gradient(115deg,#ff8797,#ff617d)!important;border-color:#ffb5c2!important;color:#0a1a25!important;
+}
+body.site31.site31-training .v14-plan-body{display:grid;grid-template-columns:minmax(195px,.85fr) minmax(0,1.7fr);gap:10px}
+body.site31.site31-training .v14-plan-art{
+ min-height:240px;position:relative;overflow:hidden;
+ display:flex;flex-direction:column;padding:16px 14px;border:1px solid #af647c;
+ border-radius:4px 13px 4px 13px;
+ background:radial-gradient(circle at 50% 67%,#8e39572b,transparent 55%),linear-gradient(145deg,#342639,#101c2d);
+}
+body.site31.site31-training .v14-plan-art h3{font-size:22px;line-height:1.05;margin:16px 0 8px}
+body.site31.site31-training .v14-plan-art p{font-size:11px;line-height:1.55;color:#d4dce6}
+body.site31.site31-training .v14-plan-reticle{position:absolute;font-size:88px;color:#ff6883;opacity:.25;right:4px;bottom:18px;line-height:1}
+body.site31.site31-training .v14-plan-foot{font-size:10px;margin-top:auto;color:#cde1e7}
+body.site31.site31-training .v14-exercise-list{display:grid;gap:7px}
+body.site31.site31-training .v14-exercise{
+ min-height:70px;display:grid;grid-template-columns:45px minmax(0,1fr) auto auto;gap:8px;align-items:center;
+ background:linear-gradient(135deg,#182d3c,#10202d);border:1px solid #4e6978;border-radius:5px;padding:8px;
+}
+body.site31.site31-training .v14-exercise .v14-glyph{width:40px;height:40px;font-size:21px}
+body.site31.site31-training .v14-exercise strong{display:block;font-size:13px;line-height:1.1}
+body.site31.site31-training .v14-exercise small{font-size:10px;color:#a8bbc9;line-height:1.3}
+body.site31.site31-training .v14-exercise-time{font-size:11px;color:#dce6ee;white-space:nowrap}
+body.site31.site31-training .v14-exercise button{
+ min-height:35px;padding:8px 11px;border:0;border-radius:4px 8px 4px 8px;
+ background:#ff7589;color:#101724;font-size:11px;font-weight:900;cursor:pointer;
+}
+body.site31.site31-training .v14-exercise button:hover{background:#ffb3bc}
+body.site31.site31-training .v14-plan-footer{display:flex;gap:10px;justify-content:space-between;align-items:center;padding-top:13px}
+body.site31.site31-training .v14-plan-footer>span{font-size:10px;color:#afc7d2;max-width:37ch}
+body.site31.site31-training .v14-plan-footer .v14-hot-button{font-size:11px;padding:9px 14px;white-space:nowrap}
+body.site31.site31-training .v14-preview-chart{height:155px;margin:15px 0;display:grid;align-items:center}
+body.site31.site31-training .v14-preview-chart svg{width:100%;height:100%;overflow:visible}
+body.site31.site31-training .v14-chart-empty{font-size:12px;text-align:center;color:#9cb5c6}
+body.site31.site31-training .v14-chart-foot{display:flex;align-items:center;justify-content:space-between;gap:6px;padding-top:11px;border-top:1px solid #486375}
+body.site31.site31-training .v14-chart-foot strong{font-size:23px;color:#ff97ab}
+body.site31.site31-training .v14-chart-foot a{font-size:11px;color:#7de9dc}
+body.site31.site31-training .v14-daily-challenge{background:linear-gradient(135deg,#342533,#0c1b29)!important;border-color:#aa5d77!important}
+body.site31.site31-training .v14-daily-challenge h2{font-size:21px;margin:15px 0 4px}
+body.site31.site31-training .v14-daily-challenge p{font-size:12px;color:#cad9e0}
+body.site31.site31-training .v14-challenge-reticle{position:absolute;right:10px;top:18px;font-size:95px;opacity:.19;color:#ff6579}
+body.site31.site31-training .v14-daily-challenge>.v14-hot-button{width:100%;margin-top:9px;font-size:12px}
+body.site31.site31-training .ar5-tab-wrap{margin-top:16px!important;scroll-margin-top:110px}
+body.site31.site31-training #panel-insights{scroll-margin-top:105px}
+body.site31.site31-training #panel-builder{scroll-margin-top:105px}
+
+/* SCREEN 03 — cloud portal; only genuine account state */
+body.site31.site31-account .ar7-account-main{width:calc(100% - 50px)!important;max-width:1660px!important;margin-inline:auto!important}
+body.site31.site31-account .ar7-account-hero{
+ position:relative;overflow:hidden;min-height:230px;display:flex;align-items:center;
+ padding:30px clamp(28px,4vw,64px)!important;border:1px solid #aa6076!important;
+ background:linear-gradient(103deg,#0c1b29,#162b3b 75%)!important;
+}
+body.site31.site31-account .ar7-account-hero::before{
+ content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+ background-image:linear-gradient(90deg,#091625 0%,#101c2be8 45%,transparent 78%),
+ url("https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/8f0df8efd5b986039cd37a4d5f3bf31b815d0c54-3840x2160.jpg?w=1200&q=72&auto=format");
+ background-size:cover,55% auto;background-position:center,right 43%;background-repeat:no-repeat;opacity:.9;
+}
+body.site31.site31-account .ar7-account-hero>div{z-index:1;position:relative;max-width:800px}
+body.site31.site31-account .ar7-account-hero h1{font-size:clamp(38px,4.2vw,66px)!important;line-height:1!important}
+body.site31.site31-account .ar7-account-hero em{color:#ff7186!important}
+body.site31.site31-account .ar7-account-hero>div>p{font-size:13px;max-width:62ch;color:#e1e9ef!important}
+body.site31.site31-account .ar7-account-hero figure{z-index:1;position:relative;margin-left:auto;min-width:110px;opacity:.9;background:#0d21307b!important}
+body.site31.site31-account .ar7-account-hero figure img{max-width:100px}
+body.site31.site31-account .ar7-account-highlights{display:flex!important;gap:8px;flex-wrap:wrap}
+body.site31.site31-account .ar7-account-chip{border-color:#714354!important;background:#261e2e99!important;color:#ffd0dc!important}
+body.site31.site31-account .v14-account-stage{margin:13px 0 17px;display:grid;gap:12px}
+body.site31.site31-account .v14-account-profile{
+ display:grid;grid-template-columns:72px minmax(0,1.15fr) minmax(110px,.7fr) minmax(110px,.7fr) minmax(215px,1.1fr);
+ align-items:center;gap:17px;padding:17px 25px;border-color:#ff748e!important;
+ background:linear-gradient(110deg,#352531,#142131 55%,#102636)!important;
+}
+body.site31.site31-account .v14-account-profile[hidden],
+body.site31.site31-account .v14-account-welcome[hidden]{display:none!important}
+body.site31.site31-account .v14-profile-avatar{
+ width:68px;height:68px;display:grid;place-items:center;
+ color:#ffc4cf;background:#462033;border:1px solid #ff7991;border-radius:8px 17px 8px 17px;font-size:24px;font-weight:950;
+}
+body.site31.site31-account .v14-account-profile h2{font-size:clamp(20px,1.6vw,29px);margin:2px 0!important}
+body.site31.site31-account .v14-account-profile small{color:#bdd0d9;font-size:11px;overflow-wrap:anywhere}
+body.site31.site31-account .v14-profile-stat{display:grid;gap:5px;min-width:0}
+body.site31.site31-account .v14-profile-stat>span{font-size:9px;color:#bfd0de;font-weight:850;letter-spacing:.08em}
+body.site31.site31-account .v14-profile-stat strong{font-size:25px;color:#ff9eae}
+body.site31.site31-account .v14-profile-sync{display:flex;align-items:center;gap:12px}
+body.site31.site31-account .v14-profile-sync>.v14-cyan{font-size:34px}
+body.site31.site31-account .v14-profile-sync strong{font-size:13px}
+body.site31.site31-account .v14-profile-sync small{display:block}
+body.site31.site31-account .v14-profile-sync button{
+ padding:9px 11px;background:#132635;border:1px solid #829da7;border-radius:5px;color:#e4f3f6;font-size:11px;font-weight:850;cursor:pointer;
+}
+body.site31.site31-account .v14-account-welcome{
+ display:flex;align-items:center;gap:20px;min-height:91px;padding:18px 26px;
+ border-color:#ae6076!important;background:linear-gradient(100deg,#342431,#132837)!important;
+}
+body.site31.site31-account .v14-account-welcome .v14-glyph{font-size:34px}
+body.site31.site31-account .v14-account-welcome h2{font-size:22px;margin:4px 0}
+body.site31.site31-account .v14-account-welcome p{font-size:12px;color:#c7d9e3;margin:0}
+body.site31.site31-account .v14-account-welcome>.v14-hot-button{margin-left:auto;flex:none}
+body.site31.site31-account .v14-cloud-benefits{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+body.site31.site31-account .v14-cloud-benefits>div{
+ display:grid;grid-template-columns:47px 1fr;grid-template-rows:1fr 1fr;align-items:center;column-gap:12px;
+ padding:15px 20px;min-height:84px;
+}
+body.site31.site31-account .v14-cloud-benefits .v14-glyph{width:42px;height:42px;grid-row:span 2;font-size:24px}
+body.site31.site31-account .v14-cloud-benefits strong{font-size:14px}
+body.site31.site31-account .v14-cloud-benefits small{font-size:11px;color:#bdd2dc}
+body.site31.site31-account .ar7-legal-line{font-size:11px!important;line-height:1.5!important;margin:12px 0!important;padding:9px 14px!important}
+body.site31.site31-account .v14-account-layout{
+ display:grid!important;grid-template-columns:minmax(300px,.83fr) minmax(0,1.5fr);gap:20px!important;align-items:start;
+}
+body.site31.site31-account #auth-panel{grid-column:1!important;grid-row:1!important}
+body.site31.site31-account #username-panel:not([hidden]){grid-column:1/-1!important}
+body.site31.site31-account #dashboard-panel:not([hidden]){grid-column:1/-1!important}
+body.site31.site31-account .v14-account-help{grid-column:2;grid-row:1}
+body.site31.site31-account #auth-panel,#dashboard-panel{
+ border:1px solid #9f627a!important;border-radius:5px 16px 5px 16px!important;
+ background:linear-gradient(130deg,#193143,#111e2d)!important;
+}
+body.site31.site31-account .ar7-account-panel h2{font-weight:900!important}
+body.site31.site31-account #auth-panel .ar7-primary{background:#ff697f!important;border-color:#ffafbd!important;color:#101c28!important}
+body.site31.site31-account #auth-panel .ar7-primary:hover{background:#ffa6b6!important}
+body.site31.site31-account #auth-panel .ar7-auth-form label{font-size:12px}
+body.site31.site31-account .v14-account-help{
+ border:1px solid #537586!important;border-radius:5px 16px 5px 16px!important;
+ background:linear-gradient(135deg,#153345,#0c1d2d)!important;
+}
+body.site31.site31-account .v14-account-help p{font-size:12px;line-height:1.6;color:#d2e0e7}
+body.site31.site31-account .ar7-account-main .ar7-google-btn{min-height:44px}
+body.site31.site31-account .ar7-account-panel[hidden]{display:none!important}
+/* account signup/privacy remains fully functional and visible in one panel; never copy false cloud devices or XP. */
+
+/* SCREEN 04 — actual per-device data analytics */
+body.site31.site31-progress .v14-progress-main{width:calc(100% - 42px);max-width:1670px;margin:10px auto 38px}
+body.site31.site31-progress .v14-progress-hero{min-height:265px;display:flex;align-items:center}
+body.site31 .v14-scene{
+ position:relative;isolation:isolate;overflow:hidden;
+ border:1px solid #a76377;border-radius:4px 18px 4px 18px!important;
+ background:linear-gradient(115deg,#15283b,#0b1725);
+}
+body.site31 .v14-scene::before{content:"";position:absolute;z-index:1;inset:0;pointer-events:none;background:linear-gradient(90deg,#081826 0%,#0a1b2bd9 43%,transparent 81%)}
+body.site31 .v14-scene-copy{position:relative;z-index:2;max-width:750px;padding:32px clamp(23px,4vw,65px)}
+body.site31 .v14-scene h1{font-weight:950;font-size:clamp(40px,4.2vw,67px);margin:11px 0 13px;line-height:1.05}
+body.site31 .v14-scene h1 em{color:#ff7088;font-style:italic}
+body.site31 .v14-scene p{font-size:13px;max-width:61ch;color:#e0e9f0;line-height:1.55}
+body.site31 .v14-scene-art{
+ position:absolute;inset:0 0 0 40%;z-index:0;background:
+ linear-gradient(120deg,transparent 30%,#ff5e7726 38%,transparent 42%),
+ url("https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/8f0df8efd5b986039cd37a4d5f3bf31b815d0c54-3840x2160.jpg?w=1200&q=72&auto=format") center 34%/cover;
+}
+body.site31 .v14-hero-actions{display:flex;gap:11px;flex-wrap:wrap;margin-top:18px}
+body.site31.site31-progress .v14-progress-notice{
+ margin:13px 0;padding:11px 15px;font-size:12px;color:#bbd8e2;border-left:3px solid #8feadd;background:#132737;
+}
+body.site31.site31-progress .v14-progress-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin-bottom:16px}
+body.site31.site31-progress .v14-kpi{min-height:95px;display:flex;align-items:center;gap:13px;padding:15px;background:linear-gradient(130deg,#302435,#122638)!important;border-color:#a76175}
+body.site31.site31-progress .v14-kpi .v14-glyph{width:49px;height:49px;font-size:28px}
+body.site31.site31-progress .v14-kpi strong{display:block;font-size:clamp(24px,2vw,36px);line-height:1.05;font-variant-numeric:tabular-nums;font-weight:950;color:#fff}
+body.site31.site31-progress .v14-kpi small{display:block;font-size:10px;color:#b5c9d6;font-weight:850;letter-spacing:.07em;margin-top:5px}
+body.site31.site31-progress .v14-progress-toolbar{display:flex;justify-content:space-between;align-items:center;margin:10px 0}
+body.site31.site31-progress .v14-progress-toolbar label{display:flex;gap:10px;align-items:center;font-size:11px;color:#d5e5ea}
+body.site31.site31-progress .v14-progress-toolbar select{background:#172f40;color:#e6f9f8;border:1px solid #637f8f;border-radius:6px;padding:9px 12px}
+body.site31.site31-progress .v14-progress-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.1fr) minmax(240px,.8fr);gap:15px}
+body.site31.site31-progress .v14-progress-grid>.v14-panel{padding:18px}
+body.site31.site31-progress .v14-progress-svgbox{height:240px;margin-top:12px;display:grid;align-items:center}
+body.site31.site31-progress .v14-progress-svgbox svg{width:100%;height:100%;display:block;overflow:visible}
+body.site31.site31-progress .v14-chart-caption{text-align:center;color:#acc7d0;font-size:11px}
+body.site31.site31-progress .v14-chart-empty{font-size:12px;color:#b0cbd6;text-align:center;padding:40px 10px}
+body.site31.site31-progress .v14-distribution{display:grid;gap:18px;margin-top:24px}
+body.site31.site31-progress .v14-distribution-head{display:flex;justify-content:space-between;gap:9px;margin-bottom:8px;font-size:12px;color:#e6f3f7}
+body.site31.site31-progress .v14-distribution-head strong{color:#82eade}
+body.site31.site31-progress .v14-distribution .v14-meter>span{background:linear-gradient(90deg,#247a8a,#59ecd9)}
+body.site31.site31-progress .v14-progress-secondary{display:grid;grid-template-columns:1.1fr .8fr 1.05fr;gap:15px;margin-top:15px}
+body.site31.site31-progress .v14-progress-secondary>.v14-panel{padding:18px}
+body.site31.site31-progress .v14-personal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:17px}
+body.site31.site31-progress .v14-personal-grid>div{padding:12px 10px;background:#172b3e;border:1px solid #567180;border-radius:5px 11px 5px 11px}
+body.site31.site31-progress .v14-personal-grid span{display:block;min-height:27px;font-size:9px;color:#b5c8d3;font-weight:850}
+body.site31.site31-progress .v14-personal-grid strong{display:block;font-size:22px;margin-top:8px;color:#ff96a9}
+body.site31.site31-progress .v14-goal-number{display:flex;align-items:baseline;gap:8px;margin:26px 0 17px}
+body.site31.site31-progress .v14-goal-number strong{font-size:35px;color:#8aefdf;font-variant-numeric:tabular-nums}
+body.site31.site31-progress .v14-goal-number span{font-size:11px;color:#c0d3dc}
+body.site31.site31-progress .v14-goal-card .v14-outline-button{margin-top:22px;width:100%;font-size:11px}
+body.site31.site31-progress .v14-nextstep{background:linear-gradient(130deg,#342638,#132b3e)!important;border-color:#b86b7c!important}
+body.site31.site31-progress .v14-nextstep h3{font-size:20px;margin:18px 0 5px}
+body.site31.site31-progress .v14-nextstep p{font-size:12px;color:#ccdce5}
+body.site31.site31-progress .v14-nextstep .v14-hot-button{width:100%;margin-top:16px;font-size:12px}
+body.site31.site31-progress .v14-data-footnote{max-width:115ch;margin:22px auto;color:#a9c5d0;font-size:11px;line-height:1.7;text-align:center}
+
+/* Global non-disruptive cinematic detail. */
+@media(hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference){
+ body.site31 .v14-card:hover,body.site31 .v14-panel:hover{border-color:#d98096!important}
+ body.site31 main :is(.v14-hot-button,.v14-outline-button){transition:transform .2s ease,background .2s ease,box-shadow .2s ease}
+ body.site31 main :is(.v14-hot-button,.v14-outline-button):hover{transform:translateY(-2px)}
+ body.site31.site31-home .v14-path:hover{transform:translateY(-4px)}
+}
+@media(min-width:1300px){
+ body.site31.site31-home .v5-hero-layout{min-height:380px}
+ body.site31.site31-home .v5-hero{min-height:380px!important}
+}
+@media(max-width:1250px){
+ body.site31 .site31-links{gap:2px!important}
+ body.site31 .site31-links>a{padding:10px 7px!important}
+ body.site31.site31-training .v14-training-stage{grid-template-columns: minmax(220px,.75fr) minmax(410px,1.7fr);gap:12px}
+ body.site31.site31-training .v14-training-aside{grid-column:1/-1;grid-template-columns:1fr 1fr}
+ body.site31.site31-home .v14-path-section{grid-template-columns:1fr!important}
+ body.site31.site31-home .v14-featured-challenge{min-height:200px}
+ body.site31.site31-account .v14-account-profile{grid-template-columns:70px 1.3fr repeat(2,.5fr);gap:13px}
+ body.site31.site31-account .v14-profile-sync{grid-column:1/-1;padding-top:10px;border-top:1px solid #506375}
+}
+@media(max-width:900px){
+ body.site31.site31-home .v5-hero-copy{width:70%!important}
+ body.site31.site31-home .v5-preview-wrap{width:75%!important;opacity:.65}
+ body.site31.site31-home .v14-signal-strip{grid-template-columns:repeat(2,minmax(0,1fr))}
+ body.site31.site31-home .v14-signal-strip>div:nth-child(2){border-right:0}
+ body.site31.site31-home .v14-signal-strip>div:nth-child(-n+2){border-bottom:1px solid #657487;padding-bottom:12px;margin-bottom:12px}
+ body.site31.site31-home .v14-home-features{grid-template-columns:1fr}
+ body.site31.site31-home .v14-feature{min-height:95px}
+ body.site31.site31-training .v14-training-stage{grid-template-columns:1fr}
+ body.site31.site31-training .v14-training-side{grid-template-columns:1fr 1fr}
+ body.site31.site31-training .v14-training-aside{grid-column:auto}
+ body.site31.site31-account .v14-cloud-benefits{grid-template-columns:1fr}
+ body.site31.site31-account .v14-account-layout{grid-template-columns:1fr!important}
+ body.site31.site31-account #auth-panel{grid-column:1!important}
+ body.site31.site31-account .v14-account-help{grid-column:1;grid-row:auto}
+ body.site31.site31-progress .v14-progress-grid{grid-template-columns:1fr 1fr}
+ body.site31.site31-progress .v14-distribution-panel{grid-column:1/-1}
+ body.site31.site31-progress .v14-progress-secondary{grid-template-columns:1fr 1fr}
+ body.site31.site31-progress .v14-nextstep{grid-column:1/-1}
+}
+@media(max-width:680px){
+ body.site31.site31-home .v5-hero{min-height:415px!important}
+ body.site31.site31-home .v5-hero-layout{min-height:415px;width:calc(100% - 28px)!important}
+ body.site31.site31-home .v5-hero-copy{width:100%!important;padding:34px 6px 26px!important}
+ body.site31.site31-home .v5-hero h1{font-size:clamp(35px,9vw,56px)!important;max-width:14ch}
+ body.site31.site31-home .v5-hero-lead{max-width:42ch!important}
+ body.site31.site31-home .v5-preview-wrap{right:-65px;width:100%!important;opacity:.36}
+ body.site31.site31-home .v5-hero::before{background:linear-gradient(90deg,#09131fe8 0%,#09131f99 85%)}
+ body.site31.site31-home .v14-signal-strip,
+ body.site31.site31-home .v14-home-features,
+ body.site31.site31-home .v14-path-section,
+ body.site31.site31-home #workspace,
+ body.site31.site31-home #aim-challenge{width:calc(100% - 28px)!important}
+ body.site31.site31-home .v14-signal-strip strong{font-size:10px}
+ body.site31.site31-home .v14-signal-strip small{font-size:9px}
+ body.site31.site31-home .v14-signal-strip>div{grid-template-columns:30px 1fr;padding:7px 8px}
+ body.site31.site31-home .v14-strip-icon{font-size:23px}
+ body.site31.site31-home .v14-rank-grid{grid-template-columns:1fr!important}
+ body.site31.site31-home .v14-path{min-height:130px}
+ body.site31.site31-home .v14-feature{grid-template-columns:46px minmax(0,1fr) 34px;padding:15px 12px!important}
+ body.site31.site31-home .v14-feature-icon{width:44px;height:44px;font-size:24px}
+ body.site31.site31-home .v14-feature-art{font-size:23px}
+ body.site31.site31-training .ar5-workspace.shell{width:calc(100% - 24px)!important}
+ body.site31.site31-training .ar5-hero{padding:26px 18px!important}
+ body.site31.site31-training .ar5-hero h1{font-size:38px!important}
+ body.site31.site31-training .ar5-art{width:100%!important;opacity:.2}
+ body.site31.site31-training .v14-training-side,.site31.site31-training .v14-training-aside{grid-template-columns:1fr}
+ body.site31.site31-training .v14-training-stage{margin-top:12px}
+ body.site31.site31-training .v14-level-tabs{grid-template-columns:1fr 1fr}
+ body.site31.site31-training .v14-level-tabs button:last-child{grid-column:1/-1}
+ body.site31.site31-training .v14-plan-body{grid-template-columns:1fr}
+ body.site31.site31-training .v14-plan-art{min-height:155px}
+ body.site31.site31-training .v14-exercise{grid-template-columns:38px 1fr auto}
+ body.site31.site31-training .v14-exercise button{grid-column:2/-1}
+ body.site31.site31-training .v14-plan-footer{flex-direction:column;align-items:stretch}
+ body.site31.site31-account .ar7-account-main{width:calc(100% - 22px)!important}
+ body.site31.site31-account .ar7-account-hero{padding:25px 17px!important}
+ body.site31.site31-account .ar7-account-hero h1{font-size:38px!important}
+ body.site31.site31-account .ar7-account-hero::before{opacity:.42;background-size:cover,auto 100%}
+ body.site31.site31-account .ar7-account-hero figure{display:none!important}
+ body.site31.site31-account .v14-account-welcome{flex-wrap:wrap;gap:12px}
+ body.site31.site31-account .v14-account-welcome>.v14-hot-button{width:100%}
+ body.site31.site31-account .v14-account-profile{grid-template-columns:58px 1fr}
+ body.site31.site31-account .v14-profile-avatar{width:55px;height:55px}
+ body.site31.site31-account .v14-profile-stat{padding:12px;background:#101e2e;border:1px solid #506e7c}
+ body.site31.site31-account .v14-profile-sync{grid-column:1/-1;flex-wrap:wrap}
+ body.site31.site31-progress .v14-progress-main{width:calc(100% - 22px)}
+ body.site31.site31-progress .v14-progress-hero{min-height:290px}
+ body.site31.site31-progress .v14-scene-copy{padding:28px 17px}
+ body.site31.site31-progress .v14-scene h1{font-size:39px}
+ body.site31.site31-progress .v14-scene-art{inset:0;opacity:.22}
+ body.site31.site31-progress .v14-progress-kpis{grid-template-columns:repeat(2,1fr)}
+ body.site31.site31-progress .v14-progress-grid,.site31.site31-progress .v14-progress-secondary{grid-template-columns:1fr}
+ body.site31.site31-progress .v14-distribution-panel,.site31.site31-progress .v14-nextstep{grid-column:auto}
+ body.site31.site31-progress .v14-personal-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:380px){
+ body.site31.site31-training .v14-day-pills{grid-template-columns:repeat(2,minmax(0,1fr))}
+ body.site31.site31-home .v5-cta-row{display:grid!important;grid-template-columns:1fr}
+ body.site31.site31-home .v14-signal-strip small{font-size:8px}
+ body.site31.site31-account .v14-account-profile{gap:9px;padding:13px}
+}
+@media(prefers-reduced-motion:reduce){
+ body.site31 main :is(.v14-card,.v14-panel,.v14-hot-button,.v14-outline-button){transition:none!important;transform:none!important}
+ body.site31.site31-home .v14-feature:hover,body.site31.site31-home .v14-path:hover{transform:none!important}
+}
+
+/* Keep legacy V9 recognized container, nest the actual V14 3-level grid. */
+body.site31.site31-home .v14-path-section .ar9-path-grid{display:block!important;grid-template-columns:none!important;gap:0!important}
+body.site31.site31-home .v14-path-section .v14-rank-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important}
+@media(max-width:680px){body.site31.site31-home .v14-path-section .v14-rank-grid{grid-template-columns:1fr!important}}

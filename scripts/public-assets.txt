@@ -96,3 +96,7 @@ training.html
 training.js
 updates.html
 v5.css
+progress.html
+progress-v14.mjs
+site-v14-gallery.css
+site-v14-gallery.js

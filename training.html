@@ -21,6 +21,7 @@
 <link rel="stylesheet" href="site-arcade-v11.css?v=1">
 <link rel="stylesheet" href="site-arcade-v12.css?v=1">
 <link rel="stylesheet" href="site-future-v13.css?v=1">
+<link rel="stylesheet" href="site-v14-gallery.css?v=1">
 </head>
 <body class="site31 site31-training"><a class="skip" href="#app">Aller au contenu</a>
 <header class="site31-header"><nav class="site31-nav" aria-label="Navigation principale"><a class="site31-brand" href="index.html" aria-label="AimRoutine Tracker, accueil"><img src="aimroutine-logo.png?v=2" width="32" height="32" alt="">AimRoutine <span>TRACKER</span></a><div class="site31-links"><a href="index.html">Accueil</a>
@@ -42,13 +43,62 @@
 <main id="app" class="shell ar5-workspace">
 <section class="intro ar5-hero" aria-labelledby="workspace-title">
  <div class="ar5-hero-copy">
-  <p class="eyebrow">AIMROUTINE / PLAYER WORKSPACE <span>· VERSION WEB 6.0</span></p>
-  <h1 id="workspace-title">Ton AIM.<br><em>Ta progression.</em></h1>
+  <p class="eyebrow">AIMROUTINE // TRAIN // ROUTINES <span>· WEB 6.0</span></p>
+  <h1 id="workspace-title"><span class="fr">Tes routines<br><em>d’entraînement.</em></span><span class="en">Your training<br><em>routines.</em></span></h1>
   <p>Une routine claire, des données à toi, des objectifs réalistes. Entraîne-toi avec méthode et visualise ton évolution.</p>
   <div class="ar5-hero-actions"><button class="primary" type="button" data-go="builder">Créer une routine <span aria-hidden="true">↗</span></button><button type="button" class="outline" data-go="insights">Voir mes statistiques</button></div>
   <div class="ar5-proof"><span>100 % local</span><span>4 outils compatibles</span><span>Sans connexion Riot</span></div>
  </div>
  <figure class="ar5-art"><img src="https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/8f0df8efd5b986039cd37a4d5f3bf31b815d0c54-3840x2160.jpg?w=1200&amp;q=72&amp;auto=format" srcset="https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/8f0df8efd5b986039cd37a4d5f3bf31b815d0c54-3840x2160.jpg?w=640&amp;q=72&amp;auto=format 640w, https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/8f0df8efd5b986039cd37a4d5f3bf31b815d0c54-3840x2160.jpg?w=960&amp;q=72&amp;auto=format 960w, https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/8f0df8efd5b986039cd37a4d5f3bf31b815d0c54-3840x2160.jpg?w=1440&amp;q=72&amp;auto=format 1440w, https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/8f0df8efd5b986039cd37a4d5f3bf31b815d0c54-3840x2160.jpg?w=1920&amp;q=72&amp;auto=format 1920w" sizes="(max-width:680px) 94vw, (max-width:1000px) 90vw, 48vw" width="3840" height="2160" alt="Jett — illustration officielle VALORANT, utilisée dans ce projet indépendant" loading="eager" decoding="async" fetchpriority="high"><figcaption>© Riot Games · Projet indépendant</figcaption></figure>
+</section>
+
+<section class="v14-training-stage" aria-labelledby="v14-training-title">
+ <div class="v14-training-side">
+  <article class="v14-panel v14-training-overview">
+   <div class="v14-panel-head"><span class="v14-glyph">⌖</span><div><h2 id="v14-training-title"><span class="fr">Mon entraînement</span><span class="en">My training</span></h2><small><span class="fr">Données de tes séances enregistrées</span><span class="en">Data from your recorded sessions</span></small></div></div>
+   <div class="v14-metric-line"><span>◷ <span class="fr">Temps total</span><span class="en">Total time</span></span><strong data-v14-tminutes>—</strong></div>
+   <div class="v14-metric-line"><span>✓ <span class="fr">Séances terminées</span><span class="en">Sessions finished</span></span><strong data-v14-tcount>—</strong></div>
+   <div class="v14-metric-line"><span>▥ <span class="fr">Précision déclarée</span><span class="en">Recorded accuracy</span></span><strong data-v14-taccuracy>—</strong></div>
+   <div class="v14-metric-line"><span>↗ <span class="fr">Jours de suite</span><span class="en">Training streak</span></span><strong data-v14-tstreak>—</strong></div>
+   <div class="v14-metric-line v14-goal-line"><span>⚑ <span class="fr">Objectif 7 jours</span><span class="en">7-day goal</span></span><strong data-v14-tgoal>—</strong></div>
+   <div class="v14-meter"><span data-v14-tmeter></span></div>
+  </article>
+  <article class="v14-panel v14-train-progress">
+   <span class="v14-kicker">/// <span class="fr">TON ESPACE AIM</span><span class="en">YOUR AIM SPACE</span></span>
+   <h3><span class="fr">Une routine à ton rythme.</span><span class="en">A routine at your pace.</span></h3>
+   <p><span class="fr">Choisis ton niveau, puis personnalise les exercices dans ton atelier.</span><span class="en">Choose a level, then customize exercises in your workspace.</span></p>
+   <button type="button" data-v14-open="builder" class="v14-outline-button"><span class="fr">Personnaliser</span><span class="en">Customize</span> ↗</button>
+  </article>
+ </div>
+ <div class="v14-training-center">
+  <div class="v14-level-tabs" role="group" aria-label="Niveau de routine / Training level">
+   <button type="button" data-v14-level="iron" aria-pressed="false"><span class="v14-symbol">⌄⌄</span><span><strong><span class="fr">Débutant</span><span class="en">Beginner</span></strong><small><span class="fr">Contrôle et bases</span><span class="en">Control and basics</span></small></span></button>
+   <button type="button" data-v14-level="silver" aria-pressed="true"><span class="v14-symbol">◇</span><span><strong><span class="fr">Intermédiaire</span><span class="en">Intermediate</span></strong><small><span class="fr">Précision et vitesse</span><span class="en">Accuracy and speed</span></small></span></button>
+   <button type="button" data-v14-level="immortal" aria-pressed="false"><span class="v14-symbol">♕</span><span><strong><span class="fr">Compétitif</span><span class="en">Competitive</span></strong><small><span class="fr">Constance et pression</span><span class="en">Consistency and pressure</span></small></span></button>
+  </div>
+  <article class="v14-panel v14-workout-plan">
+   <div class="v14-panel-head"><span class="v14-glyph">▱</span><div><span class="v14-kicker">/// <span class="fr">PLAN D’ENTRAÎNEMENT</span><span class="en">TRAINING PLAN</span></span><h2><span class="fr">Prépare ta prochaine séance</span><span class="en">Plan your next session</span></h2></div><span class="v14-plan-duration" data-v14-plan-duration>25 min</span></div>
+   <div class="v14-day-pills" role="group" aria-label="Compétence à travailler / Training focus">
+    <button type="button" data-v14-focus="flick" aria-pressed="true"><span class="fr">Flick</span><span class="en">Flick</span></button>
+    <button type="button" data-v14-focus="tracking" aria-pressed="false">Tracking</button>
+    <button type="button" data-v14-focus="micro" aria-pressed="false"><span class="fr">Micro-correction</span><span class="en">Micro-adjust</span></button>
+    <button type="button" data-v14-focus="control" aria-pressed="false"><span class="fr">Contrôle</span><span class="en">Control</span></button>
+   </div>
+   <div class="v14-plan-body">
+    <div class="v14-plan-art"><span class="v14-kicker">AIM // ROUTINE</span><h3 data-v14-plan-heading><span class="fr">Précision &amp; contrôle</span><span class="en">Accuracy &amp; control</span></h3><p data-v14-plan-description><span class="fr">Répète des gestes précis, sans précipitation.</span><span class="en">Repeat precise movements without rushing.</span></p><span class="v14-plan-reticle" aria-hidden="true">⌖</span><span class="v14-plan-foot">◷ <span data-v14-plan-duration-small>25</span> MIN · 3 EXOS</span></div>
+    <div class="v14-exercise-list">
+     <div class="v14-exercise"><span class="v14-glyph">♨</span><div><strong>Warm-up</strong><small><span class="fr">Échauffement progressif</span><span class="en">Progressive warm-up</span></small></div><span class="v14-exercise-time">5 min</span><button type="button" data-v14-generate><span class="fr">Préparer</span><span class="en">Prepare</span> ↗</button></div>
+     <div class="v14-exercise"><span class="v14-glyph">⌖</span><div><strong data-v14-exercise-name>Flick</strong><small data-v14-exercise-desc><span class="fr">Premier tir et placement du viseur</span><span class="en">First shot and crosshair placement</span></small></div><span class="v14-exercise-time">10 min</span><button type="button" data-v14-generate><span class="fr">Préparer</span><span class="en">Prepare</span> ↗</button></div>
+     <div class="v14-exercise"><span class="v14-glyph">◎</span><div><strong><span class="fr">Consolidation</span><span class="en">Consolidation</span></strong><small><span class="fr">Reproduis les mêmes conditions</span><span class="en">Repeat under matching conditions</span></small></div><span class="v14-exercise-time">10 min</span><button type="button" data-v14-generate><span class="fr">Préparer</span><span class="en">Prepare</span> ↗</button></div>
+    </div>
+   </div>
+   <div class="v14-plan-footer"><span><span class="fr">Aperçu indicatif : personnalise les exercices avant de lancer le minuteur.</span><span class="en">Illustrative plan: edit exercises before starting the timer.</span></span><button type="button" class="v14-hot-button" data-v14-generate>▶ <span class="fr">Créer cette routine</span><span class="en">Build this routine</span> ↗</button></div>
+  </article>
+ </div>
+ <aside class="v14-training-aside">
+  <article class="v14-panel v14-trend-preview"><div class="v14-panel-head"><span class="v14-glyph">▥</span><div><h2><span class="fr">Statistiques d’entraînement</span><span class="en">Training statistics</span></h2><small><span class="fr">Dernières précisions saisies</span><span class="en">Latest reported accuracy</span></small></div></div><div class="v14-preview-chart" data-v14-tchart><span class="v14-chart-empty"><span class="fr">Tes séances apparaîtront ici.</span><span class="en">Your sessions will appear here.</span></span></div><div class="v14-chart-foot"><strong data-v14-tchart-value>—</strong><a href="progress.html"><span class="fr">Tout analyser</span><span class="en">View analytics</span> ↗</a></div></article>
+  <article class="v14-panel v14-daily-challenge"><span class="v14-kicker">/// <span class="fr">DÉFI AIM</span><span class="en">AIM CHALLENGE</span></span><div class="v14-challenge-reticle" aria-hidden="true">⌖</div><h2><span class="fr">Teste ta précision.</span><span class="en">Test your accuracy.</span></h2><p><span class="fr">Un défi rapide de cibles, sans classement fictif.</span><span class="en">A short target challenge, without fictional rankings.</span></p><div class="v14-challenge-chips"><span>◷ 15–30 s</span><span>⌖ <span class="fr">2 modes</span><span class="en">2 modes</span></span></div><a class="v14-hot-button" href="index.html#aim-challenge">▶ <span class="fr">Lancer le défi</span><span class="en">Start challenge</span> ↗</a></article>
+ </aside>
 </section>
 <div class="ar6-install-inline"><button id="install-app" type="button" class="outline">Installer AimRoutine</button><span id="install-help" class="muted">Sur iPhone : Partager → Sur l’écran d’accueil. Les routines locales fonctionnent hors ligne après leur première ouverture.</span></div><p class="ar5-privacy" role="note"><strong>Respect de tes données :</strong> tes séances et routines favorites restent dans ce navigateur. Aucun compte Riot connecté, aucune donnée de match récupérée. Pense à exporter régulièrement une sauvegarde JSON.</p>
 <div class="ar7-account-line"><a href="account.html" class="ar7-account-link"><span class="ar7-account-dot" aria-hidden="true">●</span> Mon compte / Cloud</a><span role="status" id="cloud-training-status">Les données sont enregistrées localement dans ce navigateur.</span></div>
@@ -154,4 +204,5 @@
 </main><footer><a class="ar-brand-footer-link" href="index.html"><img src="aimroutine-logo.png?v=2" width="38" height="38" alt=""> <strong>AimRoutine Tracker</strong></a><a href="releases.html">Versions et téléchargements</a><a href="account.html">Mon compte / Cloud</a><span>© AimRoutine Tracker · Espace web expérimental</span><a href="privacy.html">Confidentialité</a><a href="terms.html">Conditions</a><a href="riot-integration.html">Riot API : projet</a></footer>
 <script src="site-motion-v10.js?v=1" defer></script>
 <script src="site-future-v13.js?v=1" defer></script>
+<script src="site-v14-gallery.js?v=1" defer></script>
 </body></html>
