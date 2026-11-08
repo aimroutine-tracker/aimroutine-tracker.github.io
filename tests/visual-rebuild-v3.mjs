@@ -106,6 +106,36 @@ try{
    await context.close();
   }
  }
+ // Inspect responsive screens without changing any browser data or session.
+ for(const mobileWidth of [390,768,1024]){
+  for(const item of pages){
+   const context=await browser.newContext({
+    viewport:{width:mobileWidth,height:850},deviceScaleFactor:1,
+    locale:'fr-FR',colorScheme:'dark',reducedMotion:'reduce',serviceWorkers:'block'
+   });
+   try{
+    const page=await context.newPage();
+    const fatal=[];
+    page.on('pageerror',e=>fatal.push(String(e.message||e)));
+    const response=await page.goto('http://127.0.0.1:8766/'+item.filename,{waitUntil:'domcontentloaded',timeout:35000});
+    await page.waitForFunction(()=>document.body?.classList.contains('r20'),null,{timeout:30000});
+    await page.evaluate(()=>document.fonts.ready);
+    await page.waitForTimeout(350);
+    const geom=await page.evaluate(()=>({
+     docWidth:document.documentElement.scrollWidth,
+     headerPresent:Boolean(document.querySelector('.site31-header')),
+     screenPresent:Boolean(document.querySelector('.r17-screen')),
+     burgerPresent:Boolean(document.querySelector('.site31-mobile-toggle,.site31-menu-toggle,[aria-label*="menu"]')),
+    }));
+    await page.screenshot({path:join(out,item.id+'-'+mobileWidth+'.png'),animations:'disabled',fullPage:false});
+    const check={name:item.id,phase:'responsive-'+mobileWidth,httpStatus:response?.status()??null,geometry:geom,uncaughtRuntimeErrors:fatal};
+    if(geom.docWidth>mobileWidth+3||!geom.headerPresent||!geom.screenPresent||fatal.length||response?.status()!==200){
+     failed=true;check.failure='Responsive overflow, missing app structure, HTTP failure or runtime error';
+    }
+    results.push(check);
+   }finally{await context.close();}
+  }
+ }
 }finally{await browser.close();}
 await writeFile(join(out,'measurements.json'),JSON.stringify(results,null,2));
 for(const x of results)console.log(x.name,x.phase,'hero',JSON.stringify(x.geometry.hero),'content',JSON.stringify(x.geometry.heroContent),'headline',JSON.stringify(x.geometry.heroHeadline),'description',JSON.stringify(x.geometry.heroDescription),'actions',JSON.stringify(x.geometry.heroActions),'notice',JSON.stringify(x.geometry.previewNotice),'layout',JSON.stringify({homeStats:x.geometry.homeStats,homeFeatures:x.geometry.homeFeatures,homeBottom:x.geometry.homeBottom,homePaths:x.geometry.homePaths,homePathGrid:x.geometry.homePathGrid,homePathCard:x.geometry.homePathCard,homeChallenge:x.geometry.homeChallenge,trainGrid:x.geometry.trainGrid,trainPlan:x.geometry.trainPlan,trainLeft:x.geometry.trainLeft,trainSummary:x.geometry.trainSummary,trainLevelNote:x.geometry.trainLevelNote,trainCenter:x.geometry.trainCenter,trainRight:x.geometry.trainRight,trainChallenge:x.geometry.trainChallenge,trainTools:x.geometry.trainTools,trainWeek:x.geometry.trainWeek,progressKpis:x.geometry.progressKpis,progressCharts:x.geometry.progressCharts,accountBenefits:x.geometry.accountBenefits,accountProfile:x.geometry.accountProfile,navCurrent:x.geometry.navCurrent,navDetails:x.geometry.navDetails}),'width',x.geometry.documentWidth,'JS errors',x.javascriptErrors.slice(0,5));
