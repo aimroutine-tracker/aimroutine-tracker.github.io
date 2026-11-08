@@ -104,3 +104,6 @@ mockup-hero-v15.webp
 site-v15-fidelity.css
 site-v15-fidelity.js
 site-v15-data.mjs
+aimroutine-brand-a-v2.svg
+aimroutine-official-tokens-v2.css
+site-official-v16.css

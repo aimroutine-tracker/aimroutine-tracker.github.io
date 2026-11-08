@@ -59,13 +59,13 @@ for page in PAGES:
             issues.append(f"{page.name}: missing {tag} target {raw}")
     if page.name in {"index.html", "product.html", "presentation.html", "riot-integration.html", "updates.html", "privacy.html", "terms.html", "404.html", "training.html", "releases.html", "account.html"}:
         html = page.read_text(encoding="utf-8")
-        if 'src="aimroutine-logo.png?v=2"' not in html:
+        if 'src="aimroutine-brand-a-v2.svg?v=1"' not in html:
             issues.append(f"{page.name}: official logo missing from header")
-        if 'rel="icon" type="image/png"' not in html:
+        if 'href="favicon.svg?v=3" type="image/svg+xml"' not in html:
             issues.append(f"{page.name}: official browser favicon missing")
-        if 'property="og:image" content="https://aimroutine-tracker.github.io/aimroutine-logo.png?v=2"' not in html:
+        if 'property="og:image" content="https://aimroutine-tracker.github.io/aimroutine-logo.png?v=3"' not in html:
             issues.append(f"{page.name}: official social image missing")
-        if 'favicon.svg' in html:
+        if 'favicon.svg' in html and 'favicon.svg?v=3' not in html:
             issues.append(f"{page.name}: outdated favicon reference")
     # V9 design smoke checks: every public route uses the same updated stylesheet.
     if 'visual-v8.css?v=2' not in page.read_text(encoding='utf-8'):

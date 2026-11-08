@@ -10,13 +10,13 @@
     "standalone",
     "minimal-ui"
   ],
-  "background_color": "#0b141f",
-  "theme_color": "#0b141f",
+  "background_color": "#080F18",
+  "theme_color": "#07121B",
   "lang": "fr",
   "icons": [
     {
-      "src": "aimroutine-logo.png?v=2",
-      "sizes": "128x128",
+      "src": "aimroutine-logo.png?v=3",
+      "sizes": "256x256",
       "type": "image/png",
       "purpose": "any"
     }
