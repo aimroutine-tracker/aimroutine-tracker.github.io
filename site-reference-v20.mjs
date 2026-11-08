@@ -18,6 +18,7 @@ function init(){
  if(p==='progress.html')progress(screen);
  if(p==='progress.html')installV3ProgressComposition(screen);
  installV3Icons(screen);
+ relocateV3LanguageSwitch();
 }
 function home(screen){
  const feature=$$('.r17-feature',screen);
@@ -194,6 +195,23 @@ function progress(screen){
 
 /* V3: replace platform-dependent text glyphs with a deterministic local SVG
    set. No remote icon CDN, no new library, no new user data. */
+/* Reference nav does not include the EN pill. Relocate the EXISTING
+   language control to the shared footer; retain its original listeners,
+   keyboard access and English/French settings. Do not duplicate it. */
+function relocateV3LanguageSwitch(){
+ const switcher=document.querySelector('.site31-header [data-switch-lang]');
+ const footer=document.querySelector('.site31-footer-inner');
+ if(!switcher||!footer||footer.querySelector('.ar-v3-language-footer'))return;
+ const holder=document.createElement('div');
+ holder.className='ar-v3-language-footer';
+ const label=document.createElement('span');
+ label.textContent='FR / EN';
+ label.setAttribute('aria-hidden','true');
+ holder.append(label,switcher);
+ const meta=footer.querySelector('.site31-footer-meta');
+ if(meta)meta.before(holder);else footer.append(holder);
+}
+
 function installV3Icons(screen){
  const form=part=>'<svg class="ar-v3-symbol" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true">'+part+'</svg>';
  const paths={
