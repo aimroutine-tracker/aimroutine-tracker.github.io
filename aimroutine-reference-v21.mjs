@@ -110,7 +110,7 @@ function makeProgress(){screen.innerHTML=`${hero('<em>Suivi de</em> <strong>prog
  const src=$('.v14-progress-notice');if(src){const source=$('#a21-data-source');const update=()=>source.textContent=src.textContent.trim()||source.textContent;new MutationObserver(update).observe(src,{childList:true,subtree:true,characterData:true});update()}
  mirror();
 }
-function init(){if(!['index','training','account','progress'].includes(page))return;const root=installRoot();if(!root)return;if(page==='index'){
+function init(){if(window.__aim_test_legacy_ui===true)return;if(!['index','training','account','progress'].includes(page))return;const root=installRoot();if(!root)return;if(page==='index'){
  makeHome();
  const community=document.createElement('section');
  community.id='a21-community';
@@ -119,7 +119,19 @@ function init(){if(!['index','training','account','progress'].includes(page))ret
  screen.append(community);
  if(location.hash==='#aim-challenge')setTimeout(()=>{const a=$('[href="#aim-challenge"]',screen);a?.click()},250);
 }
-if(page==='training'){makeRoutines();$('[href="#aim-challenge"]',screen).forEach(a=>a.href='index.html#aim-challenge')}if(page==='account')makeAccount();if(page==='progress')makeProgress();
+if(page==='training'){
+ makeRoutines();
+ $('[href="#aim-challenge"]',screen).forEach(a=>a.href='index.html#aim-challenge');
+ const level=new URLSearchParams(location.search).get('level');
+ if(['iron','silver','immortal'].includes(level))$('[data-a21-level="'+level+'"]',screen)?.click();
+ const tab=location.hash.match(/^#panel-(builder|program|dashboard|insights|challenges|coach|profile|data)$/)?.[1];
+ if(tab)setTimeout(()=>openTrainingTab(tab),350);
+}
+if(page==='account'){
+ makeAccount();
+ if(new URLSearchParams(location.search).get('mode')==='signup')setTimeout(()=>$('#signup-mode')?.click(),150);
+}
+if(page==='progress')makeProgress();
  // The original controllers are still active and receive user actions from UI.
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
