@@ -1,4 +1,15 @@
 import {test,expect} from '@playwright/test';
+
+/* Verified mocked account: no real Supabase requests or data mutations. */
+async function useVerifiedTestAccount(page){
+ const uid='11111111-1111-4111-8111-111111111111';
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({status:200,contentType:'application/javascript',body:"const uid='11111111-1111-4111-8111-111111111111';\nconst rows={aim_sessions:[],aim_presets:[],aim_profiles:[],aim_preferences:[]};\nwindow.__testCloudWrites=[];\nexport const supabase={\n auth:{getSession:async()=>({data:{session:{user:{id:uid,email:'qa@example.test'}}},error:null}),getUser:async()=>({data:{user:{id:uid,email:'qa@example.test'}},error:null})},\n from(table){return {\n  select(){return {order(){return {range:async()=>({data:rows[table]||[],error:null})}},eq(){return {maybeSingle:async()=>({data:null,error:null})}}}},\n  upsert:async(input)=>{window.__testCloudWrites.push({table,items:input});return {error:null}},\n  update(){return {eq(){return {eq:async()=>({error:null})}}}}\n }}\n};"}));
+ await page.evaluate(()=>localStorage.setItem('sb-lmzswtzboobpokumxzhy-auth-token','test-token'));
+ await page.reload({waitUntil:'domcontentloaded'});
+ await expect.poll(()=>page.evaluate(()=>window.__aimCloudUserId),{timeout:15000}).toBe(uid);
+ await expect.poll(()=>page.evaluate(()=>Boolean(window.AIMWeb)),{timeout:15000}).toBe(true);
+}
+
 test.beforeEach(async ({page})=>{
  await page.route('https://cmsassets.rgpub.io/**',route=>route.abort());
  // Keep browser smoke tests deterministic: real Turnstile is validated only
@@ -13,6 +24,7 @@ test.beforeEach(async ({page})=>{
  await expect.poll(()=>page.evaluate(()=>Boolean(window.AIMWeb)),{timeout:15000}).toBe(true);
 });
 test('Build, edit, run and save a player session',async ({page})=>{
+ await useVerifiedTestAccount(page);
  await page.locator('#tab-builder').click();
  await page.locator('#builder-form button[type="submit"]').click();
  await expect(page.locator('#start-plan')).toBeEnabled();
@@ -30,6 +42,7 @@ test('Build, edit, run and save a player session',async ({page})=>{
  await expect(page.locator('#best-accuracy')).toContainText('80.5');
 });
 test('Profile, program and player achievements',async ({page})=>{
+ await useVerifiedTestAccount(page);
  await page.locator('#tab-profile').click();
  await page.locator('#player-name').fill('NovaFox');
  await page.locator('#player-dpi').fill('1600');
@@ -46,6 +59,7 @@ test('Profile, program and player achievements',async ({page})=>{
  await expect(page.locator('.ar6-achievement')).toHaveCount(5);
 });
 test('Scenario-specific analytics and portable export',async ({page})=>{
+ await useVerifiedTestAccount(page);
  const add=await page.evaluate(()=>{
   const sessions=Array.from({length:6},(_,i)=>({
    id:'case-'+i,date:new Date(Date.now()-(5-i)*86400000).toISOString(),
@@ -496,7 +510,7 @@ test('V17 recreates the landing with real metrics and user-provided concept hero
  await expect(page.locator('.r17-path-grid .r17-path')).toHaveCount(3);
  await expect(page.locator('.r17-challenge .r17-button')).toHaveAttribute('href','#aim-challenge');
  await expect(page.locator('.r17-stats [data-v15-stat]')).toHaveCount(4);
- await expect.poll(()=>page.locator('.r17-stats [data-v15-stat="sessions"]').textContent(),{timeout:15000}).toBe('0');
+ await expect.poll(()=>page.locator('.r17-stats [data-v15-stat="sessions"]').textContent(),{timeout:15000}).toBe('—');
  await expect(page.locator('.r17-stats [data-v15-stat="accuracy"]')).toHaveText('—');
  await expect(page.locator('.r17-nav-actions a')).toHaveCount(3);
  await expect(page.locator('.r17-hero-art')).toHaveCSS('background-image',/r17-hero\.webp/);
@@ -567,4 +581,32 @@ test('V19 cloud screen is guest-safe and progress buttons drive real range',asyn
  await page.locator('[data-r19-range="7"]').click();
  await expect(page.locator('#v14-progress-range')).toHaveValue('7');
  await expect(page.locator('[data-r19-range="7"]')).toHaveAttribute('aria-pressed','true');
+});
+
+
+test('Guest can explore routines but cannot save results or create guest storage',async({page})=>{
+ await expect(page.locator('#ar-account-required')).toBeVisible();
+ const state=await page.evaluate(()=>{
+  const old={id:'guest-would-save',date:new Date().toISOString(),rank:'silver',focus:'flick',tool:'VALORANT',scenario:'Test',
+   minutes:15,accuracy:90,feeling:'good',notes:''};
+  let rejected=false;
+  try{window.AIMWeb.mergeData({sessions:[old],presets:[],weeklyGoal:3})}catch{rejected=true}
+  return {rejected,uid:window.__aimCloudUserId,local:localStorage.getItem('aimroutine_web_training_v2'),
+   count:window.AIMWeb.getStore().sessions.length};
+ });
+ expect(state).toEqual({rejected:true,uid:null,local:null,count:0});
+ await page.reload({waitUntil:'domcontentloaded'});
+ await expect(page.locator('#total-sessions')).toHaveText('0');
+});
+test('Verified account saves and syncs new sessions automatically without cloud buttons',async({page})=>{
+ await useVerifiedTestAccount(page);
+ const add=await page.evaluate(()=>{
+  const one={id:'auto-case',date:new Date().toISOString(),rank:'silver',focus:'flick',tool:'VALORANT',
+   scenario:'Stand de tir',minutes:20,accuracy:81,feeling:'good',notes:''};
+  return window.AIMWeb.mergeData({sessions:[one],presets:[],weeklyGoal:3});
+ });
+ expect(add).toBe(1);
+ await expect.poll(()=>page.evaluate(()=>window.__testCloudWrites.some(v=>v.table==='aim_sessions'&&v.items.some(x=>x.session_id==='auto-case'))),{timeout:15000}).toBe(true);
+ expect(await page.evaluate(()=>localStorage.getItem('aimroutine_web_training_v2'))).toBeNull();
+ await expect(page.locator('#cloud-training-status')).toContainText('Cloud automatique');
 });
