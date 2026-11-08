@@ -488,3 +488,34 @@ test('V13 tactical design loads across routes without hiding interactive element
  await expect(page.locator('#login-form')).toBeVisible();
  await expect(page.locator('#signup-mode')).toBeVisible();
 });
+
+test('V14 homepage paths and actual builder handoff',async ({page})=>{
+ await page.goto('/index.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.v14-home-features .v14-feature')).toHaveCount(3);
+ await expect(page.locator('.v14-rank-grid .v14-path')).toHaveCount(3);
+ await expect(page.locator('.v14-featured-challenge .v14-hot-button')).toHaveAttribute('href','#aim-challenge');
+ await page.goto('/training.html?level=iron#panel-builder',{waitUntil:'domcontentloaded'});
+ await expect.poll(()=>page.locator('#panel-builder').isVisible(),{timeout:15000}).toBe(true);
+ await expect(page.locator('[data-v14-level="iron"]')).toHaveAttribute('aria-pressed','true');
+ await page.locator('[data-v14-focus="tracking"]').click();
+ await expect(page.locator('[data-v14-focus="tracking"]')).toHaveAttribute('aria-pressed','true');
+ await page.locator('[data-v14-generate]').last().click();
+ await expect(page.locator('#rank')).toHaveValue('iron');
+ await expect(page.locator('#focus')).toHaveValue('tracking');
+ await expect(page.locator('#routine-output')).toContainText('Tracking');
+});
+test('V14 truthful analytics and signup controls',async ({page})=>{
+ await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.v14-progress-kpis .v14-kpi')).toHaveCount(4);
+ await expect(page.locator('#v14-p-sessions')).toHaveText('0');
+ await expect(page.locator('#v14-p-average')).toHaveText('—');
+ await page.locator('#v14-progress-range').selectOption('7');
+ await expect(page.locator('#v14-p-sessions')).toHaveText('0');
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('[data-v14-account-welcome]')).toBeVisible();
+ await page.locator('[data-v14-account-action="signup"]').click();
+ await expect(page.locator('#signup-form')).toBeVisible();
+ await expect(page.locator('#login-form')).toBeHidden();
+ await page.locator('#login-mode').click();
+ await expect(page.locator('#login-form')).toBeVisible();
+});
