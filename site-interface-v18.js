@@ -28,7 +28,7 @@
     links.innerHTML = menu.map(item => make(item[0],item[1])).join('');
     $$('.v15-header-actions,.r17-nav-actions',nav).forEach(node => node.remove());
     const actions = document.createElement('div');
-    actions.className = 'r18-actions';
+    actions.className = 'r18-actions r17-nav-actions';
     actions.innerHTML =
       '<a class="r18-cloud" href="account.html#dashboard-panel" title="'+tx('Compte et sauvegarde cloud','Account and cloud backup')+'">'+
       '<span class="r18-cloud-icon" aria-hidden="true">☁</span> Sync Cloud <span class="r18-cloud-indicator" aria-hidden="true"></span></a>'+
@@ -123,7 +123,7 @@
     $$('[data-r17-create]').forEach(button => {
       button.addEventListener('click',() => queueMicrotask(open));
     });
-    $$('a[href="#panel-builder"]','.r17-training-wrap').forEach(link => {
+    $$('a[href="#panel-builder"]',$('.r17-training-wrap')).forEach(link => {
       link.addEventListener('click',event => {event.preventDefault();open();});
     });
     document.addEventListener('keydown',event => {
