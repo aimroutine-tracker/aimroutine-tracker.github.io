@@ -53,6 +53,27 @@ jobs:
       - name: Produce four before-after diffs and source comparisons when available
         working-directory: candidate
         run: python3 tests/compare-visual-v3.py
+      - name: Export reduced-size visual contact sheet to log for review
+        working-directory: candidate
+        run: |
+          python3 - <<'PY'
+          import base64, io
+          from PIL import Image, ImageOps, ImageDraw
+          from pathlib import Path
+          pages=('home','routines','progress','account')
+          sheet=Image.new('RGB',(1280,760),'#080f18')
+          for i,name in enumerate(pages):
+              with Image.open(Path('visual-results')/(name+'-after.png')) as raw:
+                  thumb=raw.convert('RGB').resize((640,360),Image.Resampling.LANCZOS)
+                  x=(i%2)*640;y=(i//2)*380
+                  sheet.paste(thumb,(x,y))
+                  ImageDraw.Draw(sheet).text((x+12,y+5),name,fill='white',stroke_width=1,stroke_fill='black')
+          buf=io.BytesIO();sheet.save(buf,'WEBP',quality=54,method=5)
+          encoded=base64.b64encode(buf.getvalue()).decode('ascii')
+          print('AIMV3_CONTACT_START')
+          for x in range(0,len(encoded),1500): print('AIMV3_CHUNK '+encoded[x:x+1500])
+          print('AIMV3_CONTACT_END')
+          PY
       - name: Upload evidence (no site deployment)
         if: always()
         uses: actions/upload-artifact@v4
