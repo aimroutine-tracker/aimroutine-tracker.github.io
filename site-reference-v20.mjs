@@ -195,7 +195,7 @@ function installV3Icons(screen){
  update();
  // Preserve both FR and EN account-benefit labels while replacing only their
  // decorative Unicode glyphs. This never changes account state or Cloud data.
- for(const label of $('.r17-account-benefits>span',screen)){
+ for(const label of $$('.r17-account-benefits>span',screen)){
   if(label.querySelector('svg'))continue;
   const first=label.firstChild;
   if(!first||first.nodeType!==3)continue;
