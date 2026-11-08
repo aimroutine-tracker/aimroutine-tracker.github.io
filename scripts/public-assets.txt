@@ -116,3 +116,11 @@ site-interface-v19.css
 site-interface-v19.mjs
 site-reference-v20.css
 site-reference-v20.mjs
+site-pixel-v21.css
+site-pixel-v21.js
+ar21-challenge-art.webp
+ar21-hero-account.webp
+ar21-hero-home.webp
+ar21-hero-progress.webp
+ar21-hero-routines.webp
+ar21-path-art.webp

@@ -1,0 +1,50 @@
+name: AimRoutine V21 pixel preview and functional verification
+on:
+  pull_request:
+    paths:
+      - 'site-pixel-v21.*'
+      - 'ar21-*.webp'
+      - 'tests/pixel-v21*'
+      - 'tests/references/**'
+      - 'index.html'
+      - 'training.html'
+      - 'account.html'
+      - 'progress.html'
+      - '.github/workflows/pixel-v21-preview.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pixel-preview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install browsers
+        run: |
+          npm install --no-save @playwright/test@1.56.1
+          npx playwright install --with-deps chromium firefox webkit
+      - name: Serve local site
+        run: |
+          nohup python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/aimroutine-preview-http.log 2>&1 &
+          for i in $(seq 1 20); do curl -fsS http://127.0.0.1:8765/index.html >/dev/null && exit 0; sleep 1; done
+          cat /tmp/aimroutine-preview-http.log
+          exit 1
+      - name: Functional tests and four before/after screenshots
+        run: npx playwright test --config=tests/pixel-v21.config.mjs
+      - name: Calculate differences against the four owner references
+        if: always()
+        run: |
+          python3 -m pip install --break-system-packages Pillow
+          python3 tests/pixel-v21-compare.py
+      - name: Attach four visual comparisons and diff maps
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aimroutine-v21-four-visual-comparisons
+          path: visual-out/
+          retention-days: 30
+          if-no-files-found: warn
