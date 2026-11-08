@@ -27,8 +27,8 @@ for(const [name,uri] of targets){
   files.push(path+'/'+kind+'/'+name+'.png');
  }
  const referenceRGB=Buffer.from(references[name],'base64');
- const beforeRGB=await sharp(files[0]).resize(16,9,{fit:'fill',kernel:'box'}).removeAlpha().raw().toBuffer();
- const afterRGB=await sharp(files[1]).resize(16,9,{fit:'fill',kernel:'box'}).removeAlpha().raw().toBuffer();
+ const beforeRGB=await sharp(files[0]).resize(16,9,{fit:'fill',kernel:'lanczos3'}).removeAlpha().raw().toBuffer();
+ const afterRGB=await sharp(files[1]).resize(16,9,{fit:'fill',kernel:'lanczos3'}).removeAlpha().raw().toBuffer();
  referenceMetrics[name]={beforeMAE:calculateError(beforeRGB,referenceRGB),afterMAE:calculateError(afterRGB,referenceRGB)};
  console.log('V21_REFERENCE_COMPARISON_'+name+'='+JSON.stringify(referenceMetrics[name]));
  const left=await readFile(files[0]),right=await readFile(files[1]);
