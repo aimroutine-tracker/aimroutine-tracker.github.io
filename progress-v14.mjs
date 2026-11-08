@@ -56,17 +56,43 @@ function barChart(items){
 }
 function distribution(items){
  const root=$('#v14-p-distribution');root.replaceChildren();
- for(const key of Object.keys(FOCUS)){
-  const amount=items.filter(s=>s.focus===key).length,pct=items.length?Math.round(amount/items.length*100):0;
-  const row=document.createElement('div');row.className='v14-distribution-row';
-  const title=document.createElement('div');title.className='v14-distribution-head';
-  const label=document.createElement('span');label.textContent=key==='micro'?tr('Micro-corrections','Micro-adjustments'):key==='control'?tr('Contrôle','Control'):key==='tracking'?'Tracking':'Flick';
-  const value=document.createElement('strong');value.textContent=amount+' · '+pct+'%';
-  title.append(label,value);
-  const meter=document.createElement('div');meter.className='v14-meter';
-  const fill=document.createElement('span');fill.style.width=pct+'%';meter.append(fill);
-  row.append(title,meter);root.append(row);
+ const keys=['flick','tracking','micro','control'];
+ const labels=['Flick','Tracking',tr('Micro-correction','Micro-adjust'),tr('Contrôle','Control')];
+ const counts=keys.map(k=>items.filter(s=>s.focus===k).length);
+ const total=items.length;
+ if(!total){
+  const empty=document.createElement('p');empty.className='v14-chart-empty';
+  empty.textContent=tr('Enregistre tes séances pour afficher la répartition.','Record sessions to see the distribution.');
+  root.append(empty);return;
  }
+ const chart=document.createElement('div');chart.className='v15-radar';
+ const svg=svgEl('svg',{viewBox:'0 0 320 255','aria-hidden':'true'});
+ const cx=160,cy=120,r=79;
+ const pts=(fraction)=>keys.map((k,i)=>{
+  const angle=-Math.PI/2+i*2*Math.PI/keys.length;
+  return [cx+Math.cos(angle)*r*fraction,cy+Math.sin(angle)*r*fraction];
+ });
+ const string=(points)=>points.map(p=>p.map(x=>x.toFixed(1)).join(',')).join(' ');
+ for(const amount of [.25,.5,.75,1]){
+  svg.append(svgEl('polygon',{points:string(pts(amount)),fill:'none',stroke:amount===1?'#ff617c':'#3d5d6b','stroke-width':amount===1?1.5:1}));
+ }
+ pts(1).forEach(([x,y])=>svg.append(svgEl('line',{x1:cx,y1:cy,x2:x,y2:y,stroke:'#476575','stroke-dasharray':'3 5'})));
+ const actual=keys.map((_,i)=>{
+  const angle=-Math.PI/2+i*2*Math.PI/keys.length;
+  const value=counts[i]/total;
+  return [cx+Math.cos(angle)*r*value,cy+Math.sin(angle)*r*value];
+ });
+ svg.append(svgEl('polygon',{points:string(actual),fill:'#52eddc59',stroke:'#5cf6e6','stroke-width':2.3,'stroke-linejoin':'round'}));
+ actual.forEach(([x,y])=>svg.append(svgEl('circle',{cx:x,cy:y,r:3.5,fill:'#90fff2'})));
+ const labelPos=pts(1.3);
+ labelPos.forEach(([x,y],i)=>{
+  const node=svgEl('text',{x,y,'text-anchor':'middle','font-size':11,fill:'#dcf8f7'});
+  node.textContent=labels[i]+' '+Math.round(counts[i]/total*100)+'%';svg.append(node);
+ });
+ chart.append(svg);root.append(chart);
+ const description=document.createElement('p');description.className='v14-chart-caption';
+ description.textContent=tr('Part des '+total+' séances selon la compétence travaillée.','Share of '+total+' sessions by training focus.');
+ root.append(description);
 }
 function render(){
  const period=Number($('#v14-progress-range').value)||0;
