@@ -197,3 +197,6 @@ body.site31.r20 .r17-screen .r17-reticle{font-style:normal}
  body.site31.r20 .ar20-progress-advanced{flex-direction:column;align-items:stretch}
 }
 @media(prefers-reduced-motion:reduce){body.site31.r20 .r17-screen *,body.site31.r20 .r17-screen *:before,body.site31.r20 .r17-screen *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Hero artwork spans the full browser viewport at desktop widths. */
+@media(min-width:721px){body.site31.r20 .r17-screen .r17-hero{margin-left:calc(50% - 50vw)!important;margin-right:calc(50% - 50vw)!important}}
