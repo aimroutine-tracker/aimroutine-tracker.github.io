@@ -1191,8 +1191,8 @@ body.site31.r20 .r17-account-wrap .r17-avatar{
  border-radius:12px 25px 12px 25px!important;
  background-color:#382330!important;
  background-image:linear-gradient(0deg,#0b192555,transparent 70%),url('r17-hero.webp')!important;
- background-size:100% 100%,320px auto!important;
- background-position:center center,31% 12%!important;
+ background-size:100% 100%,420px auto!important;
+ background-position:center center,34% 11%!important;
  background-repeat:no-repeat!important;
  box-shadow:0 0 0 2px #a24a6066,0 0 19px #ff5b6931!important;
 }
@@ -1210,12 +1210,12 @@ body.site31.r20 .r17-account-wrap .r17-cloud-status .ar-v3-symbol{
 }
 @media(min-width:1350px){
  body.site31.r20 .r17-account-wrap .r17-account-profile{
-  grid-template-columns:106px minmax(205px,1.35fr) minmax(82px,.5fr) minmax(95px,.65fr) minmax(235px,1.25fr)!important;
-  column-gap:18px!important;min-height:114px!important;
-  padding:7px 24px 7px 45px!important;
+  grid-template-columns:126px 300px 90px 370px minmax(250px,1fr)!important;
+  column-gap:20px!important;min-height:114px!important;
+  padding:5px 24px 5px 68px!important;
  }
  body.site31.r20 .r17-account-wrap .r17-avatar{
-  width:100px!important;height:96px!important;
+  width:126px!important;height:102px!important;
  }
 }
 @media(max-width:720px){
