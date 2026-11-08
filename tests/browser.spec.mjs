@@ -480,7 +480,7 @@ test('V13 tactical design loads across routes without hiding interactive element
  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.v5-hero .ar13-frame-corners')).toHaveCount(1);
  await expect(page.locator('.v5-hero .ar13-frame-corners')).toHaveAttribute('aria-hidden','true');
- await expect(page.locator('.ar9-path-grid .ar9-path-card')).toHaveCount(3);
+ await expect(page.locator('.ar17-path-grid .ar17-path')).toHaveCount(3);
  await expect(page.locator('link[href="site-future-v13.css?v=1"]')).toHaveCount(1);
  await expect(page.locator('#aim-challenge [data-ar11-start]')).toBeAttached();
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
@@ -491,9 +491,9 @@ test('V13 tactical design loads across routes without hiding interactive element
 
 test('V14 homepage paths and actual builder handoff',async ({page})=>{
  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.v14-home-features .v14-feature')).toHaveCount(3);
- await expect(page.locator('.v14-rank-grid .v14-path')).toHaveCount(3);
- await expect(page.locator('.v14-featured-challenge .v14-hot-button')).toHaveAttribute('href','#aim-challenge');
+ await expect(page.locator('.ar17-features .ar17-feature')).toHaveCount(3);
+ await expect(page.locator('.ar17-path-grid .ar17-path')).toHaveCount(3);
+ await expect(page.locator('.ar17-featured-challenge .ar17-cta')).toHaveAttribute('href','#aim-challenge');
  await page.goto('/training.html?level=iron#panel-builder',{waitUntil:'domcontentloaded'});
  await expect.poll(()=>page.locator('#panel-builder').isVisible(),{timeout:15000}).toBe(true);
  await expect(page.locator('[data-v14-level="iron"]')).toHaveAttribute('aria-pressed','true');
@@ -506,7 +506,7 @@ test('V14 homepage paths and actual builder handoff',async ({page})=>{
 });
 test('V14 truthful analytics and signup controls',async ({page})=>{
  await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.v14-progress-kpis .v14-kpi')).toHaveCount(4);
+ await expect(page.locator('.ar17-kpi-strip .ar17-kpi')).toHaveCount(4);
  await expect(page.locator('#v14-p-sessions')).toHaveText('0');
  await expect(page.locator('#v14-p-average')).toHaveText('—');
  await page.locator('#v14-progress-range').selectOption('7');
@@ -529,7 +529,7 @@ test('V15 screenshot hero assets load and homepage stats do not invent numbers',
  await expect(page.locator('[data-v15-stat="sessions"]')).toHaveText('0');
  await expect(page.locator('[data-v15-stat="accuracy"]')).toHaveText('—');
  await expect(page.locator('.v15-header-actions a')).toHaveCount(3);
- await expect(page.locator('.v15-community-nav')).toHaveAttribute('href','index.html#community');
+ await expect(page.locator('.ar17-nav-links a[href="index.html#community"]')).toHaveAttribute('href','index.html#community');
 });
 test('V15 training day navigation uses real builder and keeps old tabs',async ({page})=>{
  await page.goto('/training.html',{waitUntil:'domcontentloaded'});
