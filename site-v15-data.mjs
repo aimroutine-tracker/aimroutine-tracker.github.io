@@ -7,7 +7,7 @@ const en=()=>document.documentElement.lang==='en';
 const format=n=>Number(n).toLocaleString(en()?'en-GB':'fr-FR',{maximumFractionDigits:1});
 const choose=(fr,english)=>en()?english:fr;
 async function render(){
- let key=STORAGE_KEY,allow=true,uid=null;
+ let key=STORAGE_KEY,allow=false,uid=null;
  try{
   const token=localStorage.getItem('sb-lmzswtzboobpokumxzhy-auth-token');
   if(token){
@@ -15,13 +15,14 @@ async function render(){
    const {supabase}=await import('./cloud-client-v7.mjs');
    const {data,error}=await supabase.auth.getSession();
    if(!error&&validUid(data?.session?.user?.id)){
-    uid=data.session.user.id;key=scopedKey(STORAGE_KEY,uid);allow=true;
+    const checked=await supabase.auth.getUser();
+    if(!checked.error&&checked.data?.user?.id===data.session.user.id){uid=data.session.user.id;key=scopedKey(STORAGE_KEY,uid);allow=true;}
    }
   }
  }catch{allow=false}
  if(!allow){
   for(const name of ['sessions','accuracy','week'])set(name,'—');
-  set('cloud',choose('À VÉRIFIER','VERIFY'));
+  set('cloud',choose('CONNEXION REQUISE','SIGN IN'));
   return;
  }
  let store;
@@ -31,7 +32,7 @@ async function render(){
  set('sessions',format(stat.count));
  set('accuracy',stat.avg===null?'—':format(stat.avg)+' %');
  set('week',stat.week+' / '+stat.goal);
- set('cloud',uid?(isEnabled(uid)?choose('ACTIVÉ','ENABLED'):choose('DÉSACTIVÉ','DISABLED')):choose('INVITÉ','GUEST'));
+ set('cloud',uid?(isEnabled(uid)?choose('AUTOMATIQUE','AUTOMATIC'):choose('NON DISPONIBLE','UNAVAILABLE')):choose('CONNEXION REQUISE','SIGN IN'));
 }
 document.querySelectorAll('[data-switch-lang]').forEach(btn=>btn.addEventListener('click',()=>queueMicrotask(()=>void render())));
 window.addEventListener('storage',e=>{if(e.key?.includes(STORAGE_KEY))void render()});
