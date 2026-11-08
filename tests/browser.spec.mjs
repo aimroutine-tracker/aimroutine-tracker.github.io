@@ -484,7 +484,7 @@ test('V13 tactical design loads across routes without hiding interactive element
  await expect(page.locator('link[href="site-future-v13.css?v=1"]')).toHaveCount(1);
  await expect(page.locator('#aim-challenge [data-ar11-start]')).toBeAttached();
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.ar7-account-hero .ar13-frame-corners')).toHaveCount(1);
+ await expect(page.locator('.ar17-account-page .ar17-hero')).toHaveCount(1);
  await expect(page.locator('#login-form')).toBeVisible();
  await expect(page.locator('#signup-mode')).toBeVisible();
 });
