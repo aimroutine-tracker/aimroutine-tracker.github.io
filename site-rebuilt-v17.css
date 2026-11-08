@@ -406,3 +406,16 @@ body.site31 main.ar17-page .ar17-disclaimer{width:calc(100% - 50px);max-width:13
  body.site31 main.ar17-page *,body.site31 main.ar17-page *::before,body.site31 main.ar17-page *::after{transition:none!important;animation:none!important}
  body.site31 main.ar17-page .ar17-cta:hover{transform:none!important}
 }
+
+/* V17 onboarding: nickname must never be obscured by cloud preview panels. */
+body.site31 main.ar17-page .ar17-cloud-benefits>span{border:1px solid #455e70;background:#182b39aa;border-radius:4px 10px 4px 10px;padding:7px 10px;font-size:11px;line-height:1.3}
+body.site31 main.ar17-page .ar17-guest-link{display:inline-flex;align-items:center;justify-content:center;min-height:30px;padding:7px 11px;margin-top:9px;color:#e7fff9;background:#132836;border:1px solid #627f8d;border-radius:4px 9px 4px 9px;font-size:11px;text-decoration:none;max-width:100%;width:max-content}
+body.site31 main.ar17-page .ar17-guest-link:hover{border-color:var(--ar17-teal);color:var(--ar17-teal)}
+body.site31 main.ar17-page .ar17-account-layout:has(>#username-panel:not([hidden])){display:grid;grid-template-columns:1fr}
+body.site31 main.ar17-page .ar17-account-layout:has(>#username-panel:not([hidden]))>#username-panel{grid-column:1;grid-row:1;position:relative;z-index:4}
+body.site31 main.ar17-page .ar17-account-layout:has(>#username-panel:not([hidden]))>.ar17-cloud-portal{grid-column:1;grid-row:2}
+body.site31 main.ar17-page .ar17-account-layout:has(>#username-panel:not([hidden]))>.ar7-account-help{grid-column:1;grid-row:3}
+body.site31 main.ar17-page .ar17-account-layout:has(>#dashboard-panel:not([hidden])){grid-template-columns:1fr}
+body.site31 main.ar17-page .ar17-account-layout:has(>#dashboard-panel:not([hidden]))>#dashboard-panel{grid-column:1;grid-row:1;position:relative;z-index:3}
+body.site31 main.ar17-page .ar17-account-layout:has(>#dashboard-panel:not([hidden]))>.ar17-cloud-portal{grid-column:1;grid-row:2}
+body.site31 main.ar17-page .ar17-account-layout:has(>#dashboard-panel:not([hidden]))>.ar7-account-help{grid-column:1;grid-row:3}

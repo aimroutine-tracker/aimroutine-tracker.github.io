@@ -89,22 +89,22 @@ test.describe('PWA cache integration',()=>{
 });
 });
 
-test('Cloud account landing has single-border tags and a compact accessible guest button',async({page})=>{
+test('V17 Cloud hero has three unstacked benefits and an accessible guest entry',async({page})=>{
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
- const chips=page.locator('.ar7-account-highlights > .ar7-account-chip');
+ const chips=page.locator('.ar17-cloud-benefits > span');
  await expect(chips).toHaveCount(3);
  await expect(page.locator('.ar7-guest-link')).toBeVisible();
+ await expect(page.locator('.ar7-guest-link')).toHaveAttribute('href','training.html');
  const check=await page.evaluate(()=>{
-   const badges=[...document.querySelectorAll('.ar7-account-highlights > .ar7-account-chip')];
+   const badges=[...document.querySelectorAll('.ar17-cloud-benefits > span')];
    const borders=badges.map(chip=>({
      outer:getComputedStyle(chip).borderTopWidth,
-     inner:getComputedStyle(chip.querySelector('span')).borderTopWidth,
-     innerPadding:getComputedStyle(chip.querySelector('span')).paddingLeft
+     inner:getComputedStyle(chip).borderTopWidth,
    }));
    const button=document.querySelector('.ar7-guest-link').getBoundingClientRect();
    return {borders,buttonWidth:button.width,overflow:document.documentElement.scrollWidth-window.innerWidth};
  });
- expect(check.borders.every(x=>x.outer==='1px'&&x.inner==='0px'&&x.innerPadding==='0px')).toBe(true);
+ expect(check.borders.every(x=>x.outer==='1px'&&x.inner==='1px')).toBe(true);
  expect(check.buttonWidth).toBeLessThanOrEqual(page.viewportSize().width);
  expect(check.overflow).toBeLessThanOrEqual(2);
 });
@@ -478,8 +478,8 @@ test('V12 AIM duration, combos and keyboard pause',async ({page})=>{
 
 test('V13 tactical design loads across routes without hiding interactive elements',async ({page})=>{
  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.v5-hero .ar13-frame-corners')).toHaveCount(1);
- await expect(page.locator('.v5-hero .ar13-frame-corners')).toHaveAttribute('aria-hidden','true');
+ await expect(page.locator('.ar17-home-page .ar17-hero')).toHaveCount(1);
+ await expect(page.locator('.ar17-home-page .ar17-hero-image')).toHaveAttribute('aria-hidden','true');
  await expect(page.locator('.ar17-path-grid .ar17-path')).toHaveCount(3);
  await expect(page.locator('link[href="site-future-v13.css?v=1"]')).toHaveCount(1);
  await expect(page.locator('#aim-challenge [data-ar11-start]')).toBeAttached();
@@ -522,7 +522,7 @@ test('V14 truthful analytics and signup controls',async ({page})=>{
 
 test('V15 screenshot hero assets load and homepage stats do not invent numbers',async ({page})=>{
  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
- const img=page.locator('.ar42-hero-poster img[src="mockup-hero-v15.webp"]');
+ const img=page.locator('.ar17-hero-image img[src="mockup-hero-v15.webp"]');
  await expect(img).toHaveCount(1);
  await expect.poll(()=>img.evaluate(el=>el.complete&&el.naturalWidth>0),{timeout:10000}).toBe(true);
  await expect(page.locator('.v14-signal-strip [data-v15-stat]')).toHaveCount(4);
