@@ -1,0 +1,73 @@
+/* AimRoutine V19 — make every reference-screen module perform a real action. */
+body.r17 .r19-reference-workspace{--r19-accent:#ff6276}
+.r19-tool-picker{display:flex;flex-direction:column;gap:5px;align-self:center;flex:none;margin-left:auto;color:#aec9d8;font-size:11px!important;letter-spacing:0!important}
+.r19-tool-picker select{background:#071c2a!important;color:#f4f9ff!important;min-width:128px;border:1px solid #426679!important;border-radius:4px 9px 4px 9px!important;padding:8px 10px;font:inherit;font-size:12px}
+.r19-reference-workspace .r17-exercise div{min-width:0}
+.r19-reference-workspace .r17-exercise div strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:30ch}
+.r19-reference-workspace .r17-exercise div small{display:block;max-width:36ch;line-height:1.4!important;color:#adc8d7!important}
+.r19-plan-summary{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 13px 0;padding:8px 13px;border:1px solid #35596e;background:#0a1d2bb8;border-radius:4px;color:#bbd2de}
+.r19-plan-summary .r19-plan-label{font-size:10px;line-height:1.35}
+.r19-plan-summary strong{color:#37e3dd;font-size:13px;white-space:nowrap}
+.r19-plan-program{display:inline-flex;align-items:center;gap:8px;margin-left:auto;padding:9px 12px!important;background:#183043!important;border:1px solid #53758a!important;border-radius:4px 8px 4px 8px!important;color:#ebf8fc!important;font:800 11px Inter,'Segoe UI',sans-serif!important;cursor:pointer}
+.r19-plan-program:hover{border-color:#ff6b7b!important;background:#2b2737!important}
+body.r17 .r19-workspace-toolbar{margin:18px 0 0;padding:18px 24px!important}
+.r19-tools-heading{display:flex;align-items:center;gap:18px;margin-bottom:15px}
+.r19-tools-heading h2{font-size:clamp(20px,2vw,29px)!important;margin:4px 0!important}
+.r19-tools-heading p{color:#bad0de!important;font-size:12px;margin:0}
+.r19-tools-brand{font-size:44px;line-height:1;color:#ff6276;margin-left:auto;opacity:.7}
+.r19-favorites-count{display:inline-flex;padding:7px 11px;color:#36dfd5;background:#0a2731;border:1px solid #236d75;border-radius:4px;font-size:11px;font-weight:700;white-space:nowrap}
+.r19-tool-grid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:9px}
+.r19-tool-btn{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:9px;position:relative;min-height:90px;cursor:pointer;background:linear-gradient(160deg,#183040,#0b1c2a)!important;color:#f2f8fb!important;border:1px solid #3d596b!important;border-radius:5px 13px 5px 13px!important;font-size:12px;font-weight:800}
+.r19-tool-btn>span:first-child{font-size:25px;color:#ff7184;line-height:1}
+.r19-tool-btn b{font-size:12px;position:absolute;top:8px;right:10px;font-weight:700;color:#75e5e0}
+.r19-tool-btn:hover{background:linear-gradient(140deg,#302b3a,#112d3c)!important;transform:translateY(-2px);border-color:#ff6d7f!important}
+.r19-tool-btn:focus-visible,.r19-plan-program:focus-visible{outline:2px solid #37e3dd;outline-offset:3px}
+body.r17 .r19-workspace-dialog{position:fixed;inset:0;width:min(1180px,calc(100vw - 26px));max-width:1180px;max-height:min(94vh,950px);padding:0;background:#071723!important;color:#f0f8fc;border:1px solid #536e83;border-radius:7px 18px 7px 18px;box-shadow:0 35px 120px #000c;overflow:auto}
+body.r17 .r19-workspace-dialog::backdrop{background:#010812df;backdrop-filter:blur(8px)}
+.r19-dialog-shell{padding:clamp(14px,2.2vw,27px)}
+.r19-dialog-header{display:flex;align-items:start;justify-content:space-between;gap:25px;padding:0 0 18px;margin-bottom:17px;border-bottom:1px solid #375368}
+.r19-dialog-header small{font-size:10px;font-weight:800;color:#ff7687;letter-spacing:.12em}
+.r19-dialog-header h2{font-size:clamp(22px,2.4vw,31px);font-weight:900;margin:5px 0 3px}
+.r19-dialog-header p{margin:0;color:#b1cbd7;font-size:12px}
+.r19-close{width:40px;height:40px;min-width:40px;background:#162b39;color:white;border:1px solid #597184;border-radius:4px 9px 4px 9px;cursor:pointer}
+.r19-close:hover{background:#3b2836;border-color:#ff687c}
+.r19-dialog-host .panel{width:100%!important;max-width:100%!important;min-height:0!important;margin:0!important;display:block!important;visibility:visible!important;opacity:1!important;transform:none!important}
+.r19-dialog-host .panel[hidden]{display:none!important}
+.r19-dialog-host .surface,.r19-dialog-host .metric,.r19-dialog-host article{background:#102533!important;border-color:#415f72!important;color:#edf8fa!important}
+.r19-dialog-host label{color:#e0eef5}
+.r19-dialog-host :is(input,select,textarea){background:#081f2e;color:#fff;border-color:#536f82}
+.r19-dialog-host :is(.primary,button[type=submit]){background:#ff6476;color:#07111b;border-color:#ff7284}
+.r19-dialog-host .section-heading h2{color:#f5f9fc}
+.r19-cloud-actions{margin:10px 0 0;padding:14px;border:1px solid #385b6d;background:linear-gradient(130deg,#122a37,#0b1d2b);border-radius:5px 13px 5px 13px}
+.r19-cloud-head{font-size:12px;font-weight:800;color:#c7deeb;margin-bottom:12px}
+.r19-cloud-commands{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.r19-cloud-commands :is(button,a){padding:10px 14px;background:#152e3d;border:1px solid #517083;color:#f2fbff;border-radius:4px 9px 4px 9px;font-size:12px;font-weight:800;cursor:pointer;text-decoration:none}
+.r19-cloud-commands :is(button,a):hover{border-color:#ff687c;background:#302839}
+.r19-cloud-commands :is(button,a)[hidden]{display:none!important}
+.r19-cloud-commands [data-r19-cloud="cloud-sync"]{background:linear-gradient(120deg,#ff7a87,#ff566c);border-color:#ff7e91;color:#081620}
+.r19-range-buttons{display:inline-flex;gap:4px;flex-wrap:wrap;padding:4px;background:#081a27;border:1px solid #35566a;border-radius:4px 9px 4px 9px;margin-left:auto}
+.r19-range-buttons button{border:1px solid transparent;border-radius:4px;background:transparent;color:#bacddb;padding:9px 13px;font-weight:800;font-size:11px;cursor:pointer}
+.r19-range-buttons button:hover{color:#fff;border-color:#475c74}
+.r19-range-buttons button.is-active{color:#101924;background:#ff687a;border-color:#ff7186}
+.r19-home-progress{display:inline-flex;gap:10px;align-items:center;color:#f4fafb;background:#172b3b;border:1px solid #547088;border-radius:4px 9px 4px 9px;padding:10px 16px;margin:13px 0;font-size:12px;font-weight:850;text-decoration:none}
+.r19-home-progress:hover{border-color:#ff7083;background:#302837}
+@media(max-width:1500px){.r19-tool-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:1000px){.r19-reference-workspace .r17-plan-footer{flex-wrap:wrap}.r19-tool-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.r19-favorites-count{display:none}.r19-range-buttons{width:100%;justify-content:space-around}}
+@media(max-width:700px){
+ .r19-tool-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .r19-tool-btn{min-height:74px}
+ body.r17 .r19-workspace-toolbar{padding:13px!important;margin:11px 8px 0}
+ .r19-tools-heading{align-items:flex-start;flex-wrap:wrap}
+ .r19-tools-brand{display:none}
+ .r19-plan-summary{margin:7px 9px 0}
+ .r19-plan-program{width:100%;justify-content:center}
+ .r19-tool-picker{margin:7px 0 0}
+ .r19-reference-workspace .r17-training-plan .r17-panel-title{flex-wrap:wrap;gap:9px}
+ .r19-dialog-header{gap:10px}
+ .r19-dialog-shell{padding:12px}
+ .r19-cloud-commands{flex-direction:column;align-items:stretch}
+ .r19-cloud-commands :is(button,a){text-align:center;width:100%}
+ .r19-range-buttons{gap:2px}
+ .r19-range-buttons button{padding:8px;font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){.r19-tool-btn{transform:none!important;transition:none!important}}
