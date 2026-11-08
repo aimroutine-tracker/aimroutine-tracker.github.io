@@ -60,6 +60,7 @@
   const selector=$('[data-v15-lang]');
   function render(){
    const logged=dashboard&&!dashboard.hidden;
+   document.body.classList.toggle('v15-account-logged',Boolean(logged));
    if(state)state.textContent=logged?($('#cloud-enabled-status')?.textContent||'—'):tr('Connexion nécessaire','Sign-in required');
    if(detail)detail.textContent=logged?
     tr('État de ta sauvegarde personnelle','Your personal backup status'):
