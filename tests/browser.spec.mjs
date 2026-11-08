@@ -668,3 +668,16 @@ test('V3 four-reference headers stay clean and original locale control still wor
   expect(overflow).toBeLessThanOrEqual(3);
  }
 });
+
+
+test('V3 empty Progress radar shows tracked focus axes but no fabricated score', async ({page}) => {
+ await page.goto('/progress.html', {waitUntil:'domcontentloaded'});
+ const root=page.locator('#v14-p-distribution');
+ const drawing=root.locator('.v3-empty-radar svg');
+ await expect(drawing).toBeVisible();
+ await expect(drawing.locator('polygon')).toHaveCount(4); // grid ONLY, no measured profile
+ await expect(drawing.locator('text')).toHaveCount(4); // four real focus categories
+ await expect(root.locator('.v3-empty-radar-caption')).toContainText('Aucune séance');
+ await expect(page.locator('#v14-p-average')).toContainText('—');
+ await expect(page.locator('#v14-p-sessions')).toContainText('0');
+});
