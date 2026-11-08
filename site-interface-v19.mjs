@@ -83,7 +83,8 @@ function installWorkspace(){
   ['profile','◉','Mon profil','My profile'],['data','☁','Sauvegardes','Backups']
  ].map(([key,icon,fr,english])=>'<button type="button" class="r19-tool-btn" data-r19-panel="'+key+'"><span aria-hidden="true">'+icon+'</span>'+tag(fr,english)+'<b aria-hidden="true">↗</b></button>').join('')+'</div>';
  const week=$('.r17-weekline',screen);
- if(week)week.before(toolbar);else screen.append(toolbar);
+ // Keep the real AIM toolkit accessible, but place it after the reference week's timeline.
+ if(week)week.after(toolbar);else screen.append(toolbar);
 
  const dialog=document.createElement('dialog');
  dialog.className='r19-workspace-dialog';
