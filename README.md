@@ -106,3 +106,10 @@ Security verification on 6 November 2026: owner-only RLS policies and delete cas
 - Cloud account actions in the reference screen call existing authenticated account handlers, with guest actions disabled until sign-in.
 - Progress 7/30/90/all controls drive the existing real analytics renderer, not illustrative charts.
 - All training/Cloud/Supabase mechanisms stay unchanged; no Riot API claims.
+
+## Auto Cloud — novembre 2026
+
+- No new guest progress is persisted: the training preview is available, but account sign-in is required to save routines, sessions, profile and programs. Existing guest local data is preserved only for explicit migration.
+- Cloud synchronization is enabled by default for **every verified account**; no enable/sync button or manual activation. Training syncs after changes (debounced), reconnect/focus, and every 45 seconds while active; the account portal also refreshes periodically.
+- The verified user's browser storage is a scoped offline/retry cache, not a guest backup; failed uploads remain pending and are not presented as uploaded.
+- Server ownership continues to be enforced by existing Supabase RLS. Public Riot APIs are unchanged.
