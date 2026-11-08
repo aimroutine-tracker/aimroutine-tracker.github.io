@@ -589,3 +589,8 @@ body.site31.site31-progress .v14-data-footnote{max-width:115ch;margin:22px auto;
  body.site31 main :is(.v14-card,.v14-panel,.v14-hot-button,.v14-outline-button){transition:none!important;transform:none!important}
  body.site31.site31-home .v14-feature:hover,body.site31.site31-home .v14-path:hover{transform:none!important}
 }
+
+/* Keep legacy V9 recognized container, nest the actual V14 3-level grid. */
+body.site31.site31-home .v14-path-section .ar9-path-grid{display:block!important;grid-template-columns:none!important;gap:0!important}
+body.site31.site31-home .v14-path-section .v14-rank-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important}
+@media(max-width:680px){body.site31.site31-home .v14-path-section .v14-rank-grid{grid-template-columns:1fr!important}}
