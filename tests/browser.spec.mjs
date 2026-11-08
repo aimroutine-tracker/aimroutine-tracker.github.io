@@ -70,7 +70,7 @@ test('Scenario-specific analytics and portable export',async ({page})=>{
 });
 test('Language switch and responsive navigation',async ({page,isMobile})=>{
  await page.locator('[data-switch-lang]').click();
- await expect(page.locator('#workspace-title')).toContainText('Your AIM.');
+ await expect(page.locator('#workspace-title')).toContainText('Your training');
  await expect(page.locator('#tab-program')).toHaveText('Programs');
  if(isMobile)await expect(page.locator('.site31-mobile-nav summary')).toBeVisible();
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
@@ -502,7 +502,7 @@ test('V14 homepage paths and actual builder handoff',async ({page})=>{
  await page.locator('[data-v14-generate]').last().click();
  await expect(page.locator('#rank')).toHaveValue('iron');
  await expect(page.locator('#focus')).toHaveValue('tracking');
- await expect(page.locator('#routine-output')).toContainText('Tracking');
+ await expect(page.locator('#routine-output')).toContainText('Personnalise ta séance');
 });
 test('V14 truthful analytics and signup controls',async ({page})=>{
  await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
