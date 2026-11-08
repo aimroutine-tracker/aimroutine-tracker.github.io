@@ -16,6 +16,7 @@ function init(){
  if(p==='training.html')routines(screen);
  if(p==='account.html')account(screen);
  if(p==='progress.html')progress(screen);
+ if(p==='progress.html')installV3ProgressComposition(screen);
  installV3Icons(screen);
 }
 function home(screen){
@@ -242,6 +243,76 @@ function installV3Icons(screen){
  screen.addEventListener('click',event=>{
   if(event.target.closest('[data-r17-level],[data-r17-day]'))queueMicrotask(update);
  });
+}
+
+
+/* V3 source-aligned Progress page. Move existing live panels rather than create
+   a second statistics engine: all values remain from the real session store.
+   No sample values, artificial reaction times, or simulated sessions. */
+function installV3ProgressComposition(screen){
+ const secondary=$('.r17-secondary-grid',screen);
+ const records=$('#v14-p-records',secondary);
+ const goal=$('#v14-p-goals',secondary);
+ const next=$('#v14-p-next',secondary);
+ if(!secondary||!records||!goal||!next||$('.r17-progress-bottom',screen))return;
+ const panel=(className,heading,subtitle,icon)=>{
+  const node=document.createElement('section');
+  node.className='v14-panel '+className;
+  const head=document.createElement('div');head.className='v14-panel-head';
+  head.innerHTML='<span class="v14-glyph" aria-hidden="true">'+icon+'</span><div><h2>'+heading+'</h2><small>'+subtitle+'</small></div>';
+  node.append(head);return node;
+ };
+ const streak=panel('r17-progress-streak',words('Séries d’entraînement','Training streaks'),words('Des valeurs enregistrées, sans estimation','Only recorded values, no estimates'),'♨');
+ const statrow=document.createElement('div');statrow.className='r17-progress-streak-stats';
+ const data=[
+  [words('Série en cours','Current streak'),'#v14-p-streak-detail'],
+  [words('Séances (7 jours)','Sessions (7 days)'),'#v14-p-week']
+ ];
+ for(const [title,selector] of data){
+  const tile=document.createElement('div');tile.className='r17-progress-live-metric';
+  const number=document.createElement('strong');number.textContent='—';
+  const caption=document.createElement('small');caption.textContent=title;
+  tile.append(number,caption);statrow.append(tile);
+  const source=$(selector,screen);
+  if(source){
+   const sync=()=>{number.textContent=source.textContent?.trim()||'—';};
+   new MutationObserver(sync).observe(source,{childList:true,subtree:true,characterData:true});
+   sync();
+  }
+ }
+ streak.append(statrow);
+ const journey=panel('r17-progress-journey',words('Ton parcours d’entraînement','Your training path'),words('Programme et routines enregistrées','Saved program and routines'),'▱');
+ const journeyContents=document.createElement('div');journeyContents.className='r17-progress-journey-body';
+ journeyContents.innerHTML='<div><strong>'+words('Retrouve ton programme','Find your program')+'</strong><p>'+words('Consulte ton parcours et reprends tes exercices.','Review your path and resume your exercises.')+'</p></div><a href="training.html#panel-program">'+words('Voir mes programmes','View my programs')+' ↗</a>';
+ journey.append(journeyContents);
+ secondary.append(streak,journey);
+ // Keep existing real weekly goal DOM in the first wide card.
+ const lower=document.createElement('div');lower.className='r17-progress-bottom';
+ const goals=document.createElement('section');goals.className='v14-panel r17-progress-goals-overview';
+ const head=document.createElement('div');head.className='r17-progress-bottom-head';
+ head.innerHTML='<div><h2>'+words('Objectifs et indicateurs','Goals and indicators')+'</h2><small>'+words('Ton suivi basé sur les séances réellement enregistrées.','Tracking based on your actual recorded sessions.')+'</small></div><a href="training.html#panel-dashboard">'+words('Gérer mes objectifs','Manage goals')+' ↗</a>';
+ goals.append(head);
+ const tiles=document.createElement('div');tiles.className='r17-progress-goal-tiles';
+ for(const [label,sourceSelector,desc] of [
+  [words('Précision moyenne','Average accuracy'),'#v14-p-average',words('Précision déclarée','Reported accuracy')],
+  [words('Séances terminées','Completed sessions'),'#v14-p-sessions',words('Données réelles','Actual data')]
+ ]){
+  const tile=document.createElement('div');tile.className='r17-progress-goal-tile';
+  const title=document.createElement('strong');title.textContent=label;
+  const value=document.createElement('span');value.className='r17-progress-goal-value';value.textContent='—';
+  const detail=document.createElement('small');detail.textContent=desc;
+  tile.append(title,value,detail);tiles.append(tile);
+  const source=$(sourceSelector,screen);
+  if(source){
+   const sync=()=>{value.textContent=source.textContent?.trim()||'—';};
+   new MutationObserver(sync).observe(source,{childList:true,subtree:true,characterData:true});
+   sync();
+  }
+ }
+ goal.classList.add('r17-progress-goal-tile','r17-progress-existing-goal');
+ tiles.append(goal);goals.append(tiles);
+ lower.append(goals,next);
+ secondary.after(lower);
 }
 
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
