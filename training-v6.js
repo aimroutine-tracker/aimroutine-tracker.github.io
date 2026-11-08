@@ -1,5 +1,5 @@
 import {FOCUS,TOOLS,createRoutine} from './training-core-v5.mjs';
-import {storageKey} from './cloud-core-v7.mjs';
+import {storageKey,activeUid} from './cloud-core-v7.mjs';
 import {EXT_KEY,cleanExtension,cleanProfile,startProgram,programCalendar,scenarioOptions,scenarioMetrics,calendarGrid,achievements,toInterchange,parseInterchange} from './training-v6-core.mjs';
 (()=>{
 'use strict';
@@ -10,9 +10,11 @@ const getStore=()=>window.AIMWeb.getStore();
 const percentile=n=>n===null?'—':Number(n).toFixed(1)+' %';
 let extras;
 function load(){
+ if(!activeUid()){extras=cleanExtension(null);return}
  try{extras=cleanExtension(JSON.parse(localStorage.getItem(storageKey(EXT_KEY))||'null'))}catch{extras=cleanExtension(null)}
 }
 function save(next){
+ if(!activeUid()){alert('Connecte-toi pour enregistrer ton profil ou ton programme.');return false}
  try{localStorage.setItem(storageKey(EXT_KEY),JSON.stringify(next));extras=next;window.dispatchEvent(new CustomEvent('aim-cloud-data-changed'));return true}
  catch{alert('Le stockage local du navigateur est indisponible.');return false}
 }
@@ -41,7 +43,7 @@ function setupProfile(){
    $('#profile-status').textContent='DPI ou sensibilité invalide.';return;
   }
   if(save({...extras,profile:draft})){
-   $('#profile-status').textContent='Profil enregistré dans ce navigateur.';
+   $('#profile-status').textContent='Profil enregistré sur ton compte · Synchronisation cloud automatique.';
    $('#program-tool').value=draft.tool;$('#rank').value=draft.rank;renderProgram();
   }
  });
@@ -194,6 +196,7 @@ function renderAll(){renderProgram();renderChallenges();updateScenarioChoices();
 function init(){
  load();setupProfile();setupProgram();setupAnalytics();setupInterop();renderChallenges();
  window.addEventListener('aim-store-updated',renderAll);
+ window.addEventListener('aim-sync-applied',()=>{load();showProfile();renderAll()});
  $('#tab-program').addEventListener('click',renderProgram);
  $('#tab-challenges').addEventListener('click',renderChallenges);
 }

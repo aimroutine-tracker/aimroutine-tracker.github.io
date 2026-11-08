@@ -23,7 +23,7 @@ if('serviceWorker' in navigator&&window.isSecureContext){
   });
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw-v6.js',{scope:'./',updateViaCache:'none'})
-      .then(reg=>reg.update()).catch(()=>{ /* Guest mode remains available. */ });
+      .then(reg=>reg.update()).catch(()=>{ /* Guests can only explore without saving. */ });
   },{once:true});
 }
 </script><script src="site.js?v=8" defer></script><script src="site-quality-v34.js?v=1" defer></script>
@@ -80,9 +80,9 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
 <section class="ar7-account-hero">
  <div><span class="ar7-eyebrow">AIMROUTINE / CLOUD V7</span>
  <h1><span class="fr">Ton profil <em>cloud.</em></span><span class="en">Your <em>cloud profile.</em></span></h1>
- <p><span class="fr">Retrouve tes entraînements et routines grâce à un compte personnel, avec une sauvegarde cloud facultative. Tu peux aussi continuer en invité, sans compte.</span><span class="en">Access your workouts and routines with an optional account and cloud backup, or keep training as a guest without registering.</span></p>
- <div class="ar7-account-highlights" aria-label="Avantages du compte Cloud"><div class="ar7-account-chip"><span class="fr">Comptes personnels</span><span class="en">Private accounts</span></div><div class="ar7-account-chip"><span class="fr">Données protégées</span><span class="en">Protected data</span></div><div class="ar7-account-chip"><span class="fr">Mode invité préservé</span><span class="en">Guest mode preserved</span></div></div>
- <a class="ar7-guest-link" href="training.html"><span class="fr">Continuer sans compte</span><span class="en">Continue as a guest</span> ↗</a>
+ <p><span class="fr">Retrouve tes routines et tes progrès avec ton compte personnel. La sauvegarde et la synchronisation cloud sont automatiques. Sans compte, seul l’aperçu est disponible.</span><span class="en">Save your routines and progress with a personal account and automatic cloud synchronization. Without an account, only the preview is available.</span></p>
+ <div class="ar7-account-highlights" aria-label="Avantages du compte Cloud"><div class="ar7-account-chip"><span class="fr">Comptes personnels</span><span class="en">Private accounts</span></div><div class="ar7-account-chip"><span class="fr">Données protégées</span><span class="en">Protected data</span></div><div class="ar7-account-chip"><span class="fr">Aperçu sans sauvegarde</span><span class="en">Preview without saving</span></div></div>
+ <a class="ar7-guest-link" href="training.html"><span class="fr">Découvrir sans sauvegarder</span><span class="en">Explore without saving</span> ↗</a>
  </div>
  <figure><img src="aimroutine-logo.png?v=3" alt="Logo officiel AimRoutine Tracker" width="128" height="128"><figcaption>CLOUD / PARIS REGION</figcaption></figure>
 </section>
@@ -96,7 +96,7 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
   <div class="v14-profile-sync"><span class="v14-cyan">☁</span><div><strong><span class="fr">Sauvegarde Cloud</span><span class="en">Cloud backup</span></strong><small data-v14-profile-sync>—</small></div><button type="button" data-v14-account-action="cloud"><span class="fr">Gérer</span><span class="en">Manage</span> ↗</button></div>
  </section>
  <section class="v14-account-welcome v14-panel" data-v14-account-welcome>
-  <div class="v14-glyph">☁</div><div><span class="v14-kicker">PLAYER CLOUD</span><h2><span class="fr">Ta progression, sur tes appareils.</span><span class="en">Your progress across devices.</span></h2><p><span class="fr">Connecte-toi pour retrouver ton historique synchronisé. Tu peux aussi continuer sans compte.</span><span class="en">Sign in to access your synced history. Guest mode remains available.</span></p></div>
+  <div class="v14-glyph">☁</div><div><span class="v14-kicker">PLAYER CLOUD</span><h2><span class="fr">Ta progression, sur tes appareils.</span><span class="en">Your progress across devices.</span></h2><p><span class="fr">Connecte-toi pour retrouver ton historique synchronisé. Sans compte, tu peux seulement explorer les exercices.</span><span class="en">Sign in to access your synced history. Guest mode remains available.</span></p></div>
   <button type="button" data-v14-account-action="signup" class="v14-hot-button"><span class="fr">Créer mon compte</span><span class="en">Create account</span> ↗</button>
  </section>
  <div class="v14-cloud-benefits">
@@ -106,7 +106,7 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
  </div>
 </div>
 <p class="ar7-legal-line"><strong><span class="fr">Protection des données :</span><span class="en">Data privacy:</span></strong>
-<span class="fr">Avec un compte, Supabase traite ton e-mail, les données d'authentification et la progression que tu choisis de synchroniser. Les données de progression restent privées à ton compte et le mode invité reste local. Ne partage jamais ton mot de passe.</span><span class="en">With an account, Supabase processes your email, authentication information and the progress you choose to sync. Training data is private to your account; guest data stays local. Never share passwords.</span>
+<span class="fr">Avec un compte, Supabase traite ton e-mail, les données d'authentification et tes routines et ta progression synchronisées automatiquement. Les données restent privées à ton compte ; aucun résultat invité n'est enregistré. Ne partage jamais ton mot de passe.</span><span class="en">With an account, Supabase processes your email, authentication information and your automatically synced progress. Training data remains private to your account; guest results are not saved. Never share passwords.</span>
 <a href="privacy.html"><span class="fr">Politique de confidentialité</span><span class="en">Privacy policy</span></a></p>
 <div class="ar7-account-layout v14-account-layout">
 <section class="ar7-account-panel" id="auth-panel" aria-labelledby="ar7-auth-title">
@@ -158,7 +158,7 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
 <section class="ar7-account-panel" id="username-panel" aria-labelledby="username-title" hidden>
  <span class="ar7-eyebrow">PLAYER PROFILE / USERNAME</span>
  <h2 id="username-title"><span class="fr">Choisis ton pseudo.</span><span class="en">Choose your username.</span></h2>
- <p class="ar7-social-note"><span class="fr">Pour terminer la création de ton compte, choisis un pseudo. Il reste enregistré sur tous tes appareils, même sans sauvegarde cloud. Cette étape est aussi proposée aux comptes Google et aux anciens comptes.</span><span class="en">Complete your account by choosing a username. It stays saved across devices even without cloud backup. This step also applies to Google and existing accounts.</span></p>
+ <p class="ar7-social-note"><span class="fr">Pour terminer la création de ton compte, choisis un pseudo. Il reste enregistré sur tous tes appareils, avec la sauvegarde cloud automatique. Cette étape est aussi proposée aux comptes Google et aux anciens comptes.</span><span class="en">Complete your account by choosing a username. It stays saved across devices with automatic cloud backup. This step also applies to Google and existing accounts.</span></p>
  <p class="ar7-social-note"><span class="fr">Compte : </span><span class="en">Account: </span><strong id="username-email">—</strong></p>
  <form id="username-form" class="ar7-auth-form">
   <label><span class="fr">Ton pseudo (obligatoire)</span><span class="en">Your username (required)</span><input id="username-input" type="text" autocomplete="nickname" required minlength="3" maxlength="24" pattern="[A-Za-z0-9][A-Za-z0-9_-]{2,23}" spellcheck="false" placeholder="Ex. NovaFox27"></label>
@@ -176,8 +176,8 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
   <div><small><span class="fr">MES ROUTINES LOCALES</span><span class="en">LOCAL ROUTINES</span></small><strong id="cloud-routines-count">0</strong></div>
  </div>
  <div class="ar7-controls">
-  <button id="cloud-enable" type="button" class="ar7-primary"><span class="fr">Activer la sauvegarde cloud</span><span class="en">Enable cloud backup</span></button>
-  <button id="cloud-sync" type="button" class="ar7-secondary"><span class="fr">Synchroniser maintenant</span><span class="en">Sync now</span></button>
+  <button id="cloud-enable" type="button" hidden class="ar7-primary"><span class="fr">Synchronisation automatique</span><span class="en">Enable cloud backup</span></button>
+  <button id="cloud-sync" type="button" hidden class="ar7-secondary"><span class="fr">Synchronisation automatique</span><span class="en">Sync now</span></button>
   <a href="training.html" class="ar7-secondary"><span class="fr">Accéder à mon espace AIM</span><span class="en">Open AIM workspace</span></a>
  </div>
  <div class="ar7-import-guest"><h3><span class="fr">Importer ma progression invitée</span><span class="en">Import my guest progress</span></h3><p><span class="fr">Si tu utilisais AimRoutine sans compte sur cet appareil, copie tes anciennes séances et routines vers ton compte cloud. Les données invitées seront conservées, sans suppression.</span><span class="en">If you trained as a guest on this device, copy your old training history and routines to your account. Original guest data is not deleted.</span></p><button id="cloud-import-guest" type="button" class="ar7-secondary"><span class="fr">Importer mes données invitées</span><span class="en">Import guest data</span></button></div>
@@ -205,7 +205,7 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
 </details>
 </section>
 <div class="v15-cloud-portal" aria-label="Tableau de bord Cloud / Cloud dashboard">
-<article class="v14-panel"><div class="v14-panel-head"><span class="v14-glyph v15-cyan">☁</span><div><h2><span class="fr">Synchronisation cloud</span><span class="en">Cloud synchronization</span></h2><small><span class="fr">Tes routines et tes séances, sur tes appareils lorsque tu actives la sauvegarde.</span><span class="en">Your routines and sessions across devices when backup is enabled.</span></small></div></div>
+<article class="v14-panel"><div class="v14-panel-head"><span class="v14-glyph v15-cyan">☁</span><div><h2><span class="fr">Synchronisation cloud</span><span class="en">Cloud synchronization</span></h2><small><span class="fr">Tes routines et tes séances sont automatiquement synchronisées après connexion.</span><span class="en">Your routines and sessions synchronize automatically when signed in.</span></small></div></div>
 <div class="v15-cloud-top"><div class="v15-cloud-state"><span class="v15-cloud-icon">☁</span><div><strong data-v15-cloud-status><span class="fr">Connexion nécessaire</span><span class="en">Sign-in required</span></strong><small data-v15-cloud-details><span class="fr">Connecte-toi pour gérer ta sauvegarde.</span><span class="en">Sign in to manage cloud backup.</span></small></div></div>
 <div class="v15-cloud-privacy"><h3><span class="fr">Données et appareils</span><span class="en">Data and devices</span></h3><p><span class="fr">Tes séances sont privées. La liste des appareils synchronisés n’est pas encore disponible ; aucun appareil fictif n’est affiché.</span><span class="en">Your sessions are private. A synchronized-device list is not available yet; we do not display fake devices.</span></p></div></div>
 <div class="v15-cloud-actions"><a href="training.html"><span class="fr">Accéder à mes routines</span><span class="en">Open my routines</span> ↗</a><a href="#dashboard-panel"><span class="fr">Gérer ma sauvegarde</span><span class="en">Manage my backup</span> ↗</a></div>
@@ -216,7 +216,7 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
 <article class="v15-account-setting"><span class="v14-kicker">03 / TRAINING</span><h3><span class="fr">Préférences AIM</span><span class="en">AIM preferences</span></h3><p><span class="fr">Choisis tes exercices et tes objectifs.</span><span class="en">Choose exercises and your goals.</span></p><a href="training.html#panel-profile"><span class="fr">Paramètres joueur</span><span class="en">Player settings</span> ↗</a></article>
 </div></div><aside class="ar7-account-help v14-account-help">
  <span class="ar7-eyebrow">SECURITY / PRIVACY</span><h3><span class="fr">Ton entraînement. Tes données.</span><span class="en">Your training. Your data.</span></h3>
- <p><span class="fr">La sauvegarde cloud est facultative. Elle utilise une base Supabase avec des règles qui limitent l'accès aux données du propriétaire du compte.</span><span class="en">Cloud backup is optional. Supabase database access rules restrict training data to its account owner.</span></p>
+ <p><span class="fr">La sauvegarde cloud est automatique pour les comptes connectés. Elle utilise une base Supabase avec des règles qui limitent l'accès aux données du propriétaire du compte.</span><span class="en">Cloud backup is automatic for signed-in accounts. Supabase database access rules restrict training data to its account owner.</span></p>
  <p><span class="fr">Pour un meilleur respect de la vie privée, évite de te connecter sur un ordinateur partagé : une copie locale par compte peut y rester enregistrée.</span><span class="en">Avoid logging in on shared computers: each account can leave local cached data on that device.</span></p>
  <p><span class="fr">La connexion Riot Games et la synchronisation Windows restent des projets séparés.</span><span class="en">Riot Games login and Windows sync remain separate projects.</span></p>
  <p><a href="https://supabase.com/docs/guides/auth" target="_blank" rel="noopener noreferrer">Supabase Auth ↗</a></p>

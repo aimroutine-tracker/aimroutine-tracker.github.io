@@ -1,7 +1,7 @@
 /* AimRoutine offline shell — V7 cache refresh fix.
    All same-origin static assets are network-first to stop stale CSS from persisting
-   across deployments. Offline fallback still supports AIM sessions stored locally. */
-const CACHE='aimroutine-v8-required-username-20261107';
+   across deployments. Offline fallback allows a guest preview, but saving now requires a verified account. */
+const CACHE='aimroutine-v9-account-cloud-auto-20261108';
 const BASE=new URL(self.registration.scope);
 const OFFLINE=[
  './','./index.html','./training.html','./account.html','./product.html','./releases.html',

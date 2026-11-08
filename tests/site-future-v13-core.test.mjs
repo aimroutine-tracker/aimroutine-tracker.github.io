@@ -39,5 +39,5 @@ test('V13 files are in the reviewed deployment and offline shell',()=>{
   assert.ok(allow.includes(name),name+' absent from public allowlist');
   assert.ok(worker.includes("'./"+name+"'"),name+' absent from offline assets');
  }
- assert.match(worker,/aimroutine-v8-required-username-20261107/);
+ assert.match(worker,/aimroutine-v9-account-cloud-auto-20261108/);
 });

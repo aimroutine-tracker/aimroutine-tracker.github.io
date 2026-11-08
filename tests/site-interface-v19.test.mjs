@@ -22,3 +22,10 @@ test('V19 responsive cards and dialog account for accessible motion',()=>{
  const css=get('site-interface-v19.css');
  for(const item of ['prefers-reduced-motion:reduce','max-width:700px','::backdrop','.r19-tool-grid','.r19-cloud-actions','.r19-range-buttons'])assert.ok(css.includes(item),item);
 });
+
+test('Home and progress proactively pull signed-in Cloud data',()=>{
+ const home=get('site-v15-data.mjs'),analytics=get('progress-v14.mjs');
+ assert.ok(home.includes('await synchronize(supabase,uid)'));
+ assert.ok(analytics.includes('await synchronize(supabase,uid)'));
+ assert.ok(analytics.includes('Cloud sync pending'));
+});

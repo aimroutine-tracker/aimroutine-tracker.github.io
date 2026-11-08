@@ -1,6 +1,7 @@
 /* V14 progress: only validated user-recorded sessions, no fabricated analytics. */
 import {normalizeStore,computeStats,FOCUS,STORAGE_KEY} from './training-core-v5.mjs';
 import {validUid,scopedKey} from './cloud-core-v7.mjs';
+import {synchronize} from './cloud-sync-v7.mjs';
 const $=s=>document.querySelector(s);
 const en=()=>document.documentElement.lang==='en';
 const tr=(fr,english)=>en()?english:fr;
@@ -110,25 +111,32 @@ function render(){
  lineChart(subset);barChart(subset);distribution(subset);
 }
 async function load(){
- let key=STORAGE_KEY,readable=true;
+ let key=null,readable=false,syncPending=false;scope='guest';sessions=[];goal=3;
  try{
   if(localStorage.getItem('sb-lmzswtzboobpokumxzhy-auth-token')){
-   readable=false;
    const {supabase}=await import('./cloud-client-v7.mjs');
    const {data,error}=await supabase.auth.getSession();
    const uid=data?.session?.user?.id;
-   if(!error&&validUid(uid)){key=scopedKey(STORAGE_KEY,uid);scope='account';readable=true;}
+   if(!error&&validUid(uid)){
+    const verified=await supabase.auth.getUser();
+    if(!verified.error&&verified.data?.user?.id===uid){
+     key=scopedKey(STORAGE_KEY,uid);scope='account';readable=true;
+     try{await synchronize(supabase,uid)}catch{syncPending=true}
+    }
+   }
   }
  }catch{readable=false;}
  if(readable){
   try{const raw=JSON.parse(localStorage.getItem(key)||'null');const clean=normalizeStore(raw,null);sessions=clean.sessions;goal=clean.weeklyGoal;}catch{sessions=[];goal=3;}
  }
  source.textContent=readable?
-  (scope==='account'?tr('Compte connecté · données locales de ton compte','Signed in · local account data'):tr('Mode invité · données de cet appareil','Guest mode · this device data')):
-  tr('Connecte-toi sur Mon compte pour autoriser l’accès aux données privées.','Sign in on My Account to verify access to private data.');
+  (syncPending?tr('Compte connecté · Synchronisation cloud en attente ; affichage du cache de ton compte','Signed in · Cloud sync pending; showing account cache'):tr('Compte connecté · Statistiques automatiquement synchronisées','Signed in · Statistics automatically synchronized')):
+  tr('Connecte-toi pour consulter tes statistiques. Rien n’est sauvegardé sans compte.','Sign in to see your statistics. Nothing is saved without an account.');
  render();
 }
 $('#v14-progress-range').addEventListener('change',render);
 document.querySelectorAll('[data-switch-lang]').forEach(b=>b.addEventListener('click',()=>queueMicrotask(render)));
 window.addEventListener('storage',event=>{if(event.key?.includes(STORAGE_KEY))void load();});
+window.addEventListener('focus',()=>void load());
+window.addEventListener('online',()=>void load());
 void load();
