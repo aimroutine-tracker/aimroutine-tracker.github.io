@@ -254,3 +254,29 @@ body.a21-live .site31-footer{background:#08131f!important;border-color:#365161!i
 @media(max-width:880px){.a21 .a21-hero{height:auto;min-height:245px}.a21-index .a21-hero{min-height:335px}.a21 .a21-hero-art{width:100%;opacity:.45;background-position:65% center}.a21 .a21-hero-gradient{background:linear-gradient(90deg,#07121b,#07121bca 70%,#07121b40)}.a21 .a21-feature-grid{grid-template-columns:1fr}.a21 .a21-training-grid{grid-template-columns:1fr}.a21 .a21-train-left{grid-template-columns:1fr 1fr}.a21 .a21-train-right{grid-column:auto}.a21 .a21-week{grid-template-columns:1fr}.a21 .a21-analytics-mid{grid-template-columns:1fr 1fr}.a21 .a21-analytics-bottom{grid-template-columns:1fr}.a21 .a21-kpis{grid-template-columns:repeat(2,1fr);height:auto}.a21 .a21-kpi{min-height:63px}.a21 .a21-kpi:nth-child(2):after{display:none}}
 @media(max-width:690px){.a21 .a21-hero-inner{padding:20px 22px}.a21 .a21-content{width:calc(100% - 24px)}.a21 .a21-hero h1{font-size:clamp(33px,7.5vw,48px)!important}.a21 .a21-hero-actions{flex-wrap:wrap;gap:7px}.a21 .a21-cta{padding:8px 14px;min-height:42px;font-size:11px}.a21 .a21-feature{grid-template-columns:50px 1fr 44px;min-height:114px;height:auto}.a21 .a21-feature-art svg{width:44px}.a21 .a21-paths{grid-template-columns:1fr}.a21 .a21-training-grid{grid-template-columns:1fr}.a21 .a21-train-left,.a21 .a21-train-right{grid-template-columns:1fr}.a21 .a21-plan-body{grid-template-columns:1fr}.a21 .a21-plan-head{flex-wrap:wrap}.a21 .a21-levels{gap:4px}.a21 .a21-levels button{padding:6px}.a21 .a21-levels small{display:none}.a21 .a21-levels svg{width:24px}.a21 .a21-days{gap:2px}.a21 .a21-days small{font-size:8px}.a21 .a21-exercise{grid-template-columns:31px 1fr 44px 66px;gap:4px;padding:5px}.a21 .a21-exercise button{font-size:9px}.a21 .a21-weekdays{grid-template-columns:repeat(2,minmax(0,1fr))}.a21 .a21-profile{grid-template-columns:56px 1fr;gap:9px;padding:12px}.a21 .a21-avatar{width:53px;height:53px}.a21 .a21-avatar img{width:35px}.a21 .a21-cloud-grid{grid-template-columns:1fr}.a21 .a21-pref-grid{grid-template-columns:1fr}.a21 .a21-analytics-grid,.a21 .a21-analytics-mid,.a21 .a21-analytics-bottom{grid-template-columns:1fr}.a21 .a21-analytics-grid>.a21-panel:last-child{grid-column:auto}.a21 .a21-goals{grid-template-columns:1fr}.a21 .a21-benefits{position:static;width:100%;margin-top:14px;padding:7px;flex-direction:column}.a21-account .a21-hero{min-height:340px}.a21 .a21-overline{font-size:9px}}
 @media(prefers-reduced-motion:reduce){.a21 *,.a21 *:before,.a21 *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+
+/* V21 visual comparison round 1 — measured reference-alignment corrections */
+body.a21-live #ar-account-required{display:none!important}
+@media(min-width:900px){
+ .a21-index .a21-hero h1{margin-top:-14px!important}
+ .a21-training .a21-hero h1 em,.a21-training .a21-hero h1 strong{display:inline!important}
+ .a21-training .a21-hero h1{font-size:clamp(43px,3.45vw,58px)!important;max-width:920px!important;margin-top:15px!important}
+ .a21-account .a21-hero{width:100vw!important;max-width:100vw!important;margin-left:calc(50% - 50vw)!important}
+ .a21-account .a21-hero h1{margin-top:-34px!important}
+ .a21-account .a21-benefits{top:165px!important;bottom:auto!important;left:56px!important}
+ .a21-account .a21-hero p{max-width:640px!important}
+}
+.a21 .a21-login{height:262px!important;min-height:262px!important;overflow-y:auto!important;scrollbar-color:#5a7585 #0b1b29}
+.a21 .a21-login #ar7-auth-title,.a21 .a21-login #auth-panel>.ar7-eyebrow{display:none!important}
+.a21 .a21-login #google-login-note{display:none!important}
+.a21 .a21-login #google-login-wrap{margin-top:8px}
+.a21 .a21-login .ar7-form-switch{margin:0 0 7px!important;min-height:31px!important}
+.a21 .a21-login #login-form{order:0}
+.a21 .a21-login #google-login-wrap{order:1}
+.a21 .a21-login #auth-panel{display:flex!important;flex-direction:column!important}
+.a21 .a21-login #auth-panel>.ar7-form-switch{order:-1}
+.a21 .a21-login #login-form label{margin-bottom:4px!important}
+.a21 .a21-login #reset-link{margin:0 0 4px!important}
+.a21 .a21-login .ar7-social-login{margin-bottom:8px!important}
+@media(max-width:690px){.a21 .a21-login{height:auto!important;min-height:262px!important;max-height:600px!important}.a21-account .a21-hero h1{margin-top:13px!important}.a21-account .a21-benefits{position:static!important;top:auto!important;left:auto!important}}
