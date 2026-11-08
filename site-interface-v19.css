@@ -79,3 +79,8 @@ body.site31 .ar-account-required:not([hidden]){display:flex;gap:22px;align-items
 .ar-account-required a:hover{background:#ff8b9a}
 .r19-cloud-auto{display:inline-flex;align-items:center;padding:11px 14px;border:1px solid #237c80;border-radius:4px 10px 4px 10px;background:#0e3038;color:#58e3d9;font-weight:800;font-size:12px}
 @media(max-width:700px){body.site31 .ar-account-required:not([hidden]){flex-direction:column;align-items:stretch;padding:14px}.ar-account-required a{justify-content:center}}
+
+/* Never expose manual cloud commands, and keep guest preview from exporting empty backups. */
+body.site31 #cloud-enable[hidden],body.site31 #cloud-sync[hidden],
+body.site31 [data-r19-cloud="cloud-sync"],body.site31 [data-r19-cloud="cloud-enable"]{display:none!important}
+body.ar-guest-preview :is(#export-data,#import-data,#export-portable,#import-portable,#clear-data){display:none!important}
