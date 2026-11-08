@@ -134,11 +134,14 @@
       if(e.target.closest('[data-a21-run]'))startBuilder();
     });
     ['aim-v5-ready','aim-store-updated','aim-cloud-data-changed','aim-sync-applied'].forEach(e=>window.addEventListener(e,update));
-    $('.r19-tool-select')?.addEventListener('change',plan);plan();update();
+    $('.r19-tool-select')?.addEventListener('change',plan);
+    if(!window.__aimCloudUserId){const note=$('.a21-summary .a21-card-head p',ui);if(note)note.textContent='Mode aperçu : aucune progression n’est sauvegardée sans compte.';}
+    plan();update();
     $('a[href="#panel-builder"]',ui)?.addEventListener('click',e=>{e.preventDefault();startBuilder()});
   }
   function accountLive(ui){
     const auth=$('#auth-panel'),dash=$('#dashboard-panel'),username=$('#username-panel'),target=$('[data-a21-auth]',ui);
+    const google=$('#google-login-wrap'),login=$('#login-form');if(google&&login)google.before(login);
     if(auth)target.append(auth);if(username)target.append(username);if(dash)target.append(dash);
     $('[data-a21-signup]',ui)?.addEventListener('click',()=>{const b=$('#show-signup')||$('#signup-link');if(b)b.click();else{const form=$('#signup-form');if(form)form.hidden=false;}$('#signup-form')?.scrollIntoView({block:'nearest',behavior:'smooth'});});
     const select=$('[data-a21-language]',ui);if(select){select.value=document.documentElement.lang==='en'?'en':'fr';select.addEventListener('change',()=>{if(select.value!==document.documentElement.lang)$('[data-switch-lang]')?.click()});}
