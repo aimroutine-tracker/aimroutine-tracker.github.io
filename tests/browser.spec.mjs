@@ -693,3 +693,33 @@ test('V3 account guest portrait uses the owner artwork asset without exposing a 
  expect(await source.text()).toContain('data:image/webp;base64,');
  await expect(page.locator('.r17-account-profile')).toContainText('Connecte-toi');
 });
+
+
+test('V3 Cloud FR/EN switch updates guest cards without clearing login inputs',async({page})=>{
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ const button=page.locator('.ar-v3-language-footer [data-switch-lang]');
+ const title=page.locator('#r17-guest-registration-heading');
+ const perks=page.locator('.r17-account-benefits .r17-benefit-copy strong').first();
+ const notice=page.locator('[data-r17-sync-copy]');
+ const email=page.locator('#login-email');
+ const guest=page.locator('.r17-guest-registration');
+ await expect(guest).toBeVisible();
+ if((await page.locator('html').getAttribute('lang'))==='en')await button.click();
+ await expect(title).toHaveText('Créer un compte');
+ await expect(perks).toHaveText('Progression partagée');
+ await expect(notice).toContainText('Connecte-toi');
+ await email.fill('test@example.com');
+ const initialFormCount=await page.locator('#login-form').count();
+ await button.click();
+ await expect(page.locator('html')).toHaveAttribute('lang','en');
+ await expect(title).toHaveText('Create an account');
+ await expect(perks).toHaveText('Shared progress');
+ await expect(notice).toContainText('Sign in');
+ await expect(email).toHaveValue('test@example.com');
+ await expect(page.locator('#login-form')).toHaveCount(initialFormCount);
+ await button.click();
+ await expect(title).toHaveText('Créer un compte');
+ await expect(perks).toHaveText('Progression partagée');
+ await expect(email).toHaveValue('test@example.com');
+ await expect(page.locator('.r17-guest-signup-button')).toBeVisible();
+});
