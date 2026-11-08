@@ -121,15 +121,25 @@ async function synchronizeOnce(client,uid,{guestImport=false}={}){
    const {error}=await client.from('aim_preferences').upsert({user_id:uid,weekly_goal:finalGoal,settings:{format:'aimroutine-web-v2',...(remoteResetAt?{reset_at:remoteResetAt}:{})}});
    if(error)throw error;
  }
- const finalStore={...local.store,sessions:mergedSessions,presets:mergedPresets,weeklyGoal:finalGoal};
- meta.presetDeletedIds=[];
+ // Preserve edits made while the network request was in flight.
+ // This is essential for rapid consecutive sessions and multiple open tabs.
+ const newest=readUserLocal(uid);
+ const concurrentMeta=readMeta(uid);
+ const freshDeletes=concurrentMeta.presetDeletedIds.filter(id=>!pending.has(id));
+ const finalStore={...local.store,
+   sessions:mergeRecords(newest.store.sessions,mergedSessions,
+     remoteSessions.filter(x=>x.deleted_at).map(x=>x.session_id)).filter(validSession).slice(-STORAGE_LIMIT),
+   presets:mergeRecords(newest.store.presets,mergedPresets,freshDeletes).filter(validPreset).slice(-25),
+   weeklyGoal:newest.store.weeklyGoal!==local.store.weeklyGoal?newest.store.weeklyGoal:finalGoal};
+ const newestProfile=JSON.stringify(newest.ext)!==JSON.stringify(local.ext)?newest.ext:finalProfile;
+ meta.presetDeletedIds=freshDeletes;
  meta.profileHash=JSON.stringify(finalProfile);
  meta.prefsHash=JSON.stringify({weeklyGoal:finalGoal});
  if(unseenReset){
    // Prevent the V1 fallback from resurrecting data after V2 is replaced.
    localStorage.removeItem(scopedKey(LEGACY_KEY,uid));
  }
- writeLocal(uid,finalStore,finalProfile,meta);
+ writeLocal(uid,finalStore,newestProfile,meta);
  return {
   synced:true,uploadedSessions:newSessions.length,uploadedFavorites:newPresets.length,
   downloadedSessions:mergedSessions.length,downloadedFavorites:mergedPresets.length,
@@ -183,7 +193,7 @@ const inflightSyncs=new Map();
 export function synchronize(client,uid,options={}){
  if(!validUid(uid))return Promise.reject(Error('Connexion obligatoire pour enregistrer.'));
  const pending=inflightSyncs.get(uid);
- if(pending)return pending;
+ if(pending)return options.guestImport?pending.then(()=>synchronize(client,uid,options)):pending;
  const task=synchronizeOnce(client,uid,options);
  inflightSyncs.set(uid,task);
  void task.finally(()=>{if(inflightSyncs.get(uid)===task)inflightSyncs.delete(uid)}).catch(()=>{});
