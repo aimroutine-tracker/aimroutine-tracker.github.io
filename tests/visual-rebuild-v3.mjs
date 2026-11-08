@@ -73,5 +73,5 @@ try{
  }
 }finally{await browser.close();}
 await writeFile(join(out,'measurements.json'),JSON.stringify(results,null,2));
-for(const x of results)console.log(x.name,x.phase,'hero',JSON.stringify(x.geometry.hero),'width',x.geometry.documentWidth,'JS errors',x.javascriptErrors.length);
+for(const x of results)console.log(x.name,x.phase,'hero',JSON.stringify(x.geometry.hero),'content',JSON.stringify(x.geometry.heroContent),'headline',JSON.stringify(x.geometry.heroHeadline),'description',JSON.stringify(x.geometry.heroDescription),'actions',JSON.stringify(x.geometry.heroActions),'notice',JSON.stringify(x.geometry.previewNotice),'width',x.geometry.documentWidth,'JS errors',x.javascriptErrors.length);
 if(failed)process.exitCode=1;
