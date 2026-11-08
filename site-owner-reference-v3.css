@@ -1308,3 +1308,36 @@ body.site31.r20 .r17-account-wrap .r17-account-profile .r17-avatar img{
    width:72px!important;height:59px!important;
  }
 }
+
+
+/* V3 / pass 19 — mobile profile layout guard.
+   Avoid the profile name and decorative owner portrait sharing pixels at 390px.
+   Preserve the real signed-in name, guest state and responsive session totals. */
+@media(max-width:720px){
+ body.site31.r20 .r17-account-wrap .r17-account-profile{
+  display:grid!important;
+  grid-template-columns:64px minmax(0,1fr)!important;
+  column-gap:14px!important;row-gap:12px!important;
+  padding:12px 14px!important;align-items:center!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-profile>.r17-avatar{
+  grid-column:1!important;grid-row:1!important;
+  width:62px!important;height:58px!important;
+  max-width:100%!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-profile>div:nth-child(2){
+  grid-column:2!important;grid-row:1!important;
+  min-width:0!important;max-width:100%!important;
+  overflow-wrap:anywhere!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-profile>div:nth-child(2) h2{
+  font-size:clamp(16px,4.4vw,20px)!important;
+  line-height:1.15!important;overflow-wrap:anywhere!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-profile>.r17-profile-stat{
+  min-width:0!important;max-width:100%!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-profile>.r17-profile-cloud{
+  grid-column:1/-1!important;min-width:0!important;
+ }
+}
