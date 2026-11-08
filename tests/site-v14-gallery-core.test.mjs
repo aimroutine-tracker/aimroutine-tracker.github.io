@@ -35,5 +35,5 @@ test('V14 public manifest and PWA shell updated',()=>{
  for(const name of ['site-v14-gallery.css','site-v14-gallery.js','progress-v14.mjs','progress.html']){
   assert.ok(allow.includes(name));assert.ok(sw.includes("'./"+name+"'"));
  }
- assert.match(sw,/aimroutine-v8-required-username-20261107/);
+ assert.match(sw,/aimroutine-v9-account-cloud-auto-20261108/);
 });
