@@ -107,3 +107,6 @@ site-v15-data.mjs
 aimroutine-brand-a-v2.svg
 aimroutine-official-tokens-v2.css
 site-official-v16.css
+site-rebuild-v17.css
+site-rebuild-v17.js
+r17-hero.webp

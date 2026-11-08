@@ -489,69 +489,45 @@ test('V13 tactical design loads across routes without hiding interactive element
  await expect(page.locator('#signup-mode')).toBeVisible();
 });
 
-test('V14 homepage paths and actual builder handoff',async ({page})=>{
+test('V17 recreates the landing with real metrics and user-provided concept hero',async ({page})=>{
  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.v14-home-features .v14-feature')).toHaveCount(3);
- await expect(page.locator('.v14-rank-grid .v14-path')).toHaveCount(3);
- await expect(page.locator('.v14-featured-challenge .v14-hot-button')).toHaveAttribute('href','#aim-challenge');
- await page.goto('/training.html?level=iron#panel-builder',{waitUntil:'domcontentloaded'});
- await expect.poll(()=>page.locator('#panel-builder').isVisible(),{timeout:15000}).toBe(true);
- await expect(page.locator('[data-v14-level="iron"]')).toHaveAttribute('aria-pressed','true');
- await page.locator('[data-v14-focus="tracking"]').click();
- await expect(page.locator('[data-v14-focus="tracking"]')).toHaveAttribute('aria-pressed','true');
- await page.locator('[data-v14-generate]').last().click();
+ await expect(page.locator('.r17-home-wrap .r17-hero')).toBeVisible();
+ await expect(page.locator('.r17-features .r17-feature')).toHaveCount(3);
+ await expect(page.locator('.r17-path-grid .r17-path')).toHaveCount(3);
+ await expect(page.locator('.r17-challenge .r17-button')).toHaveAttribute('href','#aim-challenge');
+ await expect(page.locator('.r17-stats [data-v15-stat]')).toHaveCount(4);
+ await expect.poll(()=>page.locator('.r17-stats [data-v15-stat="sessions"]').textContent(),{timeout:15000}).toBe('0');
+ await expect(page.locator('.r17-stats [data-v15-stat="accuracy"]')).toHaveText('—');
+ await expect(page.locator('.r17-nav-actions a')).toHaveCount(3);
+ await expect(page.locator('.r17-hero-art')).toHaveCSS('background-image',/r17-hero\.webp/);
+});
+test('V17 training five days and skill choices prepare the actual routine builder',async ({page})=>{
+ await page.goto('/training.html?level=iron',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.r17-training-grid')).toBeVisible();
+ await expect(page.locator('.r17-level-options .r17-level')).toHaveCount(3);
+ await expect(page.locator('.r17-days [data-r17-day]')).toHaveCount(5);
+ await expect(page.locator('[data-r17-level="iron"]')).toHaveAttribute('aria-pressed','true');
+ await page.locator('.r17-days [data-r17-day="1"]').click();
+ await expect(page.locator('.r17-weekdays [data-r17-day="1"]')).toHaveAttribute('aria-pressed','true');
+ await page.locator('.r17-plan-footer [data-r17-create]').click();
  await expect(page.locator('#rank')).toHaveValue('iron');
  await expect(page.locator('#focus')).toHaveValue('tracking');
- await expect(page.locator('#routine-output')).toContainText('Personnalise ta séance');
+ await expect(page.locator('#panel-builder')).toBeVisible();
 });
-test('V14 truthful analytics and signup controls',async ({page})=>{
+test('V17 honest progress and unchanged authentication forms',async ({page})=>{
  await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.v14-progress-kpis .v14-kpi')).toHaveCount(4);
- await expect(page.locator('#v14-p-sessions')).toHaveText('0');
- await expect(page.locator('#v14-p-average')).toHaveText('—');
- await page.locator('#v14-progress-range').selectOption('7');
+ await expect(page.locator('.r17-progress-wrap .r17-hero')).toBeVisible();
+ await expect(page.locator('.r17-chart-grid .v14-panel')).toHaveCount(3);
  await expect(page.locator('#v14-p-sessions')).toHaveText('0');
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
- await expect(page.locator('[data-v14-account-welcome]')).toBeVisible();
- await page.locator('[data-v14-account-action="signup"]').click();
- await expect(page.locator('#signup-form')).toBeVisible();
- await expect(page.locator('#login-form')).toBeHidden();
- await page.locator('#login-mode').click();
+ await expect(page.locator('.r17-account-cols')).toBeVisible();
+ await expect(page.locator('[data-r17-cloud-label]')).toContainText(/Cloud non connecté|Cloud not signed in/);
  await expect(page.locator('#login-form')).toBeVisible();
-});
-
-test('V15 screenshot hero assets load and homepage stats do not invent numbers',async ({page})=>{
- await page.goto('/index.html',{waitUntil:'domcontentloaded'});
- const img=page.locator('.ar42-hero-poster img[src="mockup-hero-v15.webp"]');
- await expect(img).toHaveCount(1);
- await expect.poll(()=>img.evaluate(el=>el.complete&&el.naturalWidth>0),{timeout:10000}).toBe(true);
- await expect(page.locator('.v14-signal-strip [data-v15-stat]')).toHaveCount(4);
- await expect(page.locator('[data-v15-stat="sessions"]')).toHaveText('0');
- await expect(page.locator('[data-v15-stat="accuracy"]')).toHaveText('—');
- await expect(page.locator('.v15-header-actions a')).toHaveCount(3);
- await expect(page.locator('.v15-community-nav')).toHaveAttribute('href','index.html#community');
-});
-test('V15 training day navigation uses real builder and keeps old tabs',async ({page})=>{
- await page.goto('/training.html',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.ar5-art img[src="mockup-hero-v15.webp"]')).toHaveCount(1);
- await expect(page.locator('.v14-day-pills [data-v15-day]')).toHaveCount(5);
- await expect(page.locator('.v15-training-week [data-v15-weekday]')).toHaveCount(5);
- await page.locator('[data-v15-weekday="5"]').click();
- await expect(page.locator('[data-v15-day="5"]')).toHaveAttribute('aria-pressed','true');
- await expect(page.locator('[data-v15-weekday="5"]')).toHaveAttribute('aria-pressed','true');
- await page.locator('[data-v15-weekday="2"]').click();
- await expect(page.locator('[data-v15-day="2"]')).toHaveAttribute('aria-pressed','true');
- await expect(page.locator('#tab-builder')).toBeVisible();
-});
-test('V15 cloud shows real status without listing fictitious devices',async ({page})=>{
- await page.goto('/account.html',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.v15-cloud-portal')).toBeVisible();
- await expect(page.locator('[data-v15-cloud-status]')).toContainText(/Connexion nécessaire|Sign-in required/);
- await expect(page.locator('[data-v15-lang]')).toHaveValue(/fr|en/);
- await expect(page.locator('#login-form')).toBeVisible();
- await page.goto('/account.html?mode=signup',{waitUntil:'load'});
+ await page.locator('#signup-mode').click();
  await expect(page.locator('#signup-form')).toBeVisible();
  await expect(page.locator('#signup-username')).toBeVisible();
+ await page.locator('#login-mode').click();
+ await expect(page.locator('#login-form')).toBeVisible();
 });
 
 test('V16 official A logo renders in every flagship navigation and semantic colors match uploaded charter', async ({page})=>{
