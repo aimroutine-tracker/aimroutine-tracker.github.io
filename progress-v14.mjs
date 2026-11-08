@@ -110,22 +110,24 @@ function render(){
  lineChart(subset);barChart(subset);distribution(subset);
 }
 async function load(){
- let key=STORAGE_KEY,readable=true;
+ let key=null,readable=false;scope='guest';sessions=[];goal=3;
  try{
   if(localStorage.getItem('sb-lmzswtzboobpokumxzhy-auth-token')){
-   readable=false;
    const {supabase}=await import('./cloud-client-v7.mjs');
    const {data,error}=await supabase.auth.getSession();
    const uid=data?.session?.user?.id;
-   if(!error&&validUid(uid)){key=scopedKey(STORAGE_KEY,uid);scope='account';readable=true;}
+   if(!error&&validUid(uid)){
+    const verified=await supabase.auth.getUser();
+    if(!verified.error&&verified.data?.user?.id===uid){key=scopedKey(STORAGE_KEY,uid);scope='account';readable=true;}
+   }
   }
  }catch{readable=false;}
  if(readable){
   try{const raw=JSON.parse(localStorage.getItem(key)||'null');const clean=normalizeStore(raw,null);sessions=clean.sessions;goal=clean.weeklyGoal;}catch{sessions=[];goal=3;}
  }
  source.textContent=readable?
-  (scope==='account'?tr('Compte connecté · données locales de ton compte','Signed in · local account data'):tr('Mode invité · données de cet appareil','Guest mode · this device data')):
-  tr('Connecte-toi sur Mon compte pour autoriser l’accès aux données privées.','Sign in on My Account to verify access to private data.');
+  tr('Compte connecté · Statistiques issues de ta progression sauvegardée','Signed in · Statistics from saved account progress'):
+  tr('Connecte-toi pour consulter tes statistiques. Rien n’est sauvegardé sans compte.','Sign in to see your statistics. Nothing is saved without an account.');
  render();
 }
 $('#v14-progress-range').addEventListener('change',render);
