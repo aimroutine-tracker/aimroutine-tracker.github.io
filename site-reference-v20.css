@@ -678,3 +678,80 @@ body.site31.site31-training.r20 main#app>#ar-account-required{
   padding:6px 14px!important;
  }
 }
+
+
+/* V3 / pass 4 — correct measured dashboard density, keeping all real controls.
+   Chromium evidence: home KPI was 223px vs 68px target; plan 539px vs
+   ~390px target; guest progress disclosure displaced charts by 164px. */
+@media(min-width:1350px){
+ body.site31.r20 .r17-home-wrap .r17-stats{
+  height:68px!important;min-height:68px!important;max-height:68px!important;
+  padding:0!important;overflow:visible!important;align-items:stretch!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-stats>div{
+  min-height:0!important;height:66px!important;
+  padding:4px 18px!important;gap:13px!important;align-items:center!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-stats strong{
+  font-size:25px!important;line-height:1.05!important;white-space:nowrap!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-stats>div:last-child strong{
+  font-size:15px!important;line-height:1.12!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-stats small{font-size:10px!important;line-height:1.12!important}
+ body.site31.r20 .r17-home-wrap .r17-home-bottom .r17-path{
+  height:167px!important;min-height:167px!important;max-height:167px!important;
+  padding:12px 15px!important;overflow:hidden!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-path h3{font-size:18px!important}
+ body.site31.r20 .r17-home-wrap .r17-path p{
+  font-size:12px!important;line-height:1.27!important;margin:6px 0!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-path .r17-path-foot{padding:7px 0!important}
+ body.site31.r20 .r17-home-wrap .r17-home-bottom>div>p{margin:3px 0 13px!important}
+ body.site31.r20 .r17-training-wrap .r17-training-plan{
+  height:390px!important;min-height:390px!important;max-height:390px!important;
+  overflow-y:auto!important;overflow-x:hidden!important;scrollbar-width:thin;
+  scrollbar-color:#4e6878 #0a1b29;
+ }
+ body.site31.r20 .r17-training-wrap .r17-train-right>.r17-panel:first-child{
+  height:237px!important;min-height:237px!important;max-height:237px!important;
+  overflow-y:auto!important;scrollbar-width:thin;
+ }
+ body.site31.r20 .r17-training-wrap .r17-side-challenge{
+  height:212px!important;min-height:212px!important;max-height:212px!important;
+  overflow-y:auto!important;scrollbar-width:thin;
+ }
+ body.site31.r20 .r17-training-wrap .r17-train-chart{
+  height:124px!important;min-height:0!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-progress-kpis .v14-kpi{
+  height:62px!important;min-height:62px!important;max-height:62px!important;
+  padding:7px 16px!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-progress-kpis .v14-kpi strong{
+  font-size:clamp(22px,1.7vw,28px)!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-chart-grid>.v14-panel{
+  height:251px!important;min-height:251px!important;max-height:251px!important;
+  overflow:hidden!important;padding:12px 15px!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-chart-grid .v14-progress-svgbox{
+  height:173px!important;max-height:173px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-benefits{
+  width:min(760px,calc(100% - 52px))!important;
+  min-height:55px!important;height:55px!important;
+  max-width:760px!important;margin:-80px 0 25px 32px!important;
+  padding:8px 14px!important;display:flex!important;
+  flex-wrap:nowrap!important;align-items:center!important;
+  justify-content:space-between!important;gap:9px!important;
+  z-index:4!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-benefits span{
+  font-size:11px!important;min-width:0!important;white-space:nowrap!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-profile{
+  margin-left:20px!important;margin-right:20px!important;
+ }
+}
