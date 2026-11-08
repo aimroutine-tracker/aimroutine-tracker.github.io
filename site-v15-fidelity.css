@@ -210,3 +210,9 @@ body.site31.site31-progress .v15-radar-summary{font-size:11px;color:#a9f5ef;whit
  body.site31.site31-progress .v14-scene-art{inset:0!important;opacity:.3!important}
 }
 @media(prefers-reduced-motion:reduce){body.site31 .v15-header-actions a{transition:none!important;transform:none!important}}
+
+/* A connected player sees the real account dashboard before the cloud portal, with no overlap. */
+body.site31.site31-account.v15-account-logged .v14-account-layout{grid-template-columns:1fr!important}
+body.site31.site31-account.v15-account-logged #dashboard-panel:not([hidden]){grid-column:1/-1!important;grid-row:1!important}
+body.site31.site31-account.v15-account-logged .v14-account-layout .v15-cloud-portal{grid-column:1/-1!important;grid-row:2!important}
+body.site31.site31-account.v15-account-logged .v14-account-layout .v14-account-help{grid-column:1/-1!important;grid-row:3!important}
