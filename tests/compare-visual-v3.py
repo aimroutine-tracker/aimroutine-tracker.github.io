@@ -6,9 +6,12 @@ No fabricated reference or test pass if source files are absent.
 from PIL import Image, ImageChops, ImageEnhance
 from pathlib import Path
 import json
+import hashlib
 
 root=Path('visual-results')
 source=Path('tests/visual-references')
+manifest=json.loads((source/'manifest.json').read_text(encoding='utf-8'))
+assert manifest['viewport']=={'width':1672,'height':941}
 pages=('home','routines','progress','account')
 records=[]
 for name in pages:
@@ -26,11 +29,15 @@ for name in pages:
                 'comparison_to_owner_reference':'NOT EXECUTED: exact reference not in repository'}
         image=source/f'{name}.png'
         if image.is_file():
+            expected=manifest['references'][name]['sha256']
+            actual=hashlib.sha256(image.read_bytes()).hexdigest()
+            if actual!=expected:
+                raise SystemExit(f'Wrong original source PNG for {name}; SHA-256 mismatch')
+            record['original_sha256_verified']=True
             with Image.open(image) as im:
                 ref=im.convert('RGB')
                 if ref.size!=after.size:
-                    record['comparison_to_owner_reference']='BLOCKED: dimensions differ'
-                    record['reference_size']=list(ref.size)
+                    raise SystemExit(f'Wrong reference dimensions for {name}: {ref.size}, expected {after.size}')
                 else:
                     ref_diff=ImageChops.difference(ref,after)
                     ref_diff.save(root/f'{name}-source-diff.png',optimize=True)
