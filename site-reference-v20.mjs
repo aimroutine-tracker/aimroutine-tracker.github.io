@@ -181,7 +181,7 @@ function installV3Icons(screen){
  };
  const selectors='.r17-icon,.r17-stat-icon,.r17-level-symbol,.r17-reticle,.r17-challenge-target,.r17-path > span:first-child';
  const update=()=>{
-  for(const el of $(selectors,screen)){
+  for(const el of $$(selectors,screen)){
    if(el.querySelector('svg'))continue;
    const key=el.textContent.trim();
    const shape=paths[key];
