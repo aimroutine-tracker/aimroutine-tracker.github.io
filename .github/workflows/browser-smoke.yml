@@ -5,6 +5,7 @@ on:
       - "site-rebuild-v17.*"
       - "site-interface-v19.mjs"
       - "site-reference-v20.css"
+      - "site-owner-reference-v3.css"
       - "r17-hero.webp"
       - "index.html"
       - "training.html"
