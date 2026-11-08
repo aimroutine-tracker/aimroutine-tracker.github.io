@@ -123,10 +123,32 @@ function account(screen){
  }
  const devices=$('.r17-cloud-devices',screen);
  if(devices){const p=$('p',devices);if(p)p.textContent=words('La liste des appareils n’est pas disponible dans ton compte : aucun appareil fictif n’est affiché.','Device history is unavailable: no fictional devices are displayed.')}
+ // Visually match the guest registration card in the owner's Cloud mockup.
+ // The CTA switches to the REAL Supabase signup form rather than creating
+ // a second form or pretending to create an account.
+ const loginPanel=$('#auth-panel');
+ const authArea=$('.r17-account-auth',screen);
+ let registrationCard=$('.r17-guest-registration',screen);
+ if(authArea && loginPanel && !registrationCard){
+  registrationCard=document.createElement('section');
+  registrationCard.className='r17-guest-registration r17-panel';
+  registrationCard.setAttribute('aria-labelledby','r17-guest-registration-heading');
+  registrationCard.innerHTML=
+   '<div class="r17-guest-registration-heading"><span class="r17-icon" aria-hidden="true">✓</span><div><h2 id="r17-guest-registration-heading">'+words('Créer un compte','Create an account')+'</h2><p>'+words('Rejoins AimRoutine Tracker gratuitement.','Join AimRoutine Tracker for free.')+'</p></div></div>'+
+   '<ul><li>'+words('Sauvegarde et synchronise ta progression','Save and sync your progress')+'</li><li>'+words('Accède à tes routines et tes statistiques','Access your routines and statistics')+'</li><li>'+words('Personnalise ton espace d’entraînement','Customize your training workspace')+'</li></ul>'+
+   '<button type="button" class="r17-guest-signup-button">'+words('Créer un compte gratuitement','Create a free account')+' <span aria-hidden="true">›</span></button>';
+  loginPanel.after(registrationCard);
+  $('.r17-guest-signup-button',registrationCard)?.addEventListener('click',()=>{
+   $('#signup-mode')?.click();
+   $('#auth-panel')?.scrollIntoView({behavior:'smooth',block:'start'});
+   $('#signup-username')?.focus({preventScroll:true});
+  });
+ }
  const dashboard=$('#dashboard-panel');
  if(dashboard){
   const show=()=>{
    const active=!dashboard.hidden;
+   if(registrationCard)registrationCard.hidden=active;
    const username=$('[data-r17-username]',screen);
    if(username && !active) username.textContent=words('Connecte-toi à ton profil','Sign in to your profile');
    const sync=$('[data-r17-sync-copy]',screen);
