@@ -1,6 +1,6 @@
 /* AimRoutine Cloud v7. Initial and incremental synchronization.
    User ownership is enforced by Supabase RLS; browser-side checks are defense in depth. */
-import {TRAINING_KEY,LEGACY_KEY,EXT_KEY,scopedKey,CLOUD_META_PREFIX,safeMeta,freshCloudMeta,mergeRecords,changedRecords} from './cloud-core-v7.mjs';
+import {TRAINING_KEY,LEGACY_KEY,EXT_KEY,scopedKey,CLOUD_META_PREFIX,safeMeta,freshCloudMeta,mergeRecords,changedRecords,validUid} from './cloud-core-v7.mjs';
 import {normalizeStore,validSession,validPreset} from './training-core-v5.mjs';
 import {cleanExtension} from './training-v6-core.mjs';
 
@@ -9,8 +9,8 @@ const parseJSON=s=>{try{return JSON.parse(s)}catch{return null}};
 const equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const metaKey=uid=>CLOUD_META_PREFIX+uid;
 const enabledKey=uid=>'aimroutine_cloud_enabled_'+uid;
-export const isEnabled=uid=>localStorage.getItem(enabledKey(uid))==='yes';
-export const setEnabled=(uid,value)=>localStorage.setItem(enabledKey(uid),value?'yes':'no');
+export const isEnabled=uid=>validUid(uid); // Automatic Cloud for every signed-in account.
+export const setEnabled=(uid,value)=>{if(validUid(uid))localStorage.setItem(enabledKey(uid),value?'yes':'no')}; // Legacy preference, no longer a gate.
 export function readUserLocal(uid){
  const s=parseJSON(localStorage.getItem(scopedKey(TRAINING_KEY,uid)));
  const old=parseJSON(localStorage.getItem(scopedKey(LEGACY_KEY,uid)));
@@ -45,8 +45,8 @@ async function upsertChunks(client,table,records,idColumn){
   if(error)throw error;
  }
 }
-export async function synchronize(client,uid,{guestImport=false}={}){
- if(!isEnabled(uid))throw Error('La sauvegarde cloud doit être activée depuis Mon compte.');
+async function synchronizeOnce(client,uid,{guestImport=false}={}){
+ if(!validUid(uid))throw Error('Un compte connecté est nécessaire pour sauvegarder.');
  const {data:{user},error:authError}=await client.auth.getUser();
  if(authError||!user||user.id!==uid)throw Error('Session non validée : reconnecte-toi à ton compte.');
  let local=readUserLocal(uid);
@@ -176,4 +176,16 @@ export async function deleteCloudProgress(client,uid){
  localStorage.removeItem(scopedKey(LEGACY_KEY,uid));
  localStorage.removeItem(scopedKey(EXT_KEY,uid));
  return true;
+}
+
+// Deduplicate simultaneous requests from account page, auto-refresh and training edits.
+const inflightSyncs=new Map();
+export function synchronize(client,uid,options={}){
+ if(!validUid(uid))return Promise.reject(Error('Connexion obligatoire pour enregistrer.'));
+ const pending=inflightSyncs.get(uid);
+ if(pending)return pending;
+ const task=synchronizeOnce(client,uid,options);
+ inflightSyncs.set(uid,task);
+ void task.finally(()=>{if(inflightSyncs.get(uid)===task)inflightSyncs.delete(uid)}).catch(()=>{});
+ return task;
 }
