@@ -1256,3 +1256,29 @@ body.site31.r20 .ar-v3-language-footer [data-switch-lang]:focus-visible{
   mask-image:linear-gradient(90deg,transparent 0%,transparent 10%,#000 19%,#000 54%,transparent 60%,transparent 100%);
  }
 }
+
+
+/* V3 / pass 17 — authentic zero-data radar grid.
+   Four axes correspond exclusively to the four recorded focus categories.
+   This never draws fake player skill values or replaces a real radar polygon. */
+body.site31.r20 .r17-progress-wrap #v14-p-distribution:has(.v3-empty-radar){
+ display:grid!important;gap:0!important;
+ align-content:center!important;justify-items:center!important;
+ margin-top:0!important;min-height:0!important;
+}
+body.site31.r20 .r17-progress-wrap .v3-empty-radar{
+ width:min(100%,290px)!important;min-height:0!important;
+ display:block!important;pointer-events:none!important;
+ margin:-10px auto -16px!important;
+}
+body.site31.r20 .r17-progress-wrap .v3-empty-radar svg{
+ display:block!important;width:100%!important;max-height:170px!important;
+ filter:drop-shadow(0 0 6px #35e4de12)!important;
+}
+body.site31.r20 .r17-progress-wrap .v3-empty-radar-caption{
+ margin:0 8px 4px!important;line-height:1.3!important;
+ font-size:11px!important;
+}
+@media(max-width:1024px){
+ body.site31.r20 .r17-progress-wrap .v3-empty-radar{margin:4px auto -8px!important}
+}
