@@ -58,7 +58,8 @@ function barChart(items){
 function distribution(items){
  const root=$('#v14-p-distribution');root.replaceChildren();
  const keys=['flick','tracking','micro','control'];
- const labels=['Flick','Tracking',tr('Micro-correction','Micro-adjust'),tr('Contrôle','Control')];
+ const labelPairs=[['Flick','Flick'],['Tracking','Tracking'],['Micro-correction','Micro-adjust'],['Contrôle','Control']];
+ const labels=labelPairs.map(([fr,english])=>tr(fr,english));
  const counts=keys.map(k=>items.filter(s=>s.focus===k).length);
  const total=items.length;
  if(!total){
@@ -80,11 +81,15 @@ function distribution(items){
    svg.append(svgEl('line',{x1:cx,y1:cy,x2:x,y2:y,stroke:'#4a6977','stroke-dasharray':'2 5'}));
    const [lx,ly]=point(i,1.35);
    const label=svgEl('text',{x:lx,y:ly+3,'text-anchor':'middle','font-size':10,fill:'#bdcbd9'});
-   label.textContent=labels[i];svg.append(label);
+   label.textContent=labels[i];
+   label.dataset.r20Fr=labelPairs[i][0];label.dataset.r20En=labelPairs[i][1];
+   svg.append(label);
   });
   preview.append(svg);
   const empty=document.createElement('p');empty.className='v14-chart-empty v3-empty-radar-caption';
-  empty.textContent=tr('Aucune séance enregistrée : aucun score disponible.','No recorded sessions: no score available.');
+  empty.dataset.r20Fr='Aucune séance enregistrée : aucun score disponible.';
+  empty.dataset.r20En='No recorded sessions: no score available.';
+  empty.textContent=tr(empty.dataset.r20Fr,empty.dataset.r20En);
   root.append(preview,empty);return;
  }
  const chart=document.createElement('div');chart.className='v15-radar';
@@ -109,11 +114,15 @@ function distribution(items){
  const labelPos=pts(1.3);
  labelPos.forEach(([x,y],i)=>{
   const node=svgEl('text',{x,y,'text-anchor':'middle','font-size':11,fill:'#dcf8f7'});
-  node.textContent=labels[i]+' '+Math.round(counts[i]/total*100)+'%';svg.append(node);
+  const suffix=' '+Math.round(counts[i]/total*100)+'%';
+  node.dataset.r20Fr=labelPairs[i][0]+suffix;node.dataset.r20En=labelPairs[i][1]+suffix;
+  node.textContent=tr(node.dataset.r20Fr,node.dataset.r20En);svg.append(node);
  });
  chart.append(svg);root.append(chart);
  const description=document.createElement('p');description.className='v14-chart-caption';
- description.textContent=tr('Part des '+total+' séances selon la compétence travaillée.','Share of '+total+' sessions by training focus.');
+ description.dataset.r20Fr='Part des '+total+' séances selon la compétence travaillée.';
+ description.dataset.r20En='Share of '+total+' sessions by training focus.';
+ description.textContent=tr(description.dataset.r20Fr,description.dataset.r20En);
  root.append(description);
 }
 function render(){
