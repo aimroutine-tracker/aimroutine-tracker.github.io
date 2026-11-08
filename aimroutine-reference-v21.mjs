@@ -121,7 +121,7 @@ function init(){if(window.__aim_test_legacy_ui===true)return;if(!['index','train
 }
 if(page==='training'){
  makeRoutines();
- $('[href="#aim-challenge"]',screen).forEach(a=>a.href='index.html#aim-challenge');
+ $$('[href="#aim-challenge"]',screen).forEach(a=>a.href='index.html#aim-challenge');
  const level=new URLSearchParams(location.search).get('level');
  if(['iron','silver','immortal'].includes(level))$('[data-a21-level="'+level+'"]',screen)?.click();
  const tab=location.hash.match(/^#panel-(builder|program|dashboard|insights|challenges|coach|profile|data)$/)?.[1];
