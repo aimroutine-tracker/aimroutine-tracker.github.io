@@ -383,3 +383,18 @@ body.site31.ar21 .a21-community-preview a{
  font-size:12px;font-weight:850;text-decoration:none;background:#ff6172;color:#091622;padding:10px 15px;border-radius:3px 8px
 }
 @media(max-width:650px){body.site31.ar21 .a21-community-preview{flex-direction:column;align-items:flex-start}}
+
+/* Mobile no-overflow: preserve the A logo, account cloud status and menu
+   while constraining the navigation to the available viewport. */
+@media(max-width:450px){
+ html:has(body.site31.ar21),body.site31.ar21{max-width:100vw!important;overflow-x:clip!important}
+ body.site31.ar21 .a21-header{width:100%!important;max-width:100vw!important;padding:0 7px!important;gap:5px!important}
+ body.site31.ar21 .a21-brand{font-size:14px!important;min-width:0!important;max-width:calc(100vw - 112px)!important;white-space:nowrap!important;letter-spacing:-.04em!important;gap:4px!important}
+ body.site31.ar21 .a21-brand img{width:28px!important;height:28px!important;flex:none}
+ body.site31.ar21 .a21-nav-actions{min-width:0!important;margin-left:auto!important;gap:0!important}
+ body.site31.ar21 .a21-nav-actions .a21-cloud{width:36px!important;min-width:36px!important;max-width:36px!important;padding:0 5px!important;font-size:18px!important;justify-content:center!important;overflow:hidden!important}
+ body.site31.ar21 .a21-nav-actions .a21-cloud span{display:none!important}
+ body.site31.ar21 .a21-menu{flex:none!important;width:35px!important;min-width:35px!important;margin-left:0!important;padding:4px!important}
+ body.site31.ar21 .a21-root{max-width:100vw!important;min-width:0!important;overflow-x:clip!important}
+ body.site31.ar21 .a21-content{min-width:0!important;max-width:100vw!important}
+}
