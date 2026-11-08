@@ -227,8 +227,10 @@ function installHomeActions(){
  action.className='r19-home-progress';
  action.href='progress.html';
  action.innerHTML='▥ '+tag('Mes statistiques détaillées','My detailed statistics')+' <span aria-hidden="true">↗</span>';
+ const bottom=$('.r17-home-bottom',home);
  const heading=$('.r17-home-paths',home);
- if(heading)heading.append(action);
+ // Keep the real analytics link but do not stretch the mockup's compact path cards.
+ if(bottom)bottom.after(action);else if(heading)heading.append(action);
 }
 
 function init(){
