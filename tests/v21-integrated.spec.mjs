@@ -11,7 +11,7 @@ test.beforeEach(async({page})=>{
 });
 
 test('V21 accueil reproduit la navigation et ouvre le vrai mini-défi',async({page})=>{
- const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ const errors=[];page.on('pageerror',e=>errors.push(e.stack||e.message));
  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#ar21-root .a21-hero h1')).toContainText('Routine AIM');
  await expect(page.locator('.a21-brand img')).toHaveAttribute('src','aimroutine-brand-a-v2.svg');
@@ -26,7 +26,7 @@ test('V21 accueil reproduit la navigation et ouvre le vrai mini-défi',async({pa
 });
 
 test('V21 routines sélectionne niveau et jour et ouvre le véritable créateur',async({page})=>{
- const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ const errors=[];page.on('pageerror',e=>errors.push(e.stack||e.message));
  await page.goto('/training.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#ar21-root .a21-training')).toBeVisible();
  await expect(page.locator('[data-a21-level]')).toHaveCount(3);
@@ -45,7 +45,7 @@ test('V21 routines sélectionne niveau et jour et ouvre le véritable créateur'
 });
 
 test('V21 Cloud réutilise la connexion, Google, CAPTCHA et le formulaire de pseudo',async({page})=>{
- const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ const errors=[];page.on('pageerror',e=>errors.push(e.stack||e.message));
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#ar21-root .a21-account')).toBeVisible();
  await expect(page.locator('#login-email')).toBeVisible();
@@ -60,7 +60,7 @@ test('V21 Cloud réutilise la connexion, Google, CAPTCHA et le formulaire de pse
 });
 
 test('V21 filtres statistiques alimentés par le suivi original et non par des données fictives',async({page})=>{
- const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ const errors=[];page.on('pageerror',e=>errors.push(e.stack||e.message));
  await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#ar21-root .a21-progress')).toBeVisible();
  await expect(page.locator('[data-a21-mirror="v14-p-sessions"]')).not.toContainText('128');
