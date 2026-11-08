@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - "site-rebuild-v17.*"
+      - "site-interface-v19.mjs"
+      - "site-reference-v20.css"
       - "r17-hero.webp"
       - "index.html"
       - "training.html"
