@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - "site-reference-v20.css"
+      - "site-owner-reference-v3.css"
       - "tests/visual-rebuild-v3.mjs"
       - "tests/compare-visual-v3.py"
       - ".github/workflows/visual-rebuild-v3.yml"
