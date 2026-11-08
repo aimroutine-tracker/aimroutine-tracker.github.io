@@ -126,10 +126,11 @@ async function synchronizeOnce(client,uid,{guestImport=false}={}){
  const newest=unseenReset?local:readUserLocal(uid); // Do not resurrect stale data after remote reset.
  const concurrentMeta=unseenReset?meta:readMeta(uid);
  const freshDeletes=concurrentMeta.presetDeletedIds.filter(id=>!pending.has(id));
+ const allDeletes=[...freshDeletes,...remotePresets.filter(x=>x.deleted_at).map(x=>x.preset_id)];
  const finalStore={...local.store,
    sessions:mergeRecords(newest.store.sessions,mergedSessions,
      remoteSessions.filter(x=>x.deleted_at).map(x=>x.session_id)).filter(validSession).slice(-STORAGE_LIMIT),
-   presets:mergeRecords(newest.store.presets,mergedPresets,freshDeletes).filter(validPreset).slice(-25),
+   presets:mergeRecords(newest.store.presets,mergedPresets,allDeletes).filter(validPreset).slice(-25),
    weeklyGoal:newest.store.weeklyGoal!==local.store.weeklyGoal?newest.store.weeklyGoal:finalGoal};
  const newestProfile=JSON.stringify(newest.ext)!==JSON.stringify(local.ext)?newest.ext:finalProfile;
  meta.presetDeletedIds=freshDeletes;
