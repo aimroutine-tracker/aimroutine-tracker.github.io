@@ -332,23 +332,26 @@ function installV3ProgressComposition(screen){
  const goal=$('#v14-p-goals',secondary);
  const next=$('#v14-p-next',secondary);
  if(!secondary||!records||!goal||!next||$('.r17-progress-bottom',screen))return;
- const panel=(className,heading,subtitle,icon)=>{
+ const panel=(className,headFr,headEn,subFr,subEn,icon)=>{
   const node=document.createElement('section');
   node.className='v14-panel '+className;
   const head=document.createElement('div');head.className='v14-panel-head';
-  head.innerHTML='<span class="v14-glyph" aria-hidden="true">'+icon+'</span><div><h2>'+heading+'</h2><small>'+subtitle+'</small></div>';
+  head.innerHTML='<span class="v14-glyph" aria-hidden="true">'+icon+'</span><div><h2></h2><small></small></div>';
+  bindV3Locale($('h2',head),headFr,headEn);
+  bindV3Locale($('small',head),subFr,subEn);
   node.append(head);return node;
  };
- const streak=panel('r17-progress-streak',words('Séries d’entraînement','Training streaks'),words('Des valeurs enregistrées, sans estimation','Only recorded values, no estimates'),'♨');
+ const streak=panel('r17-progress-streak','Séries d’entraînement','Training streaks',
+  'Des valeurs enregistrées, sans estimation','Only recorded values, no estimates','♨');
  const statrow=document.createElement('div');statrow.className='r17-progress-streak-stats';
  const data=[
-  [words('Série en cours','Current streak'),'#v14-p-streak-detail'],
-  [words('Séances (7 jours)','Sessions (7 days)'),'#v14-p-week']
+  ['Série en cours','Current streak','#v14-p-streak-detail'],
+  ['Séances (7 jours)','Sessions (7 days)','#v14-p-week']
  ];
- for(const [title,selector] of data){
+ for(const [fr,en,selector] of data){
   const tile=document.createElement('div');tile.className='r17-progress-live-metric';
   const number=document.createElement('strong');number.textContent='—';
-  const caption=document.createElement('small');caption.textContent=title;
+  const caption=document.createElement('small');bindV3Locale(caption,fr,en);
   tile.append(number,caption);statrow.append(tile);
   const source=$(selector,screen);
   if(source){
@@ -358,26 +361,33 @@ function installV3ProgressComposition(screen){
   }
  }
  streak.append(statrow);
- const journey=panel('r17-progress-journey',words('Ton parcours d’entraînement','Your training path'),words('Programme et routines enregistrées','Saved program and routines'),'▱');
+ const journey=panel('r17-progress-journey','Ton parcours d’entraînement','Your training path',
+  'Programme et routines enregistrées','Saved program and routines','▱');
  const journeyContents=document.createElement('div');journeyContents.className='r17-progress-journey-body';
- journeyContents.innerHTML='<div><strong>'+words('Retrouve ton programme','Find your program')+'</strong><p>'+words('Consulte ton parcours et reprends tes exercices.','Review your path and resume your exercises.')+'</p></div><a href="training.html#panel-program">'+words('Voir mes programmes','View my programs')+' ↗</a>';
+ journeyContents.innerHTML='<div><strong></strong><p></p></div><a href="training.html#panel-program"></a>';
+ bindV3Locale($('strong',journeyContents),'Retrouve ton programme','Find your program');
+ bindV3Locale($('p',journeyContents),'Consulte ton parcours et reprends tes exercices.','Review your path and resume your exercises.');
+ bindV3Locale($('a',journeyContents),'Voir mes programmes ↗','View my programs ↗');
  journey.append(journeyContents);
  secondary.append(streak,journey);
- // Keep existing real weekly goal DOM in the first wide card.
+ // Keep the existing real weekly goal DOM, including its interactions.
  const lower=document.createElement('div');lower.className='r17-progress-bottom';
  const goals=document.createElement('section');goals.className='v14-panel r17-progress-goals-overview';
  const head=document.createElement('div');head.className='r17-progress-bottom-head';
- head.innerHTML='<div><h2>'+words('Objectifs et indicateurs','Goals and indicators')+'</h2><small>'+words('Ton suivi basé sur les séances réellement enregistrées.','Tracking based on your actual recorded sessions.')+'</small></div><a href="training.html#panel-dashboard">'+words('Gérer mes objectifs','Manage goals')+' ↗</a>';
+ head.innerHTML='<div><h2></h2><small></small></div><a href="training.html#panel-dashboard"></a>';
+ bindV3Locale($('h2',head),'Objectifs et indicateurs','Goals and indicators');
+ bindV3Locale($('small',head),'Ton suivi basé sur les séances réellement enregistrées.','Tracking based on your actual recorded sessions.');
+ bindV3Locale($('a',head),'Gérer mes objectifs ↗','Manage goals ↗');
  goals.append(head);
  const tiles=document.createElement('div');tiles.className='r17-progress-goal-tiles';
- for(const [label,sourceSelector,desc] of [
-  [words('Précision moyenne','Average accuracy'),'#v14-p-average',words('Précision déclarée','Reported accuracy')],
-  [words('Séances terminées','Completed sessions'),'#v14-p-sessions',words('Données réelles','Actual data')]
+ for(const [titleFr,titleEn,sourceSelector,descFr,descEn] of [
+  ['Précision moyenne','Average accuracy','#v14-p-average','Précision déclarée','Reported accuracy'],
+  ['Séances terminées','Completed sessions','#v14-p-sessions','Données réelles','Actual data']
  ]){
   const tile=document.createElement('div');tile.className='r17-progress-goal-tile';
-  const title=document.createElement('strong');title.textContent=label;
+  const title=document.createElement('strong');bindV3Locale(title,titleFr,titleEn);
   const value=document.createElement('span');value.className='r17-progress-goal-value';value.textContent='—';
-  const detail=document.createElement('small');detail.textContent=desc;
+  const detail=document.createElement('small');bindV3Locale(detail,descFr,descEn);
   tile.append(title,value,detail);tiles.append(tile);
   const source=$(sourceSelector,screen);
   if(source){
