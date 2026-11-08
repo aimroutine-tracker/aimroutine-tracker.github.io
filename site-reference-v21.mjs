@@ -93,6 +93,12 @@
     }
     function startBuilder(){
       $(`[data-r17-level="${rank}"]`)?.click();$(`[data-r17-day="${day}"]`)?.click();
+      // Always configure the real editable routine builder before opening it.
+      const focus=$('#focus'),rankInput=$('#rank'),duration=$('#duration');
+      if(focus){focus.value=days[day][0];focus.dispatchEvent(new Event('change',{bubbles:true}));}
+      if(rankInput){rankInput.value=rank;rankInput.dispatchEvent(new Event('change',{bubbles:true}));}
+      if(duration)duration.value=String(levels[rank][1]);
+      const form=$('#builder-form');if(form)form.requestSubmit();
       const real=$('.r19-tool-btn[data-r19-panel="builder"]')||$('[data-r17-create]');
       if(real){real.click();return;}
       location.assign('training.html#panel-builder');
