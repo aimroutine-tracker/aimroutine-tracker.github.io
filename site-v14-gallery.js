@@ -1,5 +1,5 @@
 /* AimRoutine V14 UI layer: real buttons, local training metrics, shared navigation.
-   Preserve the original training engine, Supabase auth, data boundaries and Riot status. */
+   Preserves the preexisting account forms, local training and data boundaries. */
 (()=>{
  'use strict';
  const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
