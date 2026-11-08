@@ -29,7 +29,8 @@ try{
    });
    const page=await context.newPage();
    const errors=[];
-   page.on('pageerror',err=>errors.push(String(err.message||err)));
+   const runtimeErrors=[];
+   page.on('pageerror',err=>{const message=String(err.message||err);errors.push(message);runtimeErrors.push(message)});
    page.on('console',msg=>{if(msg.type()==='error')errors.push(msg.text())});
    const url='http://127.0.0.1:'+port+'/'+item.filename;
    const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:35000});
@@ -42,6 +43,7 @@ try{
     const measure=s=>{const n=document.querySelector(s);if(!n)return null;const r=n.getBoundingClientRect();return {x:Math.round(r.x),y:Math.round(r.y),width:Math.round(r.width),height:Math.round(r.height)};};
     return {
      documentWidth:document.documentElement.scrollWidth,
+     referenceIconCount:document.querySelectorAll('.r17-screen .ar-v3-symbol').length,
      header:measure('.site31-header'),
      hero:measure('.r17-screen .r17-hero'),
      heroContent:measure('.r17-screen .r17-hero-content'),
@@ -82,6 +84,7 @@ try{
     name:item.id,phase,httpStatus:response?.status()??null,expectedHeroHeight:item.heroHeight,
     screenshot:join(out,item.id+'-'+phase+'.png'),geometry:info,
     javascriptErrors:errors.slice(0,12),
+    uncaughtRuntimeErrors:runtimeErrors.slice(0,12),
     viewport:{width,height}
    };
    if(phase==='after'){
@@ -89,6 +92,15 @@ try{
      failed=true;check.failure='Required app structure or page response missing';
     }
     if(info.documentWidth>width+3){failed=true;check.failure='Horizontal overflow';}
+    if(Math.abs((info.hero?.height??0)-item.heroHeight)>2){
+      failed=true;check.failure='Hero height outside visual tolerance';
+    }
+    if(runtimeErrors.length){
+      failed=true;check.failure='Uncaught JavaScript runtime error';
+    }
+    if(item.id!=='progress' && info.referenceIconCount===0){
+      failed=true;check.failure='Expected inline SVG icons were not rendered';
+    }
    }
    results.push(check);
    await context.close();
@@ -97,4 +109,4 @@ try{
 }finally{await browser.close();}
 await writeFile(join(out,'measurements.json'),JSON.stringify(results,null,2));
 for(const x of results)console.log(x.name,x.phase,'hero',JSON.stringify(x.geometry.hero),'content',JSON.stringify(x.geometry.heroContent),'headline',JSON.stringify(x.geometry.heroHeadline),'description',JSON.stringify(x.geometry.heroDescription),'actions',JSON.stringify(x.geometry.heroActions),'notice',JSON.stringify(x.geometry.previewNotice),'layout',JSON.stringify({homeStats:x.geometry.homeStats,homeFeatures:x.geometry.homeFeatures,homeBottom:x.geometry.homeBottom,homePaths:x.geometry.homePaths,homePathGrid:x.geometry.homePathGrid,homePathCard:x.geometry.homePathCard,homeChallenge:x.geometry.homeChallenge,trainGrid:x.geometry.trainGrid,trainPlan:x.geometry.trainPlan,trainLeft:x.geometry.trainLeft,trainSummary:x.geometry.trainSummary,trainLevelNote:x.geometry.trainLevelNote,trainCenter:x.geometry.trainCenter,trainRight:x.geometry.trainRight,trainChallenge:x.geometry.trainChallenge,trainTools:x.geometry.trainTools,trainWeek:x.geometry.trainWeek,progressKpis:x.geometry.progressKpis,progressCharts:x.geometry.progressCharts,accountBenefits:x.geometry.accountBenefits,accountProfile:x.geometry.accountProfile,navCurrent:x.geometry.navCurrent,navDetails:x.geometry.navDetails}),'width',x.geometry.documentWidth,'JS errors',x.javascriptErrors.slice(0,5));
-if(failed)process.exitCode=1;
+if(failed){console.error('V3 visual evidence validation failed: see measurements.json');process.exitCode=1;}
