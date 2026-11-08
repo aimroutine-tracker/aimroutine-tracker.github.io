@@ -98,3 +98,11 @@ Security verification on 6 November 2026: owner-only RLS policies and delete cas
 - Direct links to individual training panels activate the corresponding real tab.
 - Sign-in and Cloud navigation follow the real account dashboard on the account page; unverified cloud connection is never shown with a green indicator.
 - Core account and Cloud sync modules are untouched; V18 is additive UI behavior. No Riot production API integration is implied.
+
+## V19 — connected reference UI (2026-11-08)
+
+- The five-day training preview now uses the same pure routine generator as the actual workout editor, including tool-specific names, hints, durations, levels and skills.
+- The Routines reference screen exposes every real tool (editable routines, programs, goals, insights, achievements, coach, profile, JSON backups) via the native live tab panels, without iframe or duplicate storage.
+- Cloud account actions in the reference screen call existing authenticated account handlers, with guest actions disabled until sign-in.
+- Progress 7/30/90/all controls drive the existing real analytics renderer, not illustrative charts.
+- All training/Cloud/Supabase mechanisms stay unchanged; no Riot API claims.

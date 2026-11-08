@@ -542,3 +542,29 @@ test('V16 official A logo renders in every flagship navigation and semantic colo
   expect(await page.evaluate(()=>getComputedStyle(document.documentElement).getPropertyValue('--ar-cyan').trim())).toBe('#37E3DD');
  }
 });
+
+
+test('V19 training preview uses the actual generator and every tool is reachable',async ({page})=>{
+ await page.goto('/training.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.r19-tool-grid button')).toHaveCount(8);
+ await expect(page.locator('.r17-exercise strong').first()).toContainText('Stand de tir');
+ await page.locator('.r19-tool-select').selectOption('Aim Lab');
+ await expect(page.locator('.r17-exercise strong').first()).toContainText('Gridshot');
+ await page.locator('[data-r19-panel="program"]').click();
+ await expect(page.locator('.r19-workspace-dialog')).toBeVisible();
+ await expect(page.locator('#program-form')).toBeVisible();
+ await page.locator('.r19-close').click();
+ await expect(page.locator('.r19-workspace-dialog')).not.toBeVisible();
+ await page.locator('[data-r19-panel="insights"]').click();
+ await expect(page.locator('#analysis-range')).toBeVisible();
+});
+test('V19 cloud screen is guest-safe and progress buttons drive real range',async ({page})=>{
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.r19-cloud-actions')).toBeVisible();
+ await expect(page.locator('.r19-cloud-login')).toBeVisible();
+ await expect(page.locator('[data-r19-cloud="cloud-sync"]')).toBeHidden();
+ await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
+ await page.locator('[data-r19-range="7"]').click();
+ await expect(page.locator('#v14-progress-range')).toHaveValue('7');
+ await expect(page.locator('[data-r19-range="7"]')).toHaveAttribute('aria-pressed','true');
+});
