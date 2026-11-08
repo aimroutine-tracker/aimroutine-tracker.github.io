@@ -54,6 +54,13 @@ try{
      homeBottom:measure('.r17-home-wrap .r17-home-bottom'),
      trainGrid:measure('.r17-training-wrap .r17-training-grid'),
      trainPlan:measure('.r17-training-wrap .r17-training-plan'),
+     trainLeft:measure('.r17-training-wrap .r17-train-left'),
+     trainSummary:measure('.r17-training-wrap .r17-train-summary'),
+     trainLevelNote:measure('.r17-training-wrap .r17-level-note'),
+     trainCenter:measure('.r17-training-wrap .r17-train-center'),
+     trainRight:measure('.r17-training-wrap .r17-train-right'),
+     trainChallenge:measure('.r17-training-wrap .r17-side-challenge'),
+     trainTools:measure('.r17-training-wrap .r19-workspace-toolbar'),
      trainWeek:measure('.r17-training-wrap .r17-weekline'),
      progressKpis:measure('.r17-progress-wrap .r17-progress-kpis'),
      progressCharts:measure('.r17-progress-wrap .r17-chart-grid'),
@@ -84,5 +91,5 @@ try{
  }
 }finally{await browser.close();}
 await writeFile(join(out,'measurements.json'),JSON.stringify(results,null,2));
-for(const x of results)console.log(x.name,x.phase,'hero',JSON.stringify(x.geometry.hero),'content',JSON.stringify(x.geometry.heroContent),'headline',JSON.stringify(x.geometry.heroHeadline),'description',JSON.stringify(x.geometry.heroDescription),'actions',JSON.stringify(x.geometry.heroActions),'notice',JSON.stringify(x.geometry.previewNotice),'layout',JSON.stringify({homeStats:x.geometry.homeStats,homeFeatures:x.geometry.homeFeatures,homeBottom:x.geometry.homeBottom,trainGrid:x.geometry.trainGrid,trainPlan:x.geometry.trainPlan,trainWeek:x.geometry.trainWeek,progressKpis:x.geometry.progressKpis,progressCharts:x.geometry.progressCharts,accountBenefits:x.geometry.accountBenefits,accountProfile:x.geometry.accountProfile,navCurrent:x.geometry.navCurrent}),'width',x.geometry.documentWidth,'JS errors',x.javascriptErrors.length);
+for(const x of results)console.log(x.name,x.phase,'hero',JSON.stringify(x.geometry.hero),'content',JSON.stringify(x.geometry.heroContent),'headline',JSON.stringify(x.geometry.heroHeadline),'description',JSON.stringify(x.geometry.heroDescription),'actions',JSON.stringify(x.geometry.heroActions),'notice',JSON.stringify(x.geometry.previewNotice),'layout',JSON.stringify({homeStats:x.geometry.homeStats,homeFeatures:x.geometry.homeFeatures,homeBottom:x.geometry.homeBottom,trainGrid:x.geometry.trainGrid,trainPlan:x.geometry.trainPlan,trainLeft:x.geometry.trainLeft,trainSummary:x.geometry.trainSummary,trainLevelNote:x.geometry.trainLevelNote,trainCenter:x.geometry.trainCenter,trainRight:x.geometry.trainRight,trainChallenge:x.geometry.trainChallenge,trainTools:x.geometry.trainTools,trainWeek:x.geometry.trainWeek,progressKpis:x.geometry.progressKpis,progressCharts:x.geometry.progressCharts,accountBenefits:x.geometry.accountBenefits,accountProfile:x.geometry.accountProfile,navCurrent:x.geometry.navCurrent}),'width',x.geometry.documentWidth,'JS errors',x.javascriptErrors.slice(0,5));
 if(failed)process.exitCode=1;
