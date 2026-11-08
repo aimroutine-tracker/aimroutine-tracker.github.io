@@ -593,3 +593,62 @@ body.site31.r20 .r17-account-wrap .r17-settings-grid>div{
   animation:none!important;transition:none!important;scroll-behavior:auto!important;
  }
 }
+
+
+/* V3 / pass 2 — corrections grounded in actual Chromium geometry:
+   observed before: hero heights 493/377/300/344 vs references 350/244/204/242.
+   Training guest notice and account top padding also shifted page headers.
+   Fixed heights below are desktop-only, never force content clipping on mobile. */
+@media(min-width:1350px){
+ body.site31.site31-training.r20 main#app.ar5-workspace{
+  max-width:none!important;width:100%!important;
+  margin-top:0!important;padding-top:0!important;
+ }
+ body.site31.site31-account.r20 main#main.ar7-account-main{
+  width:100%!important;max-width:none!important;
+  margin-top:0!important;padding-top:0!important;
+ }
+ body.site31.r20 .r17-screen .r17-hero{
+  overflow:hidden!important;min-height:0!important;
+  align-items:center!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-hero{
+  height:350px!important;min-height:350px!important;max-height:350px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-hero{
+  height:244px!important;min-height:244px!important;max-height:244px!important;
+ }
+ body.site31.r20 .r17-progress-wrap>.r17-hero{
+  height:204px!important;min-height:204px!important;max-height:204px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-hero{
+  height:242px!important;min-height:242px!important;max-height:242px!important;
+ }
+ body.site31.r20 .r17-screen .r17-hero-content{
+  padding-top:10px!important;padding-bottom:10px!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-hero h1{
+  font-size:57px!important;line-height:1.03!important;margin:10px 0 10px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-hero h1{
+  font-size:54px!important;line-height:1.02!important;margin:9px 0 9px!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-hero h1{
+  font-size:49px!important;line-height:1.02!important;margin:8px 0 7px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-hero h1{
+  font-size:58px!important;line-height:1.01!important;margin:10px 0 8px!important;
+ }
+ body.site31.r20 .r17-screen .r17-hero-actions{margin-top:12px!important}
+ body.site31.r20 .r17-progress-wrap .r17-hero-actions{margin-top:10px!important}
+ body.site31.r20 .r17-screen .r17-button{
+  min-height:44px!important;padding:8px 20px!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-button{min-height:40px!important;padding:7px 16px!important}
+ body.site31.r20 .r17-screen .r17-hero-desc{line-height:1.25!important}
+}
+/* Guest preview notice remains truthful, but no longer precedes the designed UI. */
+body.site31.site31-training.r20 main#app>#ar-account-required{
+ margin:18px auto 12px!important;
+ max-width:calc(100% - 40px)!important;
+}
