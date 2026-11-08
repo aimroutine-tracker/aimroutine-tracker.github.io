@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {inflateSync} from 'node:zlib';
 import {readFileSync} from 'node:fs';
 const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
 const pages=['index.html','training.html','account.html','progress.html','product.html','presentation.html','changelog.html','releases.html','updates.html','riot-integration.html','privacy.html','terms.html','404.html'];
@@ -46,4 +47,25 @@ test('Official PNG, style and logo are publicly packaged and cached',()=>{
  }
  assert.match(worker,/aimroutine-v8-required-username-20261107/);
  assert.match(read('manifest.webmanifest'),/"sizes": "256x256"/);
+});
+
+test('Official raster PWA icon is a valid transparent 256px PNG',()=>{
+ const png=readFileSync(new URL('../aimroutine-logo.png',import.meta.url));
+ assert.equal(png.subarray(0,8).toString('hex'),'89504e470d0a1a0a');
+ let position=8,dat=[];
+ let width=0,height=0,palette=false,alpha=false,ended=false;
+ while(position<png.length){
+  const n=png.readUInt32BE(position),tag=png.toString('ascii',position+4,position+8);
+  const chunk=png.subarray(position+8,position+8+n);
+  if(tag==='IHDR'){width=chunk.readUInt32BE(0);height=chunk.readUInt32BE(4);}
+  if(tag==='PLTE')palette=true;
+  if(tag==='tRNS')alpha=true;
+  if(tag==='IDAT')dat.push(chunk);
+  if(tag==='IEND'){ended=true;break;}
+  position+=12+n;
+ }
+ assert.equal(width,256);assert.equal(height,256);
+ assert.ok(palette&&alpha&&ended,'Transparent palette and IEND must be valid');
+ const decoded=inflateSync(Buffer.concat(dat));
+ assert.equal(decoded.length,256*(1+128));
 });
