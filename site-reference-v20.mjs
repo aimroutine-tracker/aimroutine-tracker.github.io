@@ -121,7 +121,7 @@ function account(screen){
    ['▱',words('Paramètres unifiés','Unified settings'),words('Une expérience cohérente','Consistent experience')],
    ['⬡',words('Données protégées','Protected data'),words('Privées et sauvegardées','Private and backed up')]
   ];
-  $('.r17-account-benefits>span',screen).forEach((it,i)=>{
+  Array.from(screen.querySelectorAll('.r17-account-benefits>span')).forEach((it,i)=>{
    const entry=descriptions[i];if(!entry)return;
    it.replaceChildren(document.createTextNode(entry[0]+' '));
    const copy=document.createElement('span');copy.className='r17-benefit-copy';
