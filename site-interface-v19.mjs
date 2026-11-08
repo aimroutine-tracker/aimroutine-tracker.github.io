@@ -176,7 +176,10 @@ function installAccountActions(){
  '<button type="button" data-r19-cloud="cloud-import-guest">'+tag('Importer mon historique','Import guest history')+'</button>'+
  '<a href="#auth-panel" class="r19-cloud-login">'+tag('Se connecter pour utiliser le cloud','Sign in to use cloud')+' ↗</a>'+
  '</div>';
- panel.after(controls);
+ // Keep Cloud management actions fully functional, but below the main
+ // synchronization/preferences panels so the reference layout stays compact.
+ const accountRight=$('.r17-account-right');
+ if(accountRight)accountRight.append(controls);else panel.after(controls);
  const actions=$$('[data-r19-cloud]',controls);
  const login=$('.r19-cloud-login',controls);
  function render(){
