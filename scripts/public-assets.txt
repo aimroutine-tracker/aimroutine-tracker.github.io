@@ -110,3 +110,5 @@ site-official-v16.css
 site-rebuild-v17.css
 site-rebuild-v17.js
 r17-hero.webp
+site-interface-v18.css
+site-interface-v18.js
