@@ -622,3 +622,31 @@ test('V3 Cloud guest registration CTA opens the real mandatory-nickname signup f
  await expect(page.locator('#signup-password')).toHaveAttribute('minlength','8');
  await expect(page.locator('#google-signin')).toBeVisible();
 });
+
+
+test('V3 progress composition preserves real live KPI values and all source panels',async({page})=>{
+ await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
+ const row=page.locator('.r17-progress-wrap .r17-secondary-grid');
+ await expect(row.locator('#v14-p-records')).toHaveCount(1);
+ await expect(row.locator('.r17-progress-streak')).toHaveCount(1);
+ await expect(row.locator('.r17-progress-journey')).toHaveCount(1);
+ const bottom=page.locator('.r17-progress-bottom');
+ await expect(bottom.locator('#v14-p-goals')).toHaveCount(1);
+ await expect(bottom.locator('#v14-p-next')).toHaveCount(1);
+ await expect(bottom.locator('a[href="training.html#panel-dashboard"]').first()).toBeVisible();
+ await expect(row.locator('a[href="training.html#panel-program"]')).toBeVisible();
+ await page.evaluate(()=>{
+  // Test-only DOM changes assert forwarding from REAL bound elements;
+  // no production data or network calls are created.
+  document.querySelector('#v14-p-streak-detail').textContent='5 jours';
+  document.querySelector('#v14-p-week').textContent='2';
+  document.querySelector('#v14-p-average').textContent='73 %';
+  document.querySelector('#v14-p-sessions').textContent='9';
+ });
+ await expect(row.locator('.r17-progress-live-metric').first()).toContainText('5 jours');
+ await expect(row.locator('.r17-progress-live-metric').nth(1)).toContainText('2');
+ await expect(bottom.locator('.r17-progress-goal-tile').first()).toContainText('73 %');
+ await expect(bottom.locator('.r17-progress-goal-tile').nth(1)).toContainText('9');
+ const documentWidth=await page.evaluate(()=>document.documentElement.scrollWidth);
+ expect(documentWidth).toBeLessThanOrEqual(1675);
+});
