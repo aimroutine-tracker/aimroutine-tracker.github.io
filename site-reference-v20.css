@@ -932,3 +932,26 @@ body.site31.r20 .r17-progress-wrap .v14-glyph .ar-v3-symbol{
   font-size:34px!important;
  }
 }
+
+
+/* V3 / pass 9 — chart grids are purely presentational empty states:
+   real datasets still exclusively drive plots, labels and KPI values.
+   This is not synthetic data and no metric is drawn in the absence of sessions. */
+body.site31.r20 .r17-progress-wrap .v14-progress-svgbox,
+body.site31.r20 .r17-training-wrap .r17-train-chart{
+ background-image:
+  linear-gradient(to right,rgba(95,135,149,.13) 1px,transparent 1px),
+  linear-gradient(to bottom,rgba(95,135,149,.13) 1px,transparent 1px)!important;
+ background-size:42px 35px!important;
+ background-position:0 0!important;
+ background-color:#0a1b28aa!important;
+ border-bottom:1px solid #52708060;
+}
+body.site31.r20 .r17-progress-wrap #v14-p-line,
+body.site31.r20 .r17-progress-wrap #v14-p-bars{
+ border-left:1px solid #5270806b;
+}
+body.site31.r20 .r17-progress-wrap .v14-panel-head .v14-glyph{
+ border-color:#a35363!important;
+ background:linear-gradient(142deg,#482736a3,#182533)!important;
+}
