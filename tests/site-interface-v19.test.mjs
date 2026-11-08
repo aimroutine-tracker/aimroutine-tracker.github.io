@@ -15,7 +15,7 @@ test('V19 reference screens load the native interaction layer',()=>{
 });
 test('V19 uses real builder, cloud actions and analytics without shadow data',()=>{
  const script=get('site-interface-v19.mjs');
- for(const item of ['createRoutine(', 'computeStats(', 'getStore','program-calendar','cloud-sync','cloud-import-guest','v14-progress-range','showModal','training-core-v5.mjs'])assert.ok(script.includes(item),item);
+ for(const item of ['createRoutine(', 'computeStats(', 'getStore','panel-program','cloud-sync','cloud-import-guest','v14-progress-range','showModal','training-core-v5.mjs'])assert.ok(script.includes(item),item);
  assert.doesNotMatch(script,/Math\.random|localStorage\.setItem|supabase\.auth|fakeResults|mockSessions/);
 });
 test('V19 responsive cards and dialog account for accessible motion',()=>{
