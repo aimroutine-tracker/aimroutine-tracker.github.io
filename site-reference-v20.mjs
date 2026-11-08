@@ -16,6 +16,7 @@ function init(){
  if(p==='training.html')routines(screen);
  if(p==='account.html')account(screen);
  if(p==='progress.html')progress(screen);
+ installV3Icons(screen);
 }
 function home(screen){
  const feature=$$('.r17-feature',screen);
@@ -154,4 +155,46 @@ function progress(screen){
  oldCharts.forEach(svg=>{svg.style.filter='drop-shadow(0 0 3px rgba(55,227,221,.25))'});
  if(source){new MutationObserver(()=>{const guest=source.textContent.includes('Connecte-toi')||source.textContent.includes('Sign in');screen.classList.toggle('ar20-guest',guest)}).observe(source,{childList:true,subtree:true})}
 }
+
+
+/* V3: replace platform-dependent text glyphs with a deterministic local SVG
+   set. No remote icon CDN, no new library, no new user data. */
+function installV3Icons(screen){
+ const form=part=>'<svg class="ar-v3-symbol" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true">'+part+'</svg>';
+ const paths={
+  '⌖':'<circle cx="16" cy="16" r="10"/><circle cx="16" cy="16" r="3.1"/><path d="M16 1v7M16 24v7M1 16h7M24 16h7"/>',
+  '◎':'<circle cx="16" cy="16" r="11"/><circle cx="16" cy="16" r="4"/><path d="M16 0v5M16 27v5M0 16h5M27 16h5"/>',
+  '▱':'<path d="M16 2 29 9 16 16 3 9 16 2Z"/><path d="m3 15 13 7 13-7M3 21l13 8 13-8"/>',
+  '▥':'<path d="M4 25V17h5v8M13 25V10h5v15M22 25V4h5v21"/><path d="M3 28h26"/>',
+  '▦':'<rect x="3" y="5" width="26" height="25" rx="2"/><path d="M3 12h26M10 2v6M22 2v6M9 18h3m4 0h3m4 0h1m-15 6h3m4 0h3"/>',
+  '◷':'<circle cx="16" cy="17" r="12"/><path d="M16 9v9l6 4M12 1h8"/>',
+  '✓':'<circle cx="16" cy="16" r="12"/><path d="m9 16 5 5 10-11"/>',
+  '☁':'<path d="M9 25h15a6 6 0 0 0 0-12 9 9 0 0 0-17-1 7 7 0 0 0 2 13Z"/>',
+  '⚙':'<path d="M13 2h6l1 4 3 1 4-2 4 6-3 3v4l3 3-4 6-4-2-3 1-1 4h-6l-1-4-3-1-4 2-4-6 3-3v-4l-3-3 4-6 4 2 3-1 1-4Z"/><circle cx="16" cy="16" r="5"/>',
+  '⚑':'<path d="M6 29V3m0 2c6-4 11 4 21 0v15c-10 4-15-4-21 0"/>',
+  '◇':'<path d="m16 3 13 8-13 8-13-8 13-8Zm-13 15 13 8 13-8M3 24l13 7 13-7"/>',
+  '♛':'<path d="M6 24 4 9l8 6 4-11 4 11 8-6-2 15H6Zm0 5h20"/>',
+  '⌄⌄':'<path d="m3 5 13 9L29 5M3 12l13 9 13-9M3 19l13 9 13-9"/>',
+  '♨':'<path d="M14 3c0 6-6 8-6 15a8 8 0 0 0 16 0c0-4-2-7-5-10 0 5-4 7-5 10-2-4-1-8 0-15Z"/>',
+  '↗':'<path d="M4 25 13 16l5 4 10-13M20 7h8v8"/>',
+  '▥▥':'<path d="M5 24v-7m6 7V12m6 12V8m6 16V4" stroke-width="3.5"/>'
+ };
+ const selectors='.r17-icon,.r17-stat-icon,.r17-level-symbol,.r17-reticle,.r17-challenge-target,.r17-path > span:first-child';
+ const update=()=>{
+  for(const el of $(selectors,screen)){
+   if(el.querySelector('svg'))continue;
+   const key=el.textContent.trim();
+   const shape=paths[key];
+   if(!shape)continue;
+   el.replaceChildren();
+   el.insertAdjacentHTML('afterbegin',form(shape));
+  }
+ };
+ update();
+ // The real training builder rerenders its preview after a level/day change.
+ screen.addEventListener('click',event=>{
+  if(event.target.closest('[data-r17-level],[data-r17-day]'))queueMicrotask(update);
+ });
+}
+
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
