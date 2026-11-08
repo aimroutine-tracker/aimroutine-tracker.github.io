@@ -1282,3 +1282,29 @@ body.site31.r20 .r17-progress-wrap .v3-empty-radar-caption{
 @media(max-width:1024px){
  body.site31.r20 .r17-progress-wrap .v3-empty-radar{margin:4px auto -8px!important}
 }
+
+
+/* V3 / pass 18 — use the owner's ACTUAL account reference portrait crop.
+   Decorative guest artwork only: never an identity/avatar claim for a user.
+   No changes to auth, account stats, synchronization or Riot integration. */
+body.site31.r20 .r17-account-wrap .r17-account-profile .r17-avatar{
+ background:#271f2c url('aimroutine-avatar-reference.svg') center / 100% 100% no-repeat!important;
+ border:0!important;box-shadow:0 0 12px #ff5b6934!important;
+ border-radius:0!important;overflow:hidden!important;
+ width:clamp(72px,7.55vw,128px)!important;
+ height:clamp(65px,6.3vw,105px)!important;
+}
+body.site31.r20 .r17-account-wrap .r17-account-profile .r17-avatar img{
+ display:none!important;
+}
+@media(min-width:1350px){
+ body.site31.r20 .r17-account-wrap .r17-account-profile{
+   grid-template-columns:128px minmax(230px,1.5fr) minmax(95px,.52fr) minmax(95px,.52fr) minmax(270px,1.25fr)!important;
+   gap:20px!important;padding:6px 24px 6px 64px!important;
+ }
+}
+@media(max-width:720px){
+ body.site31.r20 .r17-account-wrap .r17-account-profile .r17-avatar{
+   width:72px!important;height:59px!important;
+ }
+}
