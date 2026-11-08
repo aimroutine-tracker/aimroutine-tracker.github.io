@@ -723,3 +723,31 @@ test('V3 Cloud FR/EN switch updates guest cards without clearing login inputs',a
  await expect(email).toHaveValue('test@example.com');
  await expect(page.locator('.r17-guest-signup-button')).toBeVisible();
 });
+
+
+test('V3 Progress FR/EN switch localizes live cards and radar without changing data',async({page})=>{
+ await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
+ const switcher=page.locator('.ar-v3-language-footer [data-switch-lang]');
+ const headline=page.locator('.r17-progress-streak .v14-panel-head h2');
+ const journey=page.locator('.r17-progress-journey .v14-panel-head h2');
+ const axes=page.locator('.v3-empty-radar svg text');
+ const caption=page.locator('.v3-empty-radar-caption');
+ const sourceKpi=page.locator('#v14-p-sessions');
+ const before=await sourceKpi.textContent();
+ if((await page.locator('html').getAttribute('lang'))==='en')await switcher.click();
+ await expect(headline).toHaveText('Séries d’entraînement');
+ await expect(journey).toHaveText('Ton parcours d’entraînement');
+ await expect(axes.nth(2)).toHaveText('Micro-correction');
+ await expect(caption).toContainText('Aucune séance enregistrée');
+ await switcher.click();
+ await expect(page.locator('html')).toHaveAttribute('lang','en');
+ await expect(headline).toHaveText('Training streaks');
+ await expect(journey).toHaveText('Your training path');
+ await expect(axes.nth(2)).toHaveText('Micro-adjust');
+ await expect(caption).toContainText('No recorded sessions');
+ expect(await sourceKpi.textContent()).toBe(before);
+ await switcher.click();
+ await expect(headline).toHaveText('Séries d’entraînement');
+ await expect(axes.nth(2)).toHaveText('Micro-correction');
+ expect(await sourceKpi.textContent()).toBe(before);
+});
