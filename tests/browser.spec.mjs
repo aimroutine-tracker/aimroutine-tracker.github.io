@@ -610,3 +610,22 @@ test('Verified account saves and syncs new sessions automatically without cloud 
  expect(await page.evaluate(()=>localStorage.getItem('aimroutine_web_training_v2'))).toBeNull();
  await expect(page.locator('#cloud-training-status')).toContainText('Cloud automatique');
 });
+
+test('V21 rebuilt four screenshots stay live and support controls',async({page})=>{
+ for(const url of ['/index.html','/training.html','/account.html','/progress.html']){
+  await page.goto(url,{waitUntil:'domcontentloaded'});
+  await expect(page.locator('#aim-reference .a21-hero')).toBeVisible();
+ }
+ await page.goto('/training.html',{waitUntil:'domcontentloaded'});
+ await page.locator('[data-a21-level="iron"]').click();
+ await expect(page.locator('[data-a21-rank]')).toHaveText('DÉBUTANT');
+ await page.locator('[data-a21-day="2"]').click();
+ await expect(page.locator('[data-a21-daylabel]')).toHaveText('Jour 3');
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#login-form')).toBeVisible();
+ await expect(page.locator('#signup-form')).toBeHidden();
+ await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('[data-a21-chartnative="line"] #v14-p-line')).toBeVisible();
+ await page.locator('[data-a21-period]').selectOption('7');
+ await expect(page.locator('#v14-progress-range')).toHaveValue('7');
+});

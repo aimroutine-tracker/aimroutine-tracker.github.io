@@ -116,3 +116,5 @@ site-interface-v19.css
 site-interface-v19.mjs
 site-reference-v20.css
 site-reference-v20.mjs
+site-reference-v21.css
+site-reference-v21.mjs
