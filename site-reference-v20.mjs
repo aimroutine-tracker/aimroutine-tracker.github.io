@@ -52,32 +52,50 @@ function installVerifiedCloudHeader(){
   bindV3Locale(signin,next?'Mon compte':'Se connecter',next?'My account':'Sign in');
   register.hidden=next;
  };
- const start=async()=>{
-  let auth;
-  try{({supabase:{auth}}=await import('./cloud-client-v7.mjs'))}
-  catch{return} // Offline/blocked CDN must not fake a connected state.
-  const verify=async()=>{
-   const ticket=++request;
-   try{
-    const {data,error}=await auth.getUser();
-    if(ticket===request)render(Boolean(!error&&data?.user?.id));
-   }catch{if(ticket===request)render(false)}
-  };
-  auth.onAuthStateChange((event)=>{
-   if(event==='SIGNED_OUT'){
-    ++request;render(false);
-   }else if(['SIGNED_IN','TOKEN_REFRESHED','USER_UPDATED'].includes(event)){
-    // Supabase requires auth methods to run outside its synchronous callback.
-    setTimeout(()=>void verify(),0);
-   }
-  });
-  window.addEventListener('online',()=>void verify());
-  window.addEventListener('focus',()=>void verify());
-  window.addEventListener('aim-v3-locale-changed',()=>{
-   if(applied)render(connected);
-  });
-  await verify();
+ const tokenKey='sb-lmzswtzboobpokumxzhy-auth-token';
+ const hasToken=()=>{
+  try{return Boolean(localStorage.getItem(tokenKey))}
+  catch{return true} // Private browsing restrictions: still verify through Supabase.
  };
+ let loading=false,subscribed=false;
+ const start=async()=>{
+  if(subscribed||loading||!hasToken())return;
+  loading=true;
+  try{
+   const {supabase:{auth}}=await import('./cloud-client-v7.mjs');
+   const verify=async()=>{
+    const ticket=++request;
+    try{
+     const {data,error}=await auth.getUser();
+     if(ticket===request)render(Boolean(!error&&data?.user?.id));
+    }catch{if(ticket===request)render(false)}
+   };
+   auth.onAuthStateChange((event)=>{
+    if(event==='SIGNED_OUT'){
+     ++request;render(false);
+    }else if(['SIGNED_IN','TOKEN_REFRESHED','USER_UPDATED'].includes(event)){
+     // Supabase requires auth methods outside its synchronous callback.
+     setTimeout(()=>void verify(),0);
+    }
+   });
+   subscribed=true;
+   window.addEventListener('online',()=>void verify());
+   window.addEventListener('focus',()=>void verify());
+   window.addEventListener('aim-v3-locale-changed',()=>{
+    if(applied)render(connected);
+   });
+   await verify();
+  }catch{
+   // Blocked CDN/offline must never be interpreted as a verified login.
+  }finally{loading=false}
+ };
+ // A sign-in made in another tab propagates through browser storage events.
+ window.addEventListener('storage',event=>{
+  if(event.key!==tokenKey)return;
+  if(!event.newValue){++request;render(false)}
+  else void start();
+ });
+ window.addEventListener('focus',()=>void start());
  if(document.readyState==='complete')void start();
  else window.addEventListener('load',()=>void start(),{once:true});
 }
