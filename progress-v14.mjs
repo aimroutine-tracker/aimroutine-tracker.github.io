@@ -8,8 +8,16 @@ const tr=(fr,english)=>en()?english:fr;
 const fmt=n=>Number(n).toLocaleString(en()?'en-GB':'fr-FR',{maximumFractionDigits:1});
 const source=document.getElementById('v14-source-status');
 const AUTH_KEY='sb-lmzswtzboobpokumxzhy-auth-token';
-let sessions=[],goal=3,scope='guest',loadGeneration=0;
+let sessions=[],goal=3,scope='guest',loadGeneration=0,cloudSyncPending=false;
 const guestNotice=()=>tr('Connecte-toi pour consulter tes statistiques. Rien n’est sauvegardé sans compte.','Sign in to see your statistics. Nothing is saved without an account.');
+function refreshSourceNotice(){
+ const message=scope==='account'?
+  (cloudSyncPending?
+   tr('Compte connecté · Synchronisation cloud en attente ; affichage du cache de ton compte','Signed in · Cloud sync pending; showing account cache'):
+   tr('Compte connecté · Statistiques automatiquement synchronisées','Signed in · Statistics automatically synchronized')):
+  guestNotice();
+ if(source.textContent!==message)source.textContent=message;
+}
 const recent=(items,days)=>!days?items.slice():items.filter(x=>{const age=Date.now()-Date.parse(x.date);return age>=0&&age<=days*86400000;});
 function svgEl(name,props){
  const e=document.createElementNS('http://www.w3.org/2000/svg',name);
@@ -141,6 +149,7 @@ function distribution(items){
  root.append(description);
 }
 function render(){
+ refreshSourceNotice();
  const period=Number($('#v14-progress-range').value)||0;
  const subset=recent(sessions,period),stats=computeStats(subset,goal),all=computeStats(sessions,goal);
  const percent=x=>x===null?'—':fmt(x)+' %';
@@ -160,8 +169,7 @@ function render(){
 // accounts. An obsolete getUser()/cloud response may not repopulate private KPIs.
 function invalidateProgressView(){
  ++loadGeneration;
- sessions=[];goal=3;scope='guest';
- source.textContent=guestNotice();
+ sessions=[];goal=3;scope='guest';cloudSyncPending=false;
  render();
 }
 async function load(){
@@ -198,9 +206,7 @@ async function load(){
  }
  if(generation!==loadGeneration)return;
  sessions=loadedSessions;goal=loadedGoal;scope=readable?'account':'guest';
- source.textContent=readable?
-  (syncPending?tr('Compte connecté · Synchronisation cloud en attente ; affichage du cache de ton compte','Signed in · Cloud sync pending; showing account cache'):tr('Compte connecté · Statistiques automatiquement synchronisées','Signed in · Statistics automatically synchronized')):
-  guestNotice();
+ cloudSyncPending=syncPending;
  render();
 }
 $('#v14-progress-range').addEventListener('change',render);
