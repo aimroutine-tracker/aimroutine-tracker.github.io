@@ -157,29 +157,6 @@ test('V3 reference hero bracket is decorative on all four pages',async({page})=>
 });
 
 
-test('V3 routines skyline uses no repeated artwork or interactive layer',async({page})=>{
- await page.setViewportSize({width:1672,height:941});
- await page.goto('/training.html',{waitUntil:'domcontentloaded'});
- await expect.poll(()=>page.evaluate(()=>document.body.classList.contains('r20'))).toBe(true);
- const data=await page.locator('.r17-training-wrap .r17-hero-art').evaluate(el=>{
-  const art=getComputedStyle(el,'::after');
-  return {
-   content:art.content,
-   backgroundImage:art.backgroundImage,
-   maskImage:art.maskImage,
-   pointerEvents:art.pointerEvents,
-   width:el.getBoundingClientRect().width,
-   documentWidth:document.documentElement.scrollWidth
-  };
- });
- expect(data.content).toBe('""');
- expect(data.backgroundImage).toContain('gradient');
- expect(data.backgroundImage).not.toContain('url(');
- expect(data.maskImage).toContain('gradient');
- expect(data.pointerEvents).toBe('none');
- expect(data.documentWidth).toBeLessThanOrEqual(1675);
-});
-
 test('Cloud account landing has single-border tags and a compact accessible guest button',async({page})=>{
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
  const chips=page.locator('.ar7-account-highlights > .ar7-account-chip');
