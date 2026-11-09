@@ -130,7 +130,7 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
 <form id="login-form" class="ar7-auth-form">
   <label><span class="fr">Adresse e-mail</span><span class="en">Email address</span><input id="login-email" type="email" autocomplete="username" required maxlength="254" placeholder="joueur@exemple.fr"></label>
   <label><span class="fr">Mot de passe</span><span class="en">Password</span><input id="login-password" type="password" autocomplete="current-password" minlength="6" required></label>
-  <div class="ar7-captcha" id="captcha-login" aria-label="Vérification anti-robots de connexion"></div>
+  <div class="ar7-captcha" id="captcha-login" role="group" aria-label="Vérification anti-robots de connexion"></div>
   <button type="submit" class="ar7-primary"><span class="fr">Se connecter</span><span class="en">Sign in</span> ↗</button>
   <button class="ar7-link" type="button" id="reset-link"><span class="fr">Mot de passe oublié ?</span><span class="en">Forgot password?</span></button>
  </form>
@@ -141,13 +141,13 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
   <label><span class="fr">Adresse e-mail</span><span class="en">Email address</span><input id="signup-email" type="email" autocomplete="email" required maxlength="254"></label>
   <label><span class="fr">Mot de passe (8 caractères minimum)</span><span class="en">Password (8 characters minimum)</span><input id="signup-password" type="password" autocomplete="new-password" minlength="8" required></label>
   <p class="ar7-social-note"><span class="fr">Minimum 8 caractères : une minuscule, une majuscule, un chiffre et un symbole. Un contrôle gratuit vérifie les mots de passe déjà exposés dans des fuites, sans transmettre le mot de passe complet.</span><span class="en">At least 8 characters: lowercase, uppercase, a number and a symbol. Free screening checks known breaches without sharing your full password.</span></p>
-  <div class="ar7-captcha" id="captcha-signup" aria-label="Vérification anti-robots d’inscription"></div>
+  <div class="ar7-captcha" id="captcha-signup" role="group" aria-label="Vérification anti-robots d’inscription"></div>
   <button type="submit" class="ar7-primary" id="signup-submit"><span class="fr">Créer mon compte</span><span class="en">Create my account</span></button>
  </form>
  <form id="reset-form" class="ar7-auth-form" hidden>
   <h3><span class="fr">Réinitialiser mon mot de passe</span><span class="en">Reset my password</span></h3>
   <label>E-mail<input id="reset-email" type="email" autocomplete="email" required maxlength="254"></label>
-  <div class="ar7-captcha" id="captcha-reset" aria-label="Vérification anti-robots de récupération"></div>
+  <div class="ar7-captcha" id="captcha-reset" role="group" aria-label="Vérification anti-robots de récupération"></div>
   <button class="ar7-primary" type="submit"><span class="fr">Envoyer le lien</span><span class="en">Send reset link</span></button>
   <button type="button" class="ar7-link" id="back-to-login"><span class="fr">Retour</span><span class="en">Back</span></button>
  </form>
