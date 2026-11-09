@@ -225,6 +225,16 @@ export const supabase={auth:{
  await expect(cloud).not.toHaveClass(/r18-connected/);
  await expect(signin).toHaveText('Sign in');
  await expect(page.locator('.r18-register')).toBeVisible();
+ // Another tab signs in without reloading this one: the existing SDK must
+ // revalidate that user instead of permanently returning on 'subscribed'.
+ await page.evaluate(()=>{
+  const key='sb-lmzswtzboobpokumxzhy-auth-token';
+  window.__qaHeaderAuthenticated=true;
+  localStorage.setItem(key,'qa-other-tab-session');
+  window.dispatchEvent(new StorageEvent('storage',{key,newValue:'qa-other-tab-session'}));
+ });
+ await expect(cloud).toHaveClass(/r18-connected/);
+ await expect(signin).toHaveText('My account');
 });
 
 test('Cloud account landing has single-border tags and a compact accessible guest button',async({page})=>{
