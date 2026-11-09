@@ -906,6 +906,24 @@ test('V3 Cloud guest registration CTA opens the real mandatory-nickname signup f
 });
 
 
+test('Progress chart descriptions expose real weekly counts and respect the language',async({page})=>{
+ await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
+ const counts=page.locator('#v14-p-bars .r17-visually-hidden');
+ await expect(counts).toHaveCount(1);
+ await expect(counts).toContainText('Séances par semaine');
+ await expect(counts).toContainText('Cette semaine : 0 séance(s)');
+ await expect(page.locator('#v14-p-sessions')).toHaveText('0');
+ await page.locator('#v14-week-range').selectOption('4');
+ await expect(counts).toContainText('S-3 : 0 séance(s)');
+ await expect(counts).not.toContainText('S-7');
+ await page.locator('[data-switch-lang]').first().click();
+ await expect.poll(()=>page.evaluate(()=>document.documentElement.lang)).toBe('en');
+ await expect(counts).toContainText('Sessions per week');
+ await expect(counts).toContainText('This week : 0 session(s)');
+ await expect(page.locator('#v14-p-line .v14-chart-empty')).toContainText('No accuracy recorded');
+ await expect(page.locator('#v14-p-distribution .v3-empty-radar-caption')).toContainText('No recorded sessions');
+});
+
 test('V3 progress composition preserves real live KPI values and all source panels',async({page})=>{
  await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
  const row=page.locator('.r17-progress-wrap .r17-secondary-grid');
