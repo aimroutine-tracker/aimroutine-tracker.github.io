@@ -29,9 +29,63 @@ function watchV3Locale(){
  });
 }
 
+/* V3 / pass 31 — keep the shared header truthful on every non-account page.
+   Never infer sign-in from a cached UID; only a server-validated Supabase user
+   can activate the Cloud indicator. No writes, routines or Riot calls here.
+   Lazy-load after the page is ready to preserve the reference first paint. */
+function installVerifiedCloudHeader(){
+ if(p==='account.html')return; // Account already has its own real auth observer.
+ const cloud=$('.r18-cloud'),signin=$('.r18-signin'),register=$('.r18-register');
+ if(!cloud||!signin||!register)return;
+ let connected=false,applied=false,request=0;
+ const render=value=>{
+  const next=value===true;
+  if(!applied&&!next)return; // Keep exact guest markup and reference appearance.
+  applied=true;connected=next;
+  cloud.classList.toggle('r18-connected',next);
+  cloud.title=next?words('Compte connecté · sauvegarde cloud disponible',
+   'Account connected · cloud backup available'):
+   words('Connexion requise pour la sauvegarde cloud',
+   'Sign in to use cloud backup');
+  cloud.href=next?'account.html#dashboard-panel':'account.html#auth-panel';
+  signin.href=next?'account.html#dashboard-panel':'account.html#auth-panel';
+  bindV3Locale(signin,next?'Mon compte':'Se connecter',next?'My account':'Sign in');
+  register.hidden=next;
+ };
+ const start=async()=>{
+  let auth;
+  try{({supabase:{auth}}=await import('./cloud-client-v7.mjs'))}
+  catch{return} // Offline/blocked CDN must not fake a connected state.
+  const verify=async()=>{
+   const ticket=++request;
+   try{
+    const {data,error}=await auth.getUser();
+    if(ticket===request)render(Boolean(!error&&data?.user?.id));
+   }catch{if(ticket===request)render(false)}
+  };
+  auth.onAuthStateChange((event)=>{
+   if(event==='SIGNED_OUT'){
+    ++request;render(false);
+   }else if(['SIGNED_IN','TOKEN_REFRESHED','USER_UPDATED'].includes(event)){
+    // Supabase requires auth methods to run outside its synchronous callback.
+    setTimeout(()=>void verify(),0);
+   }
+  });
+  window.addEventListener('online',()=>void verify());
+  window.addEventListener('focus',()=>void verify());
+  window.addEventListener('aim-v3-locale-changed',()=>{
+   if(applied)render(connected);
+  });
+  await verify();
+ };
+ if(document.readyState==='complete')void start();
+ else window.addEventListener('load',()=>void start(),{once:true});
+}
+
 function init(){
  // The shared locale control exists independently of the dynamically built screen.
  relocateV3LanguageSwitch();
+ installVerifiedCloudHeader();
  const screen=$('.r17-screen');if(!screen)return;
  document.body.classList.add('r20');
  const art=$('.r17-hero-art',screen);
