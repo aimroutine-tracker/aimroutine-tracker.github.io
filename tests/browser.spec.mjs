@@ -1016,3 +1016,32 @@ test('V3 hero landmarks expose their visible FR/EN heading to assistive technolo
   await expect(section).toHaveAccessibleName(english);
  }
 });
+
+
+test('V3 mobile menu provides real account navigation at 390px',async({page})=>{
+ await page.setViewportSize({width:390,height:844});
+ await page.goto('/index.html',{waitUntil:'domcontentloaded'});
+ const menu=page.locator('.site31-mobile-nav');
+ await expect(menu.locator('summary')).toBeVisible();
+ await menu.locator('summary').click();
+ await expect(menu).toHaveAttribute('open','');
+ const account=menu.locator('.site31-mobile-links a[href="account.html"]');
+ await expect(account).toBeVisible();
+ await expect(account).toContainText('Compte');
+ await expect(account).toHaveAttribute('href','account.html');
+ await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth)).toBeLessThanOrEqual(3);
+});
+
+test('V3 reduced-motion preference disables ornamental transitions on four reference pages',async({page})=>{
+ await page.emulateMedia({reducedMotion:'reduce'});
+ for(const route of ['index.html','training.html','progress.html','account.html']){
+  await page.goto('/'+route,{waitUntil:'domcontentloaded'});
+  await expect.poll(()=>page.evaluate(()=>document.body.classList.contains('r20'))).toBe(true);
+  const duration=await page.locator('.r17-screen .r17-hero h1').evaluate(el=>{
+   const style=getComputedStyle(el);
+   return {animation:style.animationDuration,transition:style.transitionDuration};
+  });
+  expect(duration.animation,route).toBe('0s');
+  expect(duration.transition,route).toBe('0s');
+ }
+});
