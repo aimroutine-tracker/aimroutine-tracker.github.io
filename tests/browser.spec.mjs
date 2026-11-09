@@ -175,6 +175,22 @@ test('V3 home KPI strip matches reference vertical placement without moving feat
  expect(a.y+a.height).toBeLessThan(b.y);
 });
 
+
+test('V3 home benefit cards cover the reference width without overflow',async({page})=>{
+ await page.setViewportSize({width:1672,height:941});
+ await page.goto('/index.html',{waitUntil:'domcontentloaded'});
+ await expect.poll(()=>page.evaluate(()=>document.body.classList.contains('r20'))).toBe(true);
+ const grid=page.locator('.r17-home-wrap .r17-features');
+ await expect(grid.locator('.r17-feature')).toHaveCount(3);
+ const box=await grid.boundingBox();
+ expect(box.x).toBeGreaterThanOrEqual(49);
+ expect(box.x).toBeLessThanOrEqual(70);
+ expect(box.width).toBeGreaterThanOrEqual(1520);
+ expect(box.width).toBeLessThanOrEqual(1555);
+ expect(box.x+box.width).toBeLessThanOrEqual(1608);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(1675);
+});
+
 test('V3 routines hero CTAs keep source geometry and real navigation',async({page})=>{
  await page.setViewportSize({width:1672,height:941});
  await page.goto('/training.html',{waitUntil:'domcontentloaded'});
