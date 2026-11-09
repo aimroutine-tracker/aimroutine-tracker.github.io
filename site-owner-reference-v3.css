@@ -1537,3 +1537,20 @@ body.site31.r20 .r17-account-wrap #auth-panel .r17-auth-reference-copy .ar7-eyeb
  body.site31.r20 .r18-actions .r18-register{padding-inline:27px!important}
 }
 
+
+/* V3 / pass 30 — Routines hero action registration.
+   Owner reference at 1672px: primary x67..329, secondary x340..712.
+   Existing V3: primary ~x80..296, secondary ~x309..600. Fix only
+   actionable button geometry; no changes to titles or actual navigation. */
+@media(min-width:1350px){
+ body.site31.r20 .r17-training-wrap .r17-hero-actions{
+  margin-left:-13px!important;
+  gap:11px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-hero-actions .r17-button:first-child{
+  min-width:262px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-hero-actions .r17-button--outline{
+  min-width:372px!important;
+ }
+}
