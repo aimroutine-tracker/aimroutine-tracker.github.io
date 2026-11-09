@@ -832,3 +832,22 @@ test('V3 Cloud auth heading matches reference without losing active secure forms
  await expect(page.locator('#login-form')).toBeVisible();
  await expect(page.locator('#auth-panel .r17-auth-reference-heading')).toHaveCount(1);
 });
+
+
+test('V3 Cloud hero fills right edge without duplicating its sign artwork',async({page})=>{
+ await page.setViewportSize({width:1672,height:941});
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ const hero=page.locator('.r17-account-wrap .r17-hero-art');
+ await expect(hero).toBeVisible();
+ const style=await hero.evaluate(el=>({
+  original:getComputedStyle(el).backgroundImage,
+  extension:getComputedStyle(el,'::after').backgroundImage,
+  mask:getComputedStyle(el,'::after').maskImage
+ }));
+ expect(style.original).toContain('r17-hero.webp');
+ expect(style.extension).toContain('linear-gradient');
+ expect(style.extension).not.toContain('url(');
+ expect(style.mask).toContain('linear-gradient');
+ const width=await page.evaluate(()=>document.documentElement.scrollWidth);
+ expect(width).toBeLessThanOrEqual(1675);
+});
