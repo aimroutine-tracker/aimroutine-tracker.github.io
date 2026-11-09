@@ -29,6 +29,14 @@ function blank(el,fr,english){
  const p=document.createElement('p');p.className='v14-chart-empty';
  p.textContent=tr(fr,english);el.append(p);
 }
+// All SVG charts are intentionally aria-hidden: expose real recorded values
+// as screen-reader text instead of inventing demonstration metrics.
+function readableChartSummary(root,text){
+ const summary=document.createElement('p');
+ summary.className='r17-visually-hidden';
+ summary.textContent=text;
+ root.append(summary);
+}
 function lineChart(items){
  const root=$('#v14-p-line');
  const a=items.filter(s=>s.accuracy!==null).sort((x,y)=>x.date.localeCompare(y.date)).slice(-25);
@@ -50,6 +58,10 @@ function lineChart(items){
  const last=svgEl('text',{x:603,y:224,'font-size':11,fill:'#b5ced8','text-anchor':'end'});last.textContent=new Date(a[a.length-1].date).toLocaleDateString(en()?'en-GB':'fr-FR',{day:'numeric',month:'short'});svg.append(last);
  root.append(svg);
  const caption=document.createElement('small');caption.className='v14-chart-caption';caption.textContent=a.length+' '+tr('résultats saisis','reported scores');root.append(caption);
+ readableChartSummary(root,tr('Précision enregistrée : ','Recorded accuracy: ')+a.map(point=>{
+  const date=new Date(point.date).toLocaleDateString(en()?'en-GB':'fr-FR',{day:'numeric',month:'short',year:'numeric'});
+  return date+' : '+fmt(point.accuracy)+' %';
+ }).join(' ; '));
 }
 function barChart(items){
  const root=$('#v14-p-bars');root.replaceChildren();
@@ -77,6 +89,10 @@ function barChart(items){
   svg.append(week);
  });
  root.append(svg);
+ readableChartSummary(root,tr('Séances par semaine : ','Sessions per week: ')+counts.map((count,i)=>{
+  const label=i===weeks-1?tr('Cette semaine','This week'):'S-'+(weeks-1-i);
+  return label+' : '+count+' '+tr('séance(s)','session(s)');
+ }).join(' ; '));
 }
 function distribution(items){
  const root=$('#v14-p-distribution');root.replaceChildren();
@@ -147,6 +163,8 @@ function distribution(items){
  description.dataset.r20En='Share of '+total+' sessions by training focus.';
  description.textContent=tr(description.dataset.r20Fr,description.dataset.r20En);
  root.append(description);
+ readableChartSummary(root,tr('Répartition par compétence : ','Training focus distribution: ')+counts.map((count,i)=>
+  labels[i]+' : '+count+'/'+total+' ('+Math.round(count/total*100)+' %)').join(' ; '));
 }
 function render(){
  refreshSourceNotice();
