@@ -1371,13 +1371,22 @@ body.site31.r20 .r17-account-wrap .r17-account-profile .r17-avatar img{
   box-shadow:none!important;
   position:relative!important;
  }
+ body.site31.r20 .r17-progress-wrap .r17-progress-kpis>.v14-kpi::before{
+  content:none!important;
+  display:none!important;
+  background:none!important;
+  clip-path:none!important;
+ }
  body.site31.r20 .r17-progress-wrap .r17-progress-kpis>.v14-kpi:not(:last-child)::before{
   content:""!important;
+  display:block!important;
   position:absolute!important;
-  right:0!important;top:13px!important;
-  height:34px!important;
-  border-right:1px solid #64727d!important;
+  inset:13px 0 auto auto!important;
+  width:0!important;height:34px!important;
+  border:0!important;border-right:1px solid #64727d!important;
   transform:skewX(-15deg)!important;
+  background:transparent!important;clip-path:none!important;
+  opacity:1!important;z-index:2!important;
  }
  body.site31.r20 .r17-progress-wrap .r17-progress-kpis>.v14-kpi::after{
   content:none!important;display:none!important;
