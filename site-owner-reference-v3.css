@@ -1568,3 +1568,12 @@ body.site31.r20 .r17-account-wrap #auth-panel .r17-auth-reference-copy .ar7-eyeb
  white-space:nowrap!important;
  border:0!important;
 }
+
+/* V3 / pass 32 — align home KPI rail against the owner's 1672x941 PNG.
+   Source metric top: ~406px; earlier V3: ~399px.
+   A paint-only offset retains the measured feature cards' Y position. */
+@media(min-width:1350px){
+ body.site31.r20 .r17-home-wrap .r17-stats{
+  transform:translateY(7px)!important;
+ }
+}
