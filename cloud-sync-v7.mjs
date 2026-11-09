@@ -5,6 +5,9 @@ import {normalizeStore,validSession,validPreset} from './training-core-v5.mjs';
 import {cleanExtension} from './training-v6-core.mjs';
 
 const STORAGE_LIMIT=1000;
+// Serialize destructive resets against outstanding saves for the same account.
+const inflightSyncs=new Map();
+const inflightResets=new Map();
 const parseJSON=s=>{try{return JSON.parse(s)}catch{return null}};
 const equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const metaKey=uid=>CLOUD_META_PREFIX+uid;
@@ -168,31 +171,49 @@ export function importGuestIntoAccount(uid){
  writeLocal(uid,store,ext,meta);
  return {sessions:guest.sessions.length,favorites:guest.presets.length};
 }
-export async function deleteCloudProgress(client,uid){
- const {data:{user},error}=await client.auth.getUser();
- if(error||!user||user.id!==uid)throw Error('Session non validée.');
- // One RLS-protected database transaction: a failed request cannot partially
- // erase the cloud or leave the reset marker unpublished.
- const {data:resetValue,error:resetError}=await client.rpc('aim_reset_my_progress');
- if(resetError)throw resetError;
- if(typeof resetValue!=='string'||!Number.isFinite(Date.parse(resetValue))){
-  throw Error('La suppression cloud a répondu sans accusé de réinitialisation valide.');
- }
- const resetAt=new Date(resetValue).toISOString();
- const resetMeta={...freshCloudMeta(),resetAt};
- localStorage.setItem(metaKey(uid),JSON.stringify(resetMeta));
- localStorage.removeItem(scopedKey(TRAINING_KEY,uid));
- // The legacy V1 key is a fallback in readUserLocal(). Clearing only V2 could
- // silently repopulate deleted training data on the next visit.
- localStorage.removeItem(scopedKey(LEGACY_KEY,uid));
- localStorage.removeItem(scopedKey(EXT_KEY,uid));
- return true;
+export function deleteCloudProgress(client,uid){
+ if(!validUid(uid))return Promise.reject(Error('Session non validée.'));
+ const existing=inflightResets.get(uid);
+ if(existing)return existing;
+ // Lock before awaiting authentication: new sync requests wait for the reset,
+ // and previously started saves finish before the deletion transaction begins.
+ const task=(async()=>{
+  try{
+   const {data:{user},error}=await client.auth.getUser();
+   if(error||!user||user.id!==uid)throw Error('Session non validée.');
+   const previous=inflightSyncs.get(uid);
+   if(previous){
+    // A failed save must not prevent the owner from deleting their data.
+    try{await previous}catch{}
+   }
+   // One RLS-protected database transaction: a failed request cannot partially
+   // erase the cloud or leave the reset marker unpublished.
+   const {data:resetValue,error:resetError}=await client.rpc('aim_reset_my_progress');
+   if(resetError)throw resetError;
+   if(typeof resetValue!=='string'||!Number.isFinite(Date.parse(resetValue))){
+    throw Error('La suppression cloud a répondu sans accusé de réinitialisation valide.');
+   }
+   const resetAt=new Date(resetValue).toISOString();
+   const resetMeta={...freshCloudMeta(),resetAt};
+   localStorage.setItem(metaKey(uid),JSON.stringify(resetMeta));
+   localStorage.removeItem(scopedKey(TRAINING_KEY,uid));
+   // Clear the legacy fallback too, or old data could reappear on next visit.
+   localStorage.removeItem(scopedKey(LEGACY_KEY,uid));
+   localStorage.removeItem(scopedKey(EXT_KEY,uid));
+   return true;
+  }finally{
+   if(inflightResets.get(uid)===task)inflightResets.delete(uid);
+  }
+ })();
+ inflightResets.set(uid,task);
+ return task;
 }
 
 // Deduplicate simultaneous requests from account page, auto-refresh and training edits.
-const inflightSyncs=new Map();
 export function synchronize(client,uid,options={}){
  if(!validUid(uid))return Promise.reject(Error('Connexion obligatoire pour enregistrer.'));
+ const reset=inflightResets.get(uid);
+ if(reset)return reset.then(()=>synchronize(client,uid,options));
  const pending=inflightSyncs.get(uid);
  if(pending)return options.guestImport?pending.then(()=>synchronize(client,uid,options)):pending;
  const task=synchronizeOnce(client,uid,options);
