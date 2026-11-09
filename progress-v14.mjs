@@ -7,7 +7,9 @@ const en=()=>document.documentElement.lang==='en';
 const tr=(fr,english)=>en()?english:fr;
 const fmt=n=>Number(n).toLocaleString(en()?'en-GB':'fr-FR',{maximumFractionDigits:1});
 const source=document.getElementById('v14-source-status');
-let sessions=[],goal=3,scope='guest';
+const AUTH_KEY='sb-lmzswtzboobpokumxzhy-auth-token';
+let sessions=[],goal=3,scope='guest',loadGeneration=0;
+const guestNotice=()=>tr('Connecte-toi pour consulter tes statistiques. Rien n’est sauvegardé sans compte.','Sign in to see your statistics. Nothing is saved without an account.');
 const recent=(items,days)=>!days?items.slice():items.filter(x=>{const age=Date.now()-Date.parse(x.date);return age>=0&&age<=days*86400000;});
 function svgEl(name,props){
  const e=document.createElementNS('http://www.w3.org/2000/svg',name);
@@ -154,34 +156,63 @@ function render(){
  // Weekly chart uses its own explicit 4/8/12-week range; every bar reflects recorded sessions.
  lineChart(subset);barChart(sessions);distribution(subset);
 }
+// Cancel any pending verified-account load when another tab signs out or switches
+// accounts. An obsolete getUser()/cloud response may not repopulate private KPIs.
+function invalidateProgressView(){
+ ++loadGeneration;
+ sessions=[];goal=3;scope='guest';
+ source.textContent=guestNotice();
+ render();
+}
 async function load(){
- let key=null,readable=false,syncPending=false;scope='guest';sessions=[];goal=3;
+ const generation=++loadGeneration;
+ let key=null,readable=false,syncPending=false;
+ let loadedSessions=[],loadedGoal=3;
+ let token=null;
  try{
-  if(localStorage.getItem('sb-lmzswtzboobpokumxzhy-auth-token')){
+  token=localStorage.getItem(AUTH_KEY);
+  if(token){
    const {supabase}=await import('./cloud-client-v7.mjs');
    const {data,error}=await supabase.auth.getSession();
    const uid=data?.session?.user?.id;
    if(!error&&validUid(uid)){
     const verified=await supabase.auth.getUser();
     if(!verified.error&&verified.data?.user?.id===uid){
-     key=scopedKey(STORAGE_KEY,uid);scope='account';readable=true;
+     key=scopedKey(STORAGE_KEY,uid);readable=true;
      try{await synchronize(supabase,uid)}catch{syncPending=true}
     }
    }
   }
- }catch{readable=false;}
+ }catch{readable=false}
+ // The browser may have removed or replaced its session during any await.
+ // Never commit metrics from an older asynchronous verification.
+ let tokenNow;
+ try{tokenNow=localStorage.getItem(AUTH_KEY)}catch{tokenNow=null}
+ if(generation!==loadGeneration||tokenNow!==token)return;
  if(readable){
-  try{const raw=JSON.parse(localStorage.getItem(key)||'null');const clean=normalizeStore(raw,null);sessions=clean.sessions;goal=clean.weeklyGoal;}catch{sessions=[];goal=3;}
+  try{
+   const raw=JSON.parse(localStorage.getItem(key)||'null');
+   const clean=normalizeStore(raw,null);
+   loadedSessions=clean.sessions;loadedGoal=clean.weeklyGoal;
+  }catch{loadedSessions=[];loadedGoal=3}
  }
+ if(generation!==loadGeneration)return;
+ sessions=loadedSessions;goal=loadedGoal;scope=readable?'account':'guest';
  source.textContent=readable?
   (syncPending?tr('Compte connecté · Synchronisation cloud en attente ; affichage du cache de ton compte','Signed in · Cloud sync pending; showing account cache'):tr('Compte connecté · Statistiques automatiquement synchronisées','Signed in · Statistics automatically synchronized')):
-  tr('Connecte-toi pour consulter tes statistiques. Rien n’est sauvegardé sans compte.','Sign in to see your statistics. Nothing is saved without an account.');
+  guestNotice();
  render();
 }
 $('#v14-progress-range').addEventListener('change',render);
 $('#v14-week-range').addEventListener('change',render);
 document.querySelectorAll('[data-switch-lang]').forEach(b=>b.addEventListener('click',()=>queueMicrotask(render)));
-window.addEventListener('storage',event=>{if(event.key?.includes(STORAGE_KEY))void load();});
+window.addEventListener('storage',event=>{
+ if(event.key===AUTH_KEY){
+  // Cross-tab sign-out / account switch: hide private numbers synchronously.
+  invalidateProgressView();
+  if(event.newValue)void load();
+ }else if(event.key?.includes(STORAGE_KEY))void load();
+});
 window.addEventListener('focus',()=>void load());
 window.addEventListener('online',()=>void load());
 void load();
