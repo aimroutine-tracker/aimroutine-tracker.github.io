@@ -158,6 +158,23 @@ test('V3 reference hero bracket is decorative on all four pages',async({page})=>
 
 
 
+
+test('V3 home KPI strip matches reference vertical placement without moving features',async({page})=>{
+ await page.setViewportSize({width:1672,height:941});
+ await page.goto('/index.html',{waitUntil:'domcontentloaded'});
+ await expect.poll(()=>page.evaluate(()=>document.body.classList.contains('r20'))).toBe(true);
+ const rail=page.locator('.r17-home-wrap .r17-stats');
+ const features=page.locator('.r17-home-wrap .r17-features');
+ await expect(rail).toBeVisible();
+ await expect(features).toBeVisible();
+ const a=await rail.boundingBox(),b=await features.boundingBox();
+ expect(a.y).toBeGreaterThanOrEqual(402);
+ expect(a.y).toBeLessThanOrEqual(410);
+ expect(b.y).toBeGreaterThanOrEqual(490);
+ expect(b.y).toBeLessThanOrEqual(503);
+ expect(a.y+a.height).toBeLessThan(b.y);
+});
+
 test('V3 routines hero CTAs keep source geometry and real navigation',async({page})=>{
  await page.setViewportSize({width:1672,height:941});
  await page.goto('/training.html',{waitUntil:'domcontentloaded'});
