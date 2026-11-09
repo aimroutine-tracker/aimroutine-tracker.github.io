@@ -801,3 +801,34 @@ test('V3 Progress unified KPI ribbon keeps all original real-data metric element
  const scroll=await page.evaluate(()=>document.documentElement.scrollWidth);
  expect(scroll).toBeLessThanOrEqual(393);
 });
+
+
+test('V3 Cloud auth heading matches reference without losing active secure forms',async({page})=>{
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ const title=page.locator('#ar7-auth-title');
+ const subtitle=page.locator('#auth-panel .r17-auth-reference-copy .ar7-eyebrow');
+ const panel=page.locator('#auth-panel');
+ await expect(panel.locator('.r17-auth-reference-icon svg')).toHaveCount(1);
+ await expect(title).toBeVisible();
+ const lang=await page.locator('html').getAttribute('lang');
+ const switcher=page.locator('.ar-v3-language-footer [data-switch-lang]');
+ if(lang==='en')await switcher.click();
+ await expect(title).toHaveText('Connexion');
+ await expect(subtitle).toContainText('AimRoutine Tracker');
+ await expect(page.locator('#google-signin')).toBeEnabled();
+ await expect(page.locator('#login-form')).toBeVisible();
+ await page.locator('#login-email').fill('regression@example.net');
+ await page.locator('#signup-mode').click();
+ await expect(title).toHaveText('Créer un compte');
+ await expect(page.locator('#signup-form')).toBeVisible();
+ await expect(page.locator('#signup-username')).toHaveAttribute('required','');
+ await expect(page.locator('#google-signin')).toBeEnabled();
+ await switcher.click();
+ await expect(title).toHaveText('Create an account');
+ await expect(page.locator('#signup-form')).toBeVisible();
+ await page.locator('#login-mode').click();
+ await expect(title).toHaveText('Sign in');
+ await expect(page.locator('#login-email')).toHaveValue('regression@example.net');
+ await expect(page.locator('#login-form')).toBeVisible();
+ await expect(page.locator('#auth-panel .r17-auth-reference-heading')).toHaveCount(1);
+});
