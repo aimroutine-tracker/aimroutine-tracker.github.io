@@ -542,6 +542,9 @@ test('Turnstile-enabled browser form forwards a token on login and password rese
   return route.fulfill({status:200,contentType:'application/json',body:'{}'});
  });
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ // No CAPTCHA download until a guest begins using the login form.
+ await expect(page.locator('#captcha-login')).not.toHaveAttribute('data-rendered','yes');
+ await page.locator('#login-email').focus();
  await expect(page.locator('#captcha-login')).toHaveAttribute('data-rendered','yes');
  await page.locator('#login-email').fill('disposable@example.invalid');
  await page.locator('#login-password').fill('Ab1!cdef');
