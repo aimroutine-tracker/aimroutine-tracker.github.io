@@ -1472,3 +1472,14 @@ body.site31.r20 .r17-account-wrap #auth-panel .r17-auth-reference-copy .ar7-eyeb
   mask-image:linear-gradient(90deg,transparent 0%,transparent 83%,#000 95%,#000 100%);
  }
 }
+
+
+/* V3 / pass 25 — progress title registration to owner PNG at 1672x941.
+   Scoped to desktop. Text stays DOM text for accessibility and localization. */
+@media(min-width:1350px){
+ body.site31.r20 .r17-progress-wrap .r17-hero h1{
+  font-size:49px!important;
+  letter-spacing:-.025em!important;
+  transform:translateX(14px)!important;
+ }
+}
