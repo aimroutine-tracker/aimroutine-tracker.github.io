@@ -1497,3 +1497,59 @@ body.site31.r20 .r17-account-wrap #auth-panel .r17-auth-reference-copy .ar7-eyeb
   transform-origin:left center!important;
  }
 }
+
+
+/* V3 / pass 28 — source-layout radar summary with an HONEST empty score.
+   No synthetic player metrics: a dash explicitly means not calculated.
+   The original engine continues to render real data when sessions exist. */
+body.site31.r20 .r17-progress-wrap #v14-p-distribution:has(.v3-empty-radar){
+ display:grid!important;grid-template-columns:minmax(0,1fr) 112px!important;
+ grid-template-rows:minmax(0,1fr) auto!important;
+ gap:0 7px!important;align-items:center!important;
+ justify-items:center!important;padding:0 5px!important;
+}
+body.site31.r20 .r17-progress-wrap .v3-empty-radar{
+ grid-column:1!important;grid-row:1!important;
+ margin:-5px auto -8px!important;width:min(100%,260px)!important;
+}
+body.site31.r20 .r17-progress-wrap .v3-empty-radar svg{
+ max-height:145px!important;filter:drop-shadow(0 0 6px #41d2d91a)!important;
+}
+body.site31.r20 .r17-progress-wrap .v3-empty-score{
+ grid-column:2!important;grid-row:1!important;
+ min-width:0!important;width:112px!important;
+ display:flex!important;flex-direction:column!important;
+ justify-content:center!important;align-items:center!important;gap:4px!important;
+ min-height:103px!important; padding:8px 5px!important;
+ color:#e8f4fa!important;text-align:center!important;
+ background:linear-gradient(160deg,#172431,#091823)!important;
+ border:1px solid #f36979!important;clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px)!important;
+}
+body.site31.r20 .r17-progress-wrap .v3-empty-score strong{
+ font-size:11px!important;line-height:1.2!important;
+}
+body.site31.r20 .r17-progress-wrap .v3-empty-score-value{
+ font-size:29px!important;line-height:1!important;font-weight:800!important;
+ color:#54ebea!important;
+}
+body.site31.r20 .r17-progress-wrap .v3-empty-score small{
+ color:#8daab9!important;font-size:10px!important;line-height:1.2!important;
+}
+body.site31.r20 .r17-progress-wrap .v3-empty-radar-caption{
+ grid-column:1/-1!important;grid-row:2!important;
+ text-align:center!important;margin:0 4px 5px!important;
+ font-size:10px!important;
+}
+@media(max-width:540px){
+ body.site31.r20 .r17-progress-wrap #v14-p-distribution:has(.v3-empty-radar){
+  grid-template-columns:minmax(0,1fr) 94px!important;
+  padding:0 3px!important;gap:3px!important;
+ }
+ body.site31.r20 .r17-progress-wrap .v3-empty-radar{
+  width:min(100%,218px)!important;margin:0!important;
+ }
+ body.site31.r20 .r17-progress-wrap .v3-empty-score{
+  width:94px!important;min-height:87px!important;padding:5px 3px!important;
+ }
+ body.site31.r20 .r17-progress-wrap .v3-empty-score-value{font-size:24px!important}
+}
