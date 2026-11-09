@@ -2,7 +2,7 @@
 import {STORAGE_KEY,normalizeStore,computeStats} from './training-core-v5.mjs';
 import {validUid,scopedKey} from './cloud-core-v7.mjs';
 import {isEnabled,synchronize} from './cloud-sync-v7.mjs';
-const set=(name,value)=>{const node=document.querySelector('[data-v15-stat="'+name+'"]');if(node)node.textContent=value};
+const set=(name,value)=>{document.querySelectorAll('[data-v15-stat="'+name+'"]').forEach(node=>{node.textContent=value})};
 const en=()=>document.documentElement.lang==='en';
 const format=n=>Number(n).toLocaleString(en()?'en-GB':'fr-FR',{maximumFractionDigits:1});
 const choose=(fr,english)=>en()?english:fr;
