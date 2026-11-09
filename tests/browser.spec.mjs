@@ -101,6 +101,34 @@ test.describe('PWA cache integration',()=>{
  await expect.poll(()=>page.evaluate(()=>Boolean(window.AIMWeb))).toBe(true);
  await context.setOffline(false);
 });
+
+ test('V3 owner-reference assets remain cached and usable offline',async({page,context,browserName})=>{
+  test.skip(browserName!=='chromium','Offline precache verified on Chromium');
+  await page.evaluate(()=>navigator.serviceWorker.ready);
+  const cacheResults=await page.evaluate(async()=>{
+   const urls=['site-owner-reference-v3.css','aimroutine-avatar-reference.svg'];
+   return await Promise.all(urls.map(async file=>{
+    const request=new Request(new URL(file,navigator.serviceWorker.controller?.scriptURL||location.href));
+    for(const key of await caches.keys()){
+     if(await (await caches.open(key)).match(request,{ignoreSearch:true}))return true;
+    }
+    return false;
+   }));
+  });
+  expect(cacheResults,'The V3 stylesheet and avatar must be precached together').toEqual([true,true]);
+  await context.setOffline(true);
+  try{
+   const response=await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
+   expect(response?.status()).toBe(200);
+   await expect(page.locator('.r17-progress-wrap')).toBeVisible();
+   await expect.poll(()=>page.evaluate(()=>
+    getComputedStyle(document.documentElement).getPropertyValue('--ar-v3-night').trim()
+   ),{timeout:8000}).toBe('#07121b');
+  }finally{
+   await context.setOffline(false);
+  }
+ });
+
 });
 
 test('Cloud account landing has single-border tags and a compact accessible guest button',async({page})=>{
