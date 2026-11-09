@@ -157,6 +157,24 @@ test('V3 reference hero bracket is decorative on all four pages',async({page})=>
 });
 
 
+
+test('V3 routines hero CTAs keep source geometry and real navigation',async({page})=>{
+ await page.setViewportSize({width:1672,height:941});
+ await page.goto('/training.html',{waitUntil:'domcontentloaded'});
+ await expect.poll(()=>page.evaluate(()=>document.body.classList.contains('r20'))).toBe(true);
+ const buttons=page.locator('.r17-training-wrap .r17-hero-actions .r17-button');
+ await expect(buttons).toHaveCount(2);
+ const values=await buttons.evaluateAll(nodes=>nodes.map(n=>{
+  const r=n.getBoundingClientRect();
+  return {x:r.x,width:r.width,href:n.getAttribute('href'),visible:r.height>0};
+ }));
+ expect(values[0].visible&&values[1].visible).toBe(true);
+ expect(values[0].width).toBeGreaterThanOrEqual(258);
+ expect(values[1].width).toBeGreaterThanOrEqual(365);
+ expect(values[1].x).toBeGreaterThan(values[0].x+values[0].width);
+ expect(values.every(x=>x.href&&x.href!=='#')).toBe(true);
+});
+
 test('Cloud account landing has single-border tags and a compact accessible guest button',async({page})=>{
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
  const chips=page.locator('.ar7-account-highlights > .ar7-account-chip');
