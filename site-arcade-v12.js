@@ -251,4 +251,6 @@
   button.addEventListener('click',()=>queueMicrotask(render));
  }
  render();
+ // Readiness is set only after the real challenge handlers are installed.
+ game.dataset.ar12Ready='true';
 })();
