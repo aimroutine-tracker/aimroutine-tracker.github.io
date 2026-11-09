@@ -792,6 +792,23 @@ test('Verified account saves and syncs new sessions automatically without cloud 
 });
 
 
+test('Training Cloud status follows FR and EN without inventing a guest account',async({page})=>{
+ const status=page.locator('#cloud-training-status');
+ await expect(status).toContainText('Mode aperçu sans sauvegarde');
+ await page.locator('[data-switch-lang]').first().click();
+ await expect.poll(()=>page.evaluate(()=>document.documentElement.lang)).toBe('en');
+ await expect(status).toContainText('Preview only');
+ await expect(status).toContainText('Sign in to save');
+ await page.locator('[data-switch-lang]').first().click();
+ await expect.poll(()=>page.evaluate(()=>document.documentElement.lang)).toBe('fr');
+ await expect(status).toContainText('Mode aperçu sans sauvegarde');
+ await useVerifiedTestAccount(page);
+ await expect(status).toContainText('Cloud automatique');
+ await page.locator('[data-switch-lang]').first().click();
+ await expect.poll(()=>page.evaluate(()=>document.documentElement.lang)).toBe('en');
+ await expect(status).toContainText('Automatic Cloud');
+});
+
 test('Training rejects a forged cached account ID unless getUser verifies it',async({page})=>{
  const uid='11111111-1111-4111-8111-111111111111';
  await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({
