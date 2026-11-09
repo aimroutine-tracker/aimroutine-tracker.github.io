@@ -826,6 +826,26 @@ test('V3 four-reference headers stay clean and original locale control still wor
 });
 
 
+
+test('V3 chart header period selectors filter recorded weeks without fabricated data',async({page})=>{
+ await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
+ const accuracy=page.locator('#v14-p-line-panel #v14-progress-range');
+ const weeks=page.locator('#v14-p-bars-panel #v14-week-range');
+ await expect(accuracy).toHaveValue('30');
+ await expect(weeks).toHaveValue('8');
+ await expect(page.locator('#v14-p-bars svg rect')).toHaveCount(8);
+ await weeks.selectOption('4');
+ await expect(page.locator('#v14-p-bars svg rect')).toHaveCount(4);
+ await weeks.selectOption('12');
+ await expect(page.locator('#v14-p-bars svg rect')).toHaveCount(12);
+ await accuracy.selectOption('7');
+ await expect(accuracy).toHaveValue('7');
+ await page.locator('.ar-v3-language-footer [data-switch-lang]').click();
+ await expect(weeks.locator('option:checked')).toHaveText('Last 12 weeks');
+ await expect(accuracy.locator('option:checked')).toHaveText('Last 7 days');
+ await expect(page.locator('#v14-p-sessions')).toHaveText('0');
+});
+
 test('V3 empty Progress radar shows tracked focus axes but no fabricated score', async ({page}) => {
  await page.goto('/progress.html', {waitUntil:'domcontentloaded'});
  const root=page.locator('#v14-p-distribution');
