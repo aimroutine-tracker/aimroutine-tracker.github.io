@@ -1427,7 +1427,7 @@ body.site31.r20 .r17-account-wrap .r17-account-profile .r17-avatar img{
    title + subtitle block, always retaining its Google, email, and CAPTCHA. */
 body.site31.r20 .r17-account-wrap #auth-panel .r17-auth-reference-heading{
  display:flex!important;gap:13px!important;align-items:flex-start!important;
- min-width:0!important;margin:0 0 12px!important;padding:0!important;
+ min-width:0!important;margin:0 0 20px!important;padding:0!important;
 }
 body.site31.r20 .r17-account-wrap #auth-panel .r17-auth-reference-icon{
  width:55px!important;height:51px!important;flex:0 0 55px!important;
