@@ -87,6 +87,21 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
+
+      - name: Prepare reviewed static site for isolated local QA (no deployment)
+        working-directory: candidate
+        run: |
+          python3 tests/check_secrets.py
+          python3 scripts/build_public.py
+      - name: Upload temporary vetted local QA snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: aimroutine-v3-local-qa-preview
+          path: candidate/.public-site/
+          include-hidden-files: true
+          retention-days: 1
+          if-no-files-found: error
+
   reference-fidelity-gate:
     name: Release gate - four verified original PNG comparisons
     needs: visual-evidence
