@@ -1225,7 +1225,9 @@ export const supabase={auth:{
  }));
  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
  const sessions=page.locator('[data-v15-stat="sessions"]');
- await expect(sessions).toHaveText('1');
+ const allValues=(selector,expected)=>page.locator(selector).evaluateAll((nodes,value)=>
+  nodes.length>0&&nodes.every(node=>node.textContent.trim()===value),expected);
+ await expect.poll(()=>allValues('[data-v15-stat="sessions"]','1')).toBe(true);
  // Trigger a deliberately slow authenticated refresh on the still-open tab.
  await page.evaluate(()=>{
   window.__qaDeferHomeAuth=true;
@@ -1239,12 +1241,13 @@ export const supabase={auth:{
   }));
  },authKey);
  // Previously visible real-account metrics must be hidden synchronously.
- await expect(sessions).toHaveText('—');
- await expect(page.locator('[data-v15-stat="accuracy"]')).toHaveText('—');
- await expect(page.locator('[data-v15-stat="cloud"]')).toContainText('CONNEXION REQUISE');
+ await expect.poll(()=>allValues('[data-v15-stat="sessions"]','—')).toBe(true);
+ await expect.poll(()=>allValues('[data-v15-stat="accuracy"]','—')).toBe(true);
+ await expect.poll(()=>page.locator('[data-v15-stat="cloud"]').evaluateAll(nodes=>
+  nodes.length>0&&nodes.every(node=>node.textContent.includes('CONNEXION REQUISE')))).toBe(true);
  await page.evaluate(()=>window.__qaReleaseHomeAuth());
  await page.waitForTimeout(180);
  // The stale request must not re-display account data.
- await expect(sessions).toHaveText('—');
- await expect(page.locator('[data-v15-stat="accuracy"]')).toHaveText('—');
+ await expect.poll(()=>allValues('[data-v15-stat="sessions"]','—')).toBe(true);
+ await expect.poll(()=>allValues('[data-v15-stat="accuracy"]','—')).toBe(true);
 });
