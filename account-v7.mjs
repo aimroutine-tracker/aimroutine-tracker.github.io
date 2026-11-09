@@ -90,7 +90,22 @@ async function run(task){
   renderDeleteOptions();
  }
 }
-showCaptcha('login');
+// Do not download the multi-megabyte Turnstile challenge at guest first paint.
+// Keep server-enforced CAPTCHA unchanged; load on the first real form interaction.
+// Signup and recovery already mount their own widgets when those tabs are chosen.
+const loginCaptchaForm=$('#login-form');
+if(loginCaptchaForm){
+ let firstInteractionPending=true;
+ const activateLoginCaptcha=()=>{
+  if(!firstInteractionPending)return;
+  firstInteractionPending=false;
+  loginCaptchaForm.removeEventListener('focusin',activateLoginCaptcha);
+  loginCaptchaForm.removeEventListener('pointerdown',activateLoginCaptcha);
+  showCaptcha('login');
+ };
+ loginCaptchaForm.addEventListener('focusin',activateLoginCaptcha);
+ loginCaptchaForm.addEventListener('pointerdown',activateLoginCaptcha);
+}
 $('#signup-submit').disabled=!SIGNUPS_READY;
 $('#google-signin').disabled=!GOOGLE_READY;
 $('#google-signin').addEventListener('click',()=>{
