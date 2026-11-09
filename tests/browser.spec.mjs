@@ -177,6 +177,8 @@ test('V3 routines hero CTAs keep source geometry and real navigation',async({pag
 
 
 test('Shared Cloud navigation requires a verified account and follows FR/EN and logout',async({page})=>{
+ // This scenario verifies the desktop header; the mobile menu is tested separately.
+ await page.setViewportSize({width:1672,height:941});
  const uid='11111111-1111-4111-8111-111111111111';
  await page.addInitScript(()=>{
   window.__qaHeaderAuthenticated=false;
@@ -560,6 +562,8 @@ test('AIM mini-challenge is playable with mouse and keyboard, and can pause',asy
  const game=page.locator('#aim-challenge');
  await game.scrollIntoViewIfNeeded();
  await expect(game).toBeVisible();
+ // DOMContentLoaded may run before deferred scripts bind the game handlers.
+ await expect(game).toHaveAttribute('data-ar12-ready','true');
  await page.locator('[data-ar11-mode="reflex"]').click();
  await expect(page.locator('[data-ar11-mode="reflex"]')).toHaveAttribute('aria-pressed','true');
  await page.locator('[data-ar11-mode="precision"]').click();
