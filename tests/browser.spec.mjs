@@ -1127,3 +1127,68 @@ test('V3 reduced-motion preference disables ornamental transitions on four refer
   expect(duration.transition,route).toBe('0s');
  }
 });
+
+
+test('Progress cross-tab sign-out never reveals stale user analytics',async({page})=>{
+ const uid='11111111-1111-4111-8111-111111111111';
+ const authKey='sb-lmzswtzboobpokumxzhy-auth-token';
+ const dataKey='aimroutine_cloud_user_'+uid+'_aimroutine_web_training_v2';
+ await page.evaluate(({authKey,dataKey})=>{
+  const session={id:'private-qa-session',date:new Date().toISOString(),rank:'silver',
+   focus:'flick',tool:'VALORANT',scenario:'Range test',minutes:15,accuracy:85,feeling:'good',notes:''};
+  localStorage.setItem(authKey,'qa-test-token');
+  localStorage.setItem(dataKey,JSON.stringify({sessions:[session],presets:[],weeklyGoal:3}));
+ },{authKey,dataKey});
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const id='11111111-1111-4111-8111-111111111111';
+export const supabase={auth:{
+ getSession:async()=>({data:{session:{user:{id}}},error:null}),
+ getUser:async()=>new Promise(resolve=>{window.__qaReleaseProgressAuth=()=>resolve({data:{user:{id}},error:null})})
+}};`
+ }));
+ await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaReleaseProgressAuth)).toBe('function');
+ await page.evaluate(authKey=>{
+  localStorage.removeItem(authKey);
+  window.dispatchEvent(new StorageEvent('storage',{key:authKey,oldValue:'qa-test-token',newValue:null}));
+ },authKey);
+ await expect(page.locator('#v14-p-sessions')).toHaveText('0');
+ await expect(page.locator('#v14-source-status')).toContainText('Connecte-toi');
+ await page.evaluate(()=>window.__qaReleaseProgressAuth());
+ // A slow, previously authenticated response must not re-display private data.
+ await expect(page.locator('#v14-p-sessions')).toHaveText('0');
+ await expect(page.locator('#v14-p-average')).toHaveText('—');
+ await page.waitForTimeout(180);
+ await expect(page.locator('#v14-source-status')).toContainText('Connecte-toi');
+});
+test('Progress clears already visible private KPIs on a cross-tab sign-out',async({page})=>{
+ const uid='11111111-1111-4111-8111-111111111111';
+ const authKey='sb-lmzswtzboobpokumxzhy-auth-token';
+ await page.evaluate(({uid,authKey})=>{
+  const session={id:'existing-private-qa-session',date:new Date().toISOString(),
+   rank:'silver',focus:'tracking',tool:'VALORANT',scenario:'Tracking',
+   minutes:20,accuracy:88,feeling:'good',notes:''};
+  localStorage.setItem(authKey,'qa-test-token');
+  localStorage.setItem('aimroutine_cloud_user_'+uid+'_aimroutine_web_training_v2',
+   JSON.stringify({sessions:[session],presets:[],weeklyGoal:3}));
+ },{uid,authKey});
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const id='11111111-1111-4111-8111-111111111111';
+export const supabase={auth:{
+ getSession:async()=>({data:{session:{user:{id}}},error:null}),
+ getUser:async()=>({data:{user:{id}},error:null})
+}};`
+ }));
+ await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#v14-p-sessions')).toHaveText('1');
+ await expect(page.locator('#v14-p-average')).toContainText('88');
+ await page.evaluate(authKey=>{
+  localStorage.removeItem(authKey);
+  window.dispatchEvent(new StorageEvent('storage',{key:authKey,oldValue:'qa-test-token',newValue:null}));
+ },authKey);
+ await expect(page.locator('#v14-p-sessions')).toHaveText('0');
+ await expect(page.locator('#v14-p-average')).toHaveText('—');
+ await expect(page.locator('#v14-source-status')).toContainText('Connecte-toi');
+});
