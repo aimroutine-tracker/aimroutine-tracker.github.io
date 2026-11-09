@@ -145,6 +145,30 @@ function routines(screen){
  update();
 }
 function account(screen){
+ // Reuse the real Supabase auth panel and its existing login/signup handlers.
+ // Change only the visible heading composition to match the supplied Cloud PNG.
+ const authRoot=$('#auth-panel',screen)||document.querySelector('#auth-panel');
+ if(authRoot&&!$('.r17-auth-reference-heading',authRoot)){
+  const heading=$('#ar7-auth-title',authRoot);
+  const subtitle=$('.ar7-eyebrow',authRoot);
+  if(heading&&subtitle){
+   const wrap=document.createElement('div');wrap.className='r17-auth-reference-heading';
+   const glyph=document.createElement('span');glyph.className='r17-auth-reference-icon';
+   glyph.setAttribute('aria-hidden','true');
+   glyph.innerHTML='<svg viewBox="0 0 32 32" width="34" height="34" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="9" r="5"/><path d="M4 29v-3c0-6 5-11 12-11 2 0 4 .5 5.5 1.6"/><path d="M25 19v10M20 24h10"/></svg>';
+   const copy=document.createElement('div');copy.className='r17-auth-reference-copy';
+   authRoot.insertBefore(wrap,heading);wrap.append(glyph,copy);copy.append(heading,subtitle);
+   const signupMode=$('#signup-mode',authRoot);
+   const refresh=()=>{
+    const onSignup=signupMode?.getAttribute('aria-pressed')==='true';
+    bindV3Locale(heading,onSignup?'Créer un compte':'Connexion',onSignup?'Create an account':'Sign in');
+    bindV3Locale(subtitle,onSignup?'Rejoins AimRoutine Tracker gratuitement.':'Connecte-toi à ton compte AimRoutine Tracker.',
+     onSignup?'Join AimRoutine Tracker for free.':'Sign in to your AimRoutine Tracker account.');
+   };
+   if(signupMode)new MutationObserver(refresh).observe(signupMode,{attributes:true,attributeFilter:['aria-pressed']});
+   refresh();
+  }
+ }
  const benefit=$('.r17-account-benefits',screen);
  if(benefit){
   // Reuse the same visible elements on a FR/EN switch: never recreate
