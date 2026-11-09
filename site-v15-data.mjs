@@ -6,12 +6,19 @@ const set=(name,value)=>{const node=document.querySelector('[data-v15-stat="'+na
 const en=()=>document.documentElement.lang==='en';
 const format=n=>Number(n).toLocaleString(en()?'en-GB':'fr-FR',{maximumFractionDigits:1});
 const choose=(fr,english)=>en()?english:fr;
-let lastCloudRead=0,hadCloudError=false;
+const AUTH_KEY='sb-lmzswtzboobpokumxzhy-auth-token';
+let lastCloudRead=0,hadCloudError=false,renderGeneration=0;
+const readToken=()=>{try{return localStorage.getItem(AUTH_KEY)}catch{return null}};
+function hidePrivateStats(){
+ for(const name of ['sessions','accuracy','week'])set(name,'—');
+ set('cloud',choose('CONNEXION REQUISE','SIGN IN'));
+}
 async function render(){
+ const generation=++renderGeneration;
+ const startingToken=readToken();
  let key=STORAGE_KEY,allow=false,uid=null;
  try{
-  const token=localStorage.getItem('sb-lmzswtzboobpokumxzhy-auth-token');
-  if(token){
+  if(startingToken){
    allow=false;
    const {supabase}=await import('./cloud-client-v7.mjs');
    const {data,error}=await supabase.auth.getSession();
@@ -27,11 +34,10 @@ async function render(){
    }
   }
  }catch{allow=false}
- if(!allow){
-  for(const name of ['sessions','accuracy','week'])set(name,'—');
-  set('cloud',choose('CONNEXION REQUISE','SIGN IN'));
-  return;
- }
+ // Never render user data from a cloud request that finished after logout or
+ // an account switch in another browser tab.
+ if(generation!==renderGeneration||startingToken!==readToken())return;
+ if(!allow){hidePrivateStats();return}
  let store;
  try{store=normalizeStore(JSON.parse(localStorage.getItem(key)||'null'),null)}
  catch{store=normalizeStore(null,null)}
@@ -42,7 +48,13 @@ async function render(){
  set('cloud',uid?(hadCloudError?choose('EN ATTENTE','PENDING'):isEnabled(uid)?choose('AUTOMATIQUE','AUTOMATIC'):choose('NON DISPONIBLE','UNAVAILABLE')):choose('CONNEXION REQUISE','SIGN IN'));
 }
 document.querySelectorAll('[data-switch-lang]').forEach(btn=>btn.addEventListener('click',()=>queueMicrotask(()=>void render())));
-window.addEventListener('storage',e=>{if(e.key?.includes(STORAGE_KEY))void render()});
+window.addEventListener('storage',e=>{
+ if(e.key===AUTH_KEY){
+  ++renderGeneration;
+  hidePrivateStats();
+  if(e.newValue)void render();
+ }else if(e.key?.includes(STORAGE_KEY))void render();
+});
 window.addEventListener('online',()=>void render());
 window.addEventListener('focus',()=>void render());
 void render();
