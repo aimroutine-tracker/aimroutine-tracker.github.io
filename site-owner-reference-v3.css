@@ -1497,3 +1497,28 @@ body.site31.r20 .r17-account-wrap #auth-panel .r17-auth-reference-copy .ar7-eyeb
   transform-origin:left center!important;
  }
 }
+
+
+/* V3 / pass 28 — owner artwork frame: genuine decorative hero brackets.
+   The owner's four PNGs show a small coral angular mark at the hero's
+   top-left. Pure CSS: no fabricated stats, new assets or interactive UI. */
+@media (min-width:1350px){
+ body.site31.r20 .r17-screen .r17-hero-content{
+  --v3-frame-x:59px;
+  --v3-frame-y:31px;
+ }
+ body.site31.r20 .r17-home-wrap .r17-hero-content{--v3-frame-x:61px;--v3-frame-y:41px}
+ body.site31.r20 .r17-training-wrap .r17-hero-content{--v3-frame-x:51px;--v3-frame-y:30px}
+ body.site31.r20 .r17-progress-wrap .r17-hero-content{--v3-frame-x:70px;--v3-frame-y:31px}
+ body.site31.r20 .r17-account-wrap .r17-hero-content{--v3-frame-x:61px;--v3-frame-y:26px}
+ body.site31.r20 .r17-screen .r17-hero-content::before{
+  content:"";position:absolute;
+  left:var(--v3-frame-x);top:var(--v3-frame-y);
+  width:29px;height:27px;
+  border-top:2px solid #ff5669;
+  border-left:2px solid #ff5669;
+  transform:skewX(-13deg);
+  pointer-events:none;z-index:-1;
+  filter:drop-shadow(0 0 4px #ff566940);
+ }
+}
