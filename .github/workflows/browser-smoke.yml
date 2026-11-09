@@ -13,6 +13,8 @@ on:
       - "progress.html"
       - "progress-v14.mjs"
       - "tests/browser.spec.mjs"
+      - "sw-v6.js"
+      - "pwa-v6.js"
       - ".github/workflows/browser-smoke.yml"
   push:
     branches: [main]
