@@ -90,23 +90,7 @@ function distribution(items){
   empty.dataset.r20Fr='Aucune séance enregistrée : aucun score disponible.';
   empty.dataset.r20En='No recorded sessions: no score available.';
   empty.textContent=tr(empty.dataset.r20Fr,empty.dataset.r20En);
-  // Match the two-column summary layout of the supplied visual reference,
-  // without inventing a player score or implying that such a score exists.
-  const emptyScore=document.createElement('div');
-  emptyScore.className='v3-empty-score';
-  const heading=document.createElement('strong');
-  heading.dataset.r20Fr='Score global';
-  heading.dataset.r20En='Overall score';
-  heading.textContent=tr(heading.dataset.r20Fr,heading.dataset.r20En);
-  const value=document.createElement('span');
-  value.className='v3-empty-score-value';
-  value.textContent='—';
-  const explainer=document.createElement('small');
-  explainer.dataset.r20Fr='Non calculé';
-  explainer.dataset.r20En='Not calculated';
-  explainer.textContent=tr(explainer.dataset.r20Fr,explainer.dataset.r20En);
-  emptyScore.append(heading,value,explainer);
-  root.append(preview,emptyScore,empty);return;
+  root.append(preview,empty);return;
  }
  const chart=document.createElement('div');chart.className='v15-radar';
  const svg=svgEl('svg',{viewBox:'0 0 320 255','aria-hidden':'true'});
