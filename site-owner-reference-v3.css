@@ -1596,3 +1596,40 @@ body.site31.r20 .r17-account-wrap #auth-panel .r17-auth-reference-copy .ar7-eyeb
   transform:translateY(7px)!important;
  }
 }
+
+/* V3 / pass 35 — real range filters in Progress chart heads.
+   Repositions the existing timeframe control and adds a truthful weekly range;
+   options always recalculate user-recorded data, never sample metrics. */
+body.site31.r20 .r17-progress-wrap .v3-chart-period{
+ display:flex;position:relative;align-items:center;justify-content:flex-end;
+ margin-left:auto;flex:0 0 auto;min-width:0;
+}
+body.site31.r20 .r17-progress-wrap .v3-chart-period>span{
+ position:absolute!important;width:1px!important;height:1px!important;
+ overflow:hidden!important;clip:rect(0,0,0,0)!important;
+ clip-path:inset(50%)!important;white-space:nowrap!important;
+}
+body.site31.r20 .r17-progress-wrap .v3-chart-period select{
+ appearance:none;-webkit-appearance:none;min-width:132px;max-width:185px;
+ height:32px;padding:6px 25px 6px 10px;
+ background:#0b1e2c;color:#edf7fa;border:1px solid #637e90;
+ border-radius:4px;font-size:11px;font-weight:700;line-height:1.1;
+ cursor:pointer;
+}
+body.site31.r20 .r17-progress-wrap .v3-chart-period::after{
+ content:"⌄";position:absolute;right:10px;top:50%;
+ transform:translateY(-55%);color:#dbf5f8;pointer-events:none;font-size:15px;
+}
+body.site31.r20 .r17-progress-wrap .v3-chart-period select:focus-visible{
+ outline:2px solid #77eade;outline-offset:2px;
+}
+@media(max-width:720px){
+ body.site31.r20 .r17-progress-wrap #v14-p-line-panel .v14-panel-head,
+ body.site31.r20 .r17-progress-wrap #v14-p-bars-panel .v14-panel-head{
+  flex-wrap:wrap!important;
+ }
+ body.site31.r20 .r17-progress-wrap .v3-chart-period{
+  margin-left:0;margin-top:7px;flex-basis:100%;justify-content:flex-start;
+ }
+ body.site31.r20 .r17-progress-wrap .v3-chart-period select{max-width:100%}
+}
