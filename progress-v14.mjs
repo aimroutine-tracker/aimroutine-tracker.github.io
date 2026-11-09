@@ -43,15 +43,28 @@ function lineChart(items){
 }
 function barChart(items){
  const root=$('#v14-p-bars');root.replaceChildren();
- const counts=Array(8).fill(0),span=7*86400000;
- for(const s of items){const ago=Date.now()-Date.parse(s.date);if(ago>=0&&ago<8*span)counts[7-Math.floor(ago/span)]++;}
+ const choice=Number($('#v14-week-range')?.value);
+ const weeks=[4,8,12].includes(choice)?choice:8;
+ const counts=Array(weeks).fill(0),span=7*86400000;
+ for(const session of items){
+  const ago=Date.now()-Date.parse(session.date);
+  if(ago>=0&&ago<weeks*span)counts[weeks-1-Math.floor(ago/span)]++;
+ }
  const max=Math.max(1,...counts);
  const svg=svgEl('svg',{viewBox:'0 0 600 235','aria-hidden':'true'});
+ const slot=560/weeks,barWidth=weeks===8?42:Math.min(52,slot*.68);
  counts.forEach((count,i)=>{
-  const x=24+i*70,h=count/max*153;
-  svg.append(svgEl('rect',{x,y:187-h,width:42,height:h,rx:3,fill:i===7?'#8df0e0':'#268494'}));
-  const value=svgEl('text',{x:x+21,y:Math.max(18,187-h-9),'text-anchor':'middle','font-size':12,fill:'#f3fcff'});value.textContent=count;svg.append(value);
-  const week=svgEl('text',{x:x+21,y:208,'text-anchor':'middle','font-size':11,fill:'#adc7d2'});week.textContent=i===7?tr('Cette sem.','This week'):'S-'+(7-i);svg.append(week);
+  const x=weeks===8?24+i*70:24+i*slot+(slot-barWidth)/2;
+  const center=x+barWidth/2,h=count/max*153;
+  svg.append(svgEl('rect',{x,y:187-h,width:barWidth,height:h,rx:3,
+   fill:i===weeks-1?'#8df0e0':'#268494'}));
+  const value=svgEl('text',{x:center,y:Math.max(18,187-h-9),
+   'text-anchor':'middle','font-size':12,fill:'#f3fcff'});
+  value.textContent=count;svg.append(value);
+  const week=svgEl('text',{x:center,y:208,'text-anchor':'middle',
+   'font-size':11,fill:'#adc7d2'});
+  week.textContent=i===weeks-1?tr('Cette sem.','This week'):'S-'+(weeks-1-i);
+  svg.append(week);
  });
  root.append(svg);
 }
@@ -138,7 +151,8 @@ function render(){
  $('#v14-p-streak-detail').textContent=String(all.streak);
  $('#v14-p-goal').textContent=all.week+' / '+all.goal;
  $('#v14-p-goalbar').style.width=Math.min(100,Math.round(all.week/all.goal*100))+'%';
- lineChart(subset);barChart(subset);distribution(subset);
+ // Weekly chart uses its own explicit 4/8/12-week range; every bar reflects recorded sessions.
+ lineChart(subset);barChart(sessions);distribution(subset);
 }
 async function load(){
  let key=null,readable=false,syncPending=false;scope='guest';sessions=[];goal=3;
@@ -165,6 +179,7 @@ async function load(){
  render();
 }
 $('#v14-progress-range').addEventListener('change',render);
+$('#v14-week-range').addEventListener('change',render);
 document.querySelectorAll('[data-switch-lang]').forEach(b=>b.addEventListener('click',()=>queueMicrotask(render)));
 window.addEventListener('storage',event=>{if(event.key?.includes(STORAGE_KEY))void load();});
 window.addEventListener('focus',()=>void load());
