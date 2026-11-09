@@ -1655,10 +1655,3 @@ body.site31.r20 .r17-progress-wrap .v3-chart-period select:focus-visible{
  }
 }
 
-
-/* V3 / pass 37 — home coral headline exact source width */
-@media(min-width:1350px){
- body.site31.r20 .r17-home-wrap .r17-hero h1 strong{
-  letter-spacing:-.04em!important;
- }
-}
