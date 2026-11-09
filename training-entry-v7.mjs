@@ -38,24 +38,27 @@ await import('./training-v5.js?v=3');
 await import('./training-v6.js?v=2');
 
 async function syncChanges(){
- if(!uid||!api||!isEnabled(uid))return;
+ const requestedUid=uid,requestedApi=api;
+ if(!requestedUid||!requestedApi||!isEnabled(requestedUid))return;
  if(syncing){queued=true;return}
  syncing=true;
  report('Synchronisation automatique de la progression…');
  try{
   const before=JSON.stringify(window.AIMWeb?.getStore?.()||{});
-  await synchronize(api.supabase,uid);
-  const afterRaw=localStorage.getItem('aimroutine_cloud_user_'+uid+'_aimroutine_web_training_v2');
+  await synchronize(requestedApi.supabase,requestedUid);
+  if(uid!==requestedUid)return; // Never repaint data after another tab signs out.
+  const afterRaw=localStorage.getItem('aimroutine_cloud_user_'+requestedUid+'_aimroutine_web_training_v2');
   const after=JSON.stringify(JSON.parse(afterRaw||'{}'));
   if(before!==after){
    window.AIMWeb?.reloadFromCache?.();
    window.dispatchEvent(new CustomEvent('aim-sync-applied'));
   }
   report('Cloud automatique : progression à jour ✓');
- }catch(e){report('Sauvegarde cloud en attente · Données locales du compte conservées : '+e.message)}
+ }catch(e){if(uid===requestedUid)report('Sauvegarde cloud en attente · Données locales du compte conservées : '+e.message)}
  finally{
   syncing=false;
-  if(queued){queued=false;setTimeout(syncChanges,400)}
+  if(uid!==requestedUid)queued=false;
+  else if(queued){queued=false;setTimeout(syncChanges,400)}
  }
 }
 let debounce;
@@ -65,7 +68,26 @@ window.addEventListener('aim-cloud-data-changed',schedule);
 window.addEventListener('online',schedule);
 window.addEventListener('focus',schedule);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule()});
+// An access-token refresh for the same verified user is not a logout.
+// React immediately when another tab signs out or switches accounts.
+const tokenOwner=raw=>{
+ try{const value=JSON.parse(raw);return validUid(value?.user?.id)?value.user.id:null}
+ catch{return null}
+};
 window.addEventListener('storage',e=>{
+ if(e.key===authStorage){
+  const nextOwner=tokenOwner(e.newValue);
+  if(!e.newValue||nextOwner!==uid){
+   clearTimeout(debounce);
+   queued=false;uid=null;api=null;
+   window.__aimCloudUserId=null;
+   document.body.classList.add('ar-guest-preview');
+   document.getElementById('ar-account-required')?.removeAttribute('hidden');
+   report('Session modifiée · Vérification du compte en cours…');
+   location.reload();
+  }
+  return;
+ }
  if(e.key===UID_STORAGE_KEY&&e.newValue!==uid)location.reload();
  else if(uid&&e.key?.startsWith('aimroutine_cloud_user_'+uid+'_'))schedule();
 });
