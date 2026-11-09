@@ -792,6 +792,57 @@ test('Verified account saves and syncs new sessions automatically without cloud 
 });
 
 
+test('Training workspace hides account data after cross-tab token removal without reacting to same-user refresh',async({page})=>{
+ await useVerifiedTestAccount(page);
+ const uid='11111111-1111-4111-8111-111111111111';
+ const firstLoad=await page.evaluate(()=>performance.timeOrigin);
+ // A normal Supabase access-token refresh keeps the same verified owner.
+ await page.evaluate(owner=>{
+  const key='sb-lmzswtzboobpokumxzhy-auth-token';
+  const next=JSON.stringify({user:{id:owner},access_token:'qa-new-access-token'});
+  localStorage.setItem(key,next);
+  window.dispatchEvent(new StorageEvent('storage',{key,oldValue:'test-token',newValue:next}));
+ },uid);
+ await page.waitForTimeout(250);
+ expect(await page.evaluate(()=>performance.timeOrigin)).toBe(firstLoad);
+ await expect.poll(()=>page.evaluate(()=>window.__aimCloudUserId)).toBe(uid);
+ await page.evaluate(()=>{
+  window.AIMWeb.mergeData({sessions:[{
+   id:'cross-tab-logout-fixture',date:new Date().toISOString(),rank:'silver',
+   focus:'flick',tool:'VALORANT',scenario:'Stand de tir',minutes:10,
+   accuracy:72,feeling:'good',notes:''
+  }],presets:[],weeklyGoal:3});
+ });
+ await expect(page.locator('#total-sessions')).toHaveText('1');
+ // Revoking the auth token from another tab must immediately stop use of
+ // the old namespace and reload the page into guest-only preview mode.
+ const navigation=page.waitForEvent('framenavigated');
+ await page.evaluate(()=>{
+  setTimeout(()=>{
+   const key='sb-lmzswtzboobpokumxzhy-auth-token';
+   const oldValue=localStorage.getItem(key);
+   localStorage.removeItem(key);
+   window.dispatchEvent(new StorageEvent('storage',{key,oldValue,newValue:null}));
+  },0);
+ });
+ await navigation;
+ await expect(page.locator('#ar-account-required')).toBeVisible();
+ await expect(page.locator('body')).toHaveClass(/ar-guest-preview/);
+ await expect.poll(()=>page.evaluate(()=>window.__aimCloudUserId)).toBe(null);
+ await expect.poll(()=>page.evaluate(()=>window.AIMWeb?.getStore?.().sessions.length)).toBe(0);
+ expect(await page.evaluate(()=>localStorage.getItem('aimroutine_cloud_current_uid'))).toBeNull();
+ const rejected=await page.evaluate(()=>{
+  try{
+   window.AIMWeb.mergeData({sessions:[{
+    id:'forbidden-guest-save',date:new Date().toISOString(),rank:'silver',
+    focus:'flick',tool:'VALORANT',scenario:'Test',minutes:10,accuracy:70,feeling:'good',notes:''
+   }],presets:[],weeklyGoal:3});
+   return false;
+  }catch{return true}
+ });
+ expect(rejected).toBe(true);
+});
+
 test('V3 Cloud guest registration CTA opens the real mandatory-nickname signup form',async ({page})=>{
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.r17-guest-registration')).toBeVisible();
