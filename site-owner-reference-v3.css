@@ -1633,3 +1633,24 @@ body.site31.r20 .r17-progress-wrap .v3-chart-period select:focus-visible{
  }
  body.site31.r20 .r17-progress-wrap .v3-chart-period select{max-width:100%}
 }
+
+/* V3 / pass 36 — exact Progress selector registration (1672×941).
+   Owner PNG: first selector x≈471..593 y≈348..377; second x≈960..1104.
+   The new functional controls are placed against those real bounds. */
+@media(min-width:1350px){
+ body.site31.r20 .r17-progress-wrap .v3-chart-period{
+  transform:translateY(-5px)!important;
+ }
+ body.site31.r20 .r17-progress-wrap .v3-chart-period select{
+  height:30px!important;font-size:10.5px!important;
+ }
+ body.site31.r20 .r17-progress-wrap #v14-p-line-panel .v3-chart-period select{
+  min-width:122px!important;width:122px!important;max-width:122px!important;
+ }
+ body.site31.r20 .r17-progress-wrap #v14-p-bars-panel .v3-chart-period{
+  margin-right:30px!important;
+ }
+ body.site31.r20 .r17-progress-wrap #v14-p-bars-panel .v3-chart-period select{
+  min-width:144px!important;width:144px!important;max-width:144px!important;
+ }
+}
