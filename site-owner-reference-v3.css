@@ -1483,3 +1483,21 @@ body.site31.r20 .r17-account-wrap #auth-panel .r17-auth-reference-copy .ar7-eyeb
   transform:translateX(14px)!important;
  }
 }
+
+
+/* V3 / pass 27 — source-aligned title glyph width (desktop only).
+   Scale the visible text horizontally, never the content layout or controls. */
+@media(min-width:1350px){
+ body.site31.r20 .r17-home-wrap .r17-hero h1{
+  transform:translateX(5px) scaleX(1.20)!important;
+  transform-origin:left center!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-hero h1{
+  transform:translateX(-4px) scaleX(1.12)!important;
+  transform-origin:left center!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-hero h1{
+  transform:translate(3px,-5px) scaleX(1.16)!important;
+  transform-origin:left center!important;
+ }
+}
