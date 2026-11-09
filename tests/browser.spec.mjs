@@ -175,6 +175,48 @@ test('V3 routines hero CTAs keep source geometry and real navigation',async({pag
  expect(values.every(x=>x.href&&x.href!=='#')).toBe(true);
 });
 
+
+test('Shared Cloud navigation requires a verified account and follows FR/EN and logout',async({page})=>{
+ const uid='11111111-1111-4111-8111-111111111111';
+ await page.addInitScript(()=>{
+  window.__qaHeaderAuthenticated=false;
+  localStorage.setItem('aimroutine_cloud_current_uid','11111111-1111-4111-8111-111111111111');
+ });
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const id='11111111-1111-4111-8111-111111111111';
+const listeners=[];
+window.__qaEmitCloudAuth=event=>listeners.forEach(fn=>fn(event));
+export const supabase={auth:{
+ getUser:async()=>({data:{user:window.__qaHeaderAuthenticated?{id}:null},error:null}),
+ onAuthStateChange:fn=>{listeners.push(fn);return{data:{subscription:{unsubscribe(){}}}}}
+}};`
+ }));
+ await page.goto('/index.html',{waitUntil:'load'});
+ const cloud=page.locator('.r18-cloud'),signin=page.locator('.r18-signin');
+ await expect(page.locator('.r18-register')).toBeVisible();
+ await expect(signin).toContainText('Se connecter');
+ await expect(cloud).not.toHaveClass(/r18-connected/);
+ // A forged local UID must not make the Cloud indicator appear connected.
+ await page.evaluate(()=>{
+  window.__qaHeaderAuthenticated=true;
+  window.__qaEmitCloudAuth('SIGNED_IN');
+ });
+ await expect(cloud).toHaveClass(/r18-connected/);
+ await expect(signin).toHaveText('Mon compte');
+ await expect(signin).toHaveAttribute('href','account.html#dashboard-panel');
+ await expect(page.locator('.r18-register')).toBeHidden();
+ await page.locator('.ar-v3-language-footer [data-switch-lang]').click();
+ await expect(signin).toHaveText('My account');
+ await page.evaluate(()=>{
+  window.__qaHeaderAuthenticated=false;
+  window.__qaEmitCloudAuth('SIGNED_OUT');
+ });
+ await expect(cloud).not.toHaveClass(/r18-connected/);
+ await expect(signin).toHaveText('Sign in');
+ await expect(page.locator('.r18-register')).toBeVisible();
+});
+
 test('Cloud account landing has single-border tags and a compact accessible guest button',async({page})=>{
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
  const chips=page.locator('.ar7-account-highlights > .ar7-account-chip');
