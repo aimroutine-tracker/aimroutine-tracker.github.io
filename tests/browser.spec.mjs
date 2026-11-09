@@ -254,6 +254,16 @@ export const supabase={auth:{
  await expect(signin).toHaveText('My account');
 });
 
+test('V3 profile label respects the selected locale without pretending there is a guest account',async({page})=>{
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ const label=page.locator('.r17-account-profile .r17-section-label');
+ await expect.poll(()=>label.evaluate(el=>el.innerText.trim())).toBe('PROFIL JOUEUR');
+ await expect(page.locator('.r17-account-profile [data-r17-username]')).toContainText('Ton compte AIM');
+ await page.locator('.ar-v3-language-footer [data-switch-lang]').click();
+ await expect.poll(()=>label.evaluate(el=>el.innerText.trim())).toBe('PLAYER PROFILE');
+ await expect(page.locator('.r17-account-profile [data-r17-username]')).toContainText('Your AIM account');
+});
+
 test('Google Cloud sign-in description is accurate and accessible in French and English',async({page})=>{
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
  const google=page.locator('#google-signin');
