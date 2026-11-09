@@ -1407,3 +1407,16 @@ body.site31.r20 .r17-account-wrap .r17-account-profile .r17-avatar img{
   letter-spacing:.045em!important;color:#dbe4ea!important;
  }
 }
+
+
+/* V3 / pass 21 — align the three real-data Progress charts to the
+   owner's desktop x-coordinates (33/633/1141px at 1672px viewport).
+   Only layout dimensions are changed; chart values and sources are not. */
+@media(min-width:1350px){
+ body.site31.r20 .r17-progress-wrap .r17-chart-grid{
+  margin-left:13px!important;
+  margin-right:32px!important;
+  grid-template-columns:minmax(0,1.198fr) minmax(0,1fr) minmax(0,.984fr)!important;
+  gap:14px!important;
+ }
+}
