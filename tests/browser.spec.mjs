@@ -851,3 +851,26 @@ test('V3 Cloud hero fills right edge without duplicating its sign artwork',async
  const width=await page.evaluate(()=>document.documentElement.scrollWidth);
  expect(width).toBeLessThanOrEqual(1675);
 });
+
+
+test('V3 owner-reference hero headings keep punctuation-free copy on every page',async({page})=>{
+ await page.setViewportSize({width:1672,height:941});
+ const cases=[
+  ['index.html','nouvelle génération'],
+  ['training.html','d’entraînement'],
+  ['progress.html','progression'],
+  ['account.html','cloud']
+ ];
+ for(const [route,expected] of cases){
+  await page.goto('/'+route,{waitUntil:'domcontentloaded'});
+  const title=page.locator('.r17-screen .r17-hero h1').first();
+  await expect(title).toBeVisible();
+  const lang=await page.locator('html').getAttribute('lang');
+  if(lang==='en')await page.locator('.ar-v3-language-footer [data-switch-lang]').click();
+  await expect(title.locator('strong')).toContainText(expected);
+  const ending=(await title.locator('strong').innerText()).trim();
+  expect(ending.endsWith('.')).toBe(false);
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+  expect(overflow).toBeLessThanOrEqual(3);
+ }
+});
