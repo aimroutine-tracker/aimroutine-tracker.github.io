@@ -1577,3 +1577,12 @@ body.site31.r20 .r17-account-wrap #auth-panel .r17-auth-reference-copy .ar7-eyeb
   transform:translateY(7px)!important;
  }
 }
+
+/* V3 / pass 33 — routines weekly strip vertical registration.
+   Source: week begins around y=797; Chromium V3 around y=787 at 1672×941.
+   Paint-only placement preserves all training interactions and its mobile layout. */
+@media(min-width:1350px){
+ body.site31.r20 .r17-training-wrap .r17-weekline{
+  transform:translateY(10px)!important;
+ }
+}
