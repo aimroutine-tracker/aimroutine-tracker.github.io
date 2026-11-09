@@ -199,7 +199,15 @@ export const supabase={auth:{
  await expect(page.locator('.r18-register')).toBeVisible();
  await expect(signin).toContainText('Se connecter');
  await expect(cloud).not.toHaveClass(/r18-connected/);
- // A forged local UID must not make the Cloud indicator appear connected.
+ // A forged local UID must not activate the Cloud indicator or eagerly
+ // download the Supabase SDK before a real session token appears.
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaEmitCloudAuth)).toBe('undefined');
+ await page.evaluate(()=>{
+  const key='sb-lmzswtzboobpokumxzhy-auth-token';
+  localStorage.setItem(key,'qa-session-only');
+  window.dispatchEvent(new StorageEvent('storage',{key,newValue:'qa-session-only'}));
+ });
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaEmitCloudAuth)).toBe('function');
  await page.evaluate(()=>{
   window.__qaHeaderAuthenticated=true;
   window.__qaEmitCloudAuth('SIGNED_IN');
