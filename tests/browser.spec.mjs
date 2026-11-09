@@ -131,6 +131,31 @@ test.describe('PWA cache integration',()=>{
 
 });
 
+
+test('V3 reference hero bracket is decorative on all four pages',async({page})=>{
+ await page.setViewportSize({width:1672,height:941});
+ for(const route of ['index.html','training.html','progress.html','account.html']){
+  await page.goto('/'+route,{waitUntil:'domcontentloaded'});
+  await expect.poll(()=>page.evaluate(()=>document.body.classList.contains('r20'))).toBe(true);
+  const bracket=await page.locator('.r17-screen .r17-hero-content').evaluate(el=>{
+   const style=getComputedStyle(el,'::before');
+   return {
+    content:style.content,
+    left:style.left,
+    width:style.width,
+    border:style.borderTopWidth,
+    pointerEvents:style.pointerEvents,
+    documentWidth:document.documentElement.scrollWidth
+   };
+  });
+  expect(bracket.content,route).toBe('""');
+  expect(bracket.width,route).toBe('29px');
+  expect(bracket.border,route).toBe('2px');
+  expect(bracket.pointerEvents,route).toBe('none');
+  expect(bracket.documentWidth,route).toBeLessThanOrEqual(1675);
+ }
+});
+
 test('Cloud account landing has single-border tags and a compact accessible guest button',async({page})=>{
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
  const chips=page.locator('.ar7-account-highlights > .ar7-account-chip');
