@@ -258,10 +258,10 @@ test('V3 profile label respects the selected locale without pretending there is 
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
  const label=page.locator('.r17-account-profile .r17-section-label');
  await expect.poll(()=>label.evaluate(el=>el.innerText.trim())).toBe('PROFIL JOUEUR');
- await expect(page.locator('.r17-account-profile [data-r17-username]')).toContainText('Ton compte AIM');
+ await expect(page.locator('.r17-account-profile [data-r17-username]')).toContainText('Connecte-toi à ton profil');
  await page.locator('.ar-v3-language-footer [data-switch-lang]').click();
  await expect.poll(()=>label.evaluate(el=>el.innerText.trim())).toBe('PLAYER PROFILE');
- await expect(page.locator('.r17-account-profile [data-r17-username]')).toContainText('Your AIM account');
+ await expect(page.locator('.r17-account-profile [data-r17-username]')).toContainText('Sign in to your profile');
 });
 
 test('Google Cloud sign-in description is accurate and accessible in French and English',async({page})=>{
