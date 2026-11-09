@@ -4,7 +4,7 @@
 const CACHE='aimroutine-v10-owner-reference-20261109';
 const BASE=new URL(self.registration.scope);
 const OFFLINE=[
- './','./index.html','./training.html','./account.html','./product.html','./releases.html',
+ './','./index.html','./training.html','./progress.html','./account.html','./product.html','./releases.html',
  './training.css','./training-v5.css','./training-v6.css','./account-v7.css',
  './training-v5.js','./training-v6.js','./training-core-v5.mjs','./training-v6-core.mjs',
  './training-entry-v7.mjs','./cloud-core-v7.mjs','./cloud-sync-v7.mjs',
