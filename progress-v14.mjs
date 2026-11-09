@@ -68,7 +68,7 @@ function distribution(items){
   // No data polygon, percentage, ranking or additional skill is invented.
   const preview=document.createElement('div');preview.className='v3-empty-radar';
   const svg=svgEl('svg',{viewBox:'0 0 320 215','aria-hidden':'true',focusable:'false'});
-  const cx=160,cy=102,r=78;
+  const cx=160,cy=102,r=62;
   const point=(i,factor)=>{
    const angle=-Math.PI/2+i*Math.PI/2;
    return [cx+Math.cos(angle)*r*factor,cy+Math.sin(angle)*r*factor];
