@@ -1456,3 +1456,19 @@ body.site31.r20 .r17-account-wrap #auth-panel .r17-auth-reference-copy .ar7-eyeb
   font-size:20px!important;
  }
 }
+
+
+/* V3 / pass 24 — continue the account skyline to the right viewport edge.
+   Preserve the original scaled portrait. Additional layer is the same local
+   artwork, feathered only into the far-right gap, not another image asset. */
+@media(min-width:1350px){
+ body.site31.r20 .r17-account-wrap .r17-hero-art::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:url('r17-hero.webp');
+  background-size:cover;
+  background-position:right center;
+  background-repeat:no-repeat;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,transparent 80%,#000 95%,#000 100%);
+  mask-image:linear-gradient(90deg,transparent 0%,transparent 80%,#000 95%,#000 100%);
+ }
+}
