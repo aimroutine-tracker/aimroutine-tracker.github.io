@@ -1522,3 +1522,17 @@ body.site31.r20 .r17-account-wrap #auth-panel .r17-auth-reference-copy .ar7-eyeb
   filter:drop-shadow(0 0 4px #ff566940);
  }
 }
+
+
+/* V3 / pass 29 — measured desktop header proportions against owner PNG.
+   Original: logo ~x89, last account CTA ~x1645 at 1672px.
+   Prior V3: logo ~x80, last CTA ~x1574. No markup changes. */
+@media(min-width:1350px){
+ body.site31.r20 .site31-nav{
+  padding-left:88px!important;
+  padding-right:25px!important;
+ }
+ body.site31.r20 .r18-actions .r18-cloud{padding-inline:18px!important}
+ body.site31.r20 .r18-actions .r18-signin{padding-inline:22px!important}
+ body.site31.r20 .r18-actions .r18-register{padding-inline:27px!important}
+}
