@@ -211,3 +211,56 @@ test('concurrent inserts of the same session ID preserve the first database writ
   assert.equal(readUserLocal(USER_A).store.sessions[0].accuracy,97,'Next sync converges on cloud winner');
  });
 });
+
+
+test('reset waits for the in-flight save and queues subsequent syncs, preventing resurrection',async()=>{
+ const db=makeDb(),store=new MemoryStorage(),base=clientFor(db,USER_A);
+ let unblockSave,markSaveStarted;
+ const saveGate=new Promise(resolve=>{unblockSave=resolve});
+ const saveStarted=new Promise(resolve=>{markSaveStarted=resolve});
+ let resetCalls=0;
+ const client={
+  ...base,
+  from(table){
+   const query=base.from(table);
+   if(table==='aim_sessions'){
+    const original=query.upsert.bind(query);
+    query.upsert=async(...args)=>{
+     markSaveStarted();
+     await saveGate;
+     return original(...args);
+    };
+   }
+   return query;
+  },
+  async rpc(...args){resetCalls++;return base.rpc(...args)}
+ };
+ await use(store,async()=>{
+  write(store,USER_A,[session('old-save-in-flight')]);
+  const saving=synchronize(client,USER_A);
+  await saveStarted;
+  // Delete while the first network write is deliberately blocked.
+  const deleting=deleteCloudProgress(client,USER_A);
+  const duplicateDelete=deleteCloudProgress(client,USER_A);
+  assert.strictEqual(deleting,duplicateDelete,'Duplicate reset requests should share one RPC');
+  // An automatic sync triggered after Delete must run only after the reset.
+  const queuedSync=synchronize(client,USER_A);
+  await Promise.resolve();
+  assert.equal(resetCalls,0,'Cloud reset must wait for pending writes');
+  unblockSave();
+  await saving;
+  await deleting;
+  await queuedSync;
+  assert.equal(resetCalls,1,'Exactly one destructive RPC is allowed');
+  assert.deepEqual(db.aim_sessions.filter(x=>x.user_id===USER_A),[],
+   'Queued sync must never reupload sessions deleted by the reset');
+  assert.equal(readUserLocal(USER_A).store.sessions.length,0);
+  const resetAt=db.aim_preferences.find(x=>x.user_id===USER_A)?.settings?.reset_at;
+  assert.ok(Number.isFinite(Date.parse(resetAt)));
+  // A real new session created AFTER deletion is allowed to sync normally.
+  write(store,USER_A,[session('created-after-reset')]);
+  await synchronize(client,USER_A);
+  assert.deepEqual(db.aim_sessions.filter(x=>x.user_id===USER_A).map(x=>x.session_id),
+   ['created-after-reset']);
+ });
+});
