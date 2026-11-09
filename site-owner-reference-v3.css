@@ -1492,10 +1492,6 @@ body.site31.r20 .r17-account-wrap #auth-panel .r17-auth-reference-copy .ar7-eyeb
   transform:translateX(5px) scaleX(1.20)!important;
   transform-origin:left center!important;
  }
- body.site31.r20 .r17-training-wrap .r17-hero h1{
-  transform:translateX(-4px) scaleX(1.12)!important;
-  transform-origin:left center!important;
- }
  body.site31.r20 .r17-account-wrap .r17-hero h1{
   transform:translate(3px,-5px) scaleX(1.16)!important;
   transform-origin:left center!important;
