@@ -1407,3 +1407,17 @@ body.site31.r20 .r17-account-wrap .r17-account-profile .r17-avatar img{
   letter-spacing:.045em!important;color:#dbe4ea!important;
  }
 }
+
+
+/* V3 / pass 22 — subtle panel surface darkening against exact source PNG.
+   No graph/metric opacity changes: affects surfaces only. */
+@media(min-width:1350px){
+ body.site31.r20 .r17-progress-wrap .r17-chart-grid>.v14-panel{
+  background-image:linear-gradient(140deg,#142431,#071723)!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-secondary-grid>.v14-panel:not(.r17-progress-streak),
+ body.site31.r20 .r17-progress-wrap .r17-progress-journey,
+ body.site31.r20 .r17-progress-wrap .r17-progress-goals-overview{
+  background:linear-gradient(130deg,#142432,#091824)!important;
+ }
+}
