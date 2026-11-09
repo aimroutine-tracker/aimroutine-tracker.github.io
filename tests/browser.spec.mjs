@@ -875,3 +875,30 @@ test('V3 owner-reference hero headings keep punctuation-free copy on every page'
   expect(overflow).toBeLessThanOrEqual(3);
  }
 });
+
+
+test('V3 Progress empty score panel matches reference layout without claiming a score',async({page})=>{
+ for(const width of [1672,390]){
+  await page.setViewportSize({width,height:width===1672?941:850});
+  await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
+  const root=page.locator('#v14-p-distribution');
+  const radar=root.locator('.v3-empty-radar svg');
+  const score=root.locator('.v3-empty-score');
+  await expect(radar).toBeVisible();
+  await expect(score).toBeVisible();
+  await expect(score.locator('strong')).toHaveText('Score global');
+  await expect(score.locator('.v3-empty-score-value')).toHaveText('—');
+  await expect(score.locator('small')).toHaveText('Non calculé');
+  const radarRect=await radar.boundingBox(), scoreRect=await score.boundingBox();
+  expect(radarRect).toBeTruthy();expect(scoreRect).toBeTruthy();
+  expect(radarRect.x+radarRect.width).toBeLessThanOrEqual(scoreRect.x+8);
+  await expect(radar.locator('polygon')).toHaveCount(4); // no synthetic score polygon
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
+  expect(overflow).toBeLessThanOrEqual(3);
+ }
+ const switcher=page.locator('.ar-v3-language-footer [data-switch-lang]');
+ await switcher.click();
+ await expect(page.locator('.v3-empty-score strong')).toHaveText('Overall score');
+ await expect(page.locator('.v3-empty-score small')).toHaveText('Not calculated');
+ await expect(page.locator('.v3-empty-score-value')).toHaveText('—');
+});
