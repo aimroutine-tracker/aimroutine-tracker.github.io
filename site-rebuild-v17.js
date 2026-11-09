@@ -8,7 +8,7 @@ const language=()=>document.documentElement.lang==='en'?'en':'fr';
 const phrase=(fr,en)=>language()==='en'?en:fr;
 const route=location.pathname.split('/').pop()||'index.html';
 const button=(url,fr,en,kind='hot')=>`<a href="${url}" class="r17-button r17-button--${kind}">${kind==='hot'?'▶':'⌖'} ${t(fr,en)} <span aria-hidden="true">›</span></a>`;
-const hero=(fr,en,subfr,suben,kickerfr,kickeren,actions)=>`<section class="r17-hero" aria-label="${fr.replace(/<[^>]*>/g,' ')}"><div class="r17-hero-art" aria-hidden="true"></div><div class="r17-hero-content"><p class="r17-overline">${t(kickerfr,kickeren)}</p><h1>${t(fr,en)}</h1><p class="r17-hero-desc">${t(subfr,suben)}</p><div class="r17-hero-actions">${actions||''}</div></div><div class="r17-hero-mark" aria-hidden="true"><span>⌖</span><small>AIM<br>TRAIN<br>TRACK<br>IMPROVE</small></div></section>`;
+const hero=(fr,en,subfr,suben,kickerfr,kickeren,actions)=>`<section class="r17-hero" aria-labelledby="r17-main-hero-title"><div class="r17-hero-art" aria-hidden="true"></div><div class="r17-hero-content"><p class="r17-overline">${t(kickerfr,kickeren)}</p><h1 id="r17-main-hero-title">${t(fr,en)}</h1><p class="r17-hero-desc">${t(subfr,suben)}</p><div class="r17-hero-actions">${actions||''}</div></div><div class="r17-hero-mark" aria-hidden="true"><span>⌖</span><small>AIM<br>TRAIN<br>TRACK<br>IMPROVE</small></div></section>`;
 function navigation(){
  const nav=$('.site31-nav'),links=$('.site31-links'),ctrl=$('.site31-controls');
  if(!nav||!links||!ctrl)return;
