@@ -867,8 +867,9 @@ test('V3 owner-reference hero headings keep punctuation-free copy on every page'
   await expect(title).toBeVisible();
   const lang=await page.locator('html').getAttribute('lang');
   if(lang==='en')await page.locator('.ar-v3-language-footer [data-switch-lang]').click();
-  await expect(title.locator('strong')).toContainText(expected);
-  const ending=(await title.locator('strong').innerText()).trim();
+  const visibleFrenchTitle=title.locator('.fr strong');
+  await expect(visibleFrenchTitle).toContainText(expected);
+  const ending=(await visibleFrenchTitle.innerText()).trim();
   expect(ending.endsWith('.')).toBe(false);
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
   expect(overflow).toBeLessThanOrEqual(3);
