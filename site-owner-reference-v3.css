@@ -1537,21 +1537,3 @@ body.site31.r20 .r17-account-wrap #auth-panel .r17-auth-reference-copy .ar7-eyeb
  body.site31.r20 .r18-actions .r18-register{padding-inline:27px!important}
 }
 
-
-/* V3 / pass 30 — Routines right skyline continuity.
-   The reduced hero artwork ends before the owner's full-width city reference.
-   Fill only its extreme right edge with CSS atmosphere; never clone a second
-   character, crosshair or AIM TRAIN TRACK sign. */
-@media (min-width:1350px){
- body.site31.r20 .r17-training-wrap .r17-hero-art::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  background:
-   linear-gradient(180deg,#4b6c87 0%,#263d56 40%,#182e43 76%,#101e30 100%),
-   repeating-linear-gradient(90deg,transparent 0 39px,#8294a510 40px 42px,transparent 43px 67px);
-  -webkit-mask-image:linear-gradient(90deg,transparent 0%,transparent 80%,#0009 89%,#000 100%);
-  mask-image:linear-gradient(90deg,transparent 0%,transparent 80%,#0009 89%,#000 100%);
- }
-}
