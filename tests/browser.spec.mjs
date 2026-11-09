@@ -254,6 +254,20 @@ export const supabase={auth:{
  await expect(signin).toHaveText('My account');
 });
 
+test('Google Cloud sign-in description is accurate and accessible in French and English',async({page})=>{
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ const google=page.locator('#google-signin');
+ const note=page.locator('#google-login-note');
+ await expect(google).toHaveAttribute('aria-describedby','google-login-note');
+ await expect(note).toContainText('Connecte-toi avec Google');
+ await expect(note).not.toContainText('bêta');
+ await expect(note).not.toContainText('Google Auth Platform');
+ await page.locator('.ar-v3-language-footer [data-switch-lang]').click();
+ await expect(note).toContainText('Sign in with Google');
+ await expect(note).not.toContainText('beta');
+ await expect(google).toContainText('Continue with Google');
+});
+
 test('Cloud account landing has single-border tags and a compact accessible guest button',async({page})=>{
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
  const chips=page.locator('.ar7-account-highlights > .ar7-account-chip');
