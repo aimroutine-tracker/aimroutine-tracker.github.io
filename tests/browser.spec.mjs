@@ -875,3 +875,26 @@ test('V3 owner-reference hero headings keep punctuation-free copy on every page'
   expect(overflow).toBeLessThanOrEqual(3);
  }
 });
+
+
+test('V3 hero landmarks expose their visible FR/EN heading to assistive technology',async({page})=>{
+ const screens=[
+  ['index.html',/Routine AIM nouvelle génération/i,/Next-gen AIM training routines/i],
+  ['training.html',/Tes routines d’entraînement/i,/Your training routines/i],
+  ['progress.html',/Suivi de progression/i,/Progress analytics/i],
+  ['account.html',/Ton profil cloud/i,/Your cloud profile/i]
+ ];
+ for(const [route,french,english] of screens){
+  await page.goto('/'+route,{waitUntil:'domcontentloaded'});
+  const section=page.locator('.r17-screen .r17-hero').first();
+  await expect(section).toBeVisible();
+  await expect(section).toHaveAttribute('aria-labelledby','r17-main-hero-title');
+  await expect(page.locator('#r17-main-hero-title')).toHaveCount(1);
+  const switcher=page.locator('.ar-v3-language-footer [data-switch-lang]');
+  if((await page.locator('html').getAttribute('lang'))==='en')await switcher.click();
+  await expect(section).toHaveAccessibleName(french);
+  await switcher.click();
+  await expect(page.locator('html')).toHaveAttribute('lang','en');
+  await expect(section).toHaveAccessibleName(english);
+ }
+});
