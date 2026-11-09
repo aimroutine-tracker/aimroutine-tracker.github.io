@@ -264,3 +264,25 @@ test('reset waits for the in-flight save and queues subsequent syncs, preventing
    ['created-after-reset']);
  });
 });
+
+
+test('failed reset releases its lock and preserves data for a safe retry',async()=>{
+ const db=makeDb(),store=new MemoryStorage(),base=clientFor(db,USER_A);
+ let rejectFirst=true;
+ const client={...base,async rpc(name){
+  if(rejectFirst){rejectFirst=false;return {data:null,error:Error('temporary reset error')};}
+  return base.rpc(name);
+ }};
+ await use(store,async()=>{
+  write(store,USER_A,[session('retain-until-confirmed')]);
+  await synchronize(client,USER_A);
+  await assert.rejects(deleteCloudProgress(client,USER_A),/temporary reset error/);
+  assert.deepEqual(readUserLocal(USER_A).store.sessions.map(s=>s.id),
+   ['retain-until-confirmed'],'A failed server reset must not erase local progress');
+  await synchronize(client,USER_A); // Must not hang on a rejected reset lock.
+  assert.equal(db.aim_sessions.filter(x=>x.user_id===USER_A).length,1);
+  assert.equal(await deleteCloudProgress(client,USER_A),true);
+  assert.equal(db.aim_sessions.filter(x=>x.user_id===USER_A).length,0);
+  assert.equal(readUserLocal(USER_A).store.sessions.length,0);
+ });
+});
