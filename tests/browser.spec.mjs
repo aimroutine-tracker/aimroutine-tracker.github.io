@@ -770,3 +770,34 @@ test('V3 mobile Cloud profile keeps decorative portrait clear of real account ti
   await expect(page.locator('[data-r17-username]')).toBeVisible();
  }
 });
+
+
+test('V3 Progress unified KPI ribbon keeps all original real-data metric elements',async({page})=>{
+ await page.setViewportSize({width:1672,height:941});
+ await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
+ const ribbon=page.locator('.r17-progress-wrap .r17-progress-kpis');
+ await expect(ribbon).toBeVisible();
+ await expect(ribbon.locator('.v14-kpi')).toHaveCount(4);
+ for(const id of ['v14-p-average','v14-p-minutes','v14-p-sessions','v14-p-streak'])
+  await expect(ribbon.locator('#'+id)).toHaveCount(1);
+ const rect=await ribbon.boundingBox();
+ expect(rect.x).toBeGreaterThanOrEqual(20);
+ expect(rect.x).toBeLessThanOrEqual(45);
+ expect(rect.width).toBeGreaterThan(1530);
+ expect(rect.height).toBeGreaterThanOrEqual(59);
+ expect(rect.height).toBeLessThanOrEqual(66);
+ const geometry=await ribbon.evaluate(node=>{
+  const first=node.querySelector('.v14-kpi');
+  const last=node.querySelector('.v14-kpi:last-child');
+  return {
+   firstBackground:getComputedStyle(first).backgroundImage,
+   lastTriangle:getComputedStyle(last,'::before').content,
+   lastDisplay:getComputedStyle(last,'::before').display
+  };
+ });
+ expect(geometry.firstBackground).toBe('none');
+ expect(geometry.lastDisplay).toBe('none');
+ await page.setViewportSize({width:390,height:850});
+ const scroll=await page.evaluate(()=>document.documentElement.scrollWidth);
+ expect(scroll).toBeLessThanOrEqual(393);
+});
