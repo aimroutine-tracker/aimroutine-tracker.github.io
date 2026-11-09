@@ -1192,3 +1192,59 @@ export const supabase={auth:{
  await expect(page.locator('#v14-p-average')).toHaveText('—');
  await expect(page.locator('#v14-source-status')).toContainText('Connecte-toi');
 });
+
+
+test('Home guest-safe stats invalidate immediately on cross-tab logout',async({page})=>{
+ const uid='11111111-1111-4111-8111-111111111111';
+ const authKey='sb-lmzswtzboobpokumxzhy-auth-token';
+ await page.evaluate(({uid,authKey})=>{
+  const session={id:'private-home-qa-session',date:new Date().toISOString(),
+   rank:'silver',focus:'flick',tool:'VALORANT',scenario:'Stand de tir',
+   minutes:15,accuracy:85,feeling:'good',notes:''};
+  localStorage.setItem(authKey,'qa-token');
+  localStorage.setItem('aimroutine_cloud_user_'+uid+'_aimroutine_web_training_v2',
+   JSON.stringify({sessions:[session],presets:[],weeklyGoal:3}));
+ },{uid,authKey});
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const uid='11111111-1111-4111-8111-111111111111';
+let pending=[];
+window.__qaDeferHomeAuth=false;
+window.__qaAuthWaitingCount=()=>pending.length;
+window.__qaReleaseHomeAuth=()=>{
+ const list=pending.splice(0);
+ for(const resolve of list)resolve({data:{user:{id:uid}},error:null});
+};
+export const supabase={auth:{
+ getSession:async()=>({data:{session:{user:{id:uid}}},error:null}),
+ getUser:async()=>window.__qaDeferHomeAuth?
+  new Promise(resolve=>pending.push(resolve)):
+  {data:{user:{id:uid}},error:null},
+ onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})
+}};`
+ }));
+ await page.goto('/index.html',{waitUntil:'domcontentloaded'});
+ const sessions=page.locator('[data-v15-stat="sessions"]');
+ await expect(sessions).toHaveText('1');
+ // Trigger a deliberately slow authenticated refresh on the still-open tab.
+ await page.evaluate(()=>{
+  window.__qaDeferHomeAuth=true;
+  window.dispatchEvent(new Event('focus'));
+ });
+ await expect.poll(()=>page.evaluate(()=>window.__qaAuthWaitingCount()),{timeout:15000}).toBeGreaterThan(0);
+ await page.evaluate(authKey=>{
+  localStorage.removeItem(authKey);
+  window.dispatchEvent(new StorageEvent('storage',{
+   key:authKey,oldValue:'qa-token',newValue:null
+  }));
+ },authKey);
+ // Previously visible real-account metrics must be hidden synchronously.
+ await expect(sessions).toHaveText('—');
+ await expect(page.locator('[data-v15-stat="accuracy"]')).toHaveText('—');
+ await expect(page.locator('[data-v15-stat="cloud"]')).toContainText('CONNEXION REQUISE');
+ await page.evaluate(()=>window.__qaReleaseHomeAuth());
+ await page.waitForTimeout(180);
+ // The stale request must not re-display account data.
+ await expect(sessions).toHaveText('—');
+ await expect(page.locator('[data-v15-stat="accuracy"]')).toHaveText('—');
+});
