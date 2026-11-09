@@ -1554,3 +1554,17 @@ body.site31.r20 .r17-account-wrap #auth-panel .r17-auth-reference-copy .ar7-eyeb
   min-width:372px!important;
  }
 }
+
+/* Accessible section hierarchy without changing the four raster references. */
+body.site31.r20 .r17-visually-hidden{
+ position:absolute!important;
+ width:1px!important;
+ height:1px!important;
+ padding:0!important;
+ margin:-1px!important;
+ overflow:hidden!important;
+ clip:rect(0,0,0,0)!important;
+ clip-path:inset(50%)!important;
+ white-space:nowrap!important;
+ border:0!important;
+}
