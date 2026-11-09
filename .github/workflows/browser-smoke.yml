@@ -31,9 +31,6 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
-concurrency:
-  group: aimroutine-browser-${{ github.ref }}
-  cancel-in-progress: true
 jobs:
   browsers:
     runs-on: ubuntu-24.04
