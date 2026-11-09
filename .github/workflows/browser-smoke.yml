@@ -32,7 +32,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: aimroutine-browser-\${{ github.ref }}
+  group: aimroutine-browser-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   browsers:
