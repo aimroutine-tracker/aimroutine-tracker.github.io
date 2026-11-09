@@ -57,7 +57,7 @@ function installVerifiedCloudHeader(){
   try{return Boolean(localStorage.getItem(tokenKey))}
   catch{return true} // Private browsing restrictions: still verify through Supabase.
  };
- let loading=false,subscribed=false;
+ let loading=false,subscribed=false,verifyCurrent=null;
  const start=async()=>{
   if(subscribed||loading||!hasToken())return;
   loading=true;
@@ -70,6 +70,7 @@ function installVerifiedCloudHeader(){
      if(ticket===request)render(Boolean(!error&&data?.user?.id));
     }catch{if(ticket===request)render(false)}
    };
+   verifyCurrent=verify;
    auth.onAuthStateChange((event)=>{
     if(event==='SIGNED_OUT'){
      ++request;render(false);
@@ -93,6 +94,7 @@ function installVerifiedCloudHeader(){
  window.addEventListener('storage',event=>{
   if(event.key!==tokenKey)return;
   if(!event.newValue){++request;render(false)}
+  else if(verifyCurrent)void verifyCurrent();
   else void start();
  });
  window.addEventListener('focus',()=>void start());
