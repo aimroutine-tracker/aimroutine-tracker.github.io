@@ -792,6 +792,40 @@ test('Verified account saves and syncs new sessions automatically without cloud 
 });
 
 
+test('Training rejects a forged cached account ID unless getUser verifies it',async({page})=>{
+ const uid='11111111-1111-4111-8111-111111111111';
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const uid='11111111-1111-4111-8111-111111111111';
+export const supabase={auth:{
+ getSession:async()=>({data:{session:{user:{id:uid}}},error:null}),
+ getUser:async()=>({data:{user:null},error:{message:'invalid JWT'}})
+}};`
+ }));
+ await page.evaluate(owner=>{
+  localStorage.setItem('sb-lmzswtzboobpokumxzhy-auth-token',
+   JSON.stringify({user:{id:owner},access_token:'forged-token'}));
+  localStorage.setItem('aimroutine_cloud_current_uid',owner);
+ },uid);
+ await page.reload({waitUntil:'domcontentloaded'});
+ await expect.poll(()=>page.evaluate(()=>Boolean(window.AIMWeb))).toBe(true);
+ await expect(page.locator('body')).toHaveClass(/ar-guest-preview/);
+ await expect(page.locator('#ar-account-required')).toBeVisible();
+ await expect.poll(()=>page.evaluate(()=>window.__aimCloudUserId)).toBe(null);
+ expect(await page.evaluate(()=>localStorage.getItem('aimroutine_cloud_current_uid'))).toBeNull();
+ const denied=await page.evaluate(()=>{
+  try{
+   window.AIMWeb.mergeData({sessions:[{
+    id:'forged-user-must-not-save',date:new Date().toISOString(),rank:'iron',
+    focus:'tracking',tool:'VALORANT',scenario:'Test',minutes:10,accuracy:70,feeling:'good',notes:''
+   }],presets:[],weeklyGoal:3});
+   return false;
+  }catch{return true}
+ });
+ expect(denied).toBe(true);
+ expect(await page.evaluate(()=>localStorage.getItem('aimroutine_web_training_v2'))).toBeNull();
+});
+
 test('Training workspace hides account data after cross-tab token removal without reacting to same-user refresh',async({page})=>{
  await useVerifiedTestAccount(page);
  const uid='11111111-1111-4111-8111-111111111111';
