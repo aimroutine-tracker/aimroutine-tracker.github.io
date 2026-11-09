@@ -1251,3 +1251,16 @@ export const supabase={auth:{
  await expect.poll(()=>allValues('[data-v15-stat="sessions"]','—')).toBe(true);
  await expect.poll(()=>allValues('[data-v15-stat="accuracy"]','—')).toBe(true);
 });
+
+
+test('Progress guest Cloud notice follows FR/EN switches without synthetic data',async({page})=>{
+ await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
+ const source=page.locator('#v14-source-status');
+ await expect(source).toContainText('Connecte-toi pour consulter tes statistiques');
+ await expect(page.locator('#v14-p-sessions')).toHaveText('0');
+ await page.locator('.ar-v3-language-footer [data-switch-lang]').click();
+ await expect(source).toContainText('Sign in to see your statistics');
+ await expect(page.locator('#v14-p-sessions')).toHaveText('0');
+ await page.locator('.ar-v3-language-footer [data-switch-lang]').click();
+ await expect(source).toContainText('Connecte-toi pour consulter tes statistiques');
+});
