@@ -91,9 +91,9 @@ L'inspection du déploiement réel de la fonction Edge `delete-aim-account` (ver
 
 L'avis officiel `auth_leaked_password_protection` signale toujours **WARN — Leaked Password Protection Disabled**. La vérification des mots de passe compromis côté navigateur ne remplace pas un contrôle natif de Supabase Auth.
 
-Documentation : https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection
+**Limite de plan confirmée le 10 novembre 2026 :** la lecture réelle du projet et de son organisation Supabase indique le plan **`free` / `tier_free`**. La [documentation officielle de sécurité des mots de passe](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection) précise que la protection native contre les mots de passe compromis est réservée aux plans **Pro et supérieurs** ; elle n'est donc **pas disponible sur ce projet Free**, même si l'audit signale sa désactivation. La [grille tarifaire officielle](https://supabase.com/pricing) confirme cette restriction.
 
-Aucune option serveur n'a été changée ; il faut confirmer la disponibilité du réglage sur le plan réellement utilisé avant une activation, puis réexécuter les tests d'inscription et de réinitialisation.
+**Décision compatible avec l'exigence 100 % gratuite :** maintenir le contrôle HIBP côté client et la longueur minimale côté Auth, conserver CAPTCHA, RLS et autres défenses existantes, ne pas promettre de filtrage serveur des mots de passe divulgués sur Free. Un contrôle client peut être contourné, d'où l'importance de ne pas le présenter comme un équivalent. Aucun passage à un plan payant ou modification Auth n'a été entrepris.
 
 ## Méthodologie non destructive
 
