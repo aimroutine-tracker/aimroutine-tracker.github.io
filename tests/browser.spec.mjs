@@ -2796,3 +2796,99 @@ export const deleteCloudProgress=()=>new Promise((resolve,reject)=>{
  await expect(page.locator('#account-status')).not.toContainText('Old A network failure must remain hidden');
  expect(errors).toEqual([]);
 });
+
+
+test('An old A auto-sync error cannot overwrite the new A session after A -> B -> A',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const a={id:'11111111-1111-4111-8111-111111111111',email:'cloud-a@example.invalid',user_metadata:{aim_username:'Alpha'}};
+const b={id:'22222222-2222-4222-8222-222222222222',email:'cloud-b@example.invalid',user_metadata:{aim_username:'Bravo'}};
+let current=a,listener=null;
+window.__qaToB=()=>{current=b;listener?.('SIGNED_IN',{user:b})};
+window.__qaBackToA=()=>{current=a;listener?.('SIGNED_IN',{user:a})};
+export const SITE_URL='https://aimroutine-tracker.github.io/';
+export const supabase={auth:{
+ getUser:async()=>({data:{user:current},error:null}),
+ onAuthStateChange:fn=>{listener=fn;return{data:{subscription:{unsubscribe(){}}}}}
+}};`
+ }));
+ await page.route('**/cloud-sync-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const a='11111111-1111-4111-8111-111111111111';
+window.__qaHoldNextA=false;window.__qaSyncCalls=[];
+window.__qaStartSlowA=()=>{window.__qaHoldNextA=true;window.dispatchEvent(new Event('online'))};
+export const isEnabled=()=>true;
+export const setEnabled=()=>{};
+export const readUserLocal=()=>({store:{sessions:[],presets:[],weeklyGoal:3}});
+export const importGuestIntoAccount=()=>({sessions:0,favorites:0});
+export const deleteCloudProgress=async()=>true;
+export const synchronize=async(client,uid)=>{
+ window.__qaSyncCalls.push(uid);
+ if(uid===a&&window.__qaHoldNextA){
+  window.__qaHoldNextA=false;
+  return new Promise((resolve,reject)=>{
+   window.__qaFailOldA=()=>reject(new Error('STALE_AUTO_SYNC_A_ERROR'));
+  });
+ }
+ return {synced:true,downloadedSessions:0,downloadedFavorites:0};
+};`
+ }));
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#user-email')).toHaveText('cloud-a@example.invalid');
+ await expect(page.locator('#account-status')).toContainText('Sauvegarde cloud synchronisée');
+ await page.evaluate(()=>window.__qaStartSlowA());
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaFailOldA)).toBe('function');
+ await page.evaluate(()=>window.__qaToB());
+ await expect(page.locator('#user-email')).toHaveText('cloud-b@example.invalid');
+ await page.evaluate(()=>window.__qaBackToA());
+ await expect(page.locator('#user-email')).toHaveText('cloud-a@example.invalid');
+ await expect(page.locator('#account-status')).toContainText('Synchronisation automatique à jour');
+ await page.evaluate(()=>window.__qaFailOldA());
+ await page.waitForTimeout(100); // Let the deliberately rejected old promise settle.
+ await expect(page.locator('#account-status')).not.toContainText('STALE_AUTO_SYNC_A_ERROR');
+ await expect(page.locator('#user-email')).toHaveText('cloud-a@example.invalid');
+ expect(errors).toEqual([]);
+});
+
+test('A delayed global logout cannot hide the new verified account B',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const a={id:'11111111-1111-4111-8111-111111111111',email:'logout-a@example.invalid',user_metadata:{aim_username:'Alpha'}};
+const b={id:'22222222-2222-4222-8222-222222222222',email:'logout-b@example.invalid',user_metadata:{aim_username:'Bravo'}};
+let current=a,listener=null;
+window.__qaLoginB=()=>{current=b;listener?.('SIGNED_IN',{user:b})};
+export const SITE_URL='https://aimroutine-tracker.github.io/';
+export const supabase={auth:{
+ getUser:async()=>({data:{user:current},error:null}),
+ onAuthStateChange:fn=>{listener=fn;return{data:{subscription:{unsubscribe(){}}}}}
+}};`
+ }));
+ await page.route('**/session-security-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`export const signOutEverywhere=()=>new Promise(resolve=>{
+   window.__qaResolveOldLogout=()=>resolve(true);
+  });`
+ }));
+ await page.route('**/cloud-sync-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`export const isEnabled=()=>true;
+export const setEnabled=()=>{};
+export const readUserLocal=()=>({store:{sessions:[],presets:[],weeklyGoal:3}});
+export const importGuestIntoAccount=()=>({sessions:0,favorites:0});
+export const synchronize=async()=>({synced:true,downloadedSessions:0,downloadedFavorites:0});
+export const deleteCloudProgress=async()=>true;`
+ }));
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#user-email')).toHaveText('logout-a@example.invalid');
+ await page.locator('#logout').click();
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaResolveOldLogout)).toBe('function');
+ await page.evaluate(()=>window.__qaLoginB());
+ await expect(page.locator('#user-email')).toHaveText('logout-b@example.invalid');
+ await page.evaluate(()=>window.__qaResolveOldLogout());
+ await expect(page.locator('#user-email')).toHaveText('logout-b@example.invalid');
+ await expect(page.locator('#dashboard-panel')).toBeVisible();
+ await expect(page.locator('#account-status')).not.toContainText('déconnecté de ton compte');
+ expect(errors).toEqual([]);
+});
