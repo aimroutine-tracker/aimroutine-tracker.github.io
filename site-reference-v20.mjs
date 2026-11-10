@@ -129,7 +129,15 @@ function home(screen){
  feature.forEach((el,i)=>{const t=$('.r17-feature-art',el);if(t)t.innerHTML=art[i]||''});
  const challenge=$('.r17-challenge h3',screen);bindV3Locale(challenge,'Mini Défi : Précision 1 min','Mini challenge: 1-minute accuracy');
  const target=$('.r17-challenge-target',screen);if(target)target.textContent='◎';
- const chip=$('.r17-challenge .r17-chipbar span:first-child',screen);if(chip)chip.textContent=words('◷ 1 minute','◷ 1 minute');
+ const chip=$('.r17-challenge .r17-chipbar span:first-child',screen);
+ if(chip){
+  // Preserve the genuine inline clock SVG supplied by V17. Replacing the
+  // whole textContent removed the icon and exposed a missing-font glyph.
+  const icon=chip.querySelector('svg.r17-inline-symbol');
+  chip.replaceChildren();
+  if(icon)chip.append(icon);
+  chip.append(document.createTextNode(' 1 minute'));
+ }
  const link=$('.r17-challenge .r17-button',screen);
  if(link)link.addEventListener('click',event=>{ // Existing on-page AIM demo is a real interactive minigame.
   const demo=$('#aim-challenge');if(!demo)return;
