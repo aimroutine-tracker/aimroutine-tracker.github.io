@@ -2946,3 +2946,93 @@ export const deleteCloudProgress=async()=>true;`
  await expect(page.locator('#user-email')).toHaveText('new-login-b@example.invalid');
  expect(errors).toEqual([]);
 });
+
+
+test('Recovery security check cannot update password of new account B after switch',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const a={id:'11111111-1111-4111-8111-111111111111',email:'recovery-a@example.invalid',user_metadata:{aim_username:'Alpha'}};
+const b={id:'22222222-2222-4222-8222-222222222222',email:'recovery-b@example.invalid',user_metadata:{aim_username:'Bravo'}};
+let current=a,listener=null;
+window.__qaSwitchRecoveryToB=()=>{current=b;listener?.('SIGNED_IN',{user:b})};
+window.__qaRecoveryPasswordChanges=0;
+export const SITE_URL='https://aimroutine-tracker.github.io/';
+export const supabase={auth:{
+ getUser:async()=>({data:{user:current},error:null}),
+ updateUser:async()=>{window.__qaRecoveryPasswordChanges++;return {data:{user:current},error:null}},
+ onAuthStateChange:fn=>{
+  listener=fn;queueMicrotask(()=>fn('PASSWORD_RECOVERY',{user:a}));
+  return {data:{subscription:{unsubscribe(){}}}};
+ }
+}};`
+ }));
+ await page.route('**/password-security-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`export const checkLeakedPassword=()=>new Promise(resolve=>{
+   window.__qaResolveOldRecoveryCheck=()=>resolve({safe:true});
+  });`
+ }));
+ await page.route('**/cloud-sync-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`export const isEnabled=()=>true;
+export const setEnabled=()=>{};
+export const readUserLocal=()=>({store:{sessions:[],presets:[],weeklyGoal:3}});
+export const importGuestIntoAccount=()=>({sessions:0,favorites:0});
+export const synchronize=async()=>({synced:true,downloadedSessions:0,downloadedFavorites:0});
+export const deleteCloudProgress=async()=>true;`
+ }));
+ await page.goto('/account.html?reset=1',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#new-password-form')).toBeVisible();
+ await page.locator('#new-password').fill('Aa1!bcde');
+ await page.locator('#new-password-form button[type="submit"]').click();
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaResolveOldRecoveryCheck)).toBe('function');
+ await page.evaluate(()=>window.__qaSwitchRecoveryToB());
+ await expect(page.locator('#user-email')).toHaveText('recovery-b@example.invalid');
+ await expect(page.locator('#dashboard-panel')).toBeVisible();
+ await expect(page.locator('#new-password-form')).toBeHidden();
+ await page.evaluate(()=>window.__qaResolveOldRecoveryCheck());
+ await expect.poll(()=>page.evaluate(()=>window.__qaRecoveryPasswordChanges)).toBe(0);
+ await expect(page.locator('#user-email')).toHaveText('recovery-b@example.invalid');
+ await expect(page.locator('#account-status')).not.toContainText('Mot de passe mis à jour');
+ expect(errors).toEqual([]);
+});
+
+test('Signing out during a recovery password check cancels its pending mutation',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const a={id:'11111111-1111-4111-8111-111111111111',email:'signed-out-recovery@example.invalid',user_metadata:{aim_username:'Alpha'}};
+let current=a,listener=null;
+window.__qaSignOutRecovery=()=>{current=null;listener?.('SIGNED_OUT',null)};
+window.__qaRecoveryPasswordChanges=0;
+export const SITE_URL='https://aimroutine-tracker.github.io/';
+export const supabase={auth:{
+ getUser:async()=>({data:{user:current},error:null}),
+ updateUser:async()=>{window.__qaRecoveryPasswordChanges++;return {data:{user:current},error:null}},
+ onAuthStateChange:fn=>{
+  listener=fn;queueMicrotask(()=>fn('PASSWORD_RECOVERY',{user:a}));
+  return {data:{subscription:{unsubscribe(){}}}};
+ }
+}};`
+ }));
+ await page.route('**/password-security-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`export const checkLeakedPassword=()=>new Promise(resolve=>{
+   window.__qaResolveOldRecoveryCheck=()=>resolve({safe:true});
+  });`
+ }));
+ await page.goto('/account.html?reset=1',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#new-password-form')).toBeVisible();
+ await page.locator('#new-password').fill('Aa1!bcde');
+ await page.locator('#new-password-form button[type="submit"]').click();
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaResolveOldRecoveryCheck)).toBe('function');
+ await page.evaluate(()=>window.__qaSignOutRecovery());
+ await expect(page.locator('#login-form')).toBeVisible();
+ await expect(page.locator('#new-password-form')).toBeHidden();
+ await page.evaluate(()=>window.__qaResolveOldRecoveryCheck());
+ await expect.poll(()=>page.evaluate(()=>window.__qaRecoveryPasswordChanges)).toBe(0);
+ await expect(page.locator('#user-email')).toBeEmpty();
+ await expect(page.locator('#account-status')).not.toContainText('Mot de passe mis à jour');
+ expect(errors).toEqual([]);
+});
