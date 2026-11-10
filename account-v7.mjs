@@ -13,6 +13,8 @@ const RESET_LINKS_CONFIGURED=true; // Redirect allowlist was configured; real em
 const $=s=>document.querySelector(s);
 let user=null,working=false,recovery=false,authRevision=0;
 let passwordRecoveryNoticeUid=null;
+// A slow operation belongs to its original account, not the next signed-in account.
+let activeOperation=null;
 // A delayed getUser()/Cloud response must never re-display a signed-out account.
 const captcha=createAuthCaptcha(TURNSTILE_SITE_KEY);
 function showCaptcha(mode){
@@ -53,7 +55,11 @@ function showUser(next){
  const nextUid=next&&validUid(next.id)?next.id:null;
  // A completed recovery notice must never follow a different account.
  if(passwordRecoveryNoticeUid&&passwordRecoveryNoticeUid!==nextUid)passwordRecoveryNoticeUid=null;
- if(previousUid!==nextUid)clearPreviousIdentityForms();
+ if(previousUid!==nextUid){
+  clearPreviousIdentityForms();
+  activeOperation=null;
+  working=false;
+ }
  ++authRevision;
  user=nextUid?next:null;
  const username=usernameFromUser(user);
@@ -84,6 +90,16 @@ function showUser(next){
    $('#cloud-enabled-status').textContent='Connexion nécessaire';
    msg('Connecte-toi pour sauvegarder ta progression. Le mode aperçu sans compte ne conserve aucune séance.');
  }
+ if(previousUid!==nextUid){
+  // Release disabled controls held by an old account without granting
+  // privileges: the new identity was already verified by the caller.
+  document.querySelectorAll('.ar7-account-panel button').forEach(x=>{
+   if(x.type==='submit'||x.id?.startsWith('cloud-')||x.id?.startsWith('session-'))x.disabled=false;
+  });
+  $('#signup-submit').disabled=!SIGNUPS_READY;
+  if(user)renderCounts();
+  renderDeleteOptions();
+ }
 }
 function renderCounts(){
  if(!user)return;
@@ -113,6 +129,8 @@ function renderDeleteOptions(){
 async function run(task){
  if(working)return;
  const originatingUid=user?.id||null;
+ const operation={uid:originatingUid};
+ activeOperation=operation;
  working=true;
  document.querySelectorAll('.ar7-account-panel button').forEach(x=>{if(x.type==='submit'||x.id?.startsWith('cloud-')||x.id?.startsWith('session-'))x.disabled=true});
  try{await task()}
@@ -125,6 +143,9 @@ async function run(task){
   msg(rejected?'Vérification anti-robots refusée par le serveur. Valide le nouveau CAPTCHA puis réessaie. Si le problème persiste, contacte le support.':'Opération impossible : '+detail);
  }
  finally{
+  // A must not unlock B's controls when A finishes after B has started.
+  if(activeOperation!==operation)return;
+  activeOperation=null;
   working=false;
   document.querySelectorAll('.ar7-account-panel button').forEach(x=>{if(x.type==='submit'||x.id?.startsWith('cloud-')||x.id?.startsWith('session-'))x.disabled=false});
   $('#signup-submit').disabled=!SIGNUPS_READY;
