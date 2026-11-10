@@ -12,7 +12,7 @@ import struct
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "visual-results"
-DEST = ROOT / ".visual-public-evidence"
+DEST = ROOT / "public-visual-evidence"
 PAGES = ("home", "routines", "progress", "account")
 VIEWPORT = (1672, 941)
 RESPONSIVE = (390, 768, 1024)
