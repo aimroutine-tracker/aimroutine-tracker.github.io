@@ -140,10 +140,9 @@ $('#login-form').addEventListener('submit',e=>{e.preventDefault();run(async()=>{
  const {data:{user:validated},error:validationError}=await supabase.auth.getUser();
  if(validationError||!validated)throw validationError||Error('Connexion non validée.');
  showUser(validated);$('#login-password').value='';
- if(usernameFromUser(validated)&&isEnabled(validated.id)){
-  try{const result=await synchronize(supabase,validated.id);msg('Compte connecté · Synchronisation réussie ('+result.downloadedSessions+' séances).')}
-  catch(err){msg('Compte connecté · Sauvegarde en attente : '+err.message)}
- }
+ // A slow first Cloud fetch must not block the global logout action.
+ // autoSync() checks the current user ID after awaiting the network.
+ if(usernameFromUser(validated)&&isEnabled(validated.id))void autoSync();
 })});
 $('#signup-form').addEventListener('submit',e=>{e.preventDefault();
  if(!SIGNUPS_READY){msg("Les inscriptions par e-mail sont encore fermées pendant les tests de sécurité et de synchronisation.");return}
@@ -189,14 +188,14 @@ $('#new-password-form').addEventListener('submit',e=>{e.preventDefault();run(asy
 })});
 $('#username-form').addEventListener('submit',e=>{e.preventDefault();run(async()=>{
  if(!user)throw Error('Connecte-toi pour enregistrer ton pseudo.');
- const saved=await saveUsername(supabase.auth,user.id,$('#username-input').value);
+ const accountId=user.id,requestedRevision=authRevision;
+ const saved=await saveUsername(supabase.auth,accountId,$('#username-input').value);
+ // A cross-tab sign-out during updateUser must not restore the old account.
+ if(authRevision!==requestedRevision||user?.id!==accountId)return;
  showUser(saved);
  $('#username-input').value='';
  msg('Pseudo enregistré : '+usernameFromUser(saved)+'. Ton compte est prêt.');
- if(isEnabled(saved.id)){
-  try{const result=await synchronize(supabase,saved.id);msg('Pseudo enregistré · Synchronisation réussie ('+result.downloadedSessions+' séances).')}
-  catch(err){msg('Pseudo enregistré · Sauvegarde en attente : '+err.message)}
- }
+ if(isEnabled(saved.id))void autoSync();
 })});
 $('#username-signout').addEventListener('click',()=>$('#logout').click());
 $('#logout').addEventListener('click',()=>run(async()=>{
