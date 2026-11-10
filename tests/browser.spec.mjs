@@ -2370,3 +2370,62 @@ export const synchronize=async()=>({synced:true});`
  await expect(page.locator('#account-status')).toContainText('Mot de passe mis à jour');
  await expect(page.locator('#account-status')).toContainText('Choisis ton pseudo');
 });
+
+
+test('Offline comparator exports a verified four-screen report only after all four analyses',async({page})=>{
+ test.setTimeout(60000);
+ await page.goto('/tests/private-visual-review-v3.html',{waitUntil:'domcontentloaded'});
+ await page.evaluate(async()=>{
+  const pixels=async(color)=>{
+   const canvas=document.createElement('canvas');
+   canvas.width=1672;canvas.height=941;
+   const ctx=canvas.getContext('2d');
+   ctx.fillStyle=color;ctx.fillRect(0,0,1672,941);
+   return new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+  };
+  const ref=await pixels('#101010');
+  const digest=await crypto.subtle.digest('SHA-256',await ref.arrayBuffer());
+  const sha=Array.from(new Uint8Array(digest),n=>n.toString(16).padStart(2,'0')).join('');
+  const pages=['home','routines','progress','account'];
+  for(const [index,id] of pages.entries()){
+   CONFIG.find(entry=>entry.id===id).sha=sha;
+   const output=await pixels('#'+(20+index*4).toString(16).padStart(2,'0').repeat(3));
+   for(const [suffix,blob] of [['ref',ref],['out',output]]){
+    const picker=document.getElementById(id+'-'+suffix),transfer=new DataTransfer();
+    transfer.items.add(new File([blob],id+'-'+suffix+'.png',{type:'image/png'}));
+    picker.files=transfer.files;
+    picker.dispatchEvent(new Event('change',{bubbles:true}));
+   }
+  }
+ });
+ const expected={home:4,routines:8,progress:12,account:16};
+ await expect(page.locator('#report')).toBeDisabled();
+ for(const [id,mae] of Object.entries(expected)){
+  await page.locator('#'+id+'-compare').click();
+  await expect(page.locator('#'+id+'-status')).toContainText('Empreinte SHA-256 originale vérifiée');
+  await expect(page.locator('#'+id+'-metrics')).toContainText('MAE RGB : '+mae);
+  expect(await page.evaluate(name=>results[name].rgb_mae_0_to_255,id)).toBe(mae);
+  if(id!=='account')await expect(page.locator('#report')).toBeDisabled();
+ }
+ await expect(page.locator('#report')).toBeEnabled();
+ const event=page.waitForEvent('download');
+ await page.locator('#report').click();
+ const result=await event;
+ expect(result.suggestedFilename()).toBe('aimroutine-v3-private-diff-report.json');
+ const {readFile}=await import('node:fs/promises');
+ const report=JSON.parse(await readFile(await result.path(),'utf8'));
+ expect(report.viewport).toEqual({width:1672,height:941});
+ expect(report.scenes.map(x=>x.screen)).toEqual(['home','routines','progress','account']);
+ expect(report.scenes.map(x=>x.rgb_mae_0_to_255)).toEqual([4,8,12,16]);
+ expect(report.scenes.every(x=>x.reference_verified===true)).toBe(true);
+ // Change any one file after the report: no obsolete JSON can be exported.
+ await page.evaluate(()=>{
+  const input=document.getElementById('progress-out');
+  const dt=new DataTransfer();
+  dt.items.add(new File(['invalid-png'],'changed.png',{type:'image/png'}));
+  input.files=dt.files;
+  input.dispatchEvent(new Event('change',{bubbles:true}));
+ });
+ await expect(page.locator('#report')).toBeDisabled();
+ expect(await page.evaluate(()=>results.progress)).toBeUndefined();
+});
