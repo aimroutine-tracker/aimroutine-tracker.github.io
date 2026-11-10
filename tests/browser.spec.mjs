@@ -2892,3 +2892,57 @@ export const deleteCloudProgress=async()=>true;`
  await expect(page.locator('#account-status')).not.toContainText('déconnecté de ton compte');
  expect(errors).toEqual([]);
 });
+
+
+test('A stale email-login getUser result cannot overwrite account B validated meanwhile',async({page})=>{
+ const errors=[];page.on('pageerror',error=>errors.push(error.message));
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const a={id:'11111111-1111-4111-8111-111111111111',email:'late-login-a@example.invalid',user_metadata:{aim_username:'Alpha'}};
+const b={id:'22222222-2222-4222-8222-222222222222',email:'new-login-b@example.invalid',user_metadata:{aim_username:'Bravo'}};
+let current=null,listener=null,blockA=true;
+window.__qaEmailLoginSwitchB=()=>{current=b;listener?.('SIGNED_IN',{user:b})};
+export const SITE_URL='https://aimroutine-tracker.github.io/';
+export const supabase={auth:{
+ getUser:async()=>{
+  if(current===a&&blockA){
+   blockA=false;
+   return new Promise(resolve=>{
+    window.__qaResolveStaleEmailLogin=()=>{
+     window.__qaOldEmailLoginResolved=true;
+     resolve({data:{user:a},error:null});
+    };
+   });
+  }
+  return {data:{user:current},error:null};
+ },
+ signInWithPassword:async()=>{current=a;return {data:{user:a},error:null}},
+ onAuthStateChange:fn=>{listener=fn;return {data:{subscription:{unsubscribe(){}}}}}
+}};`
+ }));
+ await page.route('**/cloud-sync-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`export const isEnabled=()=>true;
+export const setEnabled=()=>{};
+export const readUserLocal=()=>({store:{sessions:[],presets:[],weeklyGoal:3}});
+export const importGuestIntoAccount=()=>({sessions:0,favorites:0});
+export const synchronize=async()=>({synced:true,downloadedSessions:0,downloadedFavorites:0});
+export const deleteCloudProgress=async()=>true;`
+ }));
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#login-form')).toBeVisible();
+ await page.locator('#login-email').fill('late-login-a@example.invalid');
+ await page.locator('#login-password').fill('ExampleTestPassword2026!');
+ await page.locator('#login-form button[type="submit"]').click();
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaResolveStaleEmailLogin)).toBe('function');
+ await page.evaluate(()=>window.__qaEmailLoginSwitchB());
+ await expect(page.locator('#user-email')).toHaveText('new-login-b@example.invalid');
+ await page.evaluate(()=>window.__qaResolveStaleEmailLogin());
+ await expect.poll(()=>page.evaluate(()=>window.__qaOldEmailLoginResolved)).toBe(true);
+ await expect(page.locator('#dashboard-panel')).toBeVisible();
+ await expect(page.locator('#user-email')).toHaveText('new-login-b@example.invalid');
+ await expect(page.locator('#user-username')).toHaveText('Bravo');
+ await page.waitForTimeout(80); // Ensure delayed login continuation has settled.
+ await expect(page.locator('#user-email')).toHaveText('new-login-b@example.invalid');
+ expect(errors).toEqual([]);
+});
