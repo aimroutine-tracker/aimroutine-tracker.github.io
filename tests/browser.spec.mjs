@@ -2201,6 +2201,7 @@ test('Offline private comparator verifies SHA-256 and computes the real RGB pixe
  await page.evaluate(hash=>{CONFIG.find(x=>x.id==='home').sha=hash},sourceHash);
  await page.locator('#home-compare').click();
  await expect(page.locator('#home-status')).toContainText('Empreinte SHA-256 originale vérifiée');
+ await expect(page.locator('#home-status')).not.toHaveClass(/bad/);
  await expect(page.locator('#home-metrics')).toContainText('MAE RGB : 3');
  const metrics=await page.evaluate(()=>results.home);
  expect(metrics.reference_sha256).toBe(sourceHash);
@@ -2219,6 +2220,24 @@ test('Offline private comparator verifies SHA-256 and computes the real RGB pixe
  await page.locator('#home-save').click();
  const exportFile=await downloading;
  expect(exportFile.suggestedFilename()).toBe('home-private-diff.png');
+ // A different file selection invalidates any previous green report instantly.
+ await page.evaluate(async()=>{
+  const canvas=document.createElement('canvas');
+  canvas.width=1672;canvas.height=941;
+  canvas.getContext('2d').fillStyle='#777777';
+  canvas.getContext('2d').fillRect(0,0,1672,941);
+  const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+  const transfer=new DataTransfer();
+  transfer.items.add(new File([blob],'replaced.png',{type:'image/png'}));
+  const input=document.getElementById('home-out');
+  input.files=transfer.files;
+  input.dispatchEvent(new Event('change',{bubbles:true}));
+ });
+ await expect(page.locator('#home-status')).toContainText('Fichiers modifiés');
+ await expect(page.locator('#home-metrics')).toBeEmpty();
+ await expect(page.locator('#home-save')).toBeDisabled();
+ await expect(page.locator('#report')).toBeDisabled();
+ expect(await page.evaluate(()=>results.home)).toBeUndefined();
 });
 
 test('Offline comparator rejects invalid PNG dimensions before producing metrics',async({page})=>{
