@@ -1562,3 +1562,24 @@ test('V3 training returns to account-free preview after a remote storage.clear()
  await expect.poll(()=>page.evaluate(()=>window.__aimCloudUserId)).toBe(null);
  await expect(page.locator('#ar-account-required')).toBeVisible();
 });
+
+
+test('V3 Cloud mobile hero starts near the top without overlapping the benefits',async({page})=>{
+ for(const width of [320,375,390,720]){
+  await page.setViewportSize({width,height:900});
+  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+  await expect.poll(()=>page.evaluate(()=>document.body.classList.contains('r20'))).toBe(true);
+  const data=await page.evaluate(()=>{
+   const rect=s=>document.querySelector(s)?.getBoundingClientRect();
+   const hero=rect('.r17-account-wrap .r17-hero');
+   const content=rect('.r17-account-wrap .r17-hero-content');
+   const benefits=rect('.r17-account-wrap .r17-account-benefits');
+   return {heroY:hero?.top,heroBottom:hero?.bottom,contentY:content?.top,
+    benefitsY:benefits?.top,overflow:document.documentElement.scrollWidth-innerWidth};
+  });
+  expect(data.heroY,width).toBeDefined();
+  expect(data.contentY-data.heroY,width).toBeLessThanOrEqual(60);
+  expect(data.benefitsY,width).toBeGreaterThanOrEqual(data.heroBottom-4);
+  expect(data.overflow,width).toBeLessThanOrEqual(3);
+ }
+});
