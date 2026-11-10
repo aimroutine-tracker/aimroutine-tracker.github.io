@@ -140,7 +140,7 @@ async function run(task){
  catch(e){
   // An async Cloud/Auth failure from A must not be displayed on B's account
   // or on the signed-out guest screen after an account change.
-  if((user?.id||null)!==originatingUid)return;
+  if(activeOperation!==operation||(user?.id||null)!==originatingUid)return;
   const detail=String(e?.message||e);
   const rejected=e?.code==='captcha_failed'||/captcha protection|invalid-input-response|timeout-or-duplicate/i.test(detail);
   msg(rejected?'Vérification anti-robots refusée par le serveur. Valide le nouveau CAPTCHA puis réessaie. Si le problème persiste, contacte le support.':'Opération impossible : '+detail);
