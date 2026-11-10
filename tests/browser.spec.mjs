@@ -3113,6 +3113,8 @@ export const deleteCloudProgress=async()=>true;`
 test('V3 Progress panel anchors preserve original desktop proportions without invented metrics',async({page})=>{
  await page.setViewportSize({width:1672,height:941});
  await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.r17-progress-wrap .r17-hero-desc .fr').first())
+  .toContainText('des tendances claires et des objectifs personnalisés');
  const check=async(selector,referenceX)=>{
   const nodes=page.locator(selector);
   await expect(nodes).toHaveCount(referenceX.length);
