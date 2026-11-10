@@ -3022,6 +3022,15 @@ export const supabase={auth:{
    window.__qaResolveOldRecoveryCheck=()=>resolve({safe:true});
   });`
  }));
+ await page.route('**/cloud-sync-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`export const isEnabled=()=>true;
+export const setEnabled=()=>{};
+export const readUserLocal=()=>({store:{sessions:[],presets:[],weeklyGoal:3}});
+export const importGuestIntoAccount=()=>({sessions:0,favorites:0});
+export const synchronize=async()=>({synced:true,downloadedSessions:0,downloadedFavorites:0});
+export const deleteCloudProgress=async()=>true;`
+ }));
  await page.goto('/account.html?reset=1',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#new-password-form')).toBeVisible();
  await page.locator('#new-password').fill('Aa1!bcde');
