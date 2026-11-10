@@ -3041,6 +3041,8 @@ export const deleteCloudProgress=async()=>true;`
  await expect(page.locator('#login-form')).toBeVisible();
  await expect(page.locator('#new-password-form')).toBeHidden();
  await expect(page.locator('#new-password')).toHaveValue('');
+ // Even with no hydrated user, pending recovery must not disable fresh login.
+ await expect(page.locator('#login-form button[type="submit"]')).toBeEnabled();
  await page.evaluate(()=>window.__qaResolveOldRecoveryCheck());
  await expect.poll(()=>page.evaluate(()=>window.__qaRecoveryPasswordChanges)).toBe(0);
  await expect(page.locator('#user-email')).toBeEmpty();
