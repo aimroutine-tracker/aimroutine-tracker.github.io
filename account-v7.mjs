@@ -323,7 +323,11 @@ async function verifyAccountChange(){
   const {data,error}=await supabase.auth.getUser();
   // Never restore old identity after a second cross-tab switch or logout.
   if(ticket!==accountVerification||initialToken!==currentAuthToken())return;
-  const checked=!error&&validUid(data?.user?.id)?data.user:null;
+  // A verified response may still belong to a previous SDK session while
+  // another tab has already written a different account's auth token.
+  const expectedOwner=tokenUserId(initialToken);
+  const checked=!error&&validUid(data?.user?.id)&&
+   (!expectedOwner||data.user.id===expectedOwner)?data.user:null;
   if(!checked){showUser(null);return}
   if(user?.id!==checked.id){
    showUser(checked);
@@ -373,7 +377,11 @@ supabase.auth.onAuthStateChange((event,session)=>{
   // SIGNED_OUT, an account switch, or a manual login may have happened
   // while this initial request was in flight; never replace its newer UI.
   if(authRevision!==startingRevision||startingToken!==currentAuthToken())return;
-  if(error||!validated){showUser(null);if(new URLSearchParams(location.search).has('reset'))msg('Ouvre le lien reçu par e-mail pour terminer la réinitialisation.');return;}
+  if(error||!validated||(tokenUserId(startingToken)&&validated.id!==tokenUserId(startingToken))){
+   showUser(null);
+   if(new URLSearchParams(location.search).has('reset'))msg('Ouvre le lien reçu par e-mail pour terminer la réinitialisation.');
+   return;
+  }
   showUser(validated);
   const signedInRevision=authRevision;
   if(usernameFromUser(validated)&&isEnabled(validated.id)){
