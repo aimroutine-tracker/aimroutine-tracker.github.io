@@ -12,7 +12,7 @@ Ce tableau applique la section 0.11.12 et le protocole anti-boucle du prompt. Il
 | 3 — Reconstruction des quatre pages | **IMPLÉMENTÉE, NON HOMOLOGUÉE** | Accueil `index.html`, Routines `training.html`, Progression `progress.html`, Compte `account.html` ; captures CI disponibles |
 | 4 — Animations premium et responsive | **IMPLÉMENTÉ, TESTS PARTIELS** | Responsive, FR/EN, reduced motion et navigation testés ; aucune approbation finale du propriétaire |
 | **5 — Fidélité aux quatre originaux** | **BLOQUÉE** | PNG originaux non exportables depuis cette session et absents de GitHub Actions ; métriques MAE antérieures non parfaites ; aucun nouveau score certifié |
-| **6 — Validation fonctionnelle** | **EN COURS** | Tests Node / Playwright simulés, Chromium / Firefox / WebKit et sécurité publique CI ; comptes réels jetables et échanges entre appareils non validés |
+| **6 — Validation fonctionnelle** | **EN COURS** | Tests Node / Playwright simulés ; inspection **réelle en lecture seule** des quatre RLS, de la RPC reset, du hook et de la fonction Edge ; comptes réels jetables et échanges entre appareils non validés |
 | 7 — Livraison / publication | **PRÉPARÉE, NON VALIDÉE** | PR en brouillon, preuves et rapport disponibles ; aucun merge, aucun déploiement |
 
 ## Ce que les tests démontrent déjà
@@ -28,7 +28,8 @@ Ce tableau applique la section 0.11.12 et le protocole anti-boucle du prompt. Il
 - [ ] **Phase 5** — Disposer des quatre PNG originaux en octets dans un environnement local autorisé, vérifier leur SHA-256, reproduire les quatre captures V3 au viewport exact `1672×941`, générer les quatre superpositions et différentiels, examiner les écarts et recommencer jusqu'à validation visuelle explicite. **Ne pas publier les originaux ni leurs pixels dans GitHub public.**
 - [ ] **Phase 6 — Auth** — Tester inscription/confirmation e-mail, connexion, récupération de mot de passe, Google OAuth, pseudo obligatoire et CAPTCHA sur des **comptes d'essai jetables** distincts.
 - [ ] **Phase 6 — Cloud** — Tester dans deux navigateurs/profils réellement isolés la création, modification, suppression, sauvegarde automatique, reconnexion et séparation des comptes ; vérifier les garanties réelles de déconnexion globale.
-- [ ] **Phase 6 — Sécurité** — Confirmer les contrôles serveur et RLS sur comptes de test, puis résoudre ou documenter les alertes de sécurité avant autorisation de publication. L'avis Supabase `auth_leaked_password_protection` a été observé en WARN ; la protection client HIBP n'est pas équivalente au contrôle serveur.
+- [x] **Phase 6 — Sécurité structurelle, lecture seule** — Inspection sur le projet Supabase réel des quatre politiques RLS, privilèges anonymes/authentifiés, RPC `aim_reset_my_progress`, permissions du hook et code Edge de suppression du compte. [Compte rendu vérifié](supabase-rls-readonly-audit-2026-11-10.md).
+- [ ] **Phase 6 — Sécurité fonctionnelle** — Confirmer les protections sur des comptes de test indépendants A/B, le hook réellement attaché et les opérations Auth/Cloud. L'avis `auth_leaked_password_protection` reste WARN : le projet est sur **Supabase Free**, où cette option serveur est réservée aux plans Pro et supérieurs. Conserver le contrôle HIBP client et documenter sa limite, sans imposer un abonnement.
 - [ ] **Phase 6 — intégrations** — Vérifier la continuité des pages GitHub Pages / Riot sans présumer d'une validation d'API Riot non accordée.
 - [ ] **Phase 7** — Dernier HEAD : tous les workflows non bloquants au vert, preuves visuelles privées, rapport des écarts restants, revue utilisateur et **accord explicite avant merge/déploiement**.
 
