@@ -1583,3 +1583,19 @@ test('V3 Cloud mobile hero starts near the top without overlapping the benefits'
   expect(data.overflow,width).toBeLessThanOrEqual(3);
  }
 });
+
+
+test('V3 action icons and challenge badges use real SVG instead of missing-font glyphs',async({page})=>{
+ for(const [route,minimum] of [['index.html',3],['training.html',2]]){
+  await page.goto('/'+route,{waitUntil:'domcontentloaded'});
+  await expect.poll(()=>page.evaluate(()=>document.body.classList.contains('r20'))).toBe(true);
+  const button=page.locator('.r17-hero-actions .r17-button--outline').first();
+  await expect(button.locator('svg.r17-inline-symbol[aria-hidden="true"]')).toHaveCount(1);
+  const challenge=page.locator('.r17-challenge .r17-chipbar, .r17-side-challenge .r17-chipbar').first();
+  await expect.poll(()=>challenge.locator('svg.r17-inline-symbol').count()).toBeGreaterThanOrEqual(minimum);
+  const sizes=await challenge.locator('svg.r17-inline-symbol').evaluateAll(nodes=>
+   nodes.map(node=>({width:node.getBoundingClientRect().width,height:node.getBoundingClientRect().height,
+    paths:node.querySelectorAll('path,circle').length})));
+  expect(sizes.every(size=>size.width>=14&&size.height>=14&&size.paths>0),route).toBe(true);
+ }
+});
