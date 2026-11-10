@@ -354,7 +354,7 @@ supabase.auth.onAuthStateChange((event,session)=>{
  if(event==='PASSWORD_RECOVERY'){
    recovery=true;authMode('new-password');
    $('#auth-panel').hidden=false;
-   $('#dashboard-panel'].hidden=true;
+   $('#dashboard-panel').hidden=true;
  }
  if(event==='SIGNED_OUT'){
   ++accountVerification;
