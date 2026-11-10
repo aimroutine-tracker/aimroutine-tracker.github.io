@@ -2166,3 +2166,77 @@ export const synchronize=async()=>({synced:true});`
  await expect(page.locator('.ar7-delete-account')).not.toHaveAttribute('open');
  await expect(page.locator('#dashboard-panel')).toBeVisible();
 });
+
+
+test('Offline private comparator verifies SHA-256 and computes the real RGB pixel differences',async({page})=>{
+ await page.goto('/tests/private-visual-review-v3.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#home-compare')).toBeVisible();
+ await expect(page.locator('#report')).toBeDisabled();
+ const sourceHash=await page.evaluate(async()=>{
+  const create=async(color)=>{
+   const canvas=document.createElement('canvas');
+   canvas.width=1672;canvas.height=941;
+   const ctx=canvas.getContext('2d');
+   ctx.fillStyle=color;ctx.fillRect(0,0,canvas.width,canvas.height);
+   return await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+  };
+  const original=await create('#101010'),candidate=await create('#131313');
+  const bytes=await original.arrayBuffer();
+  const digest=await crypto.subtle.digest('SHA-256',bytes);
+  const hash=Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,'0')).join('');
+  const attach=(id,blob)=>{
+   const transfer=new DataTransfer();
+   transfer.items.add(new File([blob],id+'.png',{type:'image/png'}));
+   document.getElementById(id).files=transfer.files;
+  };
+  attach('home-ref',original);attach('home-out',candidate);
+  return hash;
+ });
+ // The immutable production hash must reject an unrelated synthetic image.
+ await page.locator('#home-compare').click();
+ await expect(page.locator('#home-status')).toContainText('SHA-256 de référence différent');
+ await expect(page.locator('#home-save')).toBeDisabled();
+ // Test-only substitution: validate the actual comparison algorithm using a
+ // correctly signed synthetic reference without changing the repo manifest.
+ await page.evaluate(hash=>{CONFIG.find(x=>x.id==='home').sha=hash},sourceHash);
+ await page.locator('#home-compare').click();
+ await expect(page.locator('#home-status')).toContainText('Empreinte SHA-256 originale vérifiée');
+ await expect(page.locator('#home-metrics')).toContainText('MAE RGB : 3');
+ const metrics=await page.evaluate(()=>results.home);
+ expect(metrics.reference_sha256).toBe(sourceHash);
+ expect(metrics.rgb_mae_0_to_255).toBe(3);
+ expect(metrics.different_pixel_percent).toBe(100);
+ expect(Object.values(metrics.regional_rgb_mae).every(v=>v===3)).toBe(true);
+ expect(metrics.visually_identical).toBe(false);
+ await expect(page.locator('#report')).toBeDisabled(); // All four are mandatory.
+ await page.locator('#home-mode').selectOption('diff');
+ const pixels=await page.evaluate(()=>{
+  const c=document.getElementById('home-canvas').getContext('2d');
+  return [...c.getImageData(100,100,1,1).data];
+ });
+ expect(pixels).toEqual([12,12,12,255]); // Real abs difference ×4.
+ const downloading=page.waitForEvent('download');
+ await page.locator('#home-save').click();
+ const exportFile=await downloading;
+ expect(exportFile.suggestedFilename()).toBe('home-private-diff.png');
+});
+
+test('Offline comparator rejects invalid PNG dimensions before producing metrics',async({page})=>{
+ await page.goto('/tests/private-visual-review-v3.html',{waitUntil:'domcontentloaded'});
+ await page.evaluate(async()=>{
+  const canvas=document.createElement('canvas');
+  canvas.width=800;canvas.height=600;
+  const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+  const digest=await crypto.subtle.digest('SHA-256',await blob.arrayBuffer());
+  CONFIG[0].sha=Array.from(new Uint8Array(digest),n=>n.toString(16).padStart(2,'0')).join('');
+  for(const selector of ['home-ref','home-out']){
+   const dt=new DataTransfer();
+   dt.items.add(new File([blob],'wrong-size.png',{type:'image/png'}));
+   document.getElementById(selector).files=dt.files;
+  }
+ });
+ await page.locator('#home-compare').click();
+ await expect(page.locator('#home-status')).toContainText('Dimensions incorrectes');
+ await expect(page.locator('#home-save')).toBeDisabled();
+ await expect(page.locator('#report')).toBeDisabled();
+});
