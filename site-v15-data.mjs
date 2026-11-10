@@ -7,9 +7,29 @@ const en=()=>document.documentElement.lang==='en';
 const format=n=>Number(n).toLocaleString(en()?'en-GB':'fr-FR',{maximumFractionDigits:1});
 const choose=(fr,english)=>en()?english:fr;
 const AUTH_KEY='sb-lmzswtzboobpokumxzhy-auth-token';
-let lastCloudRead=0,hadCloudError=false,renderGeneration=0;
+// Never share a Cloud refresh timer or error state between account identities.
+const cloudReads=new Map();
+let activeCloudUid=null,renderGeneration=0;
+async function refreshCloud(client,uid){
+ const previous=cloudReads.get(uid);
+ const changedAccount=activeCloudUid!==uid;
+ activeCloudUid=uid;
+ if(!changedAccount&&previous&&Date.now()-previous.startedAt<30000){
+  await previous.promise;
+  return;
+ }
+ const status={startedAt:Date.now(),error:false,promise:null};
+ // A slow request from an old account updates only its own status, not
+ // the newly active account's badge.
+ status.promise=Promise.resolve().then(()=>synchronize(client,uid))
+  .then(()=>{status.error=false},()=>{status.error=true});
+ cloudReads.set(uid,status);
+ await status.promise;
+}
 const readToken=()=>{try{return localStorage.getItem(AUTH_KEY)}catch{return null}};
 function hidePrivateStats(){
+ activeCloudUid=null;
+ cloudReads.clear();
  for(const name of ['sessions','accuracy','week'])set(name,'—');
  set('cloud',choose('CONNEXION REQUISE','SIGN IN'));
 }
@@ -26,10 +46,7 @@ async function render(){
     const checked=await supabase.auth.getUser();
     if(!checked.error&&checked.data?.user?.id===data.session.user.id){
      uid=data.session.user.id;key=scopedKey(STORAGE_KEY,uid);allow=true;
-     if(Date.now()-lastCloudRead>30000){
-      lastCloudRead=Date.now();
-      try{await synchronize(supabase,uid);hadCloudError=false}catch{hadCloudError=true}
-     }
+     await refreshCloud(supabase,uid);
     }
    }
   }
@@ -45,7 +62,7 @@ async function render(){
  set('sessions',format(stat.count));
  set('accuracy',stat.avg===null?'—':format(stat.avg)+' %');
  set('week',stat.week+' / '+stat.goal);
- set('cloud',uid?(hadCloudError?choose('EN ATTENTE','PENDING'):isEnabled(uid)?choose('AUTOMATIQUE','AUTOMATIC'):choose('NON DISPONIBLE','UNAVAILABLE')):choose('CONNEXION REQUISE','SIGN IN'));
+ set('cloud',uid?(cloudReads.get(uid)?.error?choose('EN ATTENTE','PENDING'):isEnabled(uid)?choose('AUTOMATIQUE','AUTOMATIC'):choose('NON DISPONIBLE','UNAVAILABLE')):choose('CONNEXION REQUISE','SIGN IN'));
 }
 document.querySelectorAll('[data-switch-lang]').forEach(btn=>btn.addEventListener('click',()=>queueMicrotask(()=>void render())));
 window.addEventListener('storage',e=>{
