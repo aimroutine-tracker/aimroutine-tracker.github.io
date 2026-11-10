@@ -64,7 +64,7 @@ function appendCard(entry){
   '<p class="metrics" id="'+entry.id+'-metrics"></p>'+
   '<div class="output"><canvas width="1672" height="941" id="'+entry.id+'-canvas"></canvas></div>';
  $('pages').append(section);
- const state={};
+ const state={revision:0};
  elements[entry.id]=state;
  state.canvas=$(entry.id+'-canvas');
  state.mode=$(entry.id+'-mode');
@@ -81,9 +81,11 @@ function invalidate(id){
  // Selecting another image invalidates old measurements immediately: it is
  // unsafe to export a report computed for files no longer selected.
  const state=elements[id];
+ state.revision++;
  state.original=null;state.candidate=null;
  delete results[id];
  $(id+'-save').disabled=true;
+ $(id+'-compare').disabled=false; // A new file can start a new comparison.
  $('report').disabled=true;
  const label=$(id+'-status');
  label.className='';
@@ -134,12 +136,19 @@ async function compare(entry){
   label.textContent='Choisis les deux images.';
   return;
  }
+ const run=++state.revision;
+ state.original=null;state.candidate=null;
+ metrics.textContent='';
+ state.canvas.getContext('2d').clearRect(0,0,TARGET.width,TARGET.height);
  $(id+'-compare').disabled=true;$(id+'-save').disabled=true;delete results[id];
+ $('report').disabled=true;
  try{
   label.textContent='Vérification des empreintes et analyse locale en cours…';
   const sha=await digest(ref);
+  if(state.revision!==run)return;
   if(sha!==entry.sha)throw new Error('SHA-256 de référence différent de celui du manifeste. Refus de comparaison : fichier réencodé ou mauvaise maquette.');
   const original=await pixels(ref),output=await pixels(candidate);
+  if(state.revision!==run)return;
   let total=0,changed=0;
   const regions={};
   for(const [name,y0,y1] of REGIONS)regions[name]={total:0,pixels:0};
@@ -159,6 +168,7 @@ async function compare(entry){
    different_pixel_percent:Number((100*changed/(w*h)).toFixed(3)),
    regional_rgb_mae:Object.fromEntries(Object.entries(regions).map(([k,v])=>[k,Number((v.total/(v.pixels*3)).toFixed(4))])),
    visually_identical:total===0};
+  if(state.revision!==run)return;
   state.original=original;state.candidate=output;results[id]=report;render(id);
   label.className='';
   label.innerHTML='<span class="good">Empreinte SHA-256 originale vérifiée</span> · '+(total?'Écarts détectés':'Pixels identiques');
@@ -166,12 +176,15 @@ async function compare(entry){
    report.different_pixel_percent+' % · Régions : '+Object.entries(report.regional_rgb_mae).map(([k,v])=>k+' '+v).join(' | ');
   $(id+'-save').disabled=false;
  }catch(error){
+  if(state.revision!==run)return;
   state.original=null;state.candidate=null;label.textContent=error.message;
   label.className='bad';
   metrics.textContent='';
  }finally{
-  $(id+'-compare').disabled=false;
-  $('report').disabled=Object.keys(results).length!==4;
+  if(state.revision===run){
+   $(id+'-compare').disabled=false;
+   $('report').disabled=Object.keys(results).length!==4;
+  }
  }
 }
 function download(blob,filename){
