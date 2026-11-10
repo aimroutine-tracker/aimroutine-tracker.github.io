@@ -2314,3 +2314,59 @@ test('Offline comparator rejects a stale SHA result after the PNG is replaced mi
  await expect(page.locator('#home-save')).toBeEnabled();
  expect(await page.evaluate(()=>results.home?.rgb_mae_0_to_255)).toBe(16);
 });
+
+
+test('Password reset confirmation survives a late USER_UPDATED identity callback',async({page})=>{
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const current={id:'44444444-4444-4444-8444-444444444444',
+ email:'recovery-ui@example.invalid',user_metadata:{}};
+let verified=false,notify=null;
+window.__qaRecoveryPasswordUpdates=0;
+window.__qaRecoveryUserChecks=0;
+window.__qaSendDelayedUserUpdated=()=>notify?.('USER_UPDATED',{user:current});
+export const SITE_URL='https://aimroutine-tracker.github.io/';
+export const supabase={auth:{
+ getUser:async()=>{
+  ++window.__qaRecoveryUserChecks;
+  return {data:{user:verified?current:null},error:null};
+ },
+ updateUser:async(input)=>{
+  if(input.password!=='Aa1!bcde')throw Error('Unexpected password');
+  verified=true;
+  ++window.__qaRecoveryPasswordUpdates;
+  return {data:{user:current},error:null};
+ },
+ onAuthStateChange:callback=>{
+  notify=callback;
+  queueMicrotask(()=>callback('PASSWORD_RECOVERY',{user:current}));
+  return {data:{subscription:{unsubscribe(){}}}};
+ }
+}};`
+ }));
+ await page.route('**/cloud-sync-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`export const isEnabled=()=>true;
+export const setEnabled=()=>{};
+export const readUserLocal=()=>({store:{sessions:[],presets:[],weeklyGoal:3}});
+export const importGuestIntoAccount=()=>({sessions:0,favorites:0});
+export const deleteCloudProgress=async()=>true;
+export const synchronize=async()=>({synced:true});`
+ }));
+ await page.route('https://api.pwnedpasswords.com/range/**',route=>
+  route.fulfill({status:200,contentType:'text/plain',body:''}));
+ await page.goto('/account.html?reset=1',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#new-password-form')).toBeVisible();
+ await page.locator('#new-password').fill('Aa1!bcde');
+ await page.locator('#new-password-form button[type="submit"]').click();
+ await expect(page.locator('#account-status')).toContainText('Mot de passe mis à jour');
+ await expect.poll(()=>page.evaluate(()=>window.__qaRecoveryPasswordUpdates)).toBe(1);
+ await page.evaluate(()=>window.__qaSendDelayedUserUpdated());
+ await expect.poll(()=>page.evaluate(()=>window.__qaRecoveryUserChecks)).toBeGreaterThan(1);
+ await expect(page.locator('#user-email')).toHaveText('recovery-ui@example.invalid');
+ await expect(page.locator('#username-panel')).toBeVisible();
+ // A delayed Auth refresh must not falsely replace the completed recovery
+ // with a generic nickname-onboarding status.
+ await expect(page.locator('#account-status')).toContainText('Mot de passe mis à jour');
+ await expect(page.locator('#account-status')).toContainText('Choisis ton pseudo');
+});
