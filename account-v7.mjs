@@ -194,8 +194,14 @@ $('#login-form').addEventListener('submit',e=>{e.preventDefault();run(async()=>{
  });}finally{captcha.reset('login')}
  const {error}=loginResult;
  if(error)throw error;
+ // The SDK or another tab can change accounts while the server verifies login.
+ // An old getUser() response must never replace that newer authenticated view.
+ const loginRevision=authRevision,loginToken=currentAuthToken();
  const {data:{user:validated},error:validationError}=await supabase.auth.getUser();
+ if(authRevision!==loginRevision||loginToken!==currentAuthToken())return;
  if(validationError||!validated)throw validationError||Error('Connexion non validée.');
+ const tokenOwner=tokenUserId(loginToken);
+ if(tokenOwner&&validated.id!==tokenOwner)return;
  showUser(validated);$('#login-password').value='';
  // A slow first Cloud fetch must not block the global logout action.
  // autoSync() checks the current user ID after awaiting the network.
