@@ -260,8 +260,10 @@ $('#username-form').addEventListener('submit',e=>{e.preventDefault();run(async()
 })});
 $('#username-signout').addEventListener('click',()=>$('#logout').click());
 $('#logout').addEventListener('click',()=>run(async()=>{
- // A single logout button revokes refresh tokens for ALL sessions, including this browser.
+ // An earlier global logout may finish after another verified login.
+ const logoutUid=user?.id||null,logoutRevision=authRevision;
  await signOutEverywhere(supabase.auth);
+ if(authRevision!==logoutRevision||(user?.id||null)!==logoutUid)return;
  showUser(null);
  msg('Tu es déconnecté de ton compte sur tous les appareils. Les jetons d’accès déjà émis restent valides jusqu’à leur expiration. Les copies locales ne sont pas effacées.');
 }));
@@ -372,16 +374,17 @@ $('#delete-account-form').addEventListener('submit',event=>{
 let automaticSync=null;
 async function autoSync(){
  if(!user||!usernameFromUser(user)||recovery||document.hidden||!navigator.onLine)return;
- const id=user.id;
- // An old account's slow Cloud response must not block the new account.
- if(automaticSync?.id===id)return automaticSync.promise;
+ const id=user.id,revision=authRevision;
+ // A -> B -> A is a new session even though A's UID is unchanged.
+ const stillCurrent=()=>user?.id===id&&authRevision===revision;
+ if(automaticSync?.id===id&&automaticSync?.revision===revision)return automaticSync.promise;
  const task=(async()=>{
   try{
    await synchronize(supabase,id);
-   if(user?.id===id){renderCounts();msg('Compte connecté · Synchronisation automatique à jour ✓')}
-  }catch(e){if(user?.id===id)msg('Synchronisation cloud en attente : '+e.message)}
+   if(stillCurrent()){renderCounts();msg('Compte connecté · Synchronisation automatique à jour ✓')}
+  }catch(e){if(stillCurrent())msg('Synchronisation cloud en attente : '+e.message)}
  })().finally(()=>{if(automaticSync?.promise===task)automaticSync=null});
- automaticSync={id,promise:task};
+ automaticSync={id,revision,promise:task};
  return task;
 }
 window.addEventListener('online',()=>void autoSync());
