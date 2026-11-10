@@ -2440,3 +2440,34 @@ test('Offline comparator exports a verified four-screen report only after all fo
  await expect(page.locator('#report')).toBeDisabled();
  expect(await page.evaluate(()=>results.progress)).toBeUndefined();
 });
+
+
+test('V3 four original desktop pages align their first content panels vertically',async({page})=>{
+ const scenes=[
+  {url:'/index.html',hero:357,anchor:'.r17-home-wrap .r17-features',target:502},
+  {url:'/training.html',hero:254,anchor:'.r17-training-wrap .r17-training-grid',target:320},
+  {url:'/progress.html',hero:210,anchor:'.r17-progress-wrap .r17-chart-grid',target:338},
+  {url:'/account.html',hero:250,anchor:'.r17-account-wrap .r17-account-profile',target:301}
+ ];
+ await page.setViewportSize({width:1672,height:941});
+ for(const scene of scenes){
+  await page.goto(scene.url,{waitUntil:'domcontentloaded'});
+  await expect.poll(()=>page.evaluate(()=>document.body.classList.contains('r20'))).toBe(true);
+  await page.evaluate(()=>document.fonts.ready);
+  const hero=page.locator('.r17-hero').first();
+  await expect(hero).toBeVisible();
+  await expect(page.locator(scene.anchor)).toBeVisible();
+  const heroBox=await hero.boundingBox(),panelBox=await page.locator(scene.anchor).boundingBox();
+  expect(heroBox.height,scene.url+' hero height').toBe(scene.hero);
+  // Pixel registration is geometric only. Charts and account figures must
+  // always remain genuine data, not the synthetic values in reference images.
+  expect(Math.abs(panelBox.y-scene.target),scene.url+' first panel y').toBeLessThanOrEqual(15);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(1675);
+ }
+ // Non-reference small devices must still render without horizontal overflow.
+ await page.setViewportSize({width:390,height:850});
+ for(const url of ['/index.html','/training.html','/progress.html','/account.html']){
+  await page.goto(url,{waitUntil:'domcontentloaded'});
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth),url).toBeLessThanOrEqual(393);
+ }
+});
