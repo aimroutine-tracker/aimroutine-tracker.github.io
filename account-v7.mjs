@@ -91,7 +91,10 @@ function renderCounts(){
  $('#cloud-sync').disabled=true;
 }
 function renderDeleteOptions(){
- if(!user)return;
+ if(!user){
+  $('#delete-account-final').disabled=true;
+  return;
+ }
  const google=hasGoogleIdentity(user);
  $('#google-delete-flow').hidden=!google;
  $('#delete-password-row').hidden=google;
@@ -99,7 +102,7 @@ function renderDeleteOptions(){
  $('#delete-account-password').required=!google;
  if(!google&&document.querySelector('.ar7-delete-account')?.open)showCaptcha('delete');
  $('#google-delete-status').textContent=google?'Pour supprimer le compte, écris exactement SUPPRIMER en majuscules.':'';
- $('#delete-account-final').disabled=working||(google&&$('#delete-account-confirmation').value!=='SUPPRIMER');
+ $('#delete-account-final').disabled=working||$('#delete-account-confirmation').value!=='SUPPRIMER';
 }
 async function run(task){
  if(working)return;
