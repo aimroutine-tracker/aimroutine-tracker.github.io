@@ -2479,7 +2479,7 @@ test('Cloud deletion finishing after A-to-B switch cannot change B settings or c
  page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/cloud-client-v7.mjs*',r=>r.fulfill({
   status:200,contentType:'application/javascript',
-  body:\`const a={id:'11111111-1111-4111-8111-111111111111',email:'account-a@example.invalid',user_metadata:{aim_username:'Alpha'}};
+  body:`const a={id:'11111111-1111-4111-8111-111111111111',email:'account-a@example.invalid',user_metadata:{aim_username:'Alpha'}};
 const b={id:'22222222-2222-4222-8222-222222222222',email:'account-b@example.invalid',user_metadata:{aim_username:'Bravo'}};
 let current=a,callback=null;
 window.__qaSetAccountB=()=>{current=b;callback?.('SIGNED_IN',{user:b})};
@@ -2487,11 +2487,11 @@ export const SITE_URL='https://aimroutine-tracker.github.io/';
 export const supabase={auth:{
  getUser:async()=>({data:{user:current},error:null}),
  onAuthStateChange:fn=>{callback=fn;return{data:{subscription:{unsubscribe(){}}}}}
-}};\`
+}};`
  }));
  await page.route('**/cloud-sync-v7.mjs*',r=>r.fulfill({
   status:200,contentType:'application/javascript',
-  body:\`window.__qaCloudPreferences=[];
+  body:`window.__qaCloudPreferences=[];
 window.__qaCloudDeleteUid=null;
 export const isEnabled=()=>true;
 export const setEnabled=(uid,value)=>window.__qaCloudPreferences.push({uid,value});
@@ -2501,7 +2501,7 @@ export const synchronize=async()=>({synced:true,downloadedSessions:0,downloadedF
 export const deleteCloudProgress=(client,uid)=>{
  window.__qaCloudDeleteUid=uid;
  return new Promise(resolve=>{window.__qaReleaseCloudDelete=()=>resolve(true)});
-};\`
+};`
  }));
  page.on('dialog',dialog=>dialog.accept());
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
@@ -2525,7 +2525,7 @@ test('Guest import started for A cannot display a completion banner on account B
  page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/cloud-client-v7.mjs*',r=>r.fulfill({
   status:200,contentType:'application/javascript',
-  body:\`const a={id:'11111111-1111-4111-8111-111111111111',email:'import-a@example.invalid',user_metadata:{aim_username:'Alpha'}};
+  body:`const a={id:'11111111-1111-4111-8111-111111111111',email:'import-a@example.invalid',user_metadata:{aim_username:'Alpha'}};
 const b={id:'22222222-2222-4222-8222-222222222222',email:'import-b@example.invalid',user_metadata:{aim_username:'Bravo'}};
 let current=a,callback=null;
 window.__qaSwitchB=()=>{current=b;callback?.('SIGNED_IN',{user:b})};
@@ -2533,11 +2533,11 @@ export const SITE_URL='https://aimroutine-tracker.github.io/';
 export const supabase={auth:{
  getUser:async()=>({data:{user:current},error:null}),
  onAuthStateChange:fn=>{callback=fn;return{data:{subscription:{unsubscribe(){}}}}}
-}};\`
+}};`
  }));
  await page.route('**/cloud-sync-v7.mjs*',r=>r.fulfill({
   status:200,contentType:'application/javascript',
-  body:\`window.__qaImportedUid=null;
+  body:`window.__qaImportedUid=null;
 export const isEnabled=()=>true;
 export const setEnabled=()=>{};
 export const readUserLocal=()=>({store:{sessions:[],presets:[],weeklyGoal:3}});
@@ -2548,7 +2548,7 @@ export const synchronize=(client,uid,options={})=>{
   window.__qaReleaseGuestImport=()=>resolve({synced:true,downloadedSessions:1,downloadedFavorites:0});
  });
  return Promise.resolve({synced:true,downloadedSessions:0,downloadedFavorites:0});
-};\`
+};`
  }));
  page.on('dialog',dialog=>dialog.accept());
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
