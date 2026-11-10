@@ -1675,3 +1675,63 @@ export const synchronize=()=>new Promise(resolve=>{
  await expect.poll(()=>page.evaluate(()=>window.__aimCloudUserId)).toBe(null);
  expect(await page.evaluate(()=>localStorage.getItem('aimroutine_cloud_current_uid'))).toBeNull();
 });
+
+
+test('V3 Home refreshes the second account immediately and does not inherit Cloud errors',async({page})=>{
+ const first='11111111-1111-4111-8111-111111111111';
+ const second='22222222-2222-4222-8222-222222222222';
+ const authKey='sb-lmzswtzboobpokumxzhy-auth-token';
+ const mkToken=uid=>JSON.stringify({user:{id:uid},access_token:'qa-'+uid});
+ await page.addInitScript(({first,second,authKey})=>{
+  localStorage.setItem(authKey,JSON.stringify({user:{id:first},access_token:'qa-'+first}));
+  window.__qaCloudReads=[];
+  window.__qaCloudFailure=first;
+  const session=(id)=>({id,date:new Date().toISOString(),
+   rank:'silver',focus:'flick',tool:'VALORANT',scenario:'Range',
+   minutes:10,accuracy:82,feeling:'good',notes:''});
+  window.__qaCloudRemote={
+   [first]:[session('first-a')],
+   [second]:[session('second-a'),session('second-b')]
+  };
+ },{first,second,authKey});
+ await page.route('**/cloud-client-v7.mjs*',r=>r.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const authKey='sb-lmzswtzboobpokumxzhy-auth-token';
+const account=()=>JSON.parse(localStorage.getItem(authKey)||'null')?.user||null;
+export const supabase={auth:{
+ getSession:async()=>({data:{session:account()?{user:account()}:null},error:null}),
+ getUser:async()=>({data:{user:account()},error:null}),
+ onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})
+}};`
+ }));
+ await page.route('**/cloud-sync-v7.mjs*',r=>r.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`export const isEnabled=()=>true;
+export const synchronize=async(_client,uid)=>{
+ window.__qaCloudReads.push(uid);
+ if(window.__qaCloudFailure===uid)throw Error('qa cloud unavailable');
+ localStorage.setItem('aimroutine_cloud_user_'+uid+'_aimroutine_web_training_v2',
+ JSON.stringify({sessions:window.__qaCloudRemote[uid]||[],presets:[],weeklyGoal:3}));
+ return {synced:true};
+};`
+ }));
+ await page.goto('/index.html',{waitUntil:'domcontentloaded'});
+ const numbers=page.locator('[data-v15-stat="sessions"]');
+ const cloud=page.locator('[data-v15-stat="cloud"]');
+ await expect(cloud.first()).toHaveText('EN ATTENTE');
+ // Switching to a different verified UID must bypass the old 30s cooldown.
+ await page.evaluate(({authKey,second,mk})=>{
+  localStorage.setItem(authKey,mk);
+  window.dispatchEvent(new StorageEvent('storage',{key:authKey,newValue:mk}));
+ },{authKey,second,mk:mkToken(second)});
+ await expect(numbers.first()).toHaveText('2');
+ await expect(cloud.first()).toHaveText('AUTOMATIQUE');
+ expect(await page.evaluate(uid=>window.__qaCloudReads.includes(uid),second)).toBe(true);
+ // Returning to account A must also initiate a new refresh, not reuse B's.
+ await page.evaluate(({authKey,mk})=>{
+  localStorage.setItem(authKey,mk);
+  window.dispatchEvent(new StorageEvent('storage',{key:authKey,newValue:mk}));
+ },{authKey,mk:mkToken(first)});
+ await expect(cloud.first()).toHaveText('EN ATTENTE');
+ expect(await page.evaluate(uid=>window.__qaCloudReads.filter(x=>x===uid).length,first)).toBe(2);
+});
