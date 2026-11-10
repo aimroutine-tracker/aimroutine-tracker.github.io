@@ -367,11 +367,12 @@ supabase.auth.onAuthStateChange((event,session)=>{
 });
 (async()=>{
  const startingRevision=authRevision;
+ const startingToken=currentAuthToken();
  try{
   const {data:{user:validated},error}=await supabase.auth.getUser();
   // SIGNED_OUT, an account switch, or a manual login may have happened
   // while this initial request was in flight; never replace its newer UI.
-  if(authRevision!==startingRevision)return;
+  if(authRevision!==startingRevision||startingToken!==currentAuthToken())return;
   if(error||!validated){showUser(null);if(new URLSearchParams(location.search).has('reset'))msg('Ouvre le lien reçu par e-mail pour terminer la réinitialisation.');return;}
   showUser(validated);
   const signedInRevision=authRevision;
@@ -386,7 +387,7 @@ supabase.auth.onAuthStateChange((event,session)=>{
    }
   }
  }catch(e){
-  if(authRevision!==startingRevision)return;
+  if(authRevision!==startingRevision||startingToken!==currentAuthToken())return;
   showUser(null);msg('Service indisponible : '+e.message);
  }
 })();
