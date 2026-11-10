@@ -926,7 +926,7 @@ test('V3 home feature descriptions match owner reference without synthetic stati
  await expect(cards.nth(0)).toContainText('Des entraînements ciblés et efficaces');
  await expect(cards.nth(1)).toContainText('Des routines prêtes à l’emploi et personnalisables');
  await expect(cards.nth(2)).toContainText('des objectifs clairs pour mesurer tes vrais progrès');
- await expect(page.locator('[data-v15-stat="sessions"]')).not.toContainText('12 846');
+ await expect(page.locator('.r17-home-wrap [data-v15-stat="sessions"]')).not.toContainText('12 846');
  await page.locator('[data-switch-lang]').first().click();
  await expect.poll(()=>page.evaluate(()=>document.documentElement.lang)).toBe('en');
  await expect(cards.nth(0)).toContainText('Effective, focused training');
