@@ -239,4 +239,10 @@ window.addEventListener('storage',event=>{
 });
 window.addEventListener('focus',()=>void load());
 window.addEventListener('online',()=>void load());
+// Keep a visible progress dashboard fresh when sessions arrive from another device.
+// With no auth token, do not make periodic cloud requests.
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)void load()});
+setInterval(()=>{if(!document.hidden&&navigator.onLine){
+ try{if(localStorage.getItem(AUTH_KEY))void load()}catch{}
+}},45000);
 void load();
