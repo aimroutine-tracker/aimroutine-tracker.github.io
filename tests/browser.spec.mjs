@@ -2750,3 +2750,49 @@ export const deleteCloudProgress=(client,uid)=>{
  await expect(page.locator('#user-email')).toHaveText('active-b@example.invalid');
  expect(errors).toEqual([]);
 });
+
+
+test('Old Cloud failure cannot overwrite a new session when the same account signs in again',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const a={id:'11111111-1111-4111-8111-111111111111',email:'return-a@example.invalid',user_metadata:{aim_username:'Alpha'}};
+const b={id:'22222222-2222-4222-8222-222222222222',email:'middle-b@example.invalid',user_metadata:{aim_username:'Bravo'}};
+let current=a,listener=null;
+window.__qaSwitchToB=()=>{current=b;listener?.('SIGNED_IN',{user:b})};
+window.__qaSwitchBackToA=()=>{current=a;listener?.('SIGNED_IN',{user:a})};
+export const SITE_URL='https://aimroutine-tracker.github.io/';
+export const supabase={auth:{
+ getUser:async()=>({data:{user:current},error:null}),
+ onAuthStateChange:cb=>{listener=cb;return{data:{subscription:{unsubscribe(){}}}}}
+}};`
+ }));
+ await page.route('**/cloud-sync-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`export const isEnabled=()=>true;
+export const setEnabled=()=>{};
+export const readUserLocal=()=>({store:{sessions:[],presets:[],weeklyGoal:3}});
+export const importGuestIntoAccount=()=>({sessions:0,favorites:0});
+export const synchronize=async()=>({synced:true,downloadedSessions:0,downloadedFavorites:0});
+export const deleteCloudProgress=()=>new Promise((resolve,reject)=>{
+ window.__qaRejectOldOperation=()=>reject(new Error('Old A network failure must remain hidden'));
+});`
+ }));
+ page.on('dialog',dialog=>dialog.accept());
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#user-email')).toHaveText('return-a@example.invalid');
+ await page.locator('.ar7-delete-cloud summary').first().click();
+ await page.locator('#cloud-delete').click();
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaRejectOldOperation)).toBe('function');
+ await page.evaluate(()=>window.__qaSwitchToB());
+ await expect(page.locator('#user-email')).toHaveText('middle-b@example.invalid');
+ await page.evaluate(()=>window.__qaSwitchBackToA());
+ await expect(page.locator('#user-email')).toHaveText('return-a@example.invalid');
+ await expect(page.locator('#cloud-delete')).toBeEnabled();
+ // The account UID is the same as before, but the operation is from a stale
+ // authenticated session: the failed A request must not surface in new A.
+ await page.evaluate(()=>window.__qaRejectOldOperation());
+ await expect(page.locator('#cloud-delete')).toBeEnabled();
+ await expect(page.locator('#account-status')).not.toContainText('Old A network failure must remain hidden');
+ expect(errors).toEqual([]);
+});
