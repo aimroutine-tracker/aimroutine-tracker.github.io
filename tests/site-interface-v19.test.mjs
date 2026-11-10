@@ -25,7 +25,10 @@ test('V19 responsive cards and dialog account for accessible motion',()=>{
 
 test('Home and progress proactively pull signed-in Cloud data',()=>{
  const home=get('site-v15-data.mjs'),analytics=get('progress-v14.mjs');
- assert.ok(home.includes('await synchronize(supabase,uid)'));
+ assert.ok(home.includes('await refreshCloud(supabase,uid)'), 'Home awaits its Cloud refresh');
+ assert.ok(home.includes('synchronize(client,uid)'), 'Home still uses the real Cloud sync API');
+ assert.ok(home.includes('activeCloudUid!==uid'), 'Switching accounts bypasses the old account cache');
+ assert.ok(home.includes('cloudReads.get(uid)?.error'), 'Cloud errors are scoped to the current account');
  assert.ok(analytics.includes('await synchronize(supabase,uid)'));
  assert.ok(analytics.includes('Cloud sync pending'));
 });
