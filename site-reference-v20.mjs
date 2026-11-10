@@ -92,7 +92,8 @@ function installVerifiedCloudHeader(){
  };
  // A sign-in made in another tab propagates through browser storage events.
  window.addEventListener('storage',event=>{
-  if(event.key!==tokenKey)return;
+  // A storage.clear() in another tab sends a null key, not the token key.
+  if(event.key!==null&&event.key!==tokenKey)return;
   if(!event.newValue){++request;render(false)}
   else if(verifyCurrent)void verifyCurrent();
   else void start();
