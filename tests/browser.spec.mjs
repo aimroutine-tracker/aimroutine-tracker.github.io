@@ -3115,6 +3115,12 @@ test('V3 Progress panel anchors preserve original desktop proportions without in
  await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.r17-progress-wrap .r17-hero-desc .fr').first())
   .toContainText('des tendances claires et des objectifs personnalisés');
+ // Match the visual-evidence runner: measure only after fonts, hydration and
+ // desktop animations have settled, not at the first DOMContentLoaded paint.
+ await page.waitForFunction(()=>document.body?.classList.contains('r20'));
+ await page.evaluate(async()=>{await document.fonts.ready;});
+ await page.waitForTimeout(1400);
+ await page.addStyleTag({content:'*,*::before,*::after{transition:none!important;animation:none!important;caret-color:transparent!important}'});
  const check=async(selector,referenceX)=>{
   const nodes=page.locator(selector);
   await expect(nodes).toHaveCount(referenceX.length);
