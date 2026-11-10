@@ -2565,3 +2565,63 @@ export const synchronize=(client,uid,options={})=>{
  await expect(page.locator('#account-status')).not.toContainText('Import réalisé');
  expect(errors).toEqual([]);
 });
+
+
+test('Late deletion of account A must not sign out or clear account B',async({page})=>{
+ const errors=[];
+ page.on('pageerror',error=>errors.push(error.message));
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const a={id:'11111111-1111-4111-8111-111111111111',
+ email:'delete-a@example.invalid',user_metadata:{aim_username:'Alpha'},
+ app_metadata:{provider:'google',providers:['google']}};
+const b={id:'22222222-2222-4222-8222-222222222222',
+ email:'delete-b@example.invalid',user_metadata:{aim_username:'Bravo'},
+ app_metadata:{provider:'google',providers:['google']}};
+let current=a,listener=null;
+window.__qaAccountSignoutCalls=0;
+window.__qaAccountDeletionUid=null;
+window.__qaSwitchToB=()=>{current=b;listener?.('SIGNED_IN',{user:b})};
+export const SITE_URL='https://aimroutine-tracker.github.io/';
+export const supabase={
+ auth:{
+  getUser:async()=>({data:{user:current},error:null}),
+  signOut:async()=>{window.__qaAccountSignoutCalls++;current=null;return {error:null}},
+  onAuthStateChange:callback=>{listener=callback;return{data:{subscription:{unsubscribe(){}}}}}
+ },
+ functions:{
+  invoke:(name,options)=>{
+   window.__qaAccountDeletionUid=current.id;
+   return new Promise(resolve=>{window.__qaCompleteDeletion=()=>resolve({data:{deleted:true},error:null})});
+  }
+ }
+};`
+ }));
+ await page.route('**/cloud-sync-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`export const isEnabled=()=>true;
+export const setEnabled=()=>{};
+export const readUserLocal=()=>({store:{sessions:[],presets:[],weeklyGoal:3}});
+export const importGuestIntoAccount=()=>({sessions:0,favorites:0});
+export const deleteCloudProgress=async()=>true;
+export const synchronize=async()=>({synced:true,downloadedSessions:0,downloadedFavorites:0});`
+ }));
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#user-email')).toHaveText('delete-a@example.invalid');
+ await page.locator('.ar7-delete-account summary').click();
+ await page.locator('#delete-account-confirmation').fill('SUPPRIMER');
+ await page.locator('#delete-account-final').click();
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaCompleteDeletion)).toBe('function');
+ expect(await page.evaluate(()=>window.__qaAccountDeletionUid))
+  .toBe('11111111-1111-4111-8111-111111111111');
+ await page.evaluate(()=>window.__qaSwitchToB());
+ await expect(page.locator('#user-email')).toHaveText('delete-b@example.invalid');
+ await page.evaluate(()=>window.__qaCompleteDeletion());
+ await expect(page.locator('#delete-account-final')).toBeDisabled();
+ await expect(page.locator('#user-email')).toHaveText('delete-b@example.invalid');
+ await expect(page.locator('#account-status')).not.toContainText('Ton compte et ses données cloud ont été supprimés');
+ expect(await page.evaluate(()=>window.__qaAccountSignoutCalls)).toBe(0);
+ expect(await page.evaluate(()=>localStorage.getItem('aimroutine_cloud_current_uid')))
+  .toBe('22222222-2222-4222-8222-222222222222');
+ expect(errors).toEqual([]);
+});
