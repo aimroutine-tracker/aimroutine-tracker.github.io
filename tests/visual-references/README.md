@@ -1,14 +1,32 @@
-# Sources de comparaison AimRoutine V3
+# Sources de comparaison AimRoutine V3 — usage privé
 
-Les quatre images originales du propriétaire sont les références visuelles obligatoires.
+Les quatre PNG **originaux du propriétaire** sont les références obligatoires pour les comparaisons visuelles. Résolution : **1672 × 941 px**. Les empreintes exactes SHA-256 sont enregistrées dans `manifest.json`.
 
-Placez les **PNG originaux sans réencodage ni modification** dans ce dossier sous les noms :
-`home.png`, `routines.png`, `progress.png`, `account.png`.
+## Préparation hors du dépôt GitHub public
 
-Les quatre fichiers mesurent **1672 × 941 px** et leur SHA-256 est indiqué dans `manifest.json`. Les tests doivent refuser toute image aux mauvais octets ou aux mauvaises dimensions.
+Dans une **copie locale privée et non partagée** du projet, placer les images octet-identiques (sans recadrage ni réencodage) sous les noms :
 
-La comparaison fonctionne déjà hors ligne sur les images originales mises à disposition par le propriétaire. Les PNG binaires ne sont **pas encore présents dans le dépôt**, donc l'analyse de pixels originaux en CI est explicitement indiquée comme NON EXÉCUTÉE. Les différences entre `main` et la branche ne remplacent pas la comparaison aux références.
+- `tests/visual-references/home.png`
+- `tests/visual-references/routines.png`
+- `tests/visual-references/progress.png`
+- `tests/visual-references/account.png`
 
-Pour exécuter la validation dans GitHub Actions, intégrer ces quatre fichiers à une copie contrôlée du dépôt, puis relancer le workflow de preuves visuelles. Aucun chiffre de maquette ne doit remplacer les vraies données personnelles.
+Ces quatre chemins figurent dans `.gitignore` pour réduire les risques de commit accidentel. **Attention : `.gitignore` n'empêche pas `git add -f`, la copie dans un autre fichier ni un ancien suivi Git. Vérifier le contenu de chaque commit.** Ne jamais ajouter ces quatre PNG à un dépôt public sans accord explicite du propriétaire.
 
-⚠️ **Confidentialité / diffusion :** le dépôt GitHub est public. Si les PNG originaux sont déposés ici, ils seront consultables dans les sources GitHub, même s'ils ne figurent pas dans la liste des fichiers publiés par GitHub Pages. Ne les téléverser qu'en connaissance de cause. Le job de validation reste volontairement bloqué en attendant cet apport contrôlé.
+## Séparation des artefacts et validation
+
+- `visual-results/` est un dossier temporaire local. Lorsque les originaux sont présents, il contient aussi des `*-source-*.png` pouvant révéler des pixels des maquettes privées.
+- `tests/stage-public-visual-evidence-v3.py` copie **uniquement les captures sans référence, les comparaisons avant/après du site et un résumé numérique expurgé** dans `public-visual-evidence/`. Ce dernier est le seul lot de captures destiné à l'artefact public GitHub Actions.
+- Le job `reference-fidelity-gate` **recalcule ses comparaisons à partir des PNG locaux sur son propre runner**, sans transmettre les `*-source-*.png` aux artefacts publics.
+- Le job public reste volontairement en **échec bloquant** lorsqu'il ne dispose pas des quatre originaux exacts. Cette absence ne doit jamais être transformée en succès artificiel.
+- Une validation locale avec les quatre références exactes peut être réussie, mais elle ne signifie ni que le gate GitHub public est passé, ni que le rendu est pixel-perfect.
+
+Pour exécuter une comparaison dans une copie privée **déjà équipée de captures** `visual-results/{home,routines,progress,account}-{before,after}.png` :
+
+```bash
+python3 -m pip install Pillow==11.3.0
+python3 tests/compare-visual-v3.py
+python3 tests/check-source-fidelity-v3.py
+```
+
+Le second script exige les quatre SHA-256 corrects, les dimensions et les preuves de comparaison. Préserver ces preuves privées ; ne pas les téléverser dans une PR ou un artefact public. La publication requiert encore une revue visuelle explicite et les tests fonctionnels sur des comptes d'essai dédiés. Les valeurs fictives des maquettes ne doivent jamais être injectées dans les statistiques de vrais comptes.
