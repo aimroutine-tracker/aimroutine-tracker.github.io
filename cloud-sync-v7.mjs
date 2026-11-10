@@ -28,10 +28,12 @@ function writeLocal(uid,store,ext,meta){
  localStorage.setItem(scopedKey(EXT_KEY,uid),JSON.stringify(cleanExtension(ext)));
  localStorage.setItem(metaKey(uid),JSON.stringify(meta));
 }
-async function fetchAll(client,table,order){
+async function fetchAll(client,table,order,uid){
  const items=[];
  for(let from=0;from<11000;from+=1000){
-  const {data,error}=await client.from(table).select('*').order(order,{ascending:true}).range(from,from+999);
+  // Explicit owner filter supplements RLS. A token that changes between
+  // pagination requests must not return rows belonging to another account.
+  const {data,error}=await client.from(table).select('*').eq('user_id',uid).order(order,{ascending:true}).range(from,from+999);
   if(error)throw error;
   items.push(...(data||[]));
   if(!data||data.length<1000)return items;
@@ -55,8 +57,8 @@ async function synchronizeOnce(client,uid,{guestImport=false}={}){
  let local=readUserLocal(uid);
  const meta=readMeta(uid);
  const [remoteSessions,remotePresets,profileResult,prefResult]=await Promise.all([
-  fetchAll(client,'aim_sessions','session_id'),
-  fetchAll(client,'aim_presets','preset_id'),
+  fetchAll(client,'aim_sessions','session_id',uid),
+  fetchAll(client,'aim_presets','preset_id',uid),
   client.from('aim_profiles').select('profile').eq('user_id',uid).maybeSingle(),
   client.from('aim_preferences').select('weekly_goal,settings').eq('user_id',uid).maybeSingle()
  ]);
@@ -139,6 +141,13 @@ async function synchronizeOnce(client,uid,{guestImport=false}={}){
  meta.presetDeletedIds=freshDeletes;
  meta.profileHash=JSON.stringify(finalProfile);
  meta.prefsHash=JSON.stringify({weeklyGoal:finalGoal});
+ // A different account may have signed in while reads/writes were pending.
+ // Never commit remote data to A's local cache if the current verified user
+ // is now B, even when old HTTP responses succeeded under an earlier token.
+ const {data:lastAuth,error:lastAuthError}=await client.auth.getUser();
+ if(lastAuthError||lastAuth?.user?.id!==uid){
+  throw Error('Session modifiée pendant la synchronisation : reconnecte-toi à ton compte.');
+ }
  if(unseenReset){
    // Prevent the V1 fallback from resurrecting data after V2 is replaced.
    localStorage.removeItem(scopedKey(LEGACY_KEY,uid));
