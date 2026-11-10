@@ -2444,10 +2444,11 @@ test('Offline comparator exports a verified four-screen report only after all fo
 
 test('V3 four original desktop pages align their first content panels vertically',async({page})=>{
  const scenes=[
-  {url:'/index.html',hero:357,anchor:'.r17-home-wrap .r17-features',target:502},
-  {url:'/training.html',hero:254,anchor:'.r17-training-wrap .r17-training-grid',target:320},
-  {url:'/progress.html',hero:210,anchor:'.r17-progress-wrap .r17-chart-grid',target:338},
-  {url:'/account.html',hero:250,anchor:'.r17-account-wrap .r17-account-profile',target:301}
+  // Baseline Home already matched the original rail and first-card positions.
+  {url:'/index.html',hero:350,anchor:'.r17-home-wrap .r17-features',target:502},
+  {url:'/training.html',hero:250,anchor:'.r17-training-wrap .r17-training-grid',target:320},
+  {url:'/progress.html',hero:206,anchor:'.r17-progress-wrap .r17-chart-grid',target:338},
+  {url:'/account.html',hero:246,anchor:'.r17-account-wrap .r17-account-profile',target:301}
  ];
  await page.setViewportSize({width:1672,height:941});
  for(const scene of scenes){
