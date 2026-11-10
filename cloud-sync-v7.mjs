@@ -185,6 +185,13 @@ export function deleteCloudProgress(client,uid){
    if(previous){
     // A failed save must not prevent the owner from deleting their data.
     try{await previous}catch{}
+    // The account may have changed while the earlier save was pending.
+    // This RPC deletes the CURRENT authenticated user's progress, so a
+    // validation performed before the await is no longer sufficient.
+    const {data:latest,error:latestError}=await client.auth.getUser();
+    if(latestError||latest?.user?.id!==uid){
+     throw Error('Session modifiée pendant la suppression : reconnecte-toi à ton compte.');
+    }
    }
    // One RLS-protected database transaction: a failed request cannot partially
    // erase the cloud or leave the reset marker unpublished.
