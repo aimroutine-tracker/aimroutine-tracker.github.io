@@ -239,34 +239,50 @@ $('#logout').addEventListener('click',()=>run(async()=>{
 }));
 $('#cloud-enable').addEventListener('click',()=>run(async()=>{
  if(!user)return; // Automatic sync has no opt-in confirmation.
- setEnabled(user.id,true);
- try{const result=await synchronize(supabase,user.id);
+ const uid=user.id;
+ setEnabled(uid,true);
+ try{
+  const result=await synchronize(supabase,uid);
+  if(user?.id!==uid)return;
   msg('Sauvegarde cloud activée. '+result.downloadedSessions+' séances dans ton espace. Les nouvelles séances seront sauvegardées automatiquement lorsque tu seras connecté.');
- }catch(e){setEnabled(user.id,false);throw e}
+ }catch(e){
+  setEnabled(uid,false);
+  if(user?.id===uid)throw e;
+ }
 }));
 $('#cloud-sync').addEventListener('click',()=>run(async()=>{
  if(!user)return;
+ const uid=user.id;
  msg('Synchronisation en cours…');
- const result=await synchronize(supabase,user.id);
+ const result=await synchronize(supabase,uid);
+ if(user?.id!==uid)return; // Do not advertise A's sync from B's dashboard.
  msg('Synchronisation effectuée : '+result.downloadedSessions+' séances et '+result.downloadedFavorites+' routines. Retourne dans l’espace AIM pour voir les données actualisées.');
 }));
 $('#cloud-import-guest').addEventListener('click',()=>run(async()=>{
  if(!user||!confirm('Importer les données invitées de ce navigateur dans ton compte ? Leurs copies locales ne seront pas supprimées.'))return;
- if(!isEnabled(user.id)){
-  setEnabled(user.id,true);
-  try{await synchronize(supabase,user.id)}
-  catch(e){setEnabled(user.id,false);throw e}
+ const uid=user.id;
+ if(!isEnabled(uid)){
+  setEnabled(uid,true);
+  try{await synchronize(supabase,uid)}
+  catch(e){setEnabled(uid,false);if(user?.id===uid)throw e;return}
  }
- const result=importGuestIntoAccount(user.id);
- const sync=await synchronize(supabase,user.id,{guestImport:true});
+ if(user?.id!==uid)return;
+ const result=importGuestIntoAccount(uid);
+ const sync=await synchronize(supabase,uid,{guestImport:true});
+ if(user?.id!==uid)return;
  msg('Import réalisé : '+result.sessions+' séances invitées trouvées, '+sync.downloadedSessions+' séances maintenant dans ton espace cloud.');
 }));
 $('#cloud-delete').addEventListener('click',()=>run(async()=>{
  if(!user)return;
+ const uid=user.id;
  if(!confirm('Supprimer définitivement toute ta progression cloud pour ce compte ?'))return;
  if(!confirm('Dernière confirmation : tu as exporté une copie de tes données ?'))return;
- await deleteCloudProgress(supabase,user.id);
- setEnabled(user.id,true);
+ if(user?.id!==uid)return;
+ await deleteCloudProgress(supabase,uid);
+ // The remote deletion may have succeeded while another tab switched A to B.
+ // Never set B's preferences or show A's deletion result on B's dashboard.
+ if(user?.id!==uid)return;
+ setEnabled(uid,true);
  msg('Progression cloud supprimée. La sauvegarde automatique reste active pour tes prochaines séances ; les anciennes données invitées sont conservées pour un import manuel.');
 }));
 document.querySelector('.ar7-delete-account')?.addEventListener('toggle',()=>{
