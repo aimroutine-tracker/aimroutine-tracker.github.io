@@ -27,6 +27,11 @@ on:
       - "training*.css"
 permissions:
   contents: read
+
+# Ignore superseded commits: only the current PR/head build matters.
+concurrency:
+  group: aimroutine-lighthouse-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   lighthouse:
     runs-on: ubuntu-24.04
