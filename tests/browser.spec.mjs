@@ -2259,3 +2259,58 @@ test('Offline comparator rejects invalid PNG dimensions before producing metrics
  await expect(page.locator('#home-save')).toBeDisabled();
  await expect(page.locator('#report')).toBeDisabled();
 });
+
+
+test('Offline comparator rejects a stale SHA result after the PNG is replaced mid-comparison',async({page})=>{
+ await page.goto('/tests/private-visual-review-v3.html',{waitUntil:'domcontentloaded'});
+ await page.evaluate(async()=>{
+  const make=async(color)=>{
+   const canvas=document.createElement('canvas');
+   canvas.width=1672;canvas.height=941;
+   const ctx=canvas.getContext('2d');
+   ctx.fillStyle=color;ctx.fillRect(0,0,1672,941);
+   return new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+  };
+  const ref=await make('#101010');
+  const old=await make('#131313'),next=await make('#202020');
+  const subt=crypto.subtle;
+  const native=subt.digest.bind(subt);
+  const hash=await native('SHA-256',await ref.arrayBuffer());
+  CONFIG[0].sha=Array.from(new Uint8Array(hash),n=>n.toString(16).padStart(2,'0')).join('');
+  window.__qaNextPicture=next;
+  const put=(selector,blob)=>{
+   const dt=new DataTransfer();
+   dt.items.add(new File([blob],selector+'.png',{type:'image/png'}));
+   const input=document.getElementById(selector);
+   input.files=dt.files;
+   input.dispatchEvent(new Event('change',{bubbles:true}));
+  };
+  put('home-ref',ref);put('home-out',old);
+  let count=0;
+  Object.defineProperty(subt,'digest',{configurable:true,value:async(...args)=>{
+   if(++count===1){
+    return await new Promise(resolve=>{
+     window.__qaReleaseOldDigest=()=>native(...args).then(resolve);
+    });
+   }
+   return native(...args);
+  }});
+  window.__qaReplacePicture=()=>put('home-out',window.__qaNextPicture);
+ });
+ await page.locator('#home-compare').click();
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaReleaseOldDigest)).toBe('function');
+ // The previous analysis has not finished; a user replaces its input image.
+ await page.evaluate(()=>window.__qaReplacePicture());
+ await expect(page.locator('#home-status')).toContainText('Fichiers modifiés');
+ await expect(page.locator('#home-save')).toBeDisabled();
+ // A fresh run must use the *new* candidate without awaiting the old one.
+ await page.locator('#home-compare').click();
+ await expect(page.locator('#home-metrics')).toContainText('MAE RGB : 16');
+ expect(await page.evaluate(()=>results.home?.rgb_mae_0_to_255)).toBe(16);
+ // The old SHA response now arrives, but it must not overwrite new results.
+ await page.evaluate(()=>window.__qaReleaseOldDigest());
+ await expect(page.locator('#home-metrics')).toContainText('MAE RGB : 16');
+ await expect(page.locator('#home-status')).toContainText('Empreinte SHA-256 originale vérifiée');
+ await expect(page.locator('#home-save')).toBeEnabled();
+ expect(await page.evaluate(()=>results.home?.rgb_mae_0_to_255)).toBe(16);
+});
