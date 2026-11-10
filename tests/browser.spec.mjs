@@ -1856,3 +1856,110 @@ export const synchronize=()=>new Promise(resolve=>{
  await expect(page.locator('#account-status')).not.toContainText('Synchronisation automatique à jour');
  expect(await page.evaluate(()=>localStorage.getItem('aimroutine_cloud_current_uid'))).toBeNull();
 });
+
+
+test('Cloud portal hides account A immediately during cross-tab switch to B',async({page})=>{
+ const a='11111111-1111-4111-8111-111111111111';
+ const b='22222222-2222-4222-8222-222222222222';
+ const authKey='sb-lmzswtzboobpokumxzhy-auth-token';
+ const mk=id=>JSON.stringify({user:{id},access_token:'qa-'+id});
+ await page.addInitScript(({a,authKey})=>
+  localStorage.setItem(authKey,JSON.stringify({user:{id:a},access_token:'qa-'+a})),{a,authKey});
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const authKey='sb-lmzswtzboobpokumxzhy-auth-token';
+const a='11111111-1111-4111-8111-111111111111',b='22222222-2222-4222-8222-222222222222';
+const people={[a]:{id:a,email:'private-a@example.invalid',user_metadata:{aim_username:'PrivateA'}},
+ [b]:{id:b,email:'private-b@example.invalid',user_metadata:{aim_username:'PrivateB'}}};
+window.__qaVerifyAccountCalls=0;
+export const SITE_URL='https://aimroutine-tracker.github.io/';
+export const supabase={auth:{
+ getUser:async()=>{
+  ++window.__qaVerifyAccountCalls;
+  const id=JSON.parse(localStorage.getItem(authKey)||'null')?.user?.id;
+  if(id===b)return new Promise(resolve=>{window.__qaAllowSwitchToB=()=>resolve({data:{user:people[b]},error:null})});
+  return {data:{user:people[id]||null},error:null};
+ },
+ onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})
+}};`
+ }));
+ await page.route('**/cloud-sync-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`export const isEnabled=()=>true;
+export const setEnabled=()=>{};
+export const readUserLocal=()=>({store:{sessions:[],presets:[],weeklyGoal:3}});
+export const importGuestIntoAccount=()=>({sessions:0,favorites:0});
+export const deleteCloudProgress=async()=>true;
+export const synchronize=async()=>({synced:true});`
+ }));
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#dashboard-panel')).toBeVisible();
+ await expect(page.locator('#user-email')).toHaveText('private-a@example.invalid');
+ await page.evaluate(({authKey,token})=>{
+  localStorage.setItem(authKey,token);
+  window.dispatchEvent(new StorageEvent('storage',{key:authKey,newValue:token}));
+ },{authKey,token:mk(b)});
+ // The previous account's identity must disappear BEFORE B's auth check resolves.
+ await expect(page.locator('#dashboard-panel')).toBeHidden();
+ await expect(page.locator('#user-email')).toBeEmpty();
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaAllowSwitchToB)).toBe('function');
+ await page.evaluate(()=>window.__qaAllowSwitchToB());
+ await expect(page.locator('#dashboard-panel')).toBeVisible();
+ await expect(page.locator('#user-email')).toHaveText('private-b@example.invalid');
+ expect(await page.evaluate(()=>localStorage.getItem('aimroutine_cloud_current_uid'))).toBe(b);
+ // Refreshing the same verified account's access token must not hide its view.
+ await page.evaluate(({authKey,token})=>{
+  localStorage.setItem(authKey,token);
+  window.dispatchEvent(new StorageEvent('storage',{key:authKey,newValue:token}));
+ },{authKey,token:JSON.stringify({user:{id:b},access_token:'qa-b-refreshed'})});
+ await expect(page.locator('#user-email')).toHaveText('private-b@example.invalid');
+ await expect(page.locator('#dashboard-panel')).toBeVisible();
+});
+
+test('Cloud portal starts B sync while a previous account A sync is unresolved',async({page})=>{
+ const a='11111111-1111-4111-8111-111111111111';
+ const b='22222222-2222-4222-8222-222222222222';
+ const authKey='sb-lmzswtzboobpokumxzhy-auth-token';
+ const mk=id=>JSON.stringify({user:{id},access_token:'qa-'+id});
+ await page.addInitScript(({a,authKey})=>
+  localStorage.setItem(authKey,JSON.stringify({user:{id:a},access_token:'qa-'+a})),{a,authKey});
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const authKey='sb-lmzswtzboobpokumxzhy-auth-token';
+const a='11111111-1111-4111-8111-111111111111',b='22222222-2222-4222-8222-222222222222';
+const users={[a]:{id:a,email:'private-a@example.invalid',user_metadata:{aim_username:'PrivateA'}},
+ [b]:{id:b,email:'private-b@example.invalid',user_metadata:{aim_username:'PrivateB'}}};
+export const SITE_URL='https://aimroutine-tracker.github.io/';
+export const supabase={auth:{
+ getUser:async()=>({data:{user:users[JSON.parse(localStorage.getItem(authKey)||'null')?.user?.id]||null},error:null}),
+ onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})
+}};`
+ }));
+ await page.route('**/cloud-sync-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`export const isEnabled=()=>true;
+export const setEnabled=()=>{};
+export const readUserLocal=()=>({store:{sessions:[],presets:[],weeklyGoal:3}});
+export const importGuestIntoAccount=()=>({sessions:0,favorites:0});
+export const deleteCloudProgress=async()=>true;
+window.__qaAccountSyncCalls=[];
+export const synchronize=(_client,uid)=>{
+ window.__qaAccountSyncCalls.push(uid);
+ if(uid==='11111111-1111-4111-8111-111111111111')
+  return new Promise(resolve=>{window.__qaFinishOldCloud=()=>resolve({synced:true})});
+ return Promise.resolve({synced:true});
+};`
+ }));
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect.poll(()=>page.evaluate(()=>window.__qaAccountSyncCalls?.includes('11111111-1111-4111-8111-111111111111'))).toBe(true);
+ await page.evaluate(({authKey,token})=>{
+  localStorage.setItem(authKey,token);
+  window.dispatchEvent(new StorageEvent('storage',{key:authKey,newValue:token}));
+ },{authKey,token:mk(b)});
+ await expect(page.locator('#user-email')).toHaveText('private-b@example.invalid');
+ await expect.poll(()=>page.evaluate(()=>window.__qaAccountSyncCalls?.includes('22222222-2222-4222-8222-222222222222'))).toBe(true);
+ await expect(page.locator('#dashboard-panel')).toBeVisible();
+ await page.evaluate(()=>window.__qaFinishOldCloud());
+ await expect(page.locator('#user-email')).toHaveText('private-b@example.invalid');
+ expect(await page.evaluate(()=>localStorage.getItem('aimroutine_cloud_current_uid'))).toBe(b);
+});
