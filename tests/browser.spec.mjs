@@ -1963,3 +1963,56 @@ export const synchronize=(_client,uid)=>{
  await expect(page.locator('#user-email')).toHaveText('private-b@example.invalid');
  expect(await page.evaluate(()=>localStorage.getItem('aimroutine_cloud_current_uid'))).toBe(b);
 });
+
+
+test('Cloud portal rejects bootstrap account A after a token switches to B before any user is shown',async({page})=>{
+ const a='11111111-1111-4111-8111-111111111111';
+ const b='22222222-2222-4222-8222-222222222222';
+ const authKey='sb-lmzswtzboobpokumxzhy-auth-token';
+ await page.addInitScript(({a,authKey})=>{
+  localStorage.setItem(authKey,JSON.stringify({user:{id:a},access_token:'qa-a'}));
+ },{a,authKey});
+ await page.route('**/cloud-client-v7.mjs*',r=>r.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const a='11111111-1111-4111-8111-111111111111',b='22222222-2222-4222-8222-222222222222';
+const people={[a]:{id:a,email:'stale-private-a@example.invalid',user_metadata:{aim_username:'PrivateA'}},
+ [b]:{id:b,email:'private-b@example.invalid',user_metadata:{aim_username:'PrivateB'}}};
+let calls=0;
+export const SITE_URL='https://aimroutine-tracker.github.io/';
+export const supabase={auth:{
+ getUser:()=>new Promise(resolve=>{
+  if(++calls===1)window.__qaReleaseStaleBootstrap=()=>resolve({data:{user:people[a]},error:null});
+  else window.__qaReleaseCurrentB=()=>resolve({data:{user:people[b]},error:null});
+ }),
+ onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})
+}};`
+ }));
+ await page.route('**/cloud-sync-v7.mjs*',r=>r.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`export const isEnabled=()=>true;
+export const setEnabled=()=>{};
+export const readUserLocal=()=>({store:{sessions:[],presets:[],weeklyGoal:3}});
+export const importGuestIntoAccount=()=>({sessions:0,favorites:0});
+export const deleteCloudProgress=async()=>true;
+export const synchronize=async()=>({synced:true});`
+ }));
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaReleaseStaleBootstrap)).toBe('function');
+ // The Auth token changes while bootstrap getUser(A) is still unresolved,
+ // and no account has yet been painted on the screen.
+ await page.evaluate(({authKey,b})=>{
+  const next=JSON.stringify({user:{id:b},access_token:'qa-b'});
+  localStorage.setItem(authKey,next);
+  window.dispatchEvent(new StorageEvent('storage',{key:authKey,newValue:next}));
+ },{authKey,b});
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaReleaseCurrentB)).toBe('function');
+ await page.evaluate(()=>window.__qaReleaseStaleBootstrap());
+ // A's late response must not be allowed to render before B is verified.
+ await expect(page.locator('#dashboard-panel')).toBeHidden();
+ await expect(page.locator('#user-email')).toBeEmpty();
+ expect(await page.evaluate(()=>localStorage.getItem('aimroutine_cloud_current_uid'))).toBeNull();
+ await page.evaluate(()=>window.__qaReleaseCurrentB());
+ await expect(page.locator('#dashboard-panel')).toBeVisible();
+ await expect(page.locator('#user-email')).toHaveText('private-b@example.invalid');
+ expect(await page.evaluate(()=>localStorage.getItem('aimroutine_cloud_current_uid'))).toBe(b);
+});
