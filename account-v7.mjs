@@ -444,6 +444,16 @@ async function verifyAccountChange(){
 window.addEventListener('storage',event=>{
  if(event.key!==null&&event.key!==AUTH_KEY)return;
  const latest=currentAuthToken();
+ const nextTokenUid=tokenUserId(latest);
+ const originalRecoveryUid=recoverySessionUid||user?.id||null;
+ // A storage event from another tab can switch or clear the recovery owner
+ // without a corresponding SDK Auth event in this tab.
+ if(recovery&&(!latest||(originalRecoveryUid&&nextTokenUid&&
+     nextTokenUid!==originalRecoveryUid))){
+  recovery=false;
+  recoverySessionUid=null;
+  authMode('login');
+ }
  if(!latest){
   ++accountVerification;
   showUser(null); // Remove old identity and private counters immediately.
