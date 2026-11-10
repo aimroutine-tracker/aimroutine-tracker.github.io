@@ -49,7 +49,8 @@ async function render(){
 }
 document.querySelectorAll('[data-switch-lang]').forEach(btn=>btn.addEventListener('click',()=>queueMicrotask(()=>void render())));
 window.addEventListener('storage',e=>{
- if(e.key===AUTH_KEY){
+ // storage.clear() from another tab has a null key, and must hide account KPIs.
+ if(e.key===null||e.key===AUTH_KEY){
   ++renderGeneration;
   hidePrivateStats();
   if(e.newValue)void render();
