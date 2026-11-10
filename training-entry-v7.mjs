@@ -5,6 +5,19 @@ import {synchronize,isEnabled} from './cloud-sync-v7.mjs';
 
 const status=document.getElementById('cloud-training-status');
 const authStorage='sb-lmzswtzboobpokumxzhy-auth-token';
+// A validated getUser() response can arrive after an unrelated tab logs out
+// or changes accounts. Recheck the browser's CURRENT session before exposing
+// the scoped store, and again after the first (possibly slow) Cloud fetch.
+// A normal same-owner Supabase token refresh must remain uninterrupted.
+const tokenOwner=raw=>{
+ try{const value=JSON.parse(raw);return validUid(value?.user?.id)?value.user.id:null}
+ catch{return null}
+};
+const sessionStillCurrent=(initialToken,accountId)=>{
+ const latest=localStorage.getItem(authStorage);
+ return Boolean(latest&&(latest===initialToken||
+  (tokenOwner(initialToken)===accountId&&tokenOwner(latest)===accountId)));
+};
 let api=null,uid=null,syncing=false,queued=false;
 let currentNotice={fr:'',en:''};
 const updateNoticeLanguage=()=>{
@@ -18,21 +31,27 @@ const report=(fr,english=fr)=>{
 document.querySelectorAll('[data-switch-lang]').forEach(button=>
  button.addEventListener('click',()=>queueMicrotask(updateNoticeLanguage)));
 window.addEventListener('aim-v3-locale-changed',updateNoticeLanguage);
+const initialToken=localStorage.getItem(authStorage);
 try{
- if(localStorage.getItem(authStorage)){
+ if(initialToken){
   api=await import('./cloud-client-v7.mjs');
   const session=await api.supabase.auth.getSession();
   const candidate=session.data?.session?.user?.id;
   if(!session.error&&validUid(candidate)){
    // Never grant access to an account namespace from an unverified cache.
    const {data,error}=await api.supabase.auth.getUser();
-   if(!error&&data?.user?.id===candidate){
+   if(!error&&data?.user?.id===candidate&&sessionStillCurrent(initialToken,candidate)){
     uid=candidate;
     window.__aimCloudUserId=uid;
     localStorage.setItem(UID_STORAGE_KEY,uid);
     report('Compte connecté · Récupération cloud automatique…','Signed in · Restoring your Cloud progress…');
     try{await synchronize(api.supabase,uid);report('Cloud automatique : progression à jour ✓','Automatic Cloud: progress is up to date ✓')}
     catch(e){report('Cloud indisponible · Tes données de compte restent en cache et seront synchronisées : '+e.message,'Cloud unavailable · Your account data is cached and will sync later: '+e.message)}
+    // An old Cloud request finishing after sign-out must not re-enable the
+    // former account's namespace during initial page hydration.
+    if(!sessionStillCurrent(initialToken,candidate)){
+     uid=null;api=null;window.__aimCloudUserId=null;
+    }
    }
   }
  }
@@ -81,10 +100,6 @@ window.addEventListener('focus',schedule);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule()});
 // An access-token refresh for the same verified user is not a logout.
 // React immediately when another tab signs out or switches accounts.
-const tokenOwner=raw=>{
- try{const value=JSON.parse(raw);return validUid(value?.user?.id)?value.user.id:null}
- catch{return null}
-};
 window.addEventListener('storage',e=>{
  // A bulk storage.clear() in another tab also invalidates verified-account state.
  if(e.key===null||e.key===authStorage){
