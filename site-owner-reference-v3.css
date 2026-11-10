@@ -1770,3 +1770,24 @@ body.site31.r20 .r17-progress-wrap .v3-chart-period select:focus-visible{
   padding-bottom:24px!important;
  }
 }
+
+
+/* V3 / pass 42 — four-desktop-reference vertical geometry (1672 x 941).
+   Side-by-side manual review of the four owner references and the current
+   genuine-data screenshots found the panels 6–10px too high. Shift only the
+   end of each hero, preserving its actual text, artwork, actions and data.
+   Smaller screens retain their existing responsive behavior. */
+@media (min-width:1600px){
+ body.site31.r20 .r17-home-wrap .r17-hero{
+  height:357px!important;min-height:357px!important;max-height:357px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-hero{
+  height:254px!important;min-height:254px!important;max-height:254px!important;
+ }
+ body.site31.r20 .r17-progress-wrap>.r17-hero{
+  height:210px!important;min-height:210px!important;max-height:210px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-hero{
+  height:250px!important;min-height:250px!important;max-height:250px!important;
+ }
+}
