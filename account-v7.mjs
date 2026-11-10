@@ -54,12 +54,13 @@ function clearPreviousIdentityForms(){
  if(finalButton)finalButton.disabled=true;
  try{captcha.reset('delete')}catch{} // Prevent reuse of a prior account's CAPTCHA.
 }
-function showUser(next){
+function showUser(next,{forceReset=false}={}){
  const previousUid=user?.id||null;
  const nextUid=next&&validUid(next.id)?next.id:null;
+ const resetControls=previousUid!==nextUid||forceReset;
  // A completed recovery notice must never follow a different account.
  if(passwordRecoveryNoticeUid&&passwordRecoveryNoticeUid!==nextUid)passwordRecoveryNoticeUid=null;
- if(previousUid!==nextUid){
+ if(resetControls){
   clearPreviousIdentityForms();
   activeOperation=null;
   working=false;
@@ -94,7 +95,7 @@ function showUser(next){
    $('#cloud-enabled-status').textContent='Connexion nécessaire';
    msg('Connecte-toi pour sauvegarder ta progression. Le mode aperçu sans compte ne conserve aucune séance.');
  }
- if(previousUid!==nextUid){
+ if(resetControls){
   // Release disabled controls held by an old account without granting
   // privileges: the new identity was already verified by the caller.
   document.querySelectorAll('.ar7-account-panel button').forEach(x=>{
@@ -459,13 +460,13 @@ window.addEventListener('storage',event=>{
  }
  if(!latest){
   ++accountVerification;
-  showUser(null); // Remove old identity and private counters immediately.
+  showUser(null,{forceReset:true}); // Also release guest recovery controls.
   return;
  }
  if(user?.id&&tokenUserId(latest)===user.id)return; // Same-owner token refresh.
  // Do not show account A's dashboard while B's token is being verified.
  ++accountVerification;
- if(user)showUser(null);
+ showUser(null,{forceReset:true});
  void verifyAccountChange();
 });
 supabase.auth.onAuthStateChange((event,session)=>{
@@ -479,11 +480,10 @@ supabase.auth.onAuthStateChange((event,session)=>{
  if(event==='SIGNED_OUT'){
   recovery=false;
   recoverySessionUid=null;
-  // Clear a hidden recovery password even if the original user never hydrated.
-  clearPreviousIdentityForms();
+  // Force a reset even when the recovery account never hydrated (guest -> guest).
   authMode('login');
   ++accountVerification;
-  showUser(null);
+  showUser(null,{forceReset:true});
  }else if(['SIGNED_IN','TOKEN_REFRESHED','USER_UPDATED'].includes(event)){
   // Recovery belongs to its original account, not the next signed-in user.
   if(recovery&&recoverySessionUid&&validUid(session?.user?.id)&&
