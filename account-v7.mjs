@@ -12,6 +12,7 @@ const GOOGLE_READY=true; // Provider enabled by project owner; live OAuth is in 
 const RESET_LINKS_CONFIGURED=true; // Redirect allowlist was configured; real email delivery and recovery completion still require confirmation.
 const $=s=>document.querySelector(s);
 let user=null,working=false,recovery=false,authRevision=0;
+let passwordRecoveryNoticeUid=null;
 // A delayed getUser()/Cloud response must never re-display a signed-out account.
 const captcha=createAuthCaptcha(TURNSTILE_SITE_KEY);
 function showCaptcha(mode){
@@ -50,6 +51,8 @@ function clearPreviousIdentityForms(){
 function showUser(next){
  const previousUid=user?.id||null;
  const nextUid=next&&validUid(next.id)?next.id:null;
+ // A completed recovery notice must never follow a different account.
+ if(passwordRecoveryNoticeUid&&passwordRecoveryNoticeUid!==nextUid)passwordRecoveryNoticeUid=null;
  if(previousUid!==nextUid)clearPreviousIdentityForms();
  ++authRevision;
  user=nextUid?next:null;
@@ -65,7 +68,10 @@ function showUser(next){
    localStorage.setItem(UID_STORAGE_KEY,user.id);
    renderCounts();
    renderDeleteOptions();
-   msg(needsUsername?'Choisis ton pseudo pour terminer ton inscription AimRoutine.':
+   // Ignore late identity callbacks only for the short-lived explicit recovery
+   // feedback; keep the real account/username state fully updated.
+   if(passwordRecoveryNoticeUid!==user.id)
+    msg(needsUsername?'Choisis ton pseudo pour terminer ton inscription AimRoutine.':
      'Compte connecté · Synchronisation cloud automatique activée.');
  }else{
    localStorage.removeItem(UID_STORAGE_KEY);
@@ -201,13 +207,17 @@ $('#new-password-form').addEventListener('submit',e=>{e.preventDefault();run(asy
  msg('Vérification du nouveau mot de passe…');
  const assessment=await checkLeakedPassword(password);
  if(!assessment.safe)throw Error('Ce mot de passe a déjà été compromis dans des fuites connues. Choisis-en un autre.');
- const {error}=await supabase.auth.updateUser({password});
+ const {data,error}=await supabase.auth.updateUser({password});
  if(error)throw error;
  $('#new-password').value='';
  recovery=false;
  authMode('login');
- showUser(user);
- msg('Mot de passe mis à jour.');
+ // The update response includes the verified account. Show it immediately
+ // instead of depending on the order of asynchronous USER_UPDATED callbacks.
+ showUser(data?.user||user);
+ passwordRecoveryNoticeUid=user?.id||null;
+ msg('Mot de passe mis à jour.'+
+  (user&&!usernameFromUser(user)?' Choisis ton pseudo pour terminer ton inscription.':''));
 })});
 $('#username-form').addEventListener('submit',e=>{e.preventDefault();run(async()=>{
  if(!user)throw Error('Connecte-toi pour enregistrer ton pseudo.');
