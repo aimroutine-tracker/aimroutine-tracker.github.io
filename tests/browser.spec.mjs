@@ -1650,6 +1650,7 @@ export const supabase={auth:{
  await page.route('**/cloud-sync-v7.mjs*',r=>r.fulfill({
   status:200,contentType:'application/javascript',
   body:`export const isEnabled=()=>true;
+export const collectFavoriteDeletion=()=>{};
 export const synchronize=()=>new Promise(resolve=>{
  window.__qaReleaseInitialCloud=()=>resolve({synced:true});
 });`
