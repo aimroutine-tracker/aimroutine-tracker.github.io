@@ -57,4 +57,8 @@ window.addEventListener('storage',e=>{
 });
 window.addEventListener('online',()=>void render());
 window.addEventListener('focus',()=>void render());
+// A different device cannot dispatch a storage event in this browser.
+// Refresh an active dashboard periodically without polling guests/hidden tabs.
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)void render()});
+setInterval(()=>{if(!document.hidden&&navigator.onLine&&readToken())void render()},45000);
 void render();
