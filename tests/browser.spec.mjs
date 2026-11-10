@@ -1599,3 +1599,78 @@ test('V3 action icons and challenge badges use real SVG instead of missing-font 
   expect(sizes.every(size=>size.width>=14&&size.height>=14&&size.paths>0),route).toBe(true);
  }
 });
+
+
+test('Training startup discards a stale getUser result after sign-out before hydration',async({page})=>{
+ const uid='11111111-1111-4111-8111-111111111111';
+ const authKey='sb-lmzswtzboobpokumxzhy-auth-token';
+ await page.route('**/cloud-client-v7.mjs*',r=>r.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const id='11111111-1111-4111-8111-111111111111';
+export const supabase={auth:{
+ getSession:async()=>({data:{session:{user:{id}}},error:null}),
+ getUser:async()=>new Promise(resolve=>{
+  window.__qaReleaseInitialGetUser=()=>resolve({data:{user:{id}},error:null});
+ })
+}};`
+ }));
+ await page.evaluate(({uid,authKey})=>{
+  localStorage.setItem(authKey,JSON.stringify({user:{id:uid},access_token:'initial'}));
+  const session={id:'old-private-startup',date:new Date().toISOString(),
+   rank:'silver',focus:'flick',tool:'VALORANT',scenario:'Range',minutes:10,
+   accuracy:82,feeling:'good',notes:''};
+  localStorage.setItem('aimroutine_cloud_user_'+uid+'_aimroutine_web_training_v2',
+   JSON.stringify({sessions:[session],presets:[],weeklyGoal:3}));
+ },{uid,authKey});
+ await page.reload({waitUntil:'domcontentloaded'});
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaReleaseInitialGetUser)).toBe('function');
+ // This occurs BEFORE training-entry-v7 registers its regular storage listener.
+ await page.evaluate(authKey=>{
+  localStorage.removeItem(authKey);
+  window.__qaReleaseInitialGetUser();
+ },authKey);
+ await expect.poll(()=>page.evaluate(()=>Boolean(window.AIMWeb))).toBe(true);
+ await expect(page.locator('body')).toHaveClass(/ar-guest-preview/);
+ await expect(page.locator('#total-sessions')).toHaveText('0');
+ await expect.poll(()=>page.evaluate(()=>window.__aimCloudUserId)).toBe(null);
+ expect(await page.evaluate(()=>localStorage.getItem('aimroutine_cloud_current_uid'))).toBeNull();
+});
+
+test('Training startup does not restore user data after logout during initial Cloud sync',async({page})=>{
+ const uid='11111111-1111-4111-8111-111111111111';
+ const authKey='sb-lmzswtzboobpokumxzhy-auth-token';
+ await page.route('**/cloud-client-v7.mjs*',r=>r.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const id='11111111-1111-4111-8111-111111111111';
+export const supabase={auth:{
+ getSession:async()=>({data:{session:{user:{id}}},error:null}),
+ getUser:async()=>({data:{user:{id}},error:null})
+}};`
+ }));
+ await page.route('**/cloud-sync-v7.mjs*',r=>r.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`export const isEnabled=()=>true;
+export const synchronize=()=>new Promise(resolve=>{
+ window.__qaReleaseInitialCloud=()=>resolve({synced:true});
+});`
+ }));
+ await page.evaluate(({uid,authKey})=>{
+  localStorage.setItem(authKey,JSON.stringify({user:{id:uid},access_token:'initial'}));
+  const session={id:'private-before-logout',date:new Date().toISOString(),
+   rank:'silver',focus:'micro',tool:'VALORANT',scenario:'Range',minutes:12,
+   accuracy:75,feeling:'good',notes:''};
+  localStorage.setItem('aimroutine_cloud_user_'+uid+'_aimroutine_web_training_v2',
+   JSON.stringify({sessions:[session],presets:[],weeklyGoal:3}));
+ },{uid,authKey});
+ await page.reload({waitUntil:'domcontentloaded'});
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaReleaseInitialCloud)).toBe('function');
+ await page.evaluate(authKey=>{
+  localStorage.removeItem(authKey);
+  window.__qaReleaseInitialCloud();
+ },authKey);
+ await expect.poll(()=>page.evaluate(()=>Boolean(window.AIMWeb))).toBe(true);
+ await expect(page.locator('body')).toHaveClass(/ar-guest-preview/);
+ await expect(page.locator('#total-sessions')).toHaveText('0');
+ await expect.poll(()=>page.evaluate(()=>window.__aimCloudUserId)).toBe(null);
+ expect(await page.evaluate(()=>localStorage.getItem('aimroutine_cloud_current_uid'))).toBeNull();
+});
