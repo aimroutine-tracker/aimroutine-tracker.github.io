@@ -894,6 +894,31 @@ test('Training workspace hides account data after cross-tab token removal withou
  expect(rejected).toBe(true);
 });
 
+test('V3 challenge reticle is decorative and leaves functional start link available',async({page})=>{
+ await page.setViewportSize({width:1672,height:941});
+ await page.goto('/index.html',{waitUntil:'domcontentloaded'});
+ await expect.poll(()=>page.evaluate(()=>document.body.classList.contains('r20'))).toBe(true);
+ const challenge=page.locator('.r17-home-wrap .r17-challenge');
+ const heading=challenge.locator('h3');
+ const badge=await heading.evaluate(el=>{
+  const before=getComputedStyle(el,'::before'),after=getComputedStyle(el,'::after');
+  const title=el.getBoundingClientRect(),panel=el.closest('.r17-challenge').getBoundingClientRect();
+  return {titleLeft:title.left,panelLeft:panel.left,
+   beforeContent:before.content,afterContent:after.content,
+   beforeWidth:before.width,afterWidth:after.width,
+   beforePointerEvents:before.pointerEvents,afterPointerEvents:after.pointerEvents};
+ });
+ expect(badge.titleLeft-badge.panelLeft).toBeGreaterThan(90);
+ expect(badge.beforeContent).toBe('""');
+ expect(badge.afterContent).toBe('""');
+ expect(badge.beforeWidth).toBe('64px');
+ expect(badge.afterWidth).toBe('49px');
+ expect(badge.beforePointerEvents).toBe('none');
+ expect(badge.afterPointerEvents).toBe('none');
+ await expect(challenge.locator('.r17-button')).toHaveAttribute('href','#aim-challenge');
+ await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth)).toBeLessThanOrEqual(3);
+});
+
 test('V3 home feature descriptions match owner reference without synthetic statistics',async({page})=>{
  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
  const cards=page.locator('.r17-home-wrap .r17-feature');
