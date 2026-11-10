@@ -30,6 +30,11 @@ on:
       - "supabase/migrations/**"
 permissions:
   contents: read
+
+# Ignore superseded commits: only the current PR/head build matters.
+concurrency:
+  group: aimroutine-auth-ui-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   auth-ui:
     runs-on: ubuntu-24.04
