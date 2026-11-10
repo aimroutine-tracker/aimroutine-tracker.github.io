@@ -3036,3 +3036,60 @@ export const supabase={auth:{
  await expect(page.locator('#account-status')).not.toContainText('Mot de passe mis à jour');
  expect(errors).toEqual([]);
 });
+
+
+test('Cross-tab recovery switch closes password form and blocks A mutation for B',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const a={id:'11111111-1111-4111-8111-111111111111',email:'recovery-tab-a@example.invalid',user_metadata:{aim_username:'Alpha'}};
+const b={id:'22222222-2222-4222-8222-222222222222',email:'recovery-tab-b@example.invalid',user_metadata:{aim_username:'Bravo'}};
+let current=a;
+window.__qaRecoveryCrossTabToB=()=>{
+ current=b;
+ const key='sb-lmzswtzboobpokumxzhy-auth-token';
+ const previous=localStorage.getItem(key);
+ const next=JSON.stringify({user:{id:b.id}});
+ localStorage.setItem(key,next);
+ window.dispatchEvent(new StorageEvent('storage',{key,oldValue:previous,newValue:next}));
+};
+window.__qaRecoveryPasswordChanges=0;
+export const SITE_URL='https://aimroutine-tracker.github.io/';
+export const supabase={auth:{
+ getUser:async()=>({data:{user:current},error:null}),
+ updateUser:async()=>{window.__qaRecoveryPasswordChanges++;return {data:{user:current},error:null}},
+ onAuthStateChange:fn=>{
+  queueMicrotask(()=>fn('PASSWORD_RECOVERY',{user:a}));
+  return {data:{subscription:{unsubscribe(){}}}};
+ }
+}};`
+ }));
+ await page.route('**/password-security-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`export const checkLeakedPassword=()=>new Promise(resolve=>{
+   window.__qaFinishOldRecovery=()=>resolve({safe:true});
+  });`
+ }));
+ await page.route('**/cloud-sync-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`export const isEnabled=()=>true;
+export const setEnabled=()=>{};
+export const readUserLocal=()=>({store:{sessions:[],presets:[],weeklyGoal:3}});
+export const importGuestIntoAccount=()=>({sessions:0,favorites:0});
+export const synchronize=async()=>({synced:true,downloadedSessions:0,downloadedFavorites:0});
+export const deleteCloudProgress=async()=>true;`
+ }));
+ await page.goto('/account.html?reset=1',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#new-password-form')).toBeVisible();
+ await page.locator('#new-password').fill('Aa1!bcde');
+ await page.locator('#new-password-form button[type="submit"]').click();
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaFinishOldRecovery)).toBe('function');
+ await page.evaluate(()=>window.__qaRecoveryCrossTabToB());
+ await expect(page.locator('#user-email')).toHaveText('recovery-tab-b@example.invalid');
+ await expect(page.locator('#dashboard-panel')).toBeVisible();
+ await expect(page.locator('#new-password-form')).toBeHidden();
+ await page.evaluate(()=>window.__qaFinishOldRecovery());
+ await expect.poll(()=>page.evaluate(()=>window.__qaRecoveryPasswordChanges)).toBe(0);
+ await expect(page.locator('#user-email')).toHaveText('recovery-tab-b@example.invalid');
+ expect(errors).toEqual([]);
+});
