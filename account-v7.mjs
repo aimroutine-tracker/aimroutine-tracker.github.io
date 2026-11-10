@@ -11,7 +11,8 @@ const SIGNUPS_READY=true; // Email signups: Turnstile enforced by Supabase Auth,
 const GOOGLE_READY=true; // Provider enabled by project owner; live OAuth is in beta until end-to-end testing.
 const RESET_LINKS_CONFIGURED=true; // Redirect allowlist was configured; real email delivery and recovery completion still require confirmation.
 const $=s=>document.querySelector(s);
-let user=null,working=false,recovery=false;
+let user=null,working=false,recovery=false,authRevision=0;
+// A delayed getUser()/Cloud response must never re-display a signed-out account.
 const captcha=createAuthCaptcha(TURNSTILE_SITE_KEY);
 function showCaptcha(mode){
  if(!captcha.enabled||!['login','signup','reset','delete'].includes(mode))return;
@@ -30,6 +31,7 @@ function authMode(mode='login'){
  $('#signup-mode').setAttribute('aria-pressed',String(mode==='signup'));
 }
 function showUser(next){
+ ++authRevision;
  user=next&&validUid(next.id)?next:null;
  const username=usernameFromUser(user);
  const needsUsername=Boolean(user&&!username);
@@ -47,6 +49,13 @@ function showUser(next){
      'Compte connecté · Synchronisation cloud automatique activée.');
  }else{
    localStorage.removeItem(UID_STORAGE_KEY);
+   // Remove stale personally identifying text even from now-hidden panels.
+   $('#user-email').textContent='';
+   $('#user-username').textContent='';
+   $('#username-email').textContent='';
+   $('#cloud-sessions-count').textContent='—';
+   $('#cloud-routines-count').textContent='—';
+   $('#cloud-enabled-status').textContent='Connexion nécessaire';
    msg('Connecte-toi pour sauvegarder ta progression. Le mode aperçu sans compte ne conserve aucune séance.');
  }
 }
@@ -306,13 +315,27 @@ supabase.auth.onAuthStateChange((event,session)=>{
  if(event==='SIGNED_OUT'){showUser(null)}
 });
 (async()=>{
+ const startingRevision=authRevision;
  try{
   const {data:{user:validated},error}=await supabase.auth.getUser();
+  // SIGNED_OUT, an account switch, or a manual login may have happened
+  // while this initial request was in flight; never replace its newer UI.
+  if(authRevision!==startingRevision)return;
   if(error||!validated){showUser(null);if(new URLSearchParams(location.search).has('reset'))msg('Ouvre le lien reçu par e-mail pour terminer la réinitialisation.');return;}
   showUser(validated);
+  const signedInRevision=authRevision;
   if(usernameFromUser(validated)&&isEnabled(validated.id)){
-   try{await synchronize(supabase,validated.id);renderCounts();msg('Compte connecté · Sauvegarde cloud synchronisée.')}
-   catch(e){msg('Compte connecté · Cloud indisponible : '+e.message)}
+   try{
+    await synchronize(supabase,validated.id);
+    if(authRevision!==signedInRevision||user?.id!==validated.id)return;
+    renderCounts();msg('Compte connecté · Sauvegarde cloud synchronisée.');
+   }catch(e){
+    if(authRevision===signedInRevision&&user?.id===validated.id)
+     msg('Compte connecté · Cloud indisponible : '+e.message);
+   }
   }
- }catch(e){showUser(null);msg('Service indisponible : '+e.message)}
+ }catch(e){
+  if(authRevision!==startingRevision)return;
+  showUser(null);msg('Service indisponible : '+e.message);
+ }
 })();
