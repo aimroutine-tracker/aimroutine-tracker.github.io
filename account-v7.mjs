@@ -12,6 +12,7 @@ const GOOGLE_READY=true; // Provider enabled by project owner; live OAuth is in 
 const RESET_LINKS_CONFIGURED=true; // Redirect allowlist was configured; real email delivery and recovery completion still require confirmation.
 const $=s=>document.querySelector(s);
 let user=null,working=false,recovery=false,authRevision=0;
+let recoverySessionUid=null;
 let passwordRecoveryNoticeUid=null;
 // A slow operation belongs to its original account, not the next signed-in account.
 let activeOperation=null;
@@ -238,13 +239,23 @@ $('#reset-form').addEventListener('submit',e=>{e.preventDefault();if(!RESET_LINK
 })});
 $('#new-password-form').addEventListener('submit',e=>{e.preventDefault();run(async()=>{
  const password=$('#new-password').value;
+ const recoveryRevision=authRevision,recoveryToken=currentAuthToken();
+ const expectedRecoveryUid=recoverySessionUid;
+ const isCurrentRecovery=()=>recovery&&authRevision===recoveryRevision&&
+  currentAuthToken()===recoveryToken&&recoverySessionUid===expectedRecoveryUid;
  msg('Vérification du nouveau mot de passe…');
  const assessment=await checkLeakedPassword(password);
+ // A password check can finish after a sign-out or cross-tab account switch.
+ // Never submit a password change with the newly authenticated account.
+ if(!isCurrentRecovery())return;
  if(!assessment.safe)throw Error('Ce mot de passe a déjà été compromis dans des fuites connues. Choisis-en un autre.');
  const {data,error}=await supabase.auth.updateUser({password});
+ // The HTTP response can also arrive after the owner has changed.
+ if(!isCurrentRecovery())return;
  if(error)throw error;
  $('#new-password').value='';
  recovery=false;
+ recoverySessionUid=null;
  authMode('login');
  // The update response includes the verified account. Show it immediately
  // instead of depending on the order of asynchronous USER_UPDATED callbacks.
@@ -446,14 +457,26 @@ window.addEventListener('storage',event=>{
 });
 supabase.auth.onAuthStateChange((event,session)=>{
  if(event==='PASSWORD_RECOVERY'){
-   recovery=true;authMode('new-password');
+   recovery=true;
+   recoverySessionUid=validUid(session?.user?.id)?session.user.id:null;
+   authMode('new-password');
    $('#auth-panel').hidden=false;
    $('#dashboard-panel').hidden=true;
  }
  if(event==='SIGNED_OUT'){
+  recovery=false;
+  recoverySessionUid=null;
+  authMode('login');
   ++accountVerification;
   showUser(null);
  }else if(['SIGNED_IN','TOKEN_REFRESHED','USER_UPDATED'].includes(event)){
+  // Recovery belongs to its original account, not the next signed-in user.
+  if(recovery&&recoverySessionUid&&validUid(session?.user?.id)&&
+     session.user.id!==recoverySessionUid){
+   recovery=false;
+   recoverySessionUid=null;
+   authMode('login');
+  }
   // Supabase advises invoking async Auth methods outside the callback.
   if(!user||session?.user?.id!==user.id||event==='USER_UPDATED')
    setTimeout(()=>void verifyAccountChange(),0);
