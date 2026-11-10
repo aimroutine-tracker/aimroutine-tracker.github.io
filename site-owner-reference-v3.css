@@ -1737,3 +1737,21 @@ body.site31.r20 .r17-progress-wrap .v3-chart-period select:focus-visible{
   max-width:1564px!important;
  }
 }
+
+
+/* V3 / pass 41 — mid-desktop challenge chips must not overflow their panel.
+   The owner's fixed chip widths are for the 1672px reference viewport only. */
+@media (min-width:1350px) and (max-width:1599px){
+ body.site31.r20 .r17-home-wrap .r17-challenge .r17-chipbar{
+  gap:5px!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-challenge .r17-chipbar>span{
+  flex:1 1 0!important;
+  min-width:0!important;
+  padding:9px 5px!important;
+  font-size:9px!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-challenge>p{
+  white-space:normal!important;
+ }
+}
