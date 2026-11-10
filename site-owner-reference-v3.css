@@ -1772,22 +1772,19 @@ body.site31.r20 .r17-progress-wrap .v3-chart-period select:focus-visible{
 }
 
 
-/* V3 / pass 42 — four-desktop-reference vertical geometry (1672 x 941).
-   Side-by-side manual review of the four owner references and the current
-   genuine-data screenshots found the panels 6–10px too high. Shift only the
-   end of each hero, preserving its actual text, artwork, actions and data.
-   Smaller screens retain their existing responsive behavior. */
+/* V3 / pass 42 — precisely scoped 1672 x 941 panel registration.
+   Browser measurements against the previous verified HEAD showed that
+   Accueil was already correctly placed. Preserve its 350px hero unchanged.
+   Routines, Progression and Compte needed only small +6/+2/+4px shifts.
+   Do not move narrower layouts, alter genuine data or change page actions. */
 @media (min-width:1600px){
- body.site31.r20 .r17-home-wrap .r17-hero{
-  height:357px!important;min-height:357px!important;max-height:357px!important;
- }
  body.site31.r20 .r17-training-wrap .r17-hero{
-  height:254px!important;min-height:254px!important;max-height:254px!important;
+  height:250px!important;min-height:250px!important;max-height:250px!important;
  }
  body.site31.r20 .r17-progress-wrap>.r17-hero{
-  height:210px!important;min-height:210px!important;max-height:210px!important;
+  height:206px!important;min-height:206px!important;max-height:206px!important;
  }
  body.site31.r20 .r17-account-wrap .r17-hero{
-  height:250px!important;min-height:250px!important;max-height:250px!important;
+  height:246px!important;min-height:246px!important;max-height:246px!important;
  }
 }
