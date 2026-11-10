@@ -30,9 +30,29 @@ function authMode(mode='login'){
  $('#login-mode').setAttribute('aria-pressed',String(mode==='login'));
  $('#signup-mode').setAttribute('aria-pressed',String(mode==='signup'));
 }
+function clearPreviousIdentityForms(){
+ // A hidden form still holds the previous account's secret input values.
+ // Clear them only when the verified account identity actually changes,
+ // not during ordinary token refreshes or first guest-page hydration.
+ for(const selector of [
+  '#login-password','#signup-password','#new-password',
+  '#delete-account-password','#delete-account-confirmation','#username-input'
+ ]){
+  const input=$(selector);
+  if(input)input.value='';
+ }
+ const deleteSection=document.querySelector('.ar7-delete-account');
+ if(deleteSection)deleteSection.open=false;
+ const finalButton=$('#delete-account-final');
+ if(finalButton)finalButton.disabled=true;
+ try{captcha.reset('delete')}catch{} // Prevent reuse of a prior account's CAPTCHA.
+}
 function showUser(next){
+ const previousUid=user?.id||null;
+ const nextUid=next&&validUid(next.id)?next.id:null;
+ if(previousUid!==nextUid)clearPreviousIdentityForms();
  ++authRevision;
- user=next&&validUid(next.id)?next:null;
+ user=nextUid?next:null;
  const username=usernameFromUser(user);
  const needsUsername=Boolean(user&&!username);
  $('#auth-panel').hidden=!!user&&!recovery;
