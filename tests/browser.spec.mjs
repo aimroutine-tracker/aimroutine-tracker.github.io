@@ -1448,3 +1448,66 @@ test('Progress guest Cloud notice follows FR/EN switches without synthetic data'
  await page.locator('.ar-v3-language-footer [data-switch-lang]').click();
  await expect(source).toContainText('Connecte-toi pour consulter tes statistiques');
 });
+
+
+// Cross-device updates cannot create 'storage' events in another browser.
+// Test real visible-page refresh wiring with a deterministic simulated Cloud;
+// do not connect or write to the production database.
+for(const [route,selector] of [
+ ['index.html','[data-v15-stat="sessions"]'],
+ ['progress.html','#v14-p-sessions']
+]){
+ test('Visible '+route+' automatically receives a newer remote session without navigation',async({page,browserName})=>{
+  test.skip(browserName!=='chromium','Deterministic browser clock is verified in Chromium');
+  const uid='11111111-1111-4111-8111-111111111111';
+  await page.clock.install({time:new Date('2026-11-10T12:00:00.000Z')});
+  await page.addInitScript(({uid})=>{
+   localStorage.setItem('sb-lmzswtzboobpokumxzhy-auth-token','qa-polling-token');
+   window.__qaRemoteTraining=[];
+   window.__qaVisibleCloudSyncs=0;
+  },{uid});
+  await page.route('**/cloud-client-v7.mjs*',r=>r.fulfill({
+   status:200,contentType:'application/javascript',
+   body:`const id='11111111-1111-4111-8111-111111111111';
+export const supabase={auth:{
+ getSession:async()=>({data:{session:{user:{id}}},error:null}),
+ getUser:async()=>({data:{user:{id}},error:null}),
+ onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})
+}};`
+  }));
+  await page.route('**/cloud-sync-v7.mjs*',r=>r.fulfill({
+   status:200,contentType:'application/javascript',
+   body:`export const isEnabled=()=>true;
+export const synchronize=async(_client,uid)=>{
+ window.__qaVisibleCloudSyncs=(window.__qaVisibleCloudSyncs||0)+1;
+ const data={sessions:window.__qaRemoteTraining||[],presets:[],weeklyGoal:3};
+ localStorage.setItem('aimroutine_cloud_user_'+uid+'_aimroutine_web_training_v2',JSON.stringify(data));
+ return {synced:true};
+};`
+  }));
+  await page.goto('/'+route,{waitUntil:'domcontentloaded'});
+  await expect.poll(()=>page.evaluate(()=>window.__qaVisibleCloudSyncs||0)).toBeGreaterThan(0);
+  const value=page.locator(selector);
+  await expect(value.first()).toHaveText('0');
+  await page.evaluate(()=>{
+   window.__qaRemoteTraining=[{
+    id:'fresh-from-other-device',date:new Date().toISOString(),rank:'silver',
+    focus:'flick',tool:'VALORANT',scenario:'Range',minutes:15,
+    accuracy:84,feeling:'good',notes:''
+   }];
+  });
+  // The tab never loses focus and receives neither focus nor storage events.
+  await page.clock.fastForward(46000);
+  await expect.poll(()=>page.evaluate(()=>window.__qaVisibleCloudSyncs||0)).toBeGreaterThan(1);
+  await expect(value.first()).toHaveText('1');
+  // No periodic cloud reads after a cross-tab logout.
+  const before=await page.evaluate(()=>window.__qaVisibleCloudSyncs);
+  await page.evaluate(()=>{
+   const key='sb-lmzswtzboobpokumxzhy-auth-token';
+   localStorage.removeItem(key);
+   window.dispatchEvent(new StorageEvent('storage',{key,oldValue:'qa-polling-token',newValue:null}));
+  });
+  await page.clock.fastForward(46000);
+  expect(await page.evaluate(()=>window.__qaVisibleCloudSyncs)).toBe(before);
+ });
+}
