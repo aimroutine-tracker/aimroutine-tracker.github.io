@@ -12,6 +12,8 @@ on:
       - "account.html"
       - "progress.html"
       - "progress-v14.mjs"
+      - "site-v15-data.mjs"
+      - "training-entry-v7.mjs"
       - "tests/browser.spec.mjs"
       - "sw-v6.js"
       - "pwa-v6.js"
