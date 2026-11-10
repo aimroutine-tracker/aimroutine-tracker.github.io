@@ -1687,3 +1687,45 @@ body.site31.r20 .r17-progress-wrap .v3-chart-period select:focus-visible{
   opacity:.92;
  }
 }
+
+
+/* V3 / pass 39 — challenge typography and controls aligned to owner raster.
+   Only decorative/text sizing changes; the existing mini-game stays functional. */
+@media (min-width:1350px){
+ body.site31.r20 .r17-home-wrap .r17-challenge h3{
+  margin-left:98px!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-challenge>p{
+  margin-left:98px!important;
+  max-width:none!important;
+  white-space:nowrap;
+  font-size:12px!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-challenge h3::before{
+  left:-83px;
+ }
+ body.site31.r20 .r17-home-wrap .r17-challenge h3::after{
+  left:-76px;
+ }
+ body.site31.r20 .r17-home-wrap .r17-challenge .r17-chipbar{
+  margin-top:24px!important;
+  gap:9px!important;
+  flex-wrap:nowrap!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-challenge .r17-chipbar>span{
+  min-height:44px!important;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:10.5px!important;
+  padding:9px 12px!important;
+  white-space:nowrap;
+ }
+ body.site31.r20 .r17-home-wrap .r17-challenge .r17-chipbar>span:nth-child(1){min-width:103px}
+ body.site31.r20 .r17-home-wrap .r17-challenge .r17-chipbar>span:nth-child(2){min-width:159px}
+ body.site31.r20 .r17-home-wrap .r17-challenge .r17-chipbar>span:nth-child(3){min-width:153px}
+ body.site31.r20 .r17-home-wrap .r17-challenge>.r17-button{
+  margin-left:19px!important;
+  width:calc(100% - 13px)!important;
+ }
+}
