@@ -2472,3 +2472,96 @@ test('V3 four original desktop pages align their first content panels vertically
   expect(await page.evaluate(()=>document.documentElement.scrollWidth),url).toBeLessThanOrEqual(393);
  }
 });
+
+
+test('Cloud deletion finishing after A-to-B switch cannot change B settings or claim B was deleted',async({page})=>{
+ const errors=[];
+ page.on('pageerror',e=>errors.push(e.message));
+ await page.route('**/cloud-client-v7.mjs*',r=>r.fulfill({
+  status:200,contentType:'application/javascript',
+  body:\`const a={id:'11111111-1111-4111-8111-111111111111',email:'account-a@example.invalid',user_metadata:{aim_username:'Alpha'}};
+const b={id:'22222222-2222-4222-8222-222222222222',email:'account-b@example.invalid',user_metadata:{aim_username:'Bravo'}};
+let current=a,callback=null;
+window.__qaSetAccountB=()=>{current=b;callback?.('SIGNED_IN',{user:b})};
+export const SITE_URL='https://aimroutine-tracker.github.io/';
+export const supabase={auth:{
+ getUser:async()=>({data:{user:current},error:null}),
+ onAuthStateChange:fn=>{callback=fn;return{data:{subscription:{unsubscribe(){}}}}}
+}};\`
+ }));
+ await page.route('**/cloud-sync-v7.mjs*',r=>r.fulfill({
+  status:200,contentType:'application/javascript',
+  body:\`window.__qaCloudPreferences=[];
+window.__qaCloudDeleteUid=null;
+export const isEnabled=()=>true;
+export const setEnabled=(uid,value)=>window.__qaCloudPreferences.push({uid,value});
+export const readUserLocal=()=>({store:{sessions:[],presets:[],weeklyGoal:3}});
+export const importGuestIntoAccount=()=>({sessions:0,favorites:0});
+export const synchronize=async()=>({synced:true,downloadedSessions:0,downloadedFavorites:0});
+export const deleteCloudProgress=(client,uid)=>{
+ window.__qaCloudDeleteUid=uid;
+ return new Promise(resolve=>{window.__qaReleaseCloudDelete=()=>resolve(true)});
+};\`
+ }));
+ page.on('dialog',dialog=>dialog.accept());
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#user-email')).toHaveText('account-a@example.invalid');
+ await page.locator('#cloud-delete').click();
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaReleaseCloudDelete)).toBe('function');
+ expect(await page.evaluate(()=>window.__qaCloudDeleteUid))
+  .toBe('11111111-1111-4111-8111-111111111111');
+ await page.evaluate(()=>window.__qaSetAccountB());
+ await expect(page.locator('#user-email')).toHaveText('account-b@example.invalid');
+ await page.evaluate(()=>window.__qaReleaseCloudDelete());
+ await expect(page.locator('#cloud-delete')).toBeEnabled();
+ await expect(page.locator('#user-email')).toHaveText('account-b@example.invalid');
+ await expect(page.locator('#account-status')).not.toContainText('Progression cloud supprimée');
+ expect(await page.evaluate(()=>window.__qaCloudPreferences)).toEqual([]);
+ expect(errors).toEqual([]);
+});
+
+test('Guest import started for A cannot display a completion banner on account B',async({page})=>{
+ const errors=[];
+ page.on('pageerror',e=>errors.push(e.message));
+ await page.route('**/cloud-client-v7.mjs*',r=>r.fulfill({
+  status:200,contentType:'application/javascript',
+  body:\`const a={id:'11111111-1111-4111-8111-111111111111',email:'import-a@example.invalid',user_metadata:{aim_username:'Alpha'}};
+const b={id:'22222222-2222-4222-8222-222222222222',email:'import-b@example.invalid',user_metadata:{aim_username:'Bravo'}};
+let current=a,callback=null;
+window.__qaSwitchB=()=>{current=b;callback?.('SIGNED_IN',{user:b})};
+export const SITE_URL='https://aimroutine-tracker.github.io/';
+export const supabase={auth:{
+ getUser:async()=>({data:{user:current},error:null}),
+ onAuthStateChange:fn=>{callback=fn;return{data:{subscription:{unsubscribe(){}}}}}
+}};\`
+ }));
+ await page.route('**/cloud-sync-v7.mjs*',r=>r.fulfill({
+  status:200,contentType:'application/javascript',
+  body:\`window.__qaImportedUid=null;
+export const isEnabled=()=>true;
+export const setEnabled=()=>{};
+export const readUserLocal=()=>({store:{sessions:[],presets:[],weeklyGoal:3}});
+export const importGuestIntoAccount=uid=>{window.__qaImportedUid=uid;return {sessions:1,favorites:0}};
+export const deleteCloudProgress=async()=>true;
+export const synchronize=(client,uid,options={})=>{
+ if(options.guestImport)return new Promise(resolve=>{
+  window.__qaReleaseGuestImport=()=>resolve({synced:true,downloadedSessions:1,downloadedFavorites:0});
+ });
+ return Promise.resolve({synced:true,downloadedSessions:0,downloadedFavorites:0});
+};\`
+ }));
+ page.on('dialog',dialog=>dialog.accept());
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#user-email')).toHaveText('import-a@example.invalid');
+ await page.locator('#cloud-import-guest').click();
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaReleaseGuestImport)).toBe('function');
+ expect(await page.evaluate(()=>window.__qaImportedUid))
+  .toBe('11111111-1111-4111-8111-111111111111');
+ await page.evaluate(()=>window.__qaSwitchB());
+ await expect(page.locator('#user-email')).toHaveText('import-b@example.invalid');
+ await page.evaluate(()=>window.__qaReleaseGuestImport());
+ await expect(page.locator('#cloud-import-guest')).toBeEnabled();
+ await expect(page.locator('#user-email')).toHaveText('import-b@example.invalid');
+ await expect(page.locator('#account-status')).not.toContainText('Import réalisé');
+ expect(errors).toEqual([]);
+});
