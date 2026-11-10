@@ -3108,3 +3108,24 @@ export const deleteCloudProgress=async()=>true;`
  await expect(page.locator('#user-email')).toHaveText('recovery-tab-b@example.invalid');
  expect(errors).toEqual([]);
 });
+
+
+test('V3 Progress panel anchors preserve original desktop proportions without invented metrics',async({page})=>{
+ await page.setViewportSize({width:1672,height:941});
+ await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
+ const check=async(selector,referenceX)=>{
+  const nodes=page.locator(selector);
+  await expect(nodes).toHaveCount(referenceX.length);
+  const lefts=await nodes.evaluateAll(elements=>elements.map(el=>Math.round(el.getBoundingClientRect().left)));
+  for(let index=0;index<referenceX.length;index++){
+   expect(Math.abs(lefts[index]-referenceX[index]),
+    `${selector} panel ${index+1}: measured x=${lefts[index]}, owner x=${referenceX[index]}`).toBeLessThanOrEqual(8);
+  }
+ };
+ // Anchors measured from the owner's original 1672x941 reference PNG.
+ await check('.r17-chart-grid > .v14-panel',[33,643,1156]);
+ await check('.r17-secondary-grid > .v14-panel',[33,605,1007]);
+ await check('.r17-progress-bottom > .v14-panel',[33,1101]);
+ // Empty UI must never borrow the illustrative statistics in the design PNG.
+ await expect(page.locator('#v14-p-sessions')).toHaveText('0');
+});
