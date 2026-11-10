@@ -1810,3 +1810,49 @@ export const synchronize=()=>new Promise(resolve=>{
  await expect(page.locator('#account-status')).not.toContainText('Sauvegarde cloud synchronisée');
  expect(await page.evaluate(()=>localStorage.getItem('aimroutine_cloud_current_uid'))).toBeNull();
 });
+
+
+test('Email login never blocks global logout behind the initial Cloud download',async({page})=>{
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const user={id:'11111111-1111-4111-8111-111111111111',
+  email:'account-login@example.invalid',user_metadata:{aim_username:'LoggedUser'}};
+let active=null,notify=null;
+window.__qaGlobalLogoutCount=0;
+export const SITE_URL='https://aimroutine-tracker.github.io/';
+export const supabase={auth:{
+ getUser:async()=>({data:{user:active},error:null}),
+ signInWithPassword:async()=>{active=user;return {data:{user},error:null};},
+ signOut:async({scope})=>{
+   if(scope==='global')window.__qaGlobalLogoutCount++;
+   active=null;notify?.('SIGNED_OUT',null);return {error:null};
+ },
+ onAuthStateChange:callback=>{notify=callback;return {data:{subscription:{unsubscribe(){}}}};}
+}};`
+ }));
+ await page.route('**/cloud-sync-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`export const isEnabled=()=>true;
+export const setEnabled=()=>{};
+export const readUserLocal=()=>({store:{sessions:[],presets:[],weeklyGoal:3}});
+export const importGuestIntoAccount=()=>({sessions:0,favorites:0});
+export const deleteCloudProgress=async()=>true;
+export const synchronize=()=>new Promise(resolve=>{
+ window.__qaReleaseSlowLoginCloud=()=>resolve({synced:true,downloadedSessions:7});
+});`
+ }));
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await page.locator('#login-email').fill('account-login@example.invalid');
+ await page.locator('#login-password').fill('TestPass_2026!');
+ await page.locator('#login-form button[type="submit"]').click();
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaReleaseSlowLoginCloud)).toBe('function');
+ await expect(page.locator('#dashboard-panel')).toBeVisible();
+ // Logout must remain available while synchronize() has not resolved.
+ await page.locator('#logout').click();
+ await expect.poll(()=>page.evaluate(()=>window.__qaGlobalLogoutCount)).toBe(1);
+ await expect(page.locator('#dashboard-panel')).toBeHidden();
+ await page.evaluate(()=>window.__qaReleaseSlowLoginCloud());
+ await expect(page.locator('#user-email')).toBeEmpty();
+ await expect(page.locator('#account-status')).not.toContainText('Synchronisation automatique à jour');
+ expect(await page.evaluate(()=>localStorage.getItem('aimroutine_cloud_current_uid'))).toBeNull();
+});
