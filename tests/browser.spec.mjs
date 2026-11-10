@@ -2506,6 +2506,8 @@ export const deleteCloudProgress=(client,uid)=>{
  page.on('dialog',dialog=>dialog.accept());
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#user-email')).toHaveText('account-a@example.invalid');
+ await page.locator('.ar7-delete-cloud').first().locator('summary').click();
+ await expect(page.locator('#cloud-delete')).toBeVisible();
  await page.locator('#cloud-delete').click();
  await expect.poll(()=>page.evaluate(()=>typeof window.__qaReleaseCloudDelete)).toBe('function');
  expect(await page.evaluate(()=>window.__qaCloudDeleteUid))
@@ -2655,6 +2657,8 @@ export const deleteCloudProgress=()=>new Promise((resolve,reject)=>{
  page.on('dialog',d=>d.accept());
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#user-email')).toHaveText('error-a@example.invalid');
+ await page.locator('.ar7-delete-cloud').first().locator('summary').click();
+ await expect(page.locator('#cloud-delete')).toBeVisible();
  await page.locator('#cloud-delete').click();
  await expect.poll(()=>page.evaluate(()=>typeof window.__qaRejectCloudDelete)).toBe('function');
  await page.evaluate(()=>window.__qaChangeToB());
