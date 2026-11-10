@@ -38,6 +38,9 @@ function clearPreviousIdentityForms(){
  // Clear them only when the verified account identity actually changes,
  // not during ordinary token refreshes or first guest-page hydration.
  for(const selector of [
+  // E-mail addresses and unsubmitted nicknames are private too: hidden
+  // login/signup/recovery forms must not keep a former user's identity.
+  '#login-email','#signup-email','#reset-email','#signup-username',
   '#login-password','#signup-password','#new-password',
   '#delete-account-password','#delete-account-confirmation','#username-input'
  ]){
