@@ -2073,3 +2073,91 @@ export const synchronize=async()=>({synced:true});`
  await expect(page.locator('#dashboard-panel')).toBeVisible();
  expect(await page.evaluate(()=>localStorage.getItem('aimroutine_cloud_current_uid'))).toBe(b);
 });
+
+
+test('Cloud portal clears hidden deletion password and confirmation on global logout',async({page})=>{
+ await page.route('**/cloud-client-v7.mjs*',r=>r.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const user={id:'11111111-1111-4111-8111-111111111111',
+ email:'private-account@example.invalid',user_metadata:{aim_username:'PrivateA'},
+ app_metadata:{provider:'email',providers:['email']}};
+let active=user,notify=null;
+window.__qaGlobalLogoutCount=0;
+export const SITE_URL='https://aimroutine-tracker.github.io/';
+export const supabase={auth:{
+ getUser:async()=>({data:{user:active},error:null}),
+ signOut:async({scope})=>{
+  if(scope==='global')window.__qaGlobalLogoutCount++;
+  active=null;notify?.('SIGNED_OUT',null);return {error:null};
+ },
+ onAuthStateChange:callback=>{notify=callback;return {data:{subscription:{unsubscribe(){}}}};}
+}};`
+ }));
+ await page.route('**/cloud-sync-v7.mjs*',r=>r.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`export const isEnabled=()=>true;
+export const setEnabled=()=>{};
+export const readUserLocal=()=>({store:{sessions:[],presets:[],weeklyGoal:3}});
+export const importGuestIntoAccount=()=>({sessions:0,favorites:0});
+export const deleteCloudProgress=async()=>true;
+export const synchronize=async()=>({synced:true});`
+ }));
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#dashboard-panel')).toBeVisible();
+ await page.locator('.ar7-delete-account summary').click();
+ await expect(page.locator('#delete-password-row')).toBeVisible();
+ await page.locator('#delete-account-password').fill('Private-Old-Password_2026!');
+ await page.locator('#delete-account-confirmation').fill('SUPPRIMER');
+ await page.evaluate(()=>{
+  document.querySelector('#login-password').value='OldLoginSecret';
+  document.querySelector('#signup-password').value='OldSignupSecret';
+  document.querySelector('#new-password').value='OldRecoverySecret';
+  document.querySelector('#username-input').value='OldNickname';
+ });
+ await page.locator('#logout').click();
+ await expect.poll(()=>page.evaluate(()=>window.__qaGlobalLogoutCount)).toBe(1);
+ await expect(page.locator('#dashboard-panel')).toBeHidden();
+ await expect(page.locator('#user-email')).toBeEmpty();
+ await expect(page.locator('.ar7-delete-account')).not.toHaveAttribute('open');
+ for(const id of ['login-password','signup-password','new-password',
+  'delete-account-password','delete-account-confirmation','username-input']){
+  expect(await page.locator('#'+id).inputValue(),id).toBe('');
+ }
+ await expect(page.locator('#delete-account-final')).toBeDisabled();
+});
+
+test('Cloud portal clears previous account form values on direct SDK account switch',async({page})=>{
+ await page.route('**/cloud-client-v7.mjs*',r=>r.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const a='11111111-1111-4111-8111-111111111111',b='22222222-2222-4222-8222-222222222222';
+const people={[a]:{id:a,email:'private-a@example.invalid',user_metadata:{aim_username:'PrivateA'}},
+ [b]:{id:b,email:'private-b@example.invalid',user_metadata:{aim_username:'PrivateB'}}};
+let current=people[a],notify=null;
+window.__qaSwitchAccountDirectly=()=>{current=people[b];notify?.('SIGNED_IN',{user:current})};
+export const SITE_URL='https://aimroutine-tracker.github.io/';
+export const supabase={auth:{
+ getUser:async()=>({data:{user:current},error:null}),
+ onAuthStateChange:callback=>{notify=callback;return {data:{subscription:{unsubscribe(){}}}};}
+}};`
+ }));
+ await page.route('**/cloud-sync-v7.mjs*',r=>r.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`export const isEnabled=()=>true;
+export const setEnabled=()=>{};
+export const readUserLocal=()=>({store:{sessions:[],presets:[],weeklyGoal:3}});
+export const importGuestIntoAccount=()=>({sessions:0,favorites:0});
+export const deleteCloudProgress=async()=>true;
+export const synchronize=async()=>({synced:true});`
+ }));
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#user-email')).toHaveText('private-a@example.invalid');
+ await page.locator('.ar7-delete-account summary').click();
+ await page.locator('#delete-account-password').fill('OldAccountSecret!');
+ await page.locator('#delete-account-confirmation').fill('SUPPRIMER');
+ await page.evaluate(()=>window.__qaSwitchAccountDirectly());
+ await expect(page.locator('#user-email')).toHaveText('private-b@example.invalid');
+ await expect(page.locator('#delete-account-password')).toHaveValue('');
+ await expect(page.locator('#delete-account-confirmation')).toHaveValue('');
+ await expect(page.locator('.ar7-delete-account')).not.toHaveAttribute('open');
+ await expect(page.locator('#dashboard-panel')).toBeVisible();
+});
