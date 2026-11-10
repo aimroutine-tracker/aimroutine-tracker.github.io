@@ -894,6 +894,21 @@ test('Training workspace hides account data after cross-tab token removal withou
  expect(rejected).toBe(true);
 });
 
+test('V3 home feature descriptions match owner reference without synthetic statistics',async({page})=>{
+ await page.goto('/index.html',{waitUntil:'domcontentloaded'});
+ const cards=page.locator('.r17-home-wrap .r17-feature');
+ await expect(cards).toHaveCount(3);
+ await expect(cards.nth(0)).toContainText('Des entraînements ciblés et efficaces');
+ await expect(cards.nth(1)).toContainText('Des routines prêtes à l’emploi et personnalisables');
+ await expect(cards.nth(2)).toContainText('des objectifs clairs pour mesurer tes vrais progrès');
+ await expect(page.locator('[data-v15-stat="sessions"]')).not.toContainText('12 846');
+ await page.locator('[data-switch-lang]').first().click();
+ await expect.poll(()=>page.evaluate(()=>document.documentElement.lang)).toBe('en');
+ await expect(cards.nth(0)).toContainText('Effective, focused training');
+ await expect(cards.nth(1)).toContainText('Ready-to-use customizable routines');
+ await expect(cards.nth(2)).toContainText('your real training results');
+});
+
 test('V3 Cloud guest registration CTA opens the real mandatory-nickname signup form',async ({page})=>{
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.r17-guest-registration')).toBeVisible();
