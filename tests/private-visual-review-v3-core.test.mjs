@@ -15,6 +15,8 @@ test('private visual comparator runs as an offline inline script with no outboun
  assert.doesNotMatch(code,/\bfetch\s*\(|XMLHttpRequest|WebSocket|sendBeacon|import\s*\(/);
  assert.match(code,/crypto\.subtle\.digest\('SHA-256'/);
  assert.match(code,/await digest\(ref\)/);
+ assert.match(code,/await digest\(candidate\)/,'Candidate PNG must be independently hashed');
+ assert.match(code,/capture_sha256:candidateSha/,'Exported report must identify exact V3 capture bytes');
  assert.match(code,/sha!==entry\.sha/);
  assert.match(code,/state\.revision!==run/,'stale async result must be dropped');
 });
