@@ -894,6 +894,30 @@ test('Training workspace hides account data after cross-tab token removal withou
  expect(rejected).toBe(true);
 });
 
+test('V3 challenge chips fit at intermediate desktop widths',async({page})=>{
+ for(const width of [1350,1440,1599,1672]){
+  await page.setViewportSize({width,height:941});
+  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
+  await expect.poll(()=>page.evaluate(()=>document.body.classList.contains('r20'))).toBe(true);
+  const dims=await page.locator('.r17-home-wrap .r17-challenge').evaluate(panel=>{
+   const r=panel.getBoundingClientRect();
+   const chips=[...panel.querySelectorAll('.r17-chipbar>span')].map(el=>{
+    const rect=el.getBoundingClientRect();
+    return {left:rect.left,right:rect.right,scrollWidth:el.scrollWidth,clientWidth:el.clientWidth};
+   });
+   return {left:r.left,right:r.right,clientWidth:document.documentElement.clientWidth,
+    documentWidth:document.documentElement.scrollWidth,chips};
+  });
+  expect(dims.chips).toHaveLength(3);
+  for(const chip of dims.chips){
+   expect(chip.left, String(width)).toBeGreaterThanOrEqual(dims.left);
+   expect(chip.right,String(width)).toBeLessThanOrEqual(dims.right-2);
+   expect(chip.scrollWidth-chip.clientWidth,String(width)).toBeLessThanOrEqual(2);
+  }
+  expect(dims.documentWidth-dims.clientWidth,String(width)).toBeLessThanOrEqual(3);
+ }
+});
+
 test('V3 challenge reticle is decorative and leaves functional start link available',async({page})=>{
  await page.setViewportSize({width:1672,height:941});
  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
