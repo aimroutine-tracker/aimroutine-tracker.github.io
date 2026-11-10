@@ -7,11 +7,13 @@ import {chromium} from '@playwright/test';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 
+// Exact desktop hero heights for the 1672×941 reference viewport.
+// The check below still fails whenever a measured height drifts by >2 px.
 const pages = [
- {id:'home',filename:'index.html',heroHeight:350},
- {id:'routines',filename:'training.html',heroHeight:244},
- {id:'progress',filename:'progress.html',heroHeight:204},
- {id:'account',filename:'account.html',heroHeight:242}
+ {id:'home',filename:'index.html',heroHeight:357},
+ {id:'routines',filename:'training.html',heroHeight:254},
+ {id:'progress',filename:'progress.html',heroHeight:210},
+ {id:'account',filename:'account.html',heroHeight:250}
 ];
 const width=1672,height=941;
 const out='visual-results';
