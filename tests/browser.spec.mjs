@@ -2387,9 +2387,12 @@ test('Offline comparator exports a verified four-screen report only after all fo
   const digest=await crypto.subtle.digest('SHA-256',await ref.arrayBuffer());
   const sha=Array.from(new Uint8Array(digest),n=>n.toString(16).padStart(2,'0')).join('');
   const pages=['home','routines','progress','account'];
+  window.__qaCaptureHashes={};
   for(const [index,id] of pages.entries()){
    CONFIG.find(entry=>entry.id===id).sha=sha;
    const output=await pixels('#'+(20+index*4).toString(16).padStart(2,'0').repeat(3));
+   const candidateHash=await crypto.subtle.digest('SHA-256',await output.arrayBuffer());
+   window.__qaCaptureHashes[id]=Array.from(new Uint8Array(candidateHash),n=>n.toString(16).padStart(2,'0')).join('');
    for(const [suffix,blob] of [['ref',ref],['out',output]]){
     const picker=document.getElementById(id+'-'+suffix),transfer=new DataTransfer();
     transfer.items.add(new File([blob],id+'-'+suffix+'.png',{type:'image/png'}));
@@ -2418,6 +2421,14 @@ test('Offline comparator exports a verified four-screen report only after all fo
  expect(report.scenes.map(x=>x.screen)).toEqual(['home','routines','progress','account']);
  expect(report.scenes.map(x=>x.rgb_mae_0_to_255)).toEqual([4,8,12,16]);
  expect(report.scenes.every(x=>x.reference_verified===true)).toBe(true);
+ const expectedHashes=await page.evaluate(()=>window.__qaCaptureHashes);
+ for(const scene of report.scenes){
+  expect(scene.reference_sha256).toMatch(/^[0-9a-f]{64}$/);
+  expect(scene.capture_sha256,scene.screen).toBe(expectedHashes[scene.screen]);
+  expect(scene.capture_file).toBe(scene.screen+'-out.png');
+  expect(scene.reference_file).toBe(scene.screen+'-ref.png');
+ }
+ expect(new Set(report.scenes.map(x=>x.capture_sha256)).size).toBe(4);
  // Change any one file after the report: no obsolete JSON can be exported.
  await page.evaluate(()=>{
   const input=document.getElementById('progress-out');
