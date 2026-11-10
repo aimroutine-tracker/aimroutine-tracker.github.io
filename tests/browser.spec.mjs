@@ -2106,8 +2106,13 @@ export const synchronize=async()=>({synced:true});`
  await expect(page.locator('#dashboard-panel')).toBeVisible();
  await page.locator('.ar7-delete-account summary').click();
  await expect(page.locator('#delete-password-row')).toBeVisible();
+ await expect(page.locator('#delete-account-final')).toBeDisabled();
  await page.locator('#delete-account-password').fill('Private-Old-Password_2026!');
+ await expect(page.locator('#delete-account-final')).toBeDisabled();
+ await page.locator('#delete-account-confirmation').fill('SUPPRIMEE');
+ await expect(page.locator('#delete-account-final')).toBeDisabled();
  await page.locator('#delete-account-confirmation').fill('SUPPRIMER');
+ await expect(page.locator('#delete-account-final')).toBeEnabled();
  await page.evaluate(()=>{
   document.querySelector('#login-password').value='OldLoginSecret';
   document.querySelector('#signup-password').value='OldSignupSecret';
