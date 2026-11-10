@@ -1739,3 +1739,74 @@ export const synchronize=async(_client,uid)=>{
  expect(await page.evaluate(uid=>window.__qaCloudReads.filter(x=>x===uid).length,first))
   .toBeGreaterThan(firstReadsBeforeSwitch);
 });
+
+
+// Regressions for the account portal itself, not merely the Training workspace.
+// The delayed Auth service is mocked: never touch live users or data.
+test('Cloud portal does not resurrect a user after SIGNED_OUT during bootstrap',async({page})=>{
+ const uid='11111111-1111-4111-8111-111111111111';
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const id='11111111-1111-4111-8111-111111111111';
+const user={id,email:'private-account@example.invalid',user_metadata:{aim_username:'PrivateUser'}};
+let notify=null;
+window.__qaSendAccountSignOut=()=>notify?.('SIGNED_OUT',null);
+export const SITE_URL='https://aimroutine-tracker.github.io/';
+export const supabase={auth:{
+ getUser:()=>new Promise(resolve=>{
+  window.__qaReleaseAccountIdentity=()=>resolve({data:{user},error:null});
+ }),
+ onAuthStateChange:callback=>{notify=callback;return {data:{subscription:{unsubscribe(){}}}};}
+}};`
+ }));
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaReleaseAccountIdentity)).toBe('function');
+ await page.evaluate(()=>{
+  window.__qaSendAccountSignOut();
+  window.__qaReleaseAccountIdentity();
+ });
+ await expect(page.locator('#dashboard-panel')).toBeHidden();
+ await expect(page.locator('#user-email')).toBeEmpty();
+ await expect(page.locator('#cloud-sessions-count')).toHaveText('—');
+ expect(await page.evaluate(()=>localStorage.getItem('aimroutine_cloud_current_uid'))).toBeNull();
+});
+
+test('Cloud portal hides personal details after SIGNED_OUT during first Cloud download',async({page})=>{
+ const uid='11111111-1111-4111-8111-111111111111';
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const user={id:'11111111-1111-4111-8111-111111111111',
+ email:'private-account@example.invalid',user_metadata:{aim_username:'PrivateUser'}};
+let notify=null;
+window.__qaSendAccountSignOut=()=>notify?.('SIGNED_OUT',null);
+export const SITE_URL='https://aimroutine-tracker.github.io/';
+export const supabase={auth:{
+ getUser:async()=>({data:{user},error:null}),
+ onAuthStateChange:callback=>{notify=callback;return {data:{subscription:{unsubscribe(){}}}};}
+}};`
+ }));
+ await page.route('**/cloud-sync-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`export const isEnabled=()=>true;
+export const setEnabled=()=>{};
+export const readUserLocal=()=>({store:{sessions:[],presets:[],weeklyGoal:3}});
+export const importGuestIntoAccount=()=>({sessions:0,favorites:0});
+export const deleteCloudProgress=async()=>true;
+export const synchronize=()=>new Promise(resolve=>{
+ window.__qaReleaseAccountCloud=()=>resolve({synced:true,downloadedSessions:3});
+});`
+ }));
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaReleaseAccountCloud)).toBe('function');
+ await expect(page.locator('#dashboard-panel')).toBeVisible();
+ await page.evaluate(()=>{
+  window.__qaSendAccountSignOut();
+  window.__qaReleaseAccountCloud();
+ });
+ await expect(page.locator('#dashboard-panel')).toBeHidden();
+ await expect(page.locator('#user-email')).toBeEmpty();
+ await expect(page.locator('#user-username')).toBeEmpty();
+ await expect(page.locator('#cloud-sessions-count')).toHaveText('—');
+ await expect(page.locator('#account-status')).not.toContainText('Sauvegarde cloud synchronisée');
+ expect(await page.evaluate(()=>localStorage.getItem('aimroutine_cloud_current_uid'))).toBeNull();
+});
