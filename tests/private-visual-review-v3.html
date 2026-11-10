@@ -73,6 +73,23 @@ function appendCard(entry){
  state.mode.addEventListener('change',()=>render(entry.id));
  state.alpha.addEventListener('input',()=>render(entry.id));
  $(entry.id+'-save').addEventListener('click',()=>saveView(entry.id));
+ for(const kind of ['ref','out']){
+  $(entry.id+'-'+kind).addEventListener('change',()=>invalidate(entry.id));
+ }
+}
+function invalidate(id){
+ // Selecting another image invalidates old measurements immediately: it is
+ // unsafe to export a report computed for files no longer selected.
+ const state=elements[id];
+ state.original=null;state.candidate=null;
+ delete results[id];
+ $(id+'-save').disabled=true;
+ $('report').disabled=true;
+ const label=$(id+'-status');
+ label.className='';
+ label.textContent='Fichiers modifiés : lance une nouvelle comparaison.';
+ $(id+'-metrics').textContent='';
+ state.canvas.getContext('2d').clearRect(0,0,TARGET.width,TARGET.height);
 }
 async function digest(file){
  if(!globalThis.crypto?.subtle)throw new Error('SHA-256 indisponible dans ce navigateur / ce contexte. Aucune validation possible.');
@@ -112,7 +129,11 @@ function render(id){
 async function compare(entry){
  const id=entry.id,state=elements[id],ref=$(id+'-ref').files[0],candidate=$(id+'-out').files[0];
  const label=$(id+'-status'),metrics=$(id+'-metrics');
- if(!ref||!candidate){label.textContent='Choisis les deux images.';return;}
+ if(!ref||!candidate){
+  invalidate(id);
+  label.textContent='Choisis les deux images.';
+  return;
+ }
  $(id+'-compare').disabled=true;$(id+'-save').disabled=true;delete results[id];
  try{
   label.textContent='Vérification des empreintes et analyse locale en cours…';
@@ -139,6 +160,7 @@ async function compare(entry){
    regional_rgb_mae:Object.fromEntries(Object.entries(regions).map(([k,v])=>[k,Number((v.total/(v.pixels*3)).toFixed(4))])),
    visually_identical:total===0};
   state.original=original;state.candidate=output;results[id]=report;render(id);
+  label.className='';
   label.innerHTML='<span class="good">Empreinte SHA-256 originale vérifiée</span> · '+(total?'Écarts détectés':'Pixels identiques');
   metrics.textContent='MAE RGB : '+report.rgb_mae_0_to_255+' / 255 · Pixels différents : '+
    report.different_pixel_percent+' % · Régions : '+Object.entries(report.regional_rgb_mae).map(([k,v])=>k+' '+v).join(' | ');
