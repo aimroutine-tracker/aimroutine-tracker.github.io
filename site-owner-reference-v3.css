@@ -1755,3 +1755,18 @@ body.site31.r20 .r17-progress-wrap .v3-chart-period select:focus-visible{
   white-space:normal!important;
  }
 }
+
+
+/* Mobile Cloud: unlike other heroes, this one has no CTA row. The base
+   flex-centering left a large blank region above its heading. Align its
+   content with the other page headers without moving the 1672px reference. */
+@media(max-width:720px){
+ body.site31.r20 .r17-account-wrap .r17-hero{
+  min-height:292px!important;
+  align-items:flex-start!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-hero-content{
+  padding-top:28px!important;
+  padding-bottom:24px!important;
+ }
+}
