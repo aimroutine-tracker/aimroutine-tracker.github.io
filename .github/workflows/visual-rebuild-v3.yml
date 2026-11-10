@@ -7,6 +7,7 @@ on:
       - "tests/visual-rebuild-v3.mjs"
       - "tests/compare-visual-v3.py"
       - "tests/check-source-fidelity-v3.py"
+      - "tests/stage-public-visual-evidence-v3.py"
       - "tests/visual-references/**"
       - ".github/workflows/visual-rebuild-v3.yml"
       - "index.html"
@@ -78,13 +79,15 @@ jobs:
           for x in range(0,len(encoded),1500): print('AIMV3_CHUNK '+encoded[x:x+1500])
           print('AIMV3_CONTACT_END')
           PY
-      - name: Upload evidence (no site deployment)
-        if: always()
+      - name: Stage public-safe evidence (exclude owner-reference pixels)
+        working-directory: candidate
+        run: python3 tests/stage-public-visual-evidence-v3.py
+      - name: Upload public-safe before-and-after evidence (no site deployment)
         uses: actions/upload-artifact@v4
         with:
           name: aimroutine-v3-visual-evidence
-          path: candidate/visual-results/
-          if-no-files-found: warn
+          path: candidate/.visual-public-evidence/
+          if-no-files-found: error
           retention-days: 14
 
 
@@ -113,5 +116,11 @@ jobs:
         with:
           name: aimroutine-v3-visual-evidence
           path: visual-results
+      # Artifacts from a public repository contain ONLY public-safe screenshots.
+      # Rebuild source-derived overlays on this ephemeral runner, never upload them.
+      - name: Install pinned private comparison tool
+        run: python3 -m pip install --quiet Pillow==11.3.0
+      - name: Regenerate private source comparisons inside release-gate runner
+        run: python3 tests/compare-visual-v3.py
       - name: Block release until original screenshots and source diffs verified
         run: python3 tests/check-source-fidelity-v3.py
