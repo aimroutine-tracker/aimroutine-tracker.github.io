@@ -2016,3 +2016,57 @@ export const synchronize=async()=>({synced:true});`
  await expect(page.locator('#user-email')).toHaveText('private-b@example.invalid');
  expect(await page.evaluate(()=>localStorage.getItem('aimroutine_cloud_current_uid'))).toBe(b);
 });
+
+
+test('Cloud portal rejects a verified but stale account A response while the token belongs to B',async({page})=>{
+ const a='11111111-1111-4111-8111-111111111111';
+ const b='22222222-2222-4222-8222-222222222222';
+ const authKey='sb-lmzswtzboobpokumxzhy-auth-token';
+ await page.addInitScript(({a,authKey})=>
+  localStorage.setItem(authKey,JSON.stringify({user:{id:a},access_token:'qa-a'})),{a,authKey});
+ await page.route('**/cloud-client-v7.mjs*',r=>r.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const a='11111111-1111-4111-8111-111111111111',b='22222222-2222-4222-8222-222222222222';
+const people={[a]:{id:a,email:'private-old-a@example.invalid',user_metadata:{aim_username:'PrivateA'}},
+ [b]:{id:b,email:'private-current-b@example.invalid',user_metadata:{aim_username:'PrivateB'}}};
+window.__qaAuthChecks=0;
+export const SITE_URL='https://aimroutine-tracker.github.io/';
+export const supabase={auth:{
+ getUser:async()=>{
+  window.__qaAuthChecks++;
+  // Simulate the SDK initially answering from its previous account A session
+  // even after the separate browser tab has stored B's token.
+  const returned=window.__qaAuthChecks<=2?a:b;
+  return {data:{user:people[returned]},error:null};
+ },
+ onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})
+}};`
+ }));
+ await page.route('**/cloud-sync-v7.mjs*',r=>r.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`export const isEnabled=()=>true;
+export const setEnabled=()=>{};
+export const readUserLocal=()=>({store:{sessions:[],presets:[],weeklyGoal:3}});
+export const importGuestIntoAccount=()=>({sessions:0,favorites:0});
+export const deleteCloudProgress=async()=>true;
+export const synchronize=async()=>({synced:true});`
+ }));
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#user-email')).toHaveText('private-old-a@example.invalid');
+ const bToken=JSON.stringify({user:{id:b},access_token:'qa-b'});
+ await page.evaluate(({authKey,bToken})=>{
+  localStorage.setItem(authKey,bToken);
+  window.dispatchEvent(new StorageEvent('storage',{key:authKey,newValue:bToken}));
+ },{authKey,bToken});
+ await expect.poll(()=>page.evaluate(()=>window.__qaAuthChecks)).toBe(2);
+ await expect(page.locator('#dashboard-panel')).toBeHidden();
+ await expect(page.locator('#user-email')).toBeEmpty();
+ expect(await page.evaluate(()=>localStorage.getItem('aimroutine_cloud_current_uid'))).toBeNull();
+ // A subsequent legitimate B verification must restore B without A flashing.
+ await page.evaluate(({authKey,bToken})=>
+  window.dispatchEvent(new StorageEvent('storage',{key:authKey,newValue:bToken})),{authKey,bToken});
+ await expect.poll(()=>page.evaluate(()=>window.__qaAuthChecks)).toBe(3);
+ await expect(page.locator('#user-email')).toHaveText('private-current-b@example.invalid');
+ await expect(page.locator('#dashboard-panel')).toBeVisible();
+ expect(await page.evaluate(()=>localStorage.getItem('aimroutine_cloud_current_uid'))).toBe(b);
+});
