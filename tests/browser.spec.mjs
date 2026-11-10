@@ -2114,6 +2114,10 @@ export const synchronize=async()=>({synced:true});`
  await page.locator('#delete-account-confirmation').fill('SUPPRIMER');
  await expect(page.locator('#delete-account-final')).toBeEnabled();
  await page.evaluate(()=>{
+  document.querySelector('#login-email').value='private-login@example.invalid';
+  document.querySelector('#signup-email').value='private-signup@example.invalid';
+  document.querySelector('#reset-email').value='private-reset@example.invalid';
+  document.querySelector('#signup-username').value='PrivatePendingNickname';
   document.querySelector('#login-password').value='OldLoginSecret';
   document.querySelector('#signup-password').value='OldSignupSecret';
   document.querySelector('#new-password').value='OldRecoverySecret';
@@ -2124,7 +2128,8 @@ export const synchronize=async()=>({synced:true});`
  await expect(page.locator('#dashboard-panel')).toBeHidden();
  await expect(page.locator('#user-email')).toBeEmpty();
  await expect(page.locator('.ar7-delete-account')).not.toHaveAttribute('open');
- for(const id of ['login-password','signup-password','new-password',
+ for(const id of ['login-email','signup-email','reset-email','signup-username',
+  'login-password','signup-password','new-password',
   'delete-account-password','delete-account-confirmation','username-input']){
   expect(await page.locator('#'+id).inputValue(),id).toBe('');
  }
@@ -2159,10 +2164,19 @@ export const synchronize=async()=>({synced:true});`
  await page.locator('.ar7-delete-account summary').click();
  await page.locator('#delete-account-password').fill('OldAccountSecret!');
  await page.locator('#delete-account-confirmation').fill('SUPPRIMER');
+ await page.evaluate(()=>{
+  document.querySelector('#login-email').value='previous-login@example.invalid';
+  document.querySelector('#signup-email').value='previous-signup@example.invalid';
+  document.querySelector('#reset-email').value='previous-recovery@example.invalid';
+  document.querySelector('#signup-username').value='OldSignupName';
+ });
  await page.evaluate(()=>window.__qaSwitchAccountDirectly());
  await expect(page.locator('#user-email')).toHaveText('private-b@example.invalid');
  await expect(page.locator('#delete-account-password')).toHaveValue('');
  await expect(page.locator('#delete-account-confirmation')).toHaveValue('');
+ for(const id of ['login-email','signup-email','reset-email','signup-username']){
+  await expect(page.locator('#'+id)).toHaveValue('');
+ }
  await expect(page.locator('.ar7-delete-account')).not.toHaveAttribute('open');
  await expect(page.locator('#dashboard-panel')).toBeVisible();
 });
