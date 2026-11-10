@@ -15,6 +15,9 @@ on:
       - "account-v7.mjs"
       - "username-v7.mjs"
       - "cloud-sync-v7.mjs"
+      - "site-v15-data.mjs"
+      - "progress-v14.mjs"
+      - "training-entry-v7.mjs"
       - "supabase/migrations/**"
   push:
     branches: [main]
