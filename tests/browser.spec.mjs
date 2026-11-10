@@ -2625,3 +2625,48 @@ export const synchronize=async()=>({synced:true,downloadedSessions:0,downloadedF
   .toBe('22222222-2222-4222-8222-222222222222');
  expect(errors).toEqual([]);
 });
+
+
+test('A delayed Cloud failure cannot replace account B status but current B errors remain visible',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.route('**/cloud-client-v7.mjs*',r=>r.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const a={id:'11111111-1111-4111-8111-111111111111',email:'error-a@example.invalid',user_metadata:{aim_username:'Alpha'}};
+const b={id:'22222222-2222-4222-8222-222222222222',email:'error-b@example.invalid',user_metadata:{aim_username:'Bravo'}};
+let current=a,listener=null;
+window.__qaChangeToB=()=>{current=b;listener?.('SIGNED_IN',{user:b})};
+export const SITE_URL='https://aimroutine-tracker.github.io/';
+export const supabase={auth:{
+ getUser:async()=>({data:{user:current},error:null}),
+ onAuthStateChange:callback=>{listener=callback;return {data:{subscription:{unsubscribe(){}}}}}
+}};`
+ }));
+ await page.route('**/cloud-sync-v7.mjs*',r=>r.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`export const isEnabled=()=>true;
+export const setEnabled=()=>{};
+export const readUserLocal=()=>({store:{sessions:[],presets:[],weeklyGoal:3}});
+export const importGuestIntoAccount=()=>({sessions:0,favorites:0});
+export const synchronize=async()=>({synced:true,downloadedSessions:0,downloadedFavorites:0});
+export const deleteCloudProgress=()=>new Promise((resolve,reject)=>{
+ window.__qaRejectCloudDelete=()=>reject(new Error('QA Cloud simulated failure'));
+});`
+ }));
+ page.on('dialog',d=>d.accept());
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#user-email')).toHaveText('error-a@example.invalid');
+ await page.locator('#cloud-delete').click();
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaRejectCloudDelete)).toBe('function');
+ await page.evaluate(()=>window.__qaChangeToB());
+ await expect(page.locator('#user-email')).toHaveText('error-b@example.invalid');
+ await page.evaluate(()=>window.__qaRejectCloudDelete());
+ await expect(page.locator('#cloud-delete')).toBeEnabled();
+ await expect(page.locator('#account-status')).not.toContainText('QA Cloud simulated failure');
+ await expect(page.locator('#user-email')).toHaveText('error-b@example.invalid');
+ // B's own genuine failure must still be displayed to B, not suppressed.
+ await page.locator('#cloud-delete').click();
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaRejectCloudDelete)).toBe('function');
+ await page.evaluate(()=>window.__qaRejectCloudDelete());
+ await expect(page.locator('#account-status')).toContainText('QA Cloud simulated failure');
+ expect(errors).toEqual([]);
+});
