@@ -286,3 +286,56 @@ test('failed reset releases its lock and preserves data for a safe retry',async(
   assert.equal(readUserLocal(USER_A).store.sessions.length,0);
  });
 });
+
+
+test('in-flight A sync cannot cache cloud data after the authenticated session changes to B',async()=>{
+ const db=makeDb(),store=new MemoryStorage();
+ db.aim_sessions.push(
+  {user_id:USER_A,session_id:'cloud-a',payload:session('cloud-a'),deleted_at:null},
+  {user_id:USER_B,session_id:'private-b',payload:session('private-b'),deleted_at:null}
+ );
+ // With a pre-existing profile and preferences, the sync can proceed from
+ // remote reads straight to local persistence without a remote upsert.
+ db.aim_profiles.push({user_id:USER_A,profile:{}});
+ db.aim_preferences.push({user_id:USER_A,weekly_goal:3,settings:{format:'aimroutine-web-v2'}});
+ const base=clientFor(db,USER_A);
+ let authenticated=USER_A,verifiedCalls=0,switched=false;
+ const ownerFilters=[];
+ const client={
+  ...base,
+  auth:{getUser:async()=>{
+   verifiedCalls++;
+   return {data:{user:{id:authenticated}},error:null};
+  }},
+  from(table){
+   const q=base.from(table);
+   if(['aim_sessions','aim_presets'].includes(table)){
+    const originalEq=q.eq.bind(q);
+    q.eq=(column,value)=>{
+     ownerFilters.push({table,column,value});
+     return originalEq(column,value);
+    };
+   }
+   if(table==='aim_sessions'){
+    const originalRange=q.range.bind(q);
+    q.range=async(...args)=>{
+     const response=await originalRange(...args);
+     if(!switched){switched=true;authenticated=USER_B}
+     return response;
+    };
+   }
+   return q;
+  }
+ };
+ await use(store,async()=>{
+  await assert.rejects(synchronize(client,USER_A),/Session modifiée pendant la synchronisation/);
+  assert.equal(verifiedCalls,2,'Verify the session at entry and immediately before local persistence');
+  assert.equal(store.getItem(scopedKey(TRAINING_KEY,USER_A)),null,'Do not cache A cloud data after account B takes over');
+  assert.equal(store.getItem(scopedKey(TRAINING_KEY,USER_B)),null,'Do not leak A data into B cache');
+  assert.deepEqual(ownerFilters,[
+   {table:'aim_sessions',column:'user_id',value:USER_A},
+   {table:'aim_presets',column:'user_id',value:USER_A}
+  ]);
+ });
+ assert.deepEqual(db.aim_sessions.map(r=>r.session_id),['cloud-a','private-b'],'Neither account cloud data should be changed');
+});
