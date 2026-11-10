@@ -147,6 +147,10 @@ async function compare(entry){
   const sha=await digest(ref);
   if(state.revision!==run)return;
   if(sha!==entry.sha)throw new Error('SHA-256 de référence différent de celui du manifeste. Refus de comparaison : fichier réencodé ou mauvaise maquette.');
+  // Bind each locally exported report to the exact V3 capture bytes as well:
+  // visual metrics alone cannot prove which GitHub Actions ZIP was checked.
+  const candidateSha=await digest(candidate);
+  if(state.revision!==run)return;
   const original=await pixels(ref),output=await pixels(candidate);
   if(state.revision!==run)return;
   let total=0,changed=0;
@@ -164,6 +168,8 @@ async function compare(entry){
   }
   const mae=total/(w*h*3);
   const report={screen:id,reference_sha256:sha,reference_verified:true,
+   capture_sha256:candidateSha,
+   reference_file:ref.name,capture_file:candidate.name,
    viewport:{width:w,height:h},rgb_mae_0_to_255:Number(mae.toFixed(4)),
    different_pixel_percent:Number((100*changed/(w*h)).toFixed(3)),
    regional_rgb_mae:Object.fromEntries(Object.entries(regions).map(([k,v])=>[k,Number((v.total/(v.pixels*3)).toFixed(4))])),
