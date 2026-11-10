@@ -231,7 +231,8 @@ $('#v14-progress-range').addEventListener('change',render);
 $('#v14-week-range').addEventListener('change',render);
 document.querySelectorAll('[data-switch-lang]').forEach(b=>b.addEventListener('click',()=>queueMicrotask(render)));
 window.addEventListener('storage',event=>{
- if(event.key===AUTH_KEY){
+ // storage.clear() sends event.key=null; it also invalidates the session.
+ if(event.key===null||event.key===AUTH_KEY){
   // Cross-tab sign-out / account switch: hide private numbers synchronously.
   invalidateProgressView();
   if(event.newValue)void load();
