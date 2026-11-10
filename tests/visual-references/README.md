@@ -36,7 +36,7 @@ Le second script exige les quatre SHA-256 corrects, les dimensions et les preuve
 
 Pour contourner les limites d'extraction de fichiers depuis une session ChatGPT sans affaiblir les contrôles, un outil **hors ligne** est disponible dans `tests/private-visual-review-v3.html`.
 
-1. Télécharger ce fichier HTML dans un dossier privé, puis l'ouvrir localement (Chromium, Chrome, Edge ou Firefox récent). **Ne pas l'héberger sur un site public** avec les PNG propriétaires.
+1. Télécharger ce fichier HTML dans un dossier privé, puis l'ouvrir localement (Chromium, Chrome, Edge ou Firefox récent). **Ne pas l'héberger sur un site public** avec les PNG propriétaires. Si un navigateur administré bloque `file://` ou `crypto.subtle`, ouvrir un terminal dans le dossier contenant le HTML, exécuter `python3 -m http.server 8769 --bind 127.0.0.1`, puis ouvrir `http://127.0.0.1:8769/private-visual-review-v3.html`. Le serveur écoute **uniquement** sur la machine locale, et la page n'émet aucune requête réseau d'upload. Fermer ce serveur après la revue.
 2. Télécharger depuis GitHub Actions l'artefact `aimroutine-v3-visual-evidence` du **HEAD exact** de la PR n°27, puis décompresser le ZIP localement.
 3. Pour Accueil, Routines, Progression et Compte, sélectionner les véritables PNG d'origine et les captures `home-after.png`, `routines-after.png`, `progress-after.png`, `account-after.png` du même HEAD.
 4. Cliquer sur **Comparer** sur chacun des quatre écrans. L'outil vérifie **SHA-256** contre `manifest.json`, exige un viewport **1672 × 941 px**, affiche la superposition réglable et les différences, puis calcule MAE RGB, pourcentage de pixels différents et écarts par région.
