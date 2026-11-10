@@ -14,12 +14,28 @@ Métrique : erreur absolue moyenne RGB (MAE) dans [0,255], plus bas = mieux, **p
 
 | Écran | Site initial | V3 candidate | Réduction de l'erreur |
 |---|---:|---:|---:|
-| Accueil | 35.9989 | 24.8328 | 31.02 % |
-| Routines | 40.9685 | 25.6844 | 37.31 % |
-| Progression | 32.0376 | 26.7127 | 16.62 % |
-| Compte / Cloud | 33.3605 | 26.6923 | 19.99 % |
+| Accueil | 35.9989 | 24.3439 | 32.38 % |
+| Routines | 40.9685 | 25.5975 | 37.52 % |
+| Progression | 32.0376 | 26.5415 | 17.16 % |
+| Compte / Cloud | 33.3605 | 26.7008 | 19.96 % |
 
 Les quatre originaux ont été identifiés par leurs SHA-256 dans `tests/visual-references/manifest.json`. Le rapport local livré au propriétaire comprend les captures avant/après, les originaux, les images de différence, les superpositions et un comparateur HTML. **Pas d'approbation pixel-perfect** : différences résiduelles importantes entre design de référence et données live.
+
+## Contrôles du 10 novembre 2026 — branche V3
+
+Dernier code visuel évalué : `18c1feae69a42ce0d508cc02115099b358630b94` (PR n°27, non fusionnée). Les quatre PNG privés d'origine sont identifiés par leurs empreintes SHA-256. Le rapport actualisé a été livré **localement** au propriétaire : images de référence, captures `main` et V3, superpositions, différentiels et comparateur HTML. Les originaux ne sont pas ajoutés au dépôt public.
+
+- **Accueil** : les trois descriptions des fonctionnalités ont été remises au plus près du texte visible dans la maquette, sans statistiques fictives. Le bandeau « Défi AIM » a retrouvé un réticule purement décoratif et une géométrie de titre, badges et bouton plus fidèle. La rangée des trois cartes est enregistrée à 54 px du bord gauche au viewport source de 1672 px. Erreur RGB globale Accueil : **24.6353 → 24.3439**, réduction supplémentaire de 0.2914 point ; zone de défi : **26.1345 → 24.7350**.
+- **Responsive** : les badges du défi restent fluides entre 1350 et 1599 px et conservent les dimensions de référence à 1672 px. Test navigateur ajouté pour `1350 / 1440 / 1599 / 1672` : aucun badge ne doit dépasser son panneau ou élargir le document.
+- **Équivalence des autres pages** : les nouvelles captures Routines / Progression / Compte sont **pixel pour pixel inchangées** entre le contrôle antérieur et la version actuelle. Aucun chiffre de démonstration n'a été ajouté.
+- [Site quality et tests Node](https://github.com/aimroutine-tracker/aimroutine-tracker.github.io/actions/runs/42730455644) : **SUCCESS**.
+- [Fast Auth UI desktop Chromium](https://github.com/aimroutine-tracker/aimroutine-tracker.github.io/actions/runs/42730455531) : **SUCCESS**, 63 tests.
+- [Contrôle public Supabase sans écriture](https://github.com/aimroutine-tracker/aimroutine-tracker.github.io/actions/runs/42730455588) : **SUCCESS**.
+- [Lighthouse 4 pages](https://github.com/aimroutine-tracker/aimroutine-tracker.github.io/actions/runs/42730455547) : **SUCCESS** (scores simulés variables).
+- [Captures Playwright](https://github.com/aimroutine-tracker/aimroutine-tracker.github.io/actions/runs/42730455792) : job capture **SUCCESS** ; gate source-fidelity **FAIL attendu** (les quatre PNG originaux ne sont pas dans la CI publique).
+- [Cross-browser desktop et WebKit mobile](https://github.com/aimroutine-tracker/aimroutine-tracker.github.io/actions/runs/42730455510) : **EN COURS au moment de cette mise à jour** ; ne pas annoncer de PASS avant la fin du job.
+
+Les données et routines réelles restent soumises à la validation sur comptes jetables ; ne pas confondre les tests Playwright simulés avec une preuve de connexion Google ou d'envoi d'e-mail réel.
 
 ## Tests de projet non destructifs
 
