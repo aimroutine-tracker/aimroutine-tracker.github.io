@@ -30,3 +30,18 @@ python3 tests/check-source-fidelity-v3.py
 ```
 
 Le second script exige les quatre SHA-256 corrects, les dimensions et les preuves de comparaison. Préserver ces preuves privées ; ne pas les téléverser dans une PR ou un artefact public. La publication requiert encore une revue visuelle explicite et les tests fonctionnels sur des comptes d'essai dédiés. Les valeurs fictives des maquettes ne doivent jamais être injectées dans les statistiques de vrais comptes.
+
+
+## Nouvelle méthode sans Python : comparateur privé utilisable dans le navigateur
+
+Pour contourner les limites d'extraction de fichiers depuis une session ChatGPT sans affaiblir les contrôles, un outil **hors ligne** est disponible dans `tests/private-visual-review-v3.html`.
+
+1. Télécharger ce fichier HTML dans un dossier privé, puis l'ouvrir localement (Chromium, Chrome, Edge ou Firefox récent). **Ne pas l'héberger sur un site public** avec les PNG propriétaires.
+2. Télécharger depuis GitHub Actions l'artefact `aimroutine-v3-visual-evidence` du **HEAD exact** de la PR n°27, puis décompresser le ZIP localement.
+3. Pour Accueil, Routines, Progression et Compte, sélectionner les véritables PNG d'origine et les captures `home-after.png`, `routines-after.png`, `progress-after.png`, `account-after.png` du même HEAD.
+4. Cliquer sur **Comparer** sur chacun des quatre écrans. L'outil vérifie **SHA-256** contre `manifest.json`, exige un viewport **1672 × 941 px**, affiche la superposition réglable et les différences, puis calcule MAE RGB, pourcentage de pixels différents et écarts par région.
+5. Exporter le résumé **JSON privé**, consigner les corrections nécessaires, puis recommencer à partir de nouvelles captures. Les PNG originaux et les images de différence restent **sur ton ordinateur**, pas dans une PR ni un artefact GitHub public.
+
+Sécurité du comparateur : aucun import externe, aucun appel réseau, politique CSP `connect-src 'none'`, aucun `fetch` ni envoi de pixels. Le résultat n'est considéré comme une preuve de qualité que si les quatre empreintes des originaux correspondent. Une valeur MAE est une **distance moyenne de couleur**, jamais un pourcentage de fidélité ni un certificat pixel-perfect. Des données réelles non identiques aux nombres fictifs présents sur la maquette peuvent entraîner un écart légitime.
+
+**État de l'exécution :** le programme HTML et ses contrôles de syntaxe sont enregistrés sur la branche de développement ; la validation des vraies quatre images dans cet outil reste **NON EXÉCUTÉE** tant qu'un environnement local autorisé ne dispose pas des PNG originaux en octets. Le contrôle CI public reste **BLOQUÉ**. Ne jamais inventer un résultat.
