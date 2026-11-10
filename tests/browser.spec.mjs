@@ -2009,10 +2009,11 @@ export const synchronize=async()=>({synced:true});`
  await page.evaluate(()=>window.__qaReleaseStaleBootstrap());
  // A's late response must not be allowed to render before B is verified.
  await expect(page.locator('#dashboard-panel')).toBeHidden();
- // A signed-out first paint may show the neutral '—' placeholder.
- // The security property is that no previous account email was exposed.
- await expect(page.locator('#user-email')).not.toContainText('stale-private-a@example.invalid');
- await expect(page.locator('#user-email')).toHaveText('—');
+ // No identity may be shown until B has been verified. showUser(null)
+ // removes the initial HTML placeholder as well as A's private information.
+ await expect(page.locator('#user-email')).toBeEmpty();
+ await expect(page.locator('#user-username')).toBeEmpty();
+ await expect(page.locator('#dashboard-panel')).toBeHidden();
  expect(await page.evaluate(()=>localStorage.getItem('aimroutine_cloud_current_uid'))).toBeNull();
  await page.evaluate(()=>window.__qaReleaseCurrentB());
  await expect(page.locator('#dashboard-panel')).toBeVisible();
