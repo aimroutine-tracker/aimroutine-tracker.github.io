@@ -452,6 +452,9 @@ window.addEventListener('storage',event=>{
      nextTokenUid!==originalRecoveryUid))){
   recovery=false;
   recoverySessionUid=null;
+  // The recovery form may have been displayed before a verified user was set.
+  // Always clear password inputs, even when showUser(null) sees guest -> guest.
+  clearPreviousIdentityForms();
   authMode('login');
  }
  if(!latest){
@@ -476,6 +479,8 @@ supabase.auth.onAuthStateChange((event,session)=>{
  if(event==='SIGNED_OUT'){
   recovery=false;
   recoverySessionUid=null;
+  // Clear a hidden recovery password even if the original user never hydrated.
+  clearPreviousIdentityForms();
   authMode('login');
   ++accountVerification;
   showUser(null);
@@ -485,6 +490,7 @@ supabase.auth.onAuthStateChange((event,session)=>{
      session.user.id!==recoverySessionUid){
    recovery=false;
    recoverySessionUid=null;
+   clearPreviousIdentityForms();
    authMode('login');
   }
   // Supabase advises invoking async Auth methods outside the callback.
