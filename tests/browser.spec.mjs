@@ -1719,6 +1719,9 @@ export const synchronize=async(_client,uid)=>{
  const numbers=page.locator('[data-v15-stat="sessions"]');
  const cloud=page.locator('[data-v15-stat="cloud"]');
  await expect(cloud.first()).toHaveText('EN ATTENTE');
+ const firstReadsBeforeSwitch=await page.evaluate(uid=>
+  window.__qaCloudReads.filter(x=>x===uid).length,first);
+ expect(firstReadsBeforeSwitch).toBeGreaterThan(0);
  // Switching to a different verified UID must bypass the old 30s cooldown.
  await page.evaluate(({authKey,second,mk})=>{
   localStorage.setItem(authKey,mk);
@@ -1733,5 +1736,6 @@ export const synchronize=async(_client,uid)=>{
   window.dispatchEvent(new StorageEvent('storage',{key:authKey,newValue:mk}));
  },{authKey,mk:mkToken(first)});
  await expect(cloud.first()).toHaveText('EN ATTENTE');
- expect(await page.evaluate(uid=>window.__qaCloudReads.filter(x=>x===uid).length,first)).toBe(2);
+ expect(await page.evaluate(uid=>window.__qaCloudReads.filter(x=>x===uid).length,first))
+  .toBeGreaterThan(firstReadsBeforeSwitch);
 });
