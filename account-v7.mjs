@@ -291,27 +291,79 @@ $('#delete-account-form').addEventListener('submit',event=>{
 let automaticSync=null;
 async function autoSync(){
  if(!user||!usernameFromUser(user)||recovery||document.hidden||!navigator.onLine)return;
- if(automaticSync)return automaticSync;
  const id=user.id;
- automaticSync=(async()=>{
+ // An old account's slow Cloud response must not block the new account.
+ if(automaticSync?.id===id)return automaticSync.promise;
+ const task=(async()=>{
   try{
    await synchronize(supabase,id);
    if(user?.id===id){renderCounts();msg('Compte connecté · Synchronisation automatique à jour ✓')}
   }catch(e){if(user?.id===id)msg('Synchronisation cloud en attente : '+e.message)}
- })().finally(()=>{automaticSync=null});
- return automaticSync;
+ })().finally(()=>{if(automaticSync?.promise===task)automaticSync=null});
+ automaticSync={id,promise:task};
+ return task;
 }
 window.addEventListener('online',()=>void autoSync());
 window.addEventListener('focus',()=>void autoSync());
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)void autoSync()});
 setInterval(()=>{if(!document.hidden)void autoSync()},45000);
+const AUTH_KEY='sb-lmzswtzboobpokumxzhy-auth-token';
+let accountVerification=0;
+const currentAuthToken=()=>{
+ try{return localStorage.getItem(AUTH_KEY)}catch{return null}
+};
+const tokenUserId=token=>{
+ try{const id=JSON.parse(token)?.user?.id;return validUid(id)?id:null}
+ catch{return null}
+};
+async function verifyAccountChange(){
+ const ticket=++accountVerification;
+ const initialToken=currentAuthToken();
+ try{
+  const {data,error}=await supabase.auth.getUser();
+  // Never restore old identity after a second cross-tab switch or logout.
+  if(ticket!==accountVerification||initialToken!==currentAuthToken())return;
+  const checked=!error&&validUid(data?.user?.id)?data.user:null;
+  if(!checked){showUser(null);return}
+  if(user?.id!==checked.id){
+   showUser(checked);
+   void autoSync();
+  }else if(usernameFromUser(checked)!==usernameFromUser(user)){
+   showUser(checked);
+   void autoSync();
+  }
+ }catch{
+  if(ticket===accountVerification&&initialToken===currentAuthToken())showUser(null);
+ }
+}
+window.addEventListener('storage',event=>{
+ if(event.key!==null&&event.key!==AUTH_KEY)return;
+ const latest=currentAuthToken();
+ if(!latest){
+  ++accountVerification;
+  showUser(null); // Remove old identity and private counters immediately.
+  return;
+ }
+ if(user?.id&&tokenUserId(latest)===user.id)return; // Same-owner token refresh.
+ // Do not show account A's dashboard while B's token is being verified.
+ ++accountVerification;
+ if(user)showUser(null);
+ void verifyAccountChange();
+});
 supabase.auth.onAuthStateChange((event,session)=>{
  if(event==='PASSWORD_RECOVERY'){
    recovery=true;authMode('new-password');
    $('#auth-panel').hidden=false;
-   $('#dashboard-panel').hidden=true;
+   $('#dashboard-panel'].hidden=true;
  }
- if(event==='SIGNED_OUT'){showUser(null)}
+ if(event==='SIGNED_OUT'){
+  ++accountVerification;
+  showUser(null);
+ }else if(['SIGNED_IN','TOKEN_REFRESHED','USER_UPDATED'].includes(event)){
+  // Supabase advises invoking async Auth methods outside the callback.
+  if(!user||session?.user?.id!==user.id||event==='USER_UPDATED')
+   setTimeout(()=>void verifyAccountChange(),0);
+ }
 });
 (async()=>{
  const startingRevision=authRevision;
