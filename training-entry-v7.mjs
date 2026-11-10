@@ -86,7 +86,8 @@ const tokenOwner=raw=>{
  catch{return null}
 };
 window.addEventListener('storage',e=>{
- if(e.key===authStorage){
+ // A bulk storage.clear() in another tab also invalidates verified-account state.
+ if(e.key===null||e.key===authStorage){
   const nextOwner=tokenOwner(e.newValue);
   if(!e.newValue||nextOwner!==uid){
    clearTimeout(debounce);
