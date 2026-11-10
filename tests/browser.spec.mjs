@@ -1511,3 +1511,54 @@ export const synchronize=async(_client,uid)=>{
   expect(await page.evaluate(()=>window.__qaVisibleCloudSyncs)).toBe(before);
  });
 }
+
+
+// storage.clear() from a different tab dispatches StorageEvent with key=null.
+// It must revoke visible account views even if no individual auth-key event fires.
+for(const [route,metric] of [
+ ['index.html','[data-v15-stat="sessions"]'],
+ ['progress.html','#v14-p-sessions']
+]){
+ test('V3 '+route+' hides private results immediately after a remote storage.clear()',async({page})=>{
+  const uid='11111111-1111-4111-8111-111111111111';
+  const authKey='sb-lmzswtzboobpokumxzhy-auth-token';
+  await page.addInitScript(({uid,authKey})=>{
+   localStorage.setItem(authKey,'qa-storage-clear-token');
+   const session={id:'private-clear-case',date:new Date().toISOString(),
+    rank:'silver',focus:'tracking',tool:'VALORANT',scenario:'Range',
+    minutes:20,accuracy:91,feeling:'good',notes:''};
+   localStorage.setItem('aimroutine_cloud_user_'+uid+'_aimroutine_web_training_v2',
+     JSON.stringify({sessions:[session],presets:[],weeklyGoal:3}));
+  },{uid,authKey});
+  await page.route('**/cloud-client-v7.mjs*',r=>r.fulfill({
+   status:200,contentType:'application/javascript',
+   body:`const id='11111111-1111-4111-8111-111111111111';
+export const supabase={auth:{
+ getSession:async()=>({data:{session:{user:{id}}},error:null}),
+ getUser:async()=>({data:{user:{id}},error:null}),
+ onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})
+}};`
+  }));
+  await page.goto('/'+route,{waitUntil:'domcontentloaded'});
+  await expect(page.locator(metric).first()).toHaveText('1');
+  await page.evaluate(()=>{
+   localStorage.clear();
+   window.dispatchEvent(new StorageEvent('storage',{key:null,oldValue:null,newValue:null}));
+  });
+  await expect(page.locator(metric).first()).toHaveText(route==='index.html'?'—':'0');
+  await page.waitForTimeout(180);
+  await expect(page.locator(metric).first()).toHaveText(route==='index.html'?'—':'0');
+ });
+}
+
+test('V3 training returns to account-free preview after a remote storage.clear()',async({page})=>{
+ await useVerifiedTestAccount(page);
+ await expect.poll(()=>page.evaluate(()=>Boolean(window.__aimCloudUserId))).toBe(true);
+ await page.evaluate(()=>{
+  localStorage.clear();
+  window.dispatchEvent(new StorageEvent('storage',{key:null,oldValue:null,newValue:null}));
+ });
+ await expect(page.locator('body')).toHaveClass(/ar-guest-preview/);
+ await expect.poll(()=>page.evaluate(()=>window.__aimCloudUserId)).toBe(null);
+ await expect(page.locator('#ar-account-required')).toBeVisible();
+});
