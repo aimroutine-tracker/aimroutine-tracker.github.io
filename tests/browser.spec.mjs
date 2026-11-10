@@ -3008,7 +3008,8 @@ window.__qaSignOutRecovery=()=>{current=null;listener?.('SIGNED_OUT',null)};
 window.__qaRecoveryPasswordChanges=0;
 export const SITE_URL='https://aimroutine-tracker.github.io/';
 export const supabase={auth:{
- getUser:async()=>({data:{user:current},error:null}),
+ // Deliberately do not hydrate a verified account before SIGNED_OUT.
+ getUser:async()=>({data:{user:null},error:null}),
  updateUser:async()=>{window.__qaRecoveryPasswordChanges++;return {data:{user:current},error:null}},
  onAuthStateChange:fn=>{
   listener=fn;queueMicrotask(()=>fn('PASSWORD_RECOVERY',{user:a}));
@@ -3039,6 +3040,7 @@ export const deleteCloudProgress=async()=>true;`
  await page.evaluate(()=>window.__qaSignOutRecovery());
  await expect(page.locator('#login-form')).toBeVisible();
  await expect(page.locator('#new-password-form')).toBeHidden();
+ await expect(page.locator('#new-password')).toHaveValue('');
  await page.evaluate(()=>window.__qaResolveOldRecoveryCheck());
  await expect.poll(()=>page.evaluate(()=>window.__qaRecoveryPasswordChanges)).toBe(0);
  await expect(page.locator('#user-email')).toBeEmpty();
@@ -3097,6 +3099,7 @@ export const deleteCloudProgress=async()=>true;`
  await expect(page.locator('#user-email')).toHaveText('recovery-tab-b@example.invalid');
  await expect(page.locator('#dashboard-panel')).toBeVisible();
  await expect(page.locator('#new-password-form')).toBeHidden();
+ await expect(page.locator('#new-password')).toHaveValue('');
  await page.evaluate(()=>window.__qaFinishOldRecovery());
  await expect.poll(()=>page.evaluate(()=>window.__qaRecoveryPasswordChanges)).toBe(0);
  await expect(page.locator('#user-email')).toHaveText('recovery-tab-b@example.invalid');
