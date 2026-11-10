@@ -2674,3 +2674,65 @@ export const deleteCloudProgress=()=>new Promise((resolve,reject)=>{
  await expect(page.locator('#account-status')).toContainText('QA Cloud simulated failure');
  expect(errors).toEqual([]);
 });
+
+
+test('Account B can act while account A Cloud request is still pending; A completion cannot unlock B',async({page})=>{
+ const errors=[];
+ page.on('pageerror',e=>errors.push(e.message));
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const a={id:'11111111-1111-4111-8111-111111111111',email:'slow-a@example.invalid',user_metadata:{aim_username:'Alpha'}};
+const b={id:'22222222-2222-4222-8222-222222222222',email:'active-b@example.invalid',user_metadata:{aim_username:'Bravo'}};
+let current=a,listener=null;
+window.__qaSwitchFromAToB=()=>{current=b;listener?.('SIGNED_IN',{user:b})};
+export const SITE_URL='https://aimroutine-tracker.github.io/';
+export const supabase={auth:{
+ getUser:async()=>({data:{user:current},error:null}),
+ onAuthStateChange:fn=>{listener=fn;return{data:{subscription:{unsubscribe(){}}}}}
+}};`
+ }));
+ await page.route('**/cloud-sync-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const a='11111111-1111-4111-8111-111111111111',b='22222222-2222-4222-8222-222222222222';
+window.__qaDeleteRequests=[];
+export const isEnabled=()=>true;
+export const setEnabled=()=>{};
+export const readUserLocal=()=>({store:{sessions:[],presets:[],weeklyGoal:3}});
+export const importGuestIntoAccount=()=>({sessions:0,favorites:0});
+export const synchronize=async()=>({synced:true,downloadedSessions:0,downloadedFavorites:0});
+export const deleteCloudProgress=(client,uid)=>{
+ window.__qaDeleteRequests.push(uid);
+ return new Promise(resolve=>{
+  if(uid===a)window.__qaFinishDeleteA=()=>resolve(true);
+  if(uid===b)window.__qaFinishDeleteB=()=>resolve(true);
+ });
+};`
+ }));
+ page.on('dialog',dialog=>dialog.accept());
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#user-email')).toHaveText('slow-a@example.invalid');
+ await page.locator('.ar7-delete-cloud summary').first().click();
+ await page.locator('#cloud-delete').click();
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaFinishDeleteA)).toBe('function');
+ await expect(page.locator('#cloud-delete')).toBeDisabled();
+ // A stays pending indefinitely while another tab signs in as B.
+ await page.evaluate(()=>window.__qaSwitchFromAToB());
+ await expect(page.locator('#user-email')).toHaveText('active-b@example.invalid');
+ await expect(page.locator('#cloud-delete')).toBeEnabled();
+ await page.locator('#cloud-delete').click();
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaFinishDeleteB)).toBe('function');
+ expect(await page.evaluate(()=>window.__qaDeleteRequests)).toEqual([
+  '11111111-1111-4111-8111-111111111111',
+  '22222222-2222-4222-8222-222222222222'
+ ]);
+ // Old A finishes first, while B is still legitimately busy.
+ await page.evaluate(()=>window.__qaFinishDeleteA());
+ await expect(page.locator('#cloud-delete')).toBeDisabled();
+ await expect(page.locator('#account-status')).not.toContainText('Progression cloud supprimée');
+ // Only B's own completion may release B's controls and display success.
+ await page.evaluate(()=>window.__qaFinishDeleteB());
+ await expect(page.locator('#cloud-delete')).toBeEnabled();
+ await expect(page.locator('#account-status')).toContainText('Progression cloud supprimée');
+ await expect(page.locator('#user-email')).toHaveText('active-b@example.invalid');
+ expect(errors).toEqual([]);
+});
