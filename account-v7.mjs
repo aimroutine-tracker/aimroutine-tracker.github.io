@@ -311,7 +311,8 @@ $('#delete-account-form').addEventListener('submit',event=>{
   }
   // Validate the signed-in identity after the recent Google or password auth.
   const {data:{user:checked},error:authError}=await supabase.auth.getUser();
-  if(authError||checked?.id!==oldUid)throw Error('Identité différente : aucune suppression effectuée.');
+  if(authError||checked?.id!==oldUid||user?.id!==oldUid)
+   throw Error('Identité différente : aucune suppression effectuée.');
   
   const {data,error:deleteError}=await supabase.functions.invoke('delete-aim-account',{
    method:'POST',body:{action:'delete_my_account',confirmation:'SUPPRIMER'}
@@ -319,6 +320,9 @@ $('#delete-account-form').addEventListener('submit',event=>{
   if(deleteError||data?.deleted!==true){
    throw Error('Le serveur a refusé la suppression : ton compte est conservé. Reconnecte-toi si nécessaire.');
   }
+  // The server may have deleted A just as a different tab signed into B.
+  // Never sign B out or clear B's local state after A's delayed completion.
+  if(user?.id!==oldUid)return;
   $('#delete-account-password').value='';
   $('#delete-account-confirmation').value='';
   // Only this account's local copies are erased. Guest data remains untouched.
