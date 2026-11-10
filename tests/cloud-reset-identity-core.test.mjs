@@ -63,7 +63,7 @@ test('Cloud reset must NOT erase B when account switches while waiting for A sav
   assert.equal(task.authCalls,2,'A reset must begin while A save is waiting');
   current=B;
   task.finishSave();
-  assert.match((await task.saveResult).message,/Network save failed/);
+  assert.match((await task.saveResult).message,/Session non validée/);
   await assert.rejects(task.resetResult,/Session modifiée pendant la suppression/);
   assert.equal(task.authCalls,3,'A second verified identity check is required');
   assert.equal(task.rpcCalls,0,'Destructive RPC must never run as B');
@@ -86,7 +86,7 @@ test('Cloud reset still succeeds for A after failed previous save if identity st
   localStorage.setItem(TRAINING_KEY,'guest-sessions');
   const task=delayedFailedSave(()=>A);
   task.finishSave();
-  assert.match((await task.saveResult).message,/Network save failed/);
+  assert.match((await task.saveResult).message,/Session non validée/);
   assert.equal(await task.resetResult,true);
   assert.equal(task.authCalls,3,'Verify same owner again after failed previous save');
   assert.equal(task.rpcCalls,1,'Only A deletion RPC is issued');
