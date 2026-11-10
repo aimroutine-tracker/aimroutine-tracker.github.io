@@ -1729,3 +1729,11 @@ body.site31.r20 .r17-progress-wrap .v3-chart-period select:focus-visible{
   width:calc(100% - 13px)!important;
  }
 }
+
+
+/* V3 / pass 40 — owner feature row full-width registration */
+@media (min-width:1350px){
+ body.site31.r20 .r17-home-wrap .r17-features{
+  max-width:1564px!important;
+ }
+}
