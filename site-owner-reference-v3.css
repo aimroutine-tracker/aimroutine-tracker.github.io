@@ -1792,15 +1792,18 @@ body.site31.r20 .r17-progress-wrap .v3-chart-period select:focus-visible{
 
 /* V3 / pass 43 — Progress panel columns and outer edges, measured from
    the owner's 1672×941 source versus the latest anonymous Chromium capture.
-   Source chart x: 32 / 643 / 1156; capture: 20 / 625 / 1165.
-   Source secondary x: 33 / 605 / 1007; capture: 20 / 613 / 999.
+   Source chart x: 33 / 643 / 1158; capture baseline: 20 / 634 / 1182.
+   Source secondary x: 33 / 605 / 1009; capture baseline: 20 / 623 / 1014.
+   Measured after the first alignment: an extra 24px container width placed
+   rightmost borders at x=1667 rather than x=1643. Keep 12px left inset but
+   reduce outer width by 24px for all three responsive desktop grids.
    Pure desktop geometry: retain authentic session-driven values and all
    individual chart controls, the four-KPI bar, and mobile/tablet layouts. */
 @media (min-width:1600px) and (max-width:1780px){
  body.site31.r20 .r17-progress-wrap .r17-chart-grid,
  body.site31.r20 .r17-progress-wrap .r17-secondary-grid,
  body.site31.r20 .r17-progress-wrap .r17-progress-bottom{
-  width:calc(100% + 4px)!important;
+  width:calc(100% - 20px)!important;
   margin-left:12px!important;
   margin-right:0!important;
   gap:20px!important;
