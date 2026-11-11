@@ -206,7 +206,18 @@ export function deleteCloudProgress(client,uid){
    // no-argument function: it cannot reject a late JWT switch from A to B.
    // Until the matching SQL migration is deployed, deletion MUST fail closed.
    const {data:resetValue,error:resetError}=await client.rpc('aim_reset_my_progress_for_user',{expected_uid:uid});
-   if(resetError)throw resetError;
+   if(resetError){
+    // The V3 client may be previewed before its SQL migration has been applied.
+    // A missing safe RPC must fail closed without exposing a raw PostgREST error
+    // or falling back to the previous unbound destructive function.
+    if(resetError.code==='PGRST202'){
+     throw Error('Suppression indisponible : la mise à jour du serveur Cloud est nécessaire. Ta progression locale est conservée.');
+    }
+    if(resetError.code==='42501'&&/account_mismatch/i.test(String(resetError.message||''))){
+     throw Error('Suppression annulée : la session ne correspond plus au compte sélectionné.');
+    }
+    throw resetError;
+   }
    // Never clear the initiating account's local cache if a different account
    // replaced it while the server request was pending.
    const {data:confirmed,error:confirmedError}=await client.auth.getUser();
