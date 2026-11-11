@@ -1979,3 +1979,42 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--bars{
 body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
  width:28px;height:28px;
 }
+
+
+/* V3 / pass 52 — inside-button geometry from the owner reference screenshot.
+   Keep both accessible FR/EN link names and working routes. The reference
+   centers labels, with independent glyph/chevron anchors, rather than
+   distributing each flex child across the width of the button. */
+@media (min-width:1600px) and (max-width:1780px){
+ body.site31.r20 .r17-progress-wrap .r17-hero-actions>.r17-button{
+  position:relative!important;
+  justify-content:center!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon{
+  position:absolute!important;
+  left:34px!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-button--outline .r17-cta-icon{
+  left:42px!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-hero-actions>.r17-button>.fr,
+ body.site31.r20 .r17-progress-wrap .r17-hero-actions>.r17-button>.en{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  transform:translate(-50%,-50%)!important;
+  margin:0!important;
+  white-space:nowrap!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-hero-actions>.r17-button--outline>.fr,
+ body.site31.r20 .r17-progress-wrap .r17-hero-actions>.r17-button--outline>.en{
+  left:calc(50% + 16px)!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-hero-actions>.r17-button>span[aria-hidden="true"]{
+  position:absolute!important;
+  right:24px!important;top:50%!important;
+  transform:translateY(-50%)!important;
+ }
+}
