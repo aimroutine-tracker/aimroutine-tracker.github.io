@@ -67,6 +67,72 @@ test('Duplicate sessions in an imported JSON backup count once in the real train
  await expect(page.locator('#avg-accuracy')).toContainText('72');
 });
 
+test('V5 backup upload aborts when another account takes over during file reading',async({page,browserName})=>{
+ test.skip(browserName!=='chromium','Deterministic delayed File.text regression runs on Chromium');
+ await useVerifiedTestAccount(page);
+ await page.locator('#tab-data').click();
+ const before=await page.evaluate(()=>({
+  a:localStorage.getItem('aimroutine_cloud_user_11111111-1111-4111-8111-111111111111_aimroutine_web_training_v2'),
+  b:localStorage.getItem('aimroutine_cloud_user_22222222-2222-4222-8222-222222222222_aimroutine_web_training_v2')
+ }));
+ await page.evaluate(()=>{
+  File.prototype.text=function(){return new Promise(resolve=>{
+   window.__qaFinishBackupRead=()=>resolve(JSON.stringify({format:'aimroutine-web-v1',
+    sessions:[{id:'should-not-be-imported',date:new Date().toISOString(),
+     rank:'silver',focus:'flick',tool:'VALORANT',scenario:'Stand de tir',
+     minutes:20,accuracy:99,feeling:'good',notes:''}],weeklyGoal:3}));
+  })};
+ });
+ await page.locator('#import-data').setInputFiles({
+  name:'slow-account-a-backup.json',mimeType:'application/json',buffer:Buffer.from('{}')
+ });
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaFinishBackupRead)).toBe('function');
+ await page.evaluate(()=>{
+  window.__aimCloudUserId='22222222-2222-4222-8222-222222222222';
+  window.__qaFinishBackupRead();
+ });
+ await expect(page.locator('#data-message')).toContainText('Compte modifié pendant l’import');
+ const after=await page.evaluate(()=>({
+  a:localStorage.getItem('aimroutine_cloud_user_11111111-1111-4111-8111-111111111111_aimroutine_web_training_v2'),
+  b:localStorage.getItem('aimroutine_cloud_user_22222222-2222-4222-8222-222222222222_aimroutine_web_training_v2')
+ }));
+ expect(after).toEqual(before);
+});
+
+test('V6 portable upload aborts on a cross-account switch before any merge',async({page,browserName})=>{
+ test.skip(browserName!=='chromium','Deterministic delayed File.text regression runs on Chromium');
+ await useVerifiedTestAccount(page);
+ await page.locator('#tab-data').click();
+ const before=await page.evaluate(()=>({
+  a:localStorage.getItem('aimroutine_cloud_user_11111111-1111-4111-8111-111111111111_aimroutine_web_training_v2'),
+  b:localStorage.getItem('aimroutine_cloud_user_22222222-2222-4222-8222-222222222222_aimroutine_web_training_v2'),
+  extensionB:localStorage.getItem('aimroutine_cloud_user_22222222-2222-4222-8222-222222222222_aimroutine_player_extensions_v1')
+ }));
+ await page.evaluate(()=>{
+  File.prototype.text=function(){return new Promise(resolve=>{
+   window.__qaFinishPortableRead=()=>resolve(JSON.stringify({
+    format:'aimroutine-interchange-v1',sessions:[],presets:[],weeklyGoal:3,
+    profile:{nickname:'PrivateAccountA'},program:null
+   }));
+  })};
+ });
+ await page.locator('#import-portable').setInputFiles({
+  name:'slow-portable.json',mimeType:'application/json',buffer:Buffer.from('{}')
+ });
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaFinishPortableRead)).toBe('function');
+ await page.evaluate(()=>{
+  window.__aimCloudUserId='22222222-2222-4222-8222-222222222222';
+  window.__qaFinishPortableRead();
+ });
+ await expect(page.locator('#portable-status')).toContainText('Compte modifié pendant l’import');
+ const after=await page.evaluate(()=>({
+  a:localStorage.getItem('aimroutine_cloud_user_11111111-1111-4111-8111-111111111111_aimroutine_web_training_v2'),
+  b:localStorage.getItem('aimroutine_cloud_user_22222222-2222-4222-8222-222222222222_aimroutine_web_training_v2'),
+  extensionB:localStorage.getItem('aimroutine_cloud_user_22222222-2222-4222-8222-222222222222_aimroutine_player_extensions_v1')
+ }));
+ expect(after).toEqual(before);
+});
+
 test('Profile, program and player achievements',async ({page})=>{
  await useVerifiedTestAccount(page);
  await page.locator('#tab-profile').click();
