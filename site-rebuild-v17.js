@@ -72,7 +72,7 @@ function routinePage(){
   const [fr,en,minutes]=levels[level],d=days[day];
   $('[data-r17-level-name]').textContent=phrase(fr.toUpperCase(),en.toUpperCase());
   $('[data-r17-plan-title]').textContent=phrase('Plan d’entraînement — '+fr,'Training plan — '+en);
-  $('[data-r17-duration]').textContent='~'+minutes+' min / '+phrase('jour','day');
+  $('[data-r17-duration]').textContent=phrase('5 jours / semaine · ','5 days / week · ')+'~'+minutes+' min / '+phrase('jour','day');
   $('[data-r17-day-title]').textContent=phrase('Jour '+(day+1),'Day '+(day+1));
   $('[data-r17-focus]').textContent=phrase(d.title,d.en);
   $('[data-r17-min]').textContent=minutes;
