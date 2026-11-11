@@ -93,3 +93,56 @@ test('Coach never compares a mixture of different scenarios',()=>{
  const mixed=[65,63,77,79].map((x,i)=>({...sample(new Date(Date.UTC(2026,10,1+i)).toISOString(),x,'s'+i),scenario:i%2?'Cible B':'Cible A'}));
  assert.match(coach(mixed,'flick','VALORANT').confidence,/insuffisantes/);
 });
+
+
+test('Future timestamps cannot inflate totals, accuracy or the current streak',()=>{
+ const now=new Date('2026-11-09T12:00:00.000Z');
+ const yesterday=sample('2026-11-08T10:00:00.000Z',75,'past','flick');
+ const tomorrow=sample('2026-11-10T10:00:00.000Z',99,'tomorrow','tracking');
+ const laterToday=sample('2026-11-09T22:00:00.000Z',98,'future-today','micro');
+ const invalid=sample('not a timestamp',99,'invalid','control');
+ const entries=[yesterday,tomorrow,laterToday,invalid];
+ const stats=computeStats(entries,3,now);
+ assert.equal(stats.count,1);
+ assert.equal(stats.minutes,25);
+ assert.equal(stats.week,0);
+ assert.equal(stats.avg,75);
+ assert.equal(stats.best,75);
+ assert.equal(stats.streak,1,'a future session on the same calendar day cannot extend a streak');
+ assert.deepEqual(stats.byFocus,{flick:1,micro:0,tracking:0,control:0});
+ assert.equal(streak(entries,now),1);
+ assert.equal(normalizeStore({sessions:[tomorrow]},null).sessions.length,1,
+  'stored history is preserved, even though a future timestamp is not yet counted');
+});
+
+test('At the exact timestamp, a valid session becomes eligible for all statistics',()=>{
+ const now=new Date('2026-11-09T12:00:00.000Z');
+ const yesterday=sample('2026-11-08T10:00:00.000Z',70,'yesterday');
+ const nowSession=sample(now.toISOString(),90,'now');
+ const future=sample('2026-11-09T12:00:00.001Z',100,'one-ms-future');
+ const stats=computeStats([yesterday,nowSession,future],3,now);
+ assert.equal(stats.count,2);
+ assert.equal(stats.minutes,50);
+ assert.equal(stats.week,1);
+ assert.equal(stats.avg,80);
+ assert.equal(stats.best,90);
+ assert.equal(stats.streak,2);
+});
+
+test('Coaching never infers improvement from future or invalid sessions',()=>{
+ const now=new Date('2026-11-09T12:00:00.000Z');
+ const past=[
+  sample('2026-11-09T09:00:00.000Z',65,'a'),
+  sample('2026-11-09T11:00:00.000Z',67,'b')
+ ];
+ const projected=[
+  sample('2026-11-09T14:00:00.000Z',88,'c'),
+  sample('2026-11-09T16:00:00.000Z',96,'d'),
+  sample('invalid date',99,'bad')
+ ];
+ const result=coach([...past,...projected],'flick','VALORANT',3,now);
+ assert.match(result.confidence,/insuffisantes/);
+ assert.doesNotMatch(result.title,/Consolider/);
+ const onlyFuture=coach(projected,'flick','VALORANT',3,now);
+ assert.equal(onlyFuture.title,'Premiers pas');
+});
