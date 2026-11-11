@@ -3142,17 +3142,25 @@ test('V3 Progress panel anchors preserve original desktop proportions without in
  await check('.r17-chart-grid > .v14-panel',[33,643,1156]);
  await check('.r17-secondary-grid > .v14-panel',[33,605,1007]);
  await check('.r17-progress-bottom > .v14-panel',[33,1101]);
- // The owner's Goals/Next Step row starts at y≈734. This explicit vertical
- // assertion protects the 9px visual alignment gain measured in pass 58.
+ // The owner's lower dashboard begins 15–16px after the second row.
+ // Compare *relative* vertical anchors: browser smoke and screenshot runner
+ // use slightly different fonts, shifting the whole lower group ~10px,
+ // while the gap between the two rows remains invariant. This catches the
+ // old 6px gap without falsely rejecting a correctly aligned capture.
+ const secondaryBottom=await page.locator('.r17-secondary-grid > .v14-panel').first()
+  .evaluate(element=>Math.round(element.getBoundingClientRect().bottom));
  const bottomRects=await page.locator('.r17-progress-bottom > .v14-panel')
   .evaluateAll(elements=>elements.map(element=>{
    const r=element.getBoundingClientRect();
    return {top:Math.round(r.top),bottom:Math.round(r.bottom)};
   }));
  for(const [index,rect] of bottomRects.entries()){
-  expect(Math.abs(rect.top-734),
-   `Progress lower panel ${index+1}: y=${rect.top}, owner y≈734`).toBeLessThanOrEqual(8);
-  expect(rect.bottom,`Progress lower panel ${index+1} must remain in viewport`).toBeLessThanOrEqual(941);
+  const gap=rect.top-secondaryBottom;
+  expect(Math.abs(gap-16),
+   `Progress lower panel ${index+1}: row gap=${gap}px, owner gap≈16px`)
+   .toBeLessThanOrEqual(5);
+  expect(rect.bottom,`Progress lower panel ${index+1} must remain in viewport`)
+   .toBeLessThanOrEqual(941);
  }
  // Empty UI must never borrow the illustrative statistics in the design PNG.
  await expect(page.locator('#v14-p-sessions')).toHaveText('0');
