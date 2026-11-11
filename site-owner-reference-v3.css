@@ -684,9 +684,12 @@ body.site31.r20 .r17-home-wrap .r17-feature p{font-size:13.6px!important;}
    and offset 8px left from a right-anchored resize. This is visual geometry,
    not a changed game asset, data record or authentication flow. */
 @media(min-width:1350px){
+ /* V3 / pass 46 — owner PNG SIFT alignment: 450 inlier image features
+    show the existing Jett artwork 8px left and 2px high at 1672x941.
+    Move only the home hero image, never the overlay, title or interactions. */
  body.site31.r20 .r17-home-wrap .r17-hero-art{
   background-size:94.7% auto!important;
-  background-position:calc(100% - 8px) center!important;
+  background-position:100% calc(50% + 2px)!important;
  }
  body.site31.r20 .r17-home-wrap .r17-hero-content{
   position:relative!important;top:13px!important;
