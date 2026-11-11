@@ -67,6 +67,36 @@ test('Duplicate sessions in an imported JSON backup count once in the real train
  await expect(page.locator('#avg-accuracy')).toContainText('72');
 });
 
+test('V6 portable backup can restore real sessions and profile without changing account',async({page,browserName})=>{
+ test.skip(browserName!=='chromium','Portable import and mocked Cloud are validated on Chromium');
+ await useVerifiedTestAccount(page);
+ await page.locator('#tab-data').click();
+ const backup={format:'aimroutine-interchange-v1',
+  sessions:[{id:'portable-player-session',date:new Date(Date.now()-60000).toISOString(),
+   rank:'silver',focus:'micro',tool:'Aim Lab',scenario:'Microshot',
+   minutes:20,accuracy:82,feeling:'good',notes:''}],
+  presets:[],weeklyGoal:4,
+  profile:{nickname:'PortableTester',rank:'silver',dpi:1600,sensitivity:0.2,tool:'Aim Lab'},
+  program:null};
+ page.once('dialog',dialog=>dialog.accept());
+ await page.locator('#import-portable').setInputFiles({
+  name:'portable-account-a.json',mimeType:'application/json',
+  buffer:Buffer.from(JSON.stringify(backup))
+ });
+ await expect(page.locator('#portable-status')).toContainText('1 nouvelle(s) séance(s)');
+ await page.locator('#tab-dashboard').click();
+ await expect(page.locator('#total-sessions')).toHaveText('1');
+ await expect(page.locator('#total-minutes')).toHaveText('20');
+ await expect(page.locator('#avg-accuracy')).toContainText('82');
+ const stored=await page.evaluate(()=>window.AIMWeb.getStore());
+ expect(stored.sessions.map(row=>row.id)).toEqual(['portable-player-session']);
+ expect(stored.weeklyGoal).toBe(4);
+ await page.locator('#tab-profile').click();
+ await expect(page.locator('#player-name')).toHaveValue('PortableTester');
+ await expect(page.locator('#player-dpi')).toHaveValue('1600');
+ await expect(page.locator('#player-sens')).toHaveValue('0.2');
+});
+
 test('V5 backup upload aborts when another account takes over during file reading',async({page,browserName})=>{
  test.skip(browserName!=='chromium','Deterministic delayed File.text regression runs on Chromium');
  await useVerifiedTestAccount(page);
