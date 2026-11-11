@@ -39,6 +39,8 @@ jobs:
         run: python3 -m unittest discover -s tests -p 'test_stage_public_visual_evidence_v3.py' -v
       - name: Unit-test source fidelity gate with synthetic pixels only
         run: python3 -m unittest discover -s tests -p 'test_private_source_fidelity_gate_v3.py' -v
+      - name: Verify the V3 manual-only Pages publication freeze
+        run: python3 -m unittest discover -s tests -p 'test_deployment_freeze_v3.py' -v
       - name: Prevent accidental secret commits
         run: python3 tests/check_secrets.py
       - name: Validate internal HTML links and assets
