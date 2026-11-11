@@ -970,6 +970,49 @@ test('V3 Cloud guest registration CTA opens the real mandatory-nickname signup f
 });
 
 
+test('Progress real weekly KPI and bar chart share Monday calendar weeks',async({page})=>{
+ const uid='11111111-1111-4111-8111-111111111111';
+ const authKey='sb-lmzswtzboobpokumxzhy-auth-token';
+ // All records stay in a page-local mocked identity/storage; no real API
+ // credentials, database writes, user profiles or external accounts used.
+ await page.evaluate(({uid,authKey})=>{
+  const now=new Date();
+  const currentMonday=new Date(now.getFullYear(),now.getMonth(),
+   now.getDate()-(now.getDay()+6)%7,0,0,0,0);
+  const previousSunday=new Date(currentMonday.getTime()-60000);
+  const make=(id,date)=>({
+   id,date:date.toISOString(),rank:'silver',focus:'flick',
+   tool:'VALORANT',scenario:'Stand de tir',minutes:15,
+   accuracy:75,feeling:'good',notes:''
+  });
+  localStorage.setItem(authKey,'qa-calendar-week-token');
+  localStorage.setItem('aimroutine_cloud_user_'+uid+'_aimroutine_web_training_v2',
+   JSON.stringify({sessions:[
+    make('previous-sunday-session',previousSunday),
+    make('current-monday-session',currentMonday)
+   ],presets:[],weeklyGoal:3}));
+ },{uid,authKey});
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const uid='11111111-1111-4111-8111-111111111111';
+export const supabase={auth:{
+ getSession:async()=>({data:{session:{user:{id:uid}}},error:null}),
+ getUser:async()=>({data:{user:{id:uid}},error:null})
+}};`
+ }));
+ await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#v14-p-sessions')).toHaveText('2');
+ await expect(page.locator('#v14-p-week')).toHaveText('1');
+ await expect(page.locator('#v14-p-goal')).toHaveText('1 / 3');
+ const description=page.locator('#v14-p-bars .r17-visually-hidden');
+ await expect(description).toContainText('S-1 : 1 séance(s)');
+ await expect(description).toContainText('Cette semaine : 1 séance(s)');
+ await page.locator('#v14-week-range').selectOption('4');
+ await expect(description).toContainText('S-1 : 1 séance(s)');
+ await expect(description).toContainText('Cette semaine : 1 séance(s)');
+ await expect(page.locator('#v14-p-average')).toContainText('75');
+});
+
 test('Progress chart descriptions expose real weekly counts and respect the language',async({page})=>{
  await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
  const counts=page.locator('#v14-p-bars .r17-visually-hidden');
