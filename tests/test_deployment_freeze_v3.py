@@ -21,17 +21,18 @@ class PublicationFreezeTests(unittest.TestCase):
         self.assertNotIn('\n  push:',header)
         self.assertNotIn('pull_request:',header)
 
-    def test_release_is_main_only_with_three_manual_attestations(self):
+    def test_release_is_main_only_with_four_manual_attestations(self):
         for check in (
             "github.event_name == 'workflow_dispatch'",
             "github.ref == 'refs/heads/main'",
             "inputs.release_confirmation == 'PUBLIER_AIMROUTINE_V3'",
             'inputs.four_originals_reviewed == true',
             'inputs.disposable_accounts_verified == true',
+            'inputs.account_bound_reset_verified == true',
         ):
             self.assertIn(check,self.publish)
         for item in ('release_confirmation:','four_originals_reviewed:',
-                     'disposable_accounts_verified:'):
+                     'disposable_accounts_verified:','account_bound_reset_verified:'):
             self.assertIn(item,self.publish)
 
     def test_archived_recovery_cannot_deploy_or_cancel_pages(self):
@@ -57,6 +58,7 @@ class PublicationFreezeTests(unittest.TestCase):
             'test_private_source_fidelity_gate_v3.py',
             'test_stage_public_visual_evidence_v3.py',
             'python3 tests/check_secrets.py',
+            'python3 scripts/check_reset_release_ready.py',
             'python3 scripts/build_public.py',
             'python3 tests/check_public_artifact.py',
             'python3 tests/check_site.py',
