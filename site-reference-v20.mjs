@@ -165,7 +165,12 @@ function routines(screen){
   for(const [i,el] of list.entries()){
    const day=new Date(start);day.setDate(start.getDate()+i);
    const key=dateKey(day);
-   const has=sessions.some(x=>dateKey(x.date)===key);
+   // A future-dated imported record is not yet a completed training day.
+   // Match the honest weekly KPI, which also ignores future timestamps.
+   const has=sessions.some(x=>{
+    const timestamp=Date.parse(x.date);
+    return Number.isFinite(timestamp)&&timestamp<=today.getTime()&&dateKey(timestamp)===key;
+   });
    el.classList.toggle('r20-complete',has);
    if(has)done++;
    el.setAttribute('title',has?words('Séance enregistrée','Recorded session'):words('Aucune séance enregistrée','No recorded session'));
