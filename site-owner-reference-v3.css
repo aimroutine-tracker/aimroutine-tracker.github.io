@@ -1819,3 +1819,94 @@ body.site31.r20 .r17-progress-wrap .v3-chart-period select:focus-visible{
   grid-template-columns:minmax(0,1.93fr) minmax(0,1fr)!important;
  }
 }
+
+
+/* V3 / pass 44 — compact the GUEST Cloud sign-in card at the 1672px owner
+   reference, so the separate real signup card is not pushed below the fold.
+   Google, email/password, signup mode and recovery stay actionable. Only the
+   regular login view changes; registration, recovery, signed-in dashboard,
+   narrow layouts and local data are completely unaffected.
+   Two sign-in modes + Google share one desktop toolbar, rather than stacking
+   Google and its optional helper explanation above the email form.
+   Keep the helper note + alternative divider screen-reader accessible. */
+@media (min-width:1600px) and (max-width:1780px){
+ body.site31.r20 .r17-account-wrap #auth-panel:has(.r17-auth-reference-heading):has(#login-form:not([hidden])){
+  position:relative!important;
+  padding:12px 14px 13px!important;
+ }
+ body.site31.r20 .r17-account-wrap #auth-panel:has(#login-form:not([hidden])) .r17-auth-reference-heading{
+  margin-bottom:6px!important;
+ }
+ body.site31.r20 .r17-account-wrap #auth-panel:has(#login-form:not([hidden])) .ar7-form-switch{
+  width:51.5%!important;
+  min-height:35px!important;
+  padding:2px!important;
+  margin:1px 0 9px!important;
+  gap:2px!important;
+  border-radius:3px!important;
+ }
+ body.site31.r20 .r17-account-wrap #auth-panel:has(#login-form:not([hidden])) .ar7-form-switch button{
+  min-height:29px!important;
+  padding:4px 5px!important;
+  font-size:10.5px!important;
+ }
+ body.site31.r20 .r17-account-wrap #auth-panel:has(#login-form:not([hidden])) #google-login-wrap:not([hidden]){
+  position:absolute!important;
+  top:73px!important;
+  right:14px!important;
+  width:44.5%!important;
+  margin:0!important;
+  display:block!important;
+ }
+ body.site31.r20 .r17-account-wrap #auth-panel:has(#login-form:not([hidden])) .ar7-google-btn{
+  min-height:35px!important;
+  padding:5px 5px!important;
+  font-size:10.5px!important;
+  gap:5px!important;
+ }
+ body.site31.r20 .r17-account-wrap #auth-panel:has(#login-form:not([hidden])) .ar7-google-icon{
+  width:16px!important;height:18px!important;font-size:14px!important;
+ }
+ body.site31.r20 .r17-account-wrap #auth-panel:has(#login-form:not([hidden])) :is(#google-login-note,.ar7-divider){
+  position:absolute!important;
+  width:1px!important;height:1px!important;
+  padding:0!important;margin:-1px!important;
+  overflow:hidden!important;
+  clip:rect(0,0,0,0)!important;
+  clip-path:inset(50%)!important;
+  white-space:nowrap!important;
+  border:0!important;
+ }
+ body.site31.r20 .r17-account-wrap #auth-panel:has(#login-form:not([hidden])) #login-form{
+  display:grid!important;
+  grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)!important;
+  gap:6px 8px!important;
+ }
+ body.site31.r20 .r17-account-wrap #auth-panel:has(#login-form:not([hidden])) #login-form>label{
+  grid-column:1/-1!important;
+  gap:3px!important;
+  font-size:10.5px!important;
+ }
+ body.site31.r20 .r17-account-wrap #auth-panel:has(#login-form:not([hidden])) #login-form input{
+  min-height:34px!important;
+  padding:6px 9px!important;
+  font-size:11px!important;
+ }
+ body.site31.r20 .r17-account-wrap #auth-panel:has(#login-form:not([hidden])) #captcha-login{
+  grid-column:1/-1!important;
+ }
+ body.site31.r20 .r17-account-wrap #auth-panel:has(#login-form:not([hidden])) #login-form .ar7-primary{
+  grid-column:1!important;
+  min-height:35px!important;
+  padding:5px 9px!important;
+  font-size:11px!important;
+ }
+ body.site31.r20 .r17-account-wrap #auth-panel:has(#login-form:not([hidden])) #reset-link{
+  grid-column:2!important;
+  justify-self:end!important;align-self:center!important;
+  font-size:10.5px!important;
+  min-height:30px!important;
+  margin:0!important;padding:4px 0!important;
+  white-space:nowrap!important;
+ }
+}
