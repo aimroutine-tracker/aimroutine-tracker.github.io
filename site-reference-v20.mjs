@@ -470,7 +470,7 @@ function installV3ProgressComposition(screen){
  const statrow=document.createElement('div');statrow.className='r17-progress-streak-stats';
  const data=[
   ['Série en cours','Current streak','#v14-p-streak-detail'],
-  ['Séances (7 jours)','Sessions (7 days)','#v14-p-week']
+  ['Séances cette semaine','Sessions this week','#v14-p-week']
  ];
  for(const [fr,en,selector] of data){
   const tile=document.createElement('div');tile.className='r17-progress-live-metric';
