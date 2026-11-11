@@ -183,11 +183,16 @@ function setupInterop(){
  });
  $('#import-portable').addEventListener('change',async e=>{
   const file=e.target.files?.[0];if(!file)return;
+  const importUid=activeUid();
   try{
+   if(!importUid)throw Error('Connecte-toi pour importer une sauvegarde.');
    if(file.size>3e6)throw Error('Fichier limité à 3 Mo.');
    const data=parseInterchange(JSON.parse(await file.text()));
+   // Never allow a delayed file read started by A to write into B's namespace.
+   if(activeUid()!==importUid)throw Error('Compte modifié pendant l’import : recommence après connexion.');
    const added=window.AIMWeb.mergeData(data);
    if(confirm('Importer également le profil et le calendrier du fichier ?')){
+    if(activeUid()!==importUid)throw Error('Compte modifié pendant l’import : recommence après connexion.');
     if(save(data.extension))showProfile();
    }
    renderAll();status.textContent=added+' nouvelle(s) séance(s) importée(s).';
