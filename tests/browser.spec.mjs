@@ -3334,3 +3334,47 @@ test('Training insight chart never treats future-dated cache records as observed
  await expect(page.locator('#avg-accuracy')).toContainText('72');
  expect(await page.evaluate(()=>window.AIMWeb.getStore().sessions.length)).toBe(3);
 });
+
+
+test('Routines previews never count future rows or carry an old accuracy chart into an empty cache',async({page,browserName})=>{
+ test.skip(browserName!=='chromium','Deterministic observation-time validation runs on Chromium');
+ await page.clock.install({time:new Date('2026-11-09T12:00:00.000Z')});
+ await useVerifiedTestAccount(page);
+ const uid='11111111-1111-4111-8111-111111111111';
+ await page.evaluate(uid=>{
+  const make=(id,date,minutes,accuracy)=>({
+   id,date,rank:'silver',focus:'flick',tool:'VALORANT',
+   scenario:'Stand de tir',minutes,accuracy,feeling:'good',notes:''
+  });
+  const sessions=[
+   make('real-monday-1','2026-11-09T08:00:00.000Z',20,72),
+   make('real-monday-2','2026-11-09T09:00:00.000Z',15,82),
+   make('future-same-day','2026-11-09T16:00:00.000Z',90,100),
+   make('future-tuesday','2026-11-10T08:00:00.000Z',90,99)
+  ];
+  localStorage.setItem('aimroutine_cloud_user_'+uid+'_aimroutine_web_training_v2',
+   JSON.stringify({sessions,presets:[],weeklyGoal:3}));
+  if(!window.AIMWeb?.reloadFromCache?.())throw Error('QA cache hydration failed');
+  window.dispatchEvent(new Event('aim-store-updated'));
+ },uid);
+ await expect(page.locator('.r17-weekprogress [data-r17-week]')).toHaveText('1 / 5',
+  {timeout:10000});
+ await expect(page.locator('.r17-metric [data-r17-goal]')).toHaveText('2 / 3');
+ await expect(page.locator('[data-r17-count]')).toHaveText('2');
+ await expect(page.locator('[data-r17-avg]')).toHaveText('77.0 %');
+ await expect(page.locator('.r17-chart-caption strong')).toHaveText('77.0 %');
+ await expect(page.locator('[data-r17-chart] svg')).toBeVisible();
+ await page.evaluate(uid=>{
+  localStorage.setItem('aimroutine_cloud_user_'+uid+'_aimroutine_web_training_v2',
+   JSON.stringify({sessions:[],presets:[],weeklyGoal:3}));
+  if(!window.AIMWeb?.reloadFromCache?.())throw Error('QA empty cache hydration failed');
+  window.dispatchEvent(new Event('aim-store-updated'));
+ },uid);
+ await expect(page.locator('.r17-metric [data-r17-goal]')).toHaveText('0 / 3');
+ await expect(page.locator('.r17-weekprogress [data-r17-week]')).toHaveText('0 / 5');
+ await expect(page.locator('[data-r17-count]')).toHaveText('0');
+ await expect(page.locator('[data-r17-avg]')).toHaveText('—');
+ await expect(page.locator('.r17-chart-caption strong')).toHaveText('—');
+ await expect(page.locator('[data-r17-chart] svg')).toHaveCount(0);
+ await expect(page.locator('[data-r17-chart]')).toContainText('Enregistre des résultats');
+});
