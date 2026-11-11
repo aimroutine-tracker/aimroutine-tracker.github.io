@@ -18,7 +18,12 @@ function refreshSourceNotice(){
   guestNotice();
  if(source.textContent!==message)source.textContent=message;
 }
-const recent=(items,days,now=new Date())=>!days?items.slice():items.filter(x=>{const age=now.getTime()-Date.parse(x.date);return age>=0&&age<=days*86400000;});
+// Even in the all-time range, future-dated records must not appear in charts.
+// This uses the same single render-time clock snapshot as computeStats().
+const recent=(items,days,now=new Date())=>items.filter(x=>{
+ const age=now.getTime()-Date.parse(x.date);
+ return Number.isFinite(age)&&age>=0&&(!days||age<=days*86400000);
+});
 function svgEl(name,props){
  const e=document.createElementNS('http://www.w3.org/2000/svg',name);
  for(const [key,value] of Object.entries(props))e.setAttribute(key,String(value));
