@@ -1,0 +1,34 @@
+name: Scaffold account-bound reset migration (isolated CI only)
+# Temporary preparation check. This CLI command does not connect to hosted
+# Supabase, make an authenticated request, or apply any SQL.
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/prepare-account-bound-reset.yml"
+      - "docs/supabase-reset-bound-rpc-v3.proposal.sql"
+      - "scripts/check_reset_release_ready.py"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  scaffold:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Generate migration using pinned Supabase CLI without any credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes supabase@3.1.0 migration new reset_expected_uid < docs/supabase-reset-bound-rpc-v3.proposal.sql
+          migration=$(find supabase/migrations -maxdepth 1 -name '*_reset_expected_uid.sql' | sort | tail -n 1)
+          test -n "$migration"
+          echo "GENERATED_MIGRATION_PATH=$migration"
+          sha256sum "$migration"
+          grep -q 'aim_reset_my_progress_for_user(expected_uid uuid)' "$migration"
+          grep -q 'security invoker' "$migration"
+          python3 scripts/check_reset_release_ready.py
+          echo 'Only generated a local SQL file; no migration was deployed.'
