@@ -151,9 +151,9 @@ function routines(screen){
  sidebar.forEach((el,i)=>{const span=$('span',el);if(span&&labels[i])bindV3Locale(span,...labels[i]);});
  const stats=()=>window.AIMWeb?.getStore?.();
  const update=()=>{
-  const store=stats();if(!store)return;
-  const sessions=Array.isArray(store.sessions)?store.sessions:[];
-  const s=computeStats(sessions,store.weeklyGoal||3);
+  const store=stats();
+  const sessions=Array.isArray(store?.sessions)?store.sessions:[];
+  const s=computeStats(sessions,store?.weeklyGoal||3);
   const avgDuration=s.count?(s.minutes/s.count):null;
   const dur=$('[data-r17-minutes]',screen);if(dur)dur.textContent=avgDuration===null?'—':Math.round(avgDuration)+' min';
   const list=$$('.r17-weekday',screen);
@@ -220,7 +220,13 @@ function routines(screen){
   return '<svg class="ar20-graph" viewBox="0 0 330 150" role="img" aria-label="'+words('Séances des sept derniers jours','Sessions over last seven days')+'">'+counts.map((n,i)=>{const h=n/max*100;return '<rect x="'+(28+i*42)+'" y="'+(130-h)+'" width="25" height="'+h+'" rx="3" fill="'+(n?'#37e3dd':'#315064')+'"/><text x="'+(40+i*42)+'" y="145" font-size="10" fill="#b0cbdb" text-anchor="middle">'+(i+1)+'</text>'}).join('')+'</svg>';
  }
  const output=$('.r17-chart-caption strong',screen);
- if(output){const f=()=>{const ss=stats();if(!ss)return;const vals=ss.sessions.filter(s=>Number.isFinite(s.accuracy));output.textContent=vals.length?(vals.reduce((n,x)=>n+x.accuracy,0)/vals.length).toFixed(1)+' %':'—'};f();window.addEventListener('aim-store-updated',f)}
+ if(output){const f=()=>{const ss=stats(),now=Date.now();
+  const vals=(Array.isArray(ss?.sessions)?ss.sessions:[]).filter(s=>{
+   const timestamp=Date.parse(s?.date);
+   return Number.isFinite(timestamp)&&timestamp<=now&&typeof s.accuracy==='number'&&Number.isFinite(s.accuracy);
+  });
+  output.textContent=vals.length?(vals.reduce((n,x)=>n+x.accuracy,0)/vals.length).toFixed(1)+' %':'—';
+ };f();window.addEventListener('aim-store-updated',f);window.addEventListener('aim-sync-applied',f);window.addEventListener('aim-cloud-data-changed',f)}
  window.addEventListener('aim-v5-ready',update);
  window.addEventListener('aim-store-updated',update);
  window.addEventListener('aim-cloud-data-changed',update);
