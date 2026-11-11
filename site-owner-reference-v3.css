@@ -1226,7 +1226,7 @@ body.site31.r20 .ar-v3-language-footer [data-switch-lang]:focus-visible{
 @media(min-width:1350px){
  body.site31.r20 .r17-training-wrap .r17-hero-art{
   background-size:70.3% auto!important;
-  background-position:55% 0%!important;
+  background-position:55% calc(0% + 2px)!important;
  }
  body.site31.r20 .r17-progress-wrap .r17-hero-art{
   background-size:58.8% auto!important;
@@ -1234,7 +1234,7 @@ body.site31.r20 .ar-v3-language-footer [data-switch-lang]:focus-visible{
  }
  body.site31.r20 .r17-account-wrap .r17-hero-art{
   background-size:66.6% auto!important;
-  background-position:74% 0%!important;
+  background-position:74% calc(0% - 2px)!important;
  }
 }
 
@@ -1934,3 +1934,8 @@ body.site31.r20 .r17-progress-wrap .v3-chart-period select:focus-visible{
   margin-top:8px!important;
  }
 }
+
+
+/* V3 / pass 47 — private 1672px original-vs-candidate feature matching.
+   Routines source art lies ~2px below the current render, Cloud ~2px above.
+   Correct only vertical artwork coordinates; leave all copy, data and CTAs. */
