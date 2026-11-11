@@ -1023,16 +1023,19 @@ test('Progress real weekly KPI and bar chart share Monday calendar weeks',async(
   const currentMonday=new Date(now.getFullYear(),now.getMonth(),
    now.getDate()-(now.getDay()+6)%7,0,0,0,0);
   const previousSunday=new Date(currentMonday.getTime()-60000);
-  const make=(id,date)=>({
+  const make=(id,date,accuracy=75,minutes=15)=>({
    id,date:date.toISOString(),rank:'silver',focus:'flick',
-   tool:'VALORANT',scenario:'Stand de tir',minutes:15,
-   accuracy:75,feeling:'good',notes:''
+   tool:'VALORANT',scenario:'Stand de tir',minutes,
+   accuracy,feeling:'good',notes:''
   });
   localStorage.setItem(authKey,'qa-calendar-week-token');
   localStorage.setItem('aimroutine_cloud_user_'+uid+'_aimroutine_web_training_v2',
    JSON.stringify({sessions:[
     make('previous-sunday-session',previousSunday),
-    make('current-monday-session',currentMonday)
+    make('current-monday-session',currentMonday),
+    // A future row may remain in the account cache but must never become
+    // an observed metric, accuracy point, streak day or coach evidence.
+    make('future-session',new Date(now.getTime()+86400000),99,90)
    ],presets:[],weeklyGoal:3}));
  },{uid,authKey});
  await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({
@@ -1045,6 +1048,8 @@ export const supabase={auth:{
  }));
  await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#v14-p-sessions')).toHaveText('2');
+ await expect(page.locator('#v14-p-minutes')).toHaveText('30');
+ await expect(page.locator('#v14-p-line .v14-chart-caption')).toContainText('2 résultats saisis');
  await expect(page.locator('#v14-p-week')).toHaveText('1');
  await expect(page.locator('#v14-p-goal')).toHaveText('1 / 3');
  const description=page.locator('#v14-p-bars .r17-visually-hidden');
