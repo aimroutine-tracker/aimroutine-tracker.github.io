@@ -2041,3 +2041,15 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
   filter:saturate(1.13) contrast(1.05) brightness(1.08)!important;
  }
 }
+
+
+/* V3 / pass 58 — source-anchored lower Progress row placement.
+   At 1672x941 the owner's Goals/Next-step panels begin around y=734,
+   while pass 55 began around y=725. Add 9px of vertical space only above
+   the lower pair; preserve their original heights, measured KPI bindings,
+   responsiveness, and the second-row panel positions. */
+@media (min-width:1600px) and (max-width:1780px){
+ body.site31.r20 .r17-progress-wrap .r17-progress-bottom{
+  margin-top:23px!important;
+ }
+}
