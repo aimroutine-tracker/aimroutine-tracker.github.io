@@ -86,8 +86,19 @@ export function createRoutine(rank,focus,tool,minutes=25,breakSeconds=30){
 }
 export function sessionMinutes(p){return p.exercises.reduce((n,x)=>n+Number(x.minutes),0);}
 export function localDay(date){const d=new Date(date);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+// A timestamp in the future is not an observed training session. Keep it in
+// stored history for diagnostics, but never award a streak, KPI or coaching
+// trend before it actually happens (for example after device clock drift).
+export function occurredSessions(sessions,now=new Date()){
+  const cutoff=now.getTime();
+  if(!Number.isFinite(cutoff))return [];
+  return sessions.filter(s=>{
+    const timestamp=typeof s?.date==='string'?Date.parse(s.date):NaN;
+    return Number.isFinite(timestamp)&&timestamp<=cutoff;
+  });
+}
 export function streak(sessions,now=new Date()){
-  const days=new Set(sessions.map(s=>localDay(s.date)));
+  const days=new Set(occurredSessions(sessions,now).map(s=>localDay(s.date)));
   let d=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   if(!days.has(localDay(d)))d.setDate(d.getDate()-1);
   let n=0;
@@ -118,7 +129,7 @@ export function weeklySessionCounts(sessions,weeks=8,now=new Date()){
   return counts;
 }
 export function computeStats(sessions,weeklyGoal=3,now=new Date()){
-  const list=sessions.slice().sort((a,b)=>b.date.localeCompare(a.date));
+  const list=occurredSessions(sessions,now).sort((a,b)=>b.date.localeCompare(a.date));
   const scores=list.filter(s=>s.accuracy!==null).map(s=>s.accuracy);
   const week=list.filter(s=>calendarWeeksAgo(s.date,now)===0);
   return {count:list.length,minutes:list.reduce((n,s)=>n+s.minutes,0),
@@ -131,10 +142,11 @@ export function comparable(sessions,focus,tool){
   return sessions.filter(s=>s.focus===focus&&s.accuracy!==null&&(!tool||s.tool===tool)).sort((a,b)=>a.date.localeCompare(b.date));
 }
 export function coach(sessions,focus,tool,weeklyGoal=3,now=new Date()){
-  if(!sessions.length)return {title:'Premiers pas',message:'Prépare une séance courte, note ton ressenti, puis répète plusieurs fois les mêmes exercices.',confidence:'Démarrage',focus};
+  const observed=occurredSessions(sessions,now);
+  if(!observed.length)return {title:'Premiers pas',message:'Prépare une séance courte, note ton ressenti, puis répète plusieurs fois les mêmes exercices.',confidence:'Démarrage',focus};
   // Only compare identical tools and named scenarios; rank alone is not evidence.
   const groups=new Map();
-  sessions.filter(s=>validSession(s)&&s.accuracy!==null&&s.focus===focus&&
+  observed.filter(s=>validSession(s)&&s.accuracy!==null&&s.focus===focus&&
     (!tool||s.tool===tool)&&typeof s.scenario==='string'&&s.scenario.trim()&&
     TOOLS.includes(s.tool)).forEach(s=>{
     const key=s.tool+'::'+s.scenario.trim();
