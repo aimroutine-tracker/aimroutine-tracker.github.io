@@ -74,8 +74,8 @@ function routinePage(){
   $('[data-r17-plan-title]').textContent=phrase('Plan d’entraînement — '+fr,'Training plan — '+en);
   const daily=$('[data-r17-duration]');
   if(daily){
-   const fr='5 jours / semaine · ~'+minutes+' min / jour';
-   const en='5 days / week · ~'+minutes+' min / day';
+   const fr='~'+minutes+' min / jour';
+   const en='~'+minutes+' min / day';
    daily.dataset.r20Fr=fr;daily.dataset.r20En=en;
    daily.textContent=phrase(fr,en);
   }
