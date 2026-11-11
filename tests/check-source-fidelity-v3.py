@@ -49,6 +49,22 @@ for name in names:
         errors.append(f'{name}: candidate visually regressed by more than 0.25 RGB MAE against original.')
     if row and set(row.get('source_region_mae',{}))!={'header','hero','mid','lower'}:
         errors.append(f'{name}: regional source comparison is missing or incomplete.')
+    # The right-side hero artwork is a source-backed, fixed visual region.
+    # Require its private before/after measurement to avoid losing alignment
+    # gains under whole-screen differences from authentic empty data states.
+    hero_bounds={
+        'home':[780,55,1672,355],
+        'routines':[780,55,1672,300],
+        'progress':[780,55,1672,260],
+        'account':[780,55,1672,300],
+    }[name]
+    if row and row.get('source_hero_art_bounds')!=hero_bounds:
+        errors.append(f'{name}: owner hero-art crop was changed or omitted.')
+    if row and not all(isinstance(row.get(k),(int,float)) and row[k]>=0 for k in
+        ('source_hero_art_before_mae_0_to_255','source_hero_art_mae_0_to_255')):
+        errors.append(f'{name}: quantitative owner hero-art before/after comparison is missing.')
+    if row and row.get('source_hero_art_regressed') is True:
+        errors.append(f'{name}: hero-art fidelity regressed against the original.')
 if errors:
     print('BLOCKED: release cannot claim reference fidelity.')
     for e in errors: print(' -',e)
