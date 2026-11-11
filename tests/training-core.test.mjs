@@ -146,3 +146,23 @@ test('Coaching never infers improvement from future or invalid sessions',()=>{
  const onlyFuture=coach(projected,'flick','VALORANT',3,now);
  assert.equal(onlyFuture.title,'Premiers pas');
 });
+
+
+test('Insight comparisons never plot future, invalid or nonnumeric accuracy records',()=>{
+ const now=new Date('2026-11-11T12:00:00.000Z');
+ const past=sample('2026-11-10T11:00:00.000Z',67,'past');
+ const current=sample(now.toISOString(),74,'current');
+ const tomorrow=sample('2026-11-12T11:00:00.000Z',99,'tomorrow');
+ const futureToday=sample('2026-11-11T16:00:00.000Z',100,'future-today');
+ const invalidDate=sample('invalid',99,'invalid');
+ const missingAccuracy=sample('2026-11-10T12:00:00.000Z',null,'missing');
+ const differentFocus=sample('2026-11-10T12:00:00.000Z',78,'other-focus','micro');
+ const wrongTool=sample('2026-11-10T12:00:00.000Z',80,'wrong-tool','flick','Aim Lab');
+ const rows=[tomorrow,current,invalidDate,missingAccuracy,past,futureToday,differentFocus,wrongTool];
+ const selection=comparable(rows,'flick','VALORANT',now);
+ assert.deepEqual(selection.map(s=>s.id),['test-past','test-current']);
+ assert.equal(selection[0].accuracy,67);
+ assert.equal(selection[1].accuracy,74);
+ assert.equal(rows[0].id,'test-tomorrow','input rows must not be mutated');
+ assert.deepEqual(comparable([tomorrow,futureToday], 'flick','VALORANT', now),[]);
+});
