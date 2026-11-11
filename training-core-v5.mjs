@@ -138,8 +138,13 @@ export function computeStats(sessions,weeklyGoal=3,now=new Date()){
     week:week.length,goal:weeklyGoal,streak:streak(list,now),
     byFocus:Object.fromEntries(Object.keys(FOCUS).map(k=>[k,list.filter(s=>s.focus===k).length]))};
 }
-export function comparable(sessions,focus,tool){
-  return sessions.filter(s=>s.focus===focus&&s.accuracy!==null&&(!tool||s.tool===tool)).sort((a,b)=>a.date.localeCompare(b.date));
+// The training insight chart must use the same observed-session cutoff as
+// the dashboard and coach. A device-clock error cannot fabricate a new point.
+export function comparable(sessions,focus,tool,now=new Date()){
+  return occurredSessions(sessions,now).filter(s=>
+    s.focus===focus&&typeof s.accuracy==='number'&&
+    Number.isFinite(s.accuracy)&&(!tool||s.tool===tool)
+  ).sort((a,b)=>a.date.localeCompare(b.date));
 }
 export function coach(sessions,focus,tool,weeklyGoal=3,now=new Date()){
   const observed=occurredSessions(sessions,now);
