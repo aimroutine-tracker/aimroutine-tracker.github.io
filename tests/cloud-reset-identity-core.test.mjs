@@ -31,8 +31,9 @@ function delayedFailedSave(currentUser){
    }
    return Promise.resolve({data:{user:{id:currentUser()}},error:null});
   }},
-  async rpc(name){
-   assert.equal(name,'aim_reset_my_progress');
+  async rpc(name,args){
+   assert.equal(name,'aim_reset_my_progress_for_user');
+   assert.deepEqual(args,{expected_uid:A});
    rpcCalls++;
    return {data:now,error:null};
   },
