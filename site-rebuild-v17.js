@@ -72,7 +72,13 @@ function routinePage(){
   const [fr,en,minutes]=levels[level],d=days[day];
   $('[data-r17-level-name]').textContent=phrase(fr.toUpperCase(),en.toUpperCase());
   $('[data-r17-plan-title]').textContent=phrase('Plan d’entraînement — '+fr,'Training plan — '+en);
-  $('[data-r17-duration]').textContent=phrase('5 jours / semaine · ','5 days / week · ')+'~'+minutes+' min / '+phrase('jour','day');
+  const daily=$('[data-r17-duration]');
+  if(daily){
+   const fr='5 jours / semaine · ~'+minutes+' min / jour';
+   const en='5 days / week · ~'+minutes+' min / day';
+   daily.dataset.r20Fr=fr;daily.dataset.r20En=en;
+   daily.textContent=phrase(fr,en);
+  }
   $('[data-r17-day-title]').textContent=phrase('Jour '+(day+1),'Day '+(day+1));
   $('[data-r17-focus]').textContent=phrase(d.title,d.en);
   $('[data-r17-min]').textContent=minutes;
@@ -82,7 +88,12 @@ function routinePage(){
  $$('[data-r17-day]').forEach(el=>el.addEventListener('click',()=>{day=Number(el.dataset.r17Day);update()}));
  function create(){const rank=$('#rank'),focus=$('#focus'),duration=$('#duration');if(rank)rank.value=level;if(focus)focus.value=days[day].f;if(duration)duration.value=String(levels[level][2]);$('#tab-builder')?.click();$('#builder-form button[type="submit"]')?.click();$('#panel-builder')?.scrollIntoView({block:'start',behavior:'smooth'})}
  $$('[data-r17-create]').forEach(el=>el.addEventListener('click',create));
- function stats(){const store=window.AIMWeb?.getStore?.();if(!store)return;const sessions=Array.isArray(store.sessions)?store.sessions:[];const scores=sessions.filter(s=>Number.isFinite(s.accuracy));const minutes=sessions.reduce((sum,s)=>sum+(Number(s.minutes)||0),0);const avg=scores.length?scores.reduce((sum,s)=>sum+s.accuracy,0)/scores.length:null;const week=sessions.filter(s=>{const age=Date.now()-Date.parse(s.date);return age>=0&&age<=7*86400000}).length,goal=store.weeklyGoal||3;const values={minutes:minutes+' min',count:String(sessions.length),accuracy:avg===null?'—':avg.toFixed(1)+' %',streak:$('#streak-days')?.textContent||'0',goal:week+' / '+goal,week:week+' / '+goal,avg:avg===null?'—':avg.toFixed(1)+' %'};for(const [key,v] of Object.entries(values))if($('[data-r17-'+key+']'))$('[data-r17-'+key+']').textContent=v;for(const el of $$('[data-r17-meter],[data-r17-week-meter]'))el.style.width=Math.min(100,week/goal*100)+'%';const chart=$('[data-r17-chart]');if(chart&&scores.length){const items=scores.sort((a,b)=>a.date.localeCompare(b.date)).slice(-8),points=items.map((s,i)=>`${10+(items.length===1?.5:i/(items.length-1))*280},${125-s.accuracy}`).join(' ');chart.innerHTML=`<svg viewBox="0 0 300 145" role="img" aria-label="Précision déclarée"><path d="M10 125 H290" stroke="#496273"/><polyline points="${points}" stroke="#37e3dd" stroke-width="3" fill="none"/></svg>`}}
+ function stats(){const store=window.AIMWeb?.getStore?.();if(!store)return;const sessions=Array.isArray(store.sessions)?store.sessions:[];const scores=sessions.filter(s=>Number.isFinite(s.accuracy));const minutes=sessions.reduce((sum,s)=>sum+(Number(s.minutes)||0),0);const avg=scores.length?scores.reduce((sum,s)=>sum+s.accuracy,0)/scores.length:null;const now=new Date();
+  const monday=new Date(now.getFullYear(),now.getMonth(),now.getDate()-(now.getDay()+6)%7);
+  const week=sessions.filter(s=>{
+   const timestamp=Date.parse(s.date);
+   return Number.isFinite(timestamp)&&timestamp>=monday.getTime()&&timestamp<=now.getTime();
+  }).length,goal=store.weeklyGoal||3;const values={minutes:minutes+' min',count:String(sessions.length),accuracy:avg===null?'—':avg.toFixed(1)+' %',streak:$('#streak-days')?.textContent||'0',goal:week+' / '+goal,week:week+' / '+goal,avg:avg===null?'—':avg.toFixed(1)+' %'};for(const [key,v] of Object.entries(values))if($('[data-r17-'+key+']'))$('[data-r17-'+key+']').textContent=v;for(const el of $$('[data-r17-meter],[data-r17-week-meter]'))el.style.width=Math.min(100,week/goal*100)+'%';const chart=$('[data-r17-chart]');if(chart&&scores.length){const items=scores.sort((a,b)=>a.date.localeCompare(b.date)).slice(-8),points=items.map((s,i)=>`${10+(items.length===1?.5:i/(items.length-1))*280},${125-s.accuracy}`).join(' ');chart.innerHTML=`<svg viewBox="0 0 300 145" role="img" aria-label="Précision déclarée"><path d="M10 125 H290" stroke="#496273"/><polyline points="${points}" stroke="#37e3dd" stroke-width="3" fill="none"/></svg>`}}
  window.addEventListener('aim-v5-ready',stats);window.addEventListener('aim-store-updated',stats);window.addEventListener('aim-cloud-data-changed',stats);update();stats();
 }
 function accountPage(){
