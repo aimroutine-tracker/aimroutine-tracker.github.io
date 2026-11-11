@@ -55,6 +55,28 @@ for name in pages:
                     record['reference_absolute_error_reduction']=round(old_mae-new_mae,3)
                     record['reference_relative_error_reduction_percent']=round((1-new_mae/old_mae)*100,2) if old_mae else 0
                     record['source_visual_regressed']=new_mae>old_mae+0.25
+                    # Track the right-hand hero image separately. A genuine
+                    # artwork alignment can improve dramatically while other
+                    # dynamic page sections legitimately remain different.
+                    # These coordinates come from the owner's 1672x941 PNGs,
+                    # never from synthetic reference art or user metrics.
+                    hero_bounds={
+                        'home':(780,55,1672,355),
+                        'routines':(780,55,1672,300),
+                        'progress':(780,55,1672,260),
+                        'account':(780,55,1672,300),
+                    }[name]
+                    def cropped_mae(first,second,bounds):
+                        a=first.crop(bounds)
+                        b=second.crop(bounds)
+                        differences=ImageChops.difference(a,b).histogram()
+                        return sum((v%256)*count for v,count in enumerate(differences))/(a.width*a.height*3)
+                    hero_before=cropped_mae(ref,before,hero_bounds)
+                    hero_after=cropped_mae(ref,after,hero_bounds)
+                    record['source_hero_art_bounds']=list(hero_bounds)
+                    record['source_hero_art_before_mae_0_to_255']=round(hero_before,3)
+                    record['source_hero_art_mae_0_to_255']=round(hero_after,3)
+                    record['source_hero_art_regressed']=hero_after>hero_before+0.25
                     record['source_region_mae']={}
                     for label, y0, y1 in (('header',0,55),('hero',55,300),('mid',300,650),('lower',650,941)):
                         h=ImageChops.difference(ref.crop((0,y0,ref.width,y1)),
