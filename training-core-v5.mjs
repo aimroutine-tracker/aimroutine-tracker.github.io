@@ -176,8 +176,23 @@ export function exportPayload(store){
 export function importPayload(payload,store){
   if(!payload||typeof payload!=='object'||!['aimroutine-web-v1','aimroutine-web-v2'].includes(payload.format)||!Array.isArray(payload.sessions)||payload.sessions.length>1000||!payload.sessions.every(validSession))throw Error('Format ou séances invalides');
   if(payload.format==='aimroutine-web-v2'&&(!Array.isArray(payload.presets)||payload.presets.length>25||!payload.presets.every(validPreset)))throw Error('Favoris invalides');
+  // Deduplicate both against existing records and within one import. A backup
+  // can contain repeated IDs: never count one player session or favorite twice.
   const known=new Set(store.sessions.map(x=>x.id));
-  const added=payload.sessions.map(normalizeSession).filter(x=>!known.has(x.id));
-  const presets=payload.format==='aimroutine-web-v2'?[...store.presets,...payload.presets.filter(p=>!store.presets.some(y=>y.id===p.id))].slice(-25):store.presets;
-  return {store:{...store,sessions:[...store.sessions,...added].slice(-1000),presets,weeklyGoal:int(payload.weeklyGoal,1,14)?Number(payload.weeklyGoal):store.weeklyGoal},added:added.length};
+  const added=[];
+  for(const row of payload.sessions){
+    if(known.has(row.id))continue;
+    const normalized=normalizeSession(row);
+    if(!normalized)continue;
+    known.add(normalized.id);
+    added.push(normalized);
+  }
+  const presets=[...store.presets];
+  const presetIds=new Set(presets.map(p=>p.id));
+  if(payload.format==='aimroutine-web-v2')for(const preset of payload.presets){
+    if(presetIds.has(preset.id))continue;
+    presetIds.add(preset.id);
+    presets.push(preset);
+  }
+  return {store:{...store,sessions:[...store.sessions,...added].slice(-1000),presets:presets.slice(-25),weeklyGoal:int(payload.weeklyGoal,1,14)?Number(payload.weeklyGoal):store.weeklyGoal},added:added.length};
 }
