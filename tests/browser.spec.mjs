@@ -970,6 +970,31 @@ test('V3 Cloud guest registration CTA opens the real mandatory-nickname signup f
 });
 
 
+test('Routines never marks a future imported training day as completed',async({page,browserName})=>{
+ test.skip(browserName!=='chromium','Deterministic clock validation runs in Chromium');
+ await page.clock.install({time:new Date('2026-11-09T09:00:00.000Z')});
+ await useVerifiedTestAccount(page);
+ await expect(page.locator('.r17-weekprogress [data-r17-week]')).toHaveText('0 / 5');
+ await page.evaluate(()=>{
+  const uid='11111111-1111-4111-8111-111111111111';
+  const make=(id,date)=>({
+   id,date,rank:'silver',focus:'flick',tool:'VALORANT',
+   scenario:'Stand de tir',minutes:15,accuracy:82,feeling:'good',notes:''
+  });
+  const sessions=[
+   make('done-monday','2026-11-09T08:00:00.000Z'),
+   make('future-tuesday','2026-11-10T12:00:00.000Z')
+  ];
+  localStorage.setItem('aimroutine_cloud_user_'+uid+'_aimroutine_web_training_v2',
+   JSON.stringify({sessions,presets:[],weeklyGoal:3}));
+  if(!window.AIMWeb?.reloadFromCache?.())throw Error('Account cache unavailable in test');
+  window.dispatchEvent(new Event('aim-store-updated'));
+ });
+ await expect(page.locator('.r17-weekprogress [data-r17-week]')).toHaveText('1 / 5');
+ await expect(page.locator('.r17-weekday.r20-complete')).toHaveCount(1);
+ await expect(page.locator('.r17-weekdays [data-r17-day="1"]')).not.toHaveClass(/r20-complete/);
+});
+
 test('Routines five-day program metric names training days, not rolling sessions',async({page})=>{
  await page.goto('/training.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.r17-weekdays .r17-weekday')).toHaveCount(5);
