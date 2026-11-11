@@ -25,7 +25,7 @@ Pour **Accueil**, **Routines**, **Progression** et **Compte**, joindre dans une 
 
 Ne jamais copier les PNG sources, les superpositions propriétaires ou leurs pixels dans le dépôt public, dans un commentaire PR ou dans un artefact GitHub public. Le contrôle public sans les originaux reste bloquant ; ne pas le transformer artificiellement en succès.
 
-**Budgets anti-régression (pas des objectifs pixel-perfect)** : Accueil 21,625240 ; Routines 26,435744 ; Progression 26,024374 ; Compte 26,500401 de MAE RGB. Tolérance 0,25, définie dans le manifeste.
+**Budgets anti-régression (pas des objectifs pixel-perfect)** : Accueil 21,625240 ; Routines 26,435744 ; Progression **25,603400** (passe 58 : espacement des cartes du bas corrigé) ; Compte 26,500401 de MAE RGB. Tolérance 0,25, définie dans le manifeste.
 
 ## 2. Recette réelle : trois comptes d'essai exclusivement
 
