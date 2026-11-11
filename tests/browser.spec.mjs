@@ -970,6 +970,17 @@ test('V3 Cloud guest registration CTA opens the real mandatory-nickname signup f
 });
 
 
+test('Routines five-day program metric names training days, not rolling sessions',async({page})=>{
+ await page.goto('/training.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('.r17-weekdays .r17-weekday')).toHaveCount(5);
+ const summary=page.locator('.r17-weekprogress');
+ await expect(summary).toContainText('Jours du plan cette semaine');
+ await expect(summary.locator('[data-r17-week]')).toHaveText('0 / 5');
+ await page.locator('.ar-v3-language-footer [data-switch-lang]').click();
+ await expect(summary).toContainText('Program days this week');
+ await expect(summary.locator('[data-r17-week]')).toHaveText('0 / 5');
+});
+
 test('Progress real weekly KPI and bar chart share Monday calendar weeks',async({page})=>{
  const uid='11111111-1111-4111-8111-111111111111';
  const authKey='sb-lmzswtzboobpokumxzhy-auth-token';
