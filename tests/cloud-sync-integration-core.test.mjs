@@ -54,7 +54,7 @@ function clientFor(db,uid){
    from(table){assert.ok(db[table],table);return new Query(table)},
    async rpc(name,args){
     assert.equal(name,'aim_reset_my_progress_for_user');
-    assert.deepEqual(args,{expected_uid:uid});
+    assert.equal(typeof args?.expected_uid,'string','Client must pass expected_uid');
     // The new RPC rejects a mismatched expected owner even if the JWT belongs to
     // an authenticated but different user.
     if(args?.expected_uid!==uid)return {data:null,error:Error('account_mismatch')};
@@ -85,6 +85,51 @@ async function use(store,fn){
  globalThis.localStorage=store;
  return await fn();
 }
+test('account-bound RPC rejects a late JWT switch from A to B without deleting either user',async()=>{
+ const db=makeDb(),store=new MemoryStorage(),asB=clientFor(db,USER_B);
+ db.aim_sessions.push(
+  {user_id:USER_A,session_id:'private-a',payload:session('private-a'),deleted_at:null},
+  {user_id:USER_B,session_id:'private-b',payload:session('private-b'),deleted_at:null}
+ );
+ let identityChecks=0,requests=0;
+ const client={
+  auth:{getUser:async()=>{
+   identityChecks++;
+   // The Auth checks see A, but the HTTP request carries a newer B JWT.
+   return {data:{user:{id:USER_A}},error:null};
+  }},
+  async rpc(name,args){requests++;return asB.rpc(name,args)}
+ };
+ await use(store,async()=>{
+  write(store,USER_A,[session('cached-a')]);
+  await assert.rejects(deleteCloudProgress(client,USER_A),/account_mismatch/);
+  assert.equal(identityChecks,2,'A was verified before the destructive request');
+  assert.equal(requests,1,'New bound RPC was invoked exactly once');
+  assert.deepEqual(readUserLocal(USER_A).store.sessions.map(s=>s.id),['cached-a']);
+  assert.equal(store.getItem(scopedKey(TRAINING_KEY,USER_B)),null);
+ });
+ assert.deepEqual(db.aim_sessions.map(r=>r.session_id),['private-a','private-b'],
+  'Neither account can be wiped by a request with mismatched JWT and expected UID');
+});
+
+test('Cloud deletion fails closed if bound RPC is not deployed, keeping local progress',async()=>{
+ const db=makeDb(),store=new MemoryStorage(),base=clientFor(db,USER_A);
+ let calls=0;
+ const client={...base,async rpc(name,args){
+  calls++;
+  assert.equal(name,'aim_reset_my_progress_for_user');
+  assert.deepEqual(args,{expected_uid:USER_A});
+  return {data:null,error:Error('PGRST202: account-bound RPC not deployed')};
+ }};
+ await use(store,async()=>{
+  write(store,USER_A,[session('never-erase-without-server')]);
+  await assert.rejects(deleteCloudProgress(client,USER_A),/not deployed/);
+  assert.equal(calls,1);
+  assert.deepEqual(readUserLocal(USER_A).store.sessions.map(s=>s.id),
+   ['never-erase-without-server']);
+ });
+});
+
 test('two devices merge offline training without cross-account data, honor favorite tombstones',async()=>{
  const db=makeDb(),a1=new MemoryStorage(),a2=new MemoryStorage(),b1=new MemoryStorage();
  const ca=clientFor(db,USER_A),cb=clientFor(db,USER_B);
