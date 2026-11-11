@@ -2053,16 +2053,3 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
   margin-top:23px!important;
  }
 }
-
-
-/* V3 / pass 61 — active training-level tab visual registration.
-   Original owner art at 1672x941 uses a brighter red inner glow in the
-   selected Intermediate tab. Match that treatment without changing
-   selection behavior, text or the other two level cards. */
-@media (min-width:1600px) and (max-width:1780px){
- body.site31.r20 .r17-training-wrap .r17-level.is-active{
-  background:radial-gradient(ellipse at 50% 17%,#b9465b8a 0%,#672f3f9c 40%,#252130 100%)!important;
-  border-color:#ff7282!important;
-  box-shadow:inset 0 -2px #ff6174,0 0 21px #f53a5d75!important;
- }
-}
