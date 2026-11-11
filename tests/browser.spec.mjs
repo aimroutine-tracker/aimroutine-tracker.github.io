@@ -3113,6 +3113,14 @@ export const deleteCloudProgress=async()=>true;`
 test('V3 Progress panel anchors preserve original desktop proportions without invented metrics',async({page})=>{
  await page.setViewportSize({width:1672,height:941});
  await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
+ const actions=page.locator('.r17-progress-wrap .r17-hero-actions > a');
+ await expect(actions).toHaveCount(2);
+ await expect(actions.nth(0)).toHaveAttribute('href','training.html#panel-insights');
+ await expect(actions.nth(1)).toHaveAttribute('href','training.html#panel-dashboard');
+ await expect(actions.nth(0).locator('svg.r17-cta-icon--bars')).toHaveAttribute('aria-hidden','true');
+ await expect(actions.nth(1).locator('svg.r17-cta-icon--target')).toHaveAttribute('aria-hidden','true');
+ await expect(actions.nth(0)).toContainText('Mettre à jour mes données');
+ await expect(actions.nth(1)).toContainText('Gérer mes objectifs');
  await expect(page.locator('.r17-progress-wrap .r17-hero-desc .fr').first())
   .toContainText('des tendances claires et des objectifs personnalisés');
  // Match the visual-evidence runner: measure only after fonts, hydration and
