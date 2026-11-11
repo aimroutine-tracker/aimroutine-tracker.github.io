@@ -44,6 +44,13 @@ Utiliser uniquement des **comptes jetables créés pour ce test**, avec des boî
 | Suppression de progression QA | Sur un compte jetable seulement, supprimer la progression, puis reconnecter un ancien appareil | Les données supprimées ne ressuscitent pas via une ancienne copie locale |
 | Suppression d'un compte QA | Procédure `SUPPRIMER` sur un compte jetable uniquement | Connexion définitivement refusée, données du compte supprimées, autres comptes d'essai inchangés |
 
+### Cas critique ajouté — changement de compte pendant la suppression Cloud
+
+- Sur deux **comptes jetables A et B**, interrompre ou retarder une opération de sauvegarde A puis déclencher « supprimer ma progression » ; changer de compte avant la reprise réseau. **B doit conserver toutes ses données**, aucune RPC de suppression ne doit partir avec une identité B au nom de A.
+- Reproduire aussi un changement de compte pendant la réponse de la RPC. L'interface ne doit pas effacer le cache local d'une identité précédente ni afficher un succès périmé à B.
+- Côté navigateur, la branche V3 effectue un `auth.getUser()` supplémentaire **avant et après** `aim_reset_my_progress` et dispose de tests Node déterministes pour ces cas. Ce contrôle est une **défense en profondeur** : il ne peut pas éliminer toute fenêtre de course entre la dernière vérification et l'envoi effectif du JWT.
+- **Limite bloquante à vérifier** : la RPC serveur actuelle `aim_reset_my_progress()` agit sur `auth.uid()` du JWT réellement reçu et ne reçoit pas encore d'UID attendu. Ne pas annoncer une isolation destructive totalement prouvée sans test A/B réel et, si le scénario révèle une course, une RPC serveur liant explicitement l'UID attendu à `auth.uid()`. Tout changement serveur devra faire l'objet d'une migration, d'une revue et d'une validation avant déploiement.
+
 Ne pas supprimer les comptes d'essai avant d'avoir conservé **uniquement** les résultats non sensibles du protocole. Après validation, les supprimer de manière contrôlée. **État actuel de toute cette section : NON EXÉCUTÉE en vrai**, sauf si le propriétaire fournit séparément un compte rendu de test vérifiable.
 
 ## 3. Accessibilité, langues et réactivité
