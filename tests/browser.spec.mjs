@@ -3291,3 +3291,36 @@ test('V3 Cloud guest signup stays above the 1672px fold while keeping all real a
  await page.locator('#reset-link').click();
  await expect(page.locator('#reset-form')).toBeVisible();
 });
+
+
+test('Training insight chart never treats future-dated cache records as observed performance',async({page})=>{
+ // Uses an isolated QA identity and mocked cloud backend. No production
+ // Supabase account, write or token is involved in this regression test.
+ await useVerifiedTestAccount(page);
+ const added=await page.evaluate(()=>{
+  const now=Date.now();
+  const make=(id,offsetMinutes,accuracy)=>({
+   id,date:new Date(now+offsetMinutes*60000).toISOString(),
+   rank:'silver',focus:'flick',tool:'VALORANT',scenario:'Stand de tir',
+   minutes:20,accuracy,feeling:'good',notes:''
+  });
+  return window.AIMWeb.mergeData({
+   sessions:[make('observed-insight',-60,72),
+    make('future-insight-today',60,98),make('future-insight-next-day',1440,99)],
+   presets:[],weeklyGoal:3
+  });
+ });
+ expect(added).toBe(3,'stored cache retains future rows without deleting player data');
+ await page.locator('#tab-insights').click();
+ await page.locator('#insight-focus').selectOption('flick');
+ await page.locator('#insight-tool').selectOption('VALORANT');
+ await expect(page.locator('#chart-count')).toHaveText('1 valeur');
+ await expect(page.locator('#chart svg circle')).toHaveCount(1);
+ await expect(page.locator('#insight-advice')).toContainText('quatre précisions');
+ await expect(page.locator('#focus-breakdown')).toContainText('1 séance(s)');
+ await page.locator('#tab-dashboard').click();
+ await expect(page.locator('#total-sessions')).toHaveText('1');
+ await expect(page.locator('#total-minutes')).toHaveText('20');
+ await expect(page.locator('#avg-accuracy')).toContainText('72');
+ expect(await page.evaluate(()=>window.AIMWeb.getStore().sessions.length)).toBe(3);
+});
