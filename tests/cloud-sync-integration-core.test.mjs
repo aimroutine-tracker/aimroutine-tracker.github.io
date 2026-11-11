@@ -52,8 +52,12 @@ function clientFor(db,uid){
  }
  return {auth:{getUser:async()=>({data:{user:{id:uid}},error:null})},
    from(table){assert.ok(db[table],table);return new Query(table)},
-   async rpc(name){
-    assert.equal(name,'aim_reset_my_progress');
+   async rpc(name,args){
+    assert.equal(name,'aim_reset_my_progress_for_user');
+    assert.deepEqual(args,{expected_uid:uid});
+    // The new RPC rejects a mismatched expected owner even if the JWT belongs to
+    // an authenticated but different user.
+    if(args?.expected_uid!==uid)return {data:null,error:Error('account_mismatch')};
     // Real function uses SECURITY INVOKER + RLS and returns the reset cursor.
     for(const table of ['aim_sessions','aim_presets','aim_profiles']){
      db[table]=db[table].filter(row=>row.user_id!==uid);
