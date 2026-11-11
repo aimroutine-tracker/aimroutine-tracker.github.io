@@ -2032,13 +2032,12 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
 }
 
 
-/* V3 / pass 54 — verify slight artwork luminance on Routines and Cloud only.
-   Both hero assets have already been spatially registered to the owner PNG.
-   This change cannot alter account/session metrics, links or input contrast.
-   Validate per-page RGB MAE and revert any regressing page individually. */
+/* V3 / pass 54 — owner screenshot luminance verified individually.
+   Routines improves RGB MAE (26.546 -> 26.436) with +8% artwork brightness.
+   Cloud *regressed* (26.500 -> 26.528) on the same test and is excluded.
+   No account, chart, button or user-data colors are modified. */
 @media (min-width:1600px) and (max-width:1780px){
- body.site31.r20 .r17-training-wrap .r17-hero-art,
- body.site31.r20 .r17-account-wrap .r17-hero-art{
+ body.site31.r20 .r17-training-wrap .r17-hero-art{
   filter:saturate(1.13) contrast(1.05) brightness(1.08)!important;
  }
 }
