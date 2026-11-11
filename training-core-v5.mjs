@@ -70,7 +70,15 @@ export function normalizeStore(raw,old){
     const s=normalizeSession(item);
     if(s&&!seen.has(s.id)){seen.add(s.id);sessions.push(s);}
   }
-  const presets=Array.isArray(current.presets)?current.presets.filter(validPreset).slice(-25):[];
+  // Older caches could hold duplicate favorite IDs. Normalize these like
+  // sessions so a fresh reload does not restore duplicated routine cards.
+  const presetSeen=new Set(),presets=[];
+  const candidatePresets=Array.isArray(current.presets)?current.presets.filter(validPreset).slice(-25):[];
+  for(const preset of candidatePresets){
+    if(presetSeen.has(preset.id))continue;
+    presetSeen.add(preset.id);
+    presets.push(preset);
+  }
   return {format:'aimroutine-web-v2',sessions:sessions.slice(-1000),presets,weeklyGoal:int(current.weeklyGoal,1,14)?Number(current.weeklyGoal):3};
 }
 export function createRoutine(rank,focus,tool,minutes=25,breakSeconds=30){
