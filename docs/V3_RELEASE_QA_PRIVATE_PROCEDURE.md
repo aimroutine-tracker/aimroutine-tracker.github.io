@@ -60,3 +60,16 @@ Les workflows préparés sur la branche V3 rendent la publication **manuelle** :
 `recover-pages.yml` est archivé et ne possède plus de permission Pages. Les cinq tests `test_deployment_freeze_v3.py` surveillent ces propriétés. **Ces protections restent sur la PR tant qu'elle n'est pas fusionnée** ; elles ne changent pas la configuration externe du service GitHub Pages ni les workflows qui restent sur `main`.
 
 Ne confirmer aucune publication tant que les quatre sources privées, les essais réels et l'approbation visuelle humaine ne sont pas documentés. Une simple attestation manuelle ne vaut pas preuve technique : la décision appartient au propriétaire après lecture des résultats.
+
+
+## 5. Contrôle de cohérence des semaines et des indicateurs
+
+**Corrigé en V3 / passe 60 (code et tests automatisés)** :
+
+- `computeStats().week` et les barres 4/8/12 semaines de Progression comptabilisent la **semaine calendaire locale du lundi 00:00 au dimanche 23:59:59** et non les 168 dernières heures. Les séances futures ne sont pas comptabilisées.
+- Le graphique et les KPI de Progression partagent un unique instant de référence par actualisation, y compris lors d'un changement de semaine.
+- La barre `0 / 5` de Routines compte les **jours du programme complétés**, pas le nombre de séances ni les « 7 derniers jours ». Les libellés FR/EN ont été clarifiés, y compris les objectifs du tableau de bord.
+- Tests source `tests/progress-weekly-core.test.mjs` : cinq scénarios (dimanche/lundi, 4/8/12 semaines, dates invalides/futures, nouvel an et heure d'été Europe/Paris).
+- Tests Playwright `tests/browser.spec.mjs` : vérification de l'accord entre KPI et barres avec deux séances d'essai locales sur deux semaines différentes, et de la sémantique du plan de cinq jours.
+
+Ces tests utilisent exclusivement des comptes et dates simulés ou une session mockée en navigateur. Ils ne modifient pas les données Supabase réelles et ne constituent toujours pas les essais de production avec comptes jetables décrits en section 2.
