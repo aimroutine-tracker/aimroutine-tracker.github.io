@@ -41,6 +41,32 @@ test('Build, edit, run and save a player session',async ({page})=>{
  await expect(page.locator('#total-sessions')).toHaveText('1');
  await expect(page.locator('#best-accuracy')).toContainText('80.5');
 });
+test('Duplicate sessions in an imported JSON backup count once in the real training UI',async({page})=>{
+ await useVerifiedTestAccount(page);
+ const recorded={id:'imported-once',date:new Date(Date.now()-60000).toISOString(),
+  rank:'silver',focus:'flick',tool:'VALORANT',scenario:'Stand de tir',
+  minutes:20,accuracy:72,feeling:'good',notes:''};
+ const backup={format:'aimroutine-web-v1',sessions:[
+  recorded,{...recorded,accuracy:100},{...recorded,minutes:120}
+ ],weeklyGoal:3};
+ await page.locator('#tab-data').click();
+ await page.locator('#import-data').setInputFiles({
+  name:'duplicate-qa-backup.json',mimeType:'application/json',
+  buffer:Buffer.from(JSON.stringify(backup))
+ });
+ await expect(page.locator('#data-message')).toContainText('1 nouvelle(s) séance(s)');
+ await page.locator('#tab-dashboard').click();
+ await expect(page.locator('#total-sessions')).toHaveText('1');
+ await expect(page.locator('#total-minutes')).toHaveText('20');
+ await expect(page.locator('#avg-accuracy')).toContainText('72');
+ const state=await page.evaluate(()=>window.AIMWeb.getStore());
+ expect(state.sessions).toHaveLength(1);
+ expect(state.sessions[0]).toMatchObject({id:'imported-once',accuracy:72,minutes:20});
+ await page.reload({waitUntil:'domcontentloaded'});
+ await expect(page.locator('#total-sessions')).toHaveText('1');
+ await expect(page.locator('#avg-accuracy')).toContainText('72');
+});
+
 test('Profile, program and player achievements',async ({page})=>{
  await useVerifiedTestAccount(page);
  await page.locator('#tab-profile').click();
