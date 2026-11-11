@@ -213,6 +213,51 @@ test('concurrent inserts of the same session ID preserve the first database writ
 });
 
 
+test('reset never calls its destructive RPC if the account switches without a pending save',async()=>{
+ const db=makeDb(),store=new MemoryStorage(),base=clientFor(db,USER_A);
+ let checks=0,rpcCalls=0;
+ const client={...base,
+  auth:{getUser:async()=>({data:{user:{id:++checks===1?USER_A:USER_B}},error:null})},
+  rpc:async(...args)=>{rpcCalls++;return base.rpc(...args)}
+ };
+ await use(store,async()=>{
+  write(store,USER_A,[session('kept-on-owner-switch')]);
+  await assert.rejects(deleteCloudProgress(client,USER_A),/Session modifiée pendant la suppression/);
+  assert.equal(checks,2,'Owner must be validated again even when there is no pending save');
+  assert.equal(rpcCalls,0,'Never execute destructive RPC with a different authenticated owner');
+  assert.deepEqual(readUserLocal(USER_A).store.sessions.map(x=>x.id),['kept-on-owner-switch']);
+ });
+});
+
+test('reset response cannot clear the old account cache after a session change',async()=>{
+ const db=makeDb(),store=new MemoryStorage(),base=clientFor(db,USER_A);
+ let owner=USER_A,rpcCalls=0,unblockRpc,notifyRpc;
+ const waitRpc=new Promise(resolve=>{unblockRpc=resolve});
+ const rpcStarted=new Promise(resolve=>{notifyRpc=resolve});
+ const client={...base,
+  auth:{getUser:async()=>({data:{user:{id:owner}},error:null})},
+  async rpc(...args){
+   rpcCalls++;
+   notifyRpc();
+   await waitRpc;
+   return base.rpc(...args);
+  }
+ };
+ await use(store,async()=>{
+  write(store,USER_A,[session('locally-kept-until-user-revalidates')]);
+  const deleting=deleteCloudProgress(client,USER_A);
+  await rpcStarted;
+  owner=USER_B; // B signs in while A's network response is still pending.
+  unblockRpc();
+  await assert.rejects(deleting,/Session modifiée pendant la suppression/);
+  assert.equal(rpcCalls,1);
+  assert.deepEqual(readUserLocal(USER_A).store.sessions.map(x=>x.id),
+   ['locally-kept-until-user-revalidates'],
+   'Do not clear A namespace after B becomes the authenticated account');
+  assert.equal(store.getItem(scopedKey(TRAINING_KEY,USER_B)),null);
+ });
+});
+
 test('reset waits for the in-flight save and queues subsequent syncs, preventing resurrection',async()=>{
  const db=makeDb(),store=new MemoryStorage(),base=clientFor(db,USER_A);
  let unblockSave,markSaveStarted;
