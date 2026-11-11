@@ -3142,6 +3142,18 @@ test('V3 Progress panel anchors preserve original desktop proportions without in
  await check('.r17-chart-grid > .v14-panel',[33,643,1156]);
  await check('.r17-secondary-grid > .v14-panel',[33,605,1007]);
  await check('.r17-progress-bottom > .v14-panel',[33,1101]);
+ // The owner's Goals/Next Step row starts at y≈734. This explicit vertical
+ // assertion protects the 9px visual alignment gain measured in pass 58.
+ const bottomRects=await page.locator('.r17-progress-bottom > .v14-panel')
+  .evaluateAll(elements=>elements.map(element=>{
+   const r=element.getBoundingClientRect();
+   return {top:Math.round(r.top),bottom:Math.round(r.bottom)};
+  }));
+ for(const [index,rect] of bottomRects.entries()){
+  expect(Math.abs(rect.top-734),
+   `Progress lower panel ${index+1}: y=${rect.top}, owner y≈734`).toBeLessThanOrEqual(8);
+  expect(rect.bottom,`Progress lower panel ${index+1} must remain in viewport`).toBeLessThanOrEqual(941);
+ }
  // Empty UI must never borrow the illustrative statistics in the design PNG.
  await expect(page.locator('#v14-p-sessions')).toHaveText('0');
 });
