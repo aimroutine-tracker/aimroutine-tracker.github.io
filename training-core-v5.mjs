@@ -94,11 +94,33 @@ export function streak(sessions,now=new Date()){
   while(days.has(localDay(d))&&n<=3650){n++;d.setDate(d.getDate()-1);}
   return n;
 }
+// Align "Cette semaine" and the week chart to Monday–Sunday calendar weeks,
+// not a rolling 168-hour period. Date.UTC applied to LOCAL calendar components
+// is intentional: it compares dates across DST transitions without an hourly
+// offset error. Past/future dates are never silently shifted into another week.
+const mondayDateKey=date=>Date.UTC(
+  date.getFullYear(),date.getMonth(),date.getDate()-(date.getDay()+6)%7
+);
+export function calendarWeeksAgo(rawDate,now=new Date()){
+  const date=rawDate instanceof Date?rawDate:new Date(rawDate);
+  if(!Number.isFinite(date.getTime())||!Number.isFinite(now.getTime())||
+     date.getTime()>now.getTime())return null;
+  const weeks=(mondayDateKey(now)-mondayDateKey(date))/(7*86400000);
+  return Number.isInteger(weeks)&&weeks>=0?weeks:null;
+}
+export function weeklySessionCounts(sessions,weeks=8,now=new Date()){
+  if(![4,8,12].includes(weeks))throw Error('Période hebdomadaire invalide.');
+  const counts=Array(weeks).fill(0);
+  for(const item of sessions){
+    const offset=calendarWeeksAgo(item?.date,now);
+    if(offset!==null&&offset<weeks)counts[weeks-1-offset]++;
+  }
+  return counts;
+}
 export function computeStats(sessions,weeklyGoal=3,now=new Date()){
   const list=sessions.slice().sort((a,b)=>b.date.localeCompare(a.date));
   const scores=list.filter(s=>s.accuracy!==null).map(s=>s.accuracy);
-  const ms=now.getTime();
-  const week=list.filter(s=>{const t=Date.parse(s.date);return t<=ms&&t>ms-7*86400000;});
+  const week=list.filter(s=>calendarWeeksAgo(s.date,now)===0);
   return {count:list.length,minutes:list.reduce((n,s)=>n+s.minutes,0),
     avg:scores.length?scores.reduce((a,b)=>a+b,0)/scores.length:null,
     best:scores.length?Math.max(...scores):null,
