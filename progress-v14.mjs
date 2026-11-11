@@ -1,5 +1,5 @@
 /* V14 progress: only validated user-recorded sessions, no fabricated analytics. */
-import {normalizeStore,computeStats,FOCUS,STORAGE_KEY} from './training-core-v5.mjs';
+import {normalizeStore,computeStats,weeklySessionCounts,FOCUS,STORAGE_KEY} from './training-core-v5.mjs';
 import {validUid,scopedKey} from './cloud-core-v7.mjs';
 import {synchronize} from './cloud-sync-v7.mjs';
 const $=s=>document.querySelector(s);
@@ -67,11 +67,10 @@ function barChart(items){
  const root=$('#v14-p-bars');root.replaceChildren();
  const choice=Number($('#v14-week-range')?.value);
  const weeks=[4,8,12].includes(choice)?choice:8;
- const counts=Array(weeks).fill(0),span=7*86400000;
- for(const session of items){
-  const ago=Date.now()-Date.parse(session.date);
-  if(ago>=0&&ago<weeks*span)counts[weeks-1-Math.floor(ago/span)]++;
- }
+ // Group by calendar week (Monday through Sunday), exactly like the
+ // weekly-goal KPI. Rolling 7-day buckets would mislabel previous Sunday's
+ // sessions as "This week" on Monday and drift across DST boundaries.
+ const counts=weeklySessionCounts(items,weeks);
  const max=Math.max(1,...counts);
  const svg=svgEl('svg',{viewBox:'0 0 600 235','aria-hidden':'true'});
  const slot=560/weeks,barWidth=weeks===8?42:Math.min(52,slot*.68);
