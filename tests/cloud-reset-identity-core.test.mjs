@@ -88,7 +88,7 @@ test('Cloud reset still succeeds for A after failed previous save if identity st
   task.finishSave();
   assert.match((await task.saveResult).message,/Session non validée/);
   assert.equal(await task.resetResult,true);
-  assert.equal(task.authCalls,3,'Verify same owner again after failed previous save');
+  assert.equal(task.authCalls,4,'Verify same owner before and after the destructive RPC, even after a failed save');
   assert.equal(task.rpcCalls,1,'Only A deletion RPC is issued');
   for(const key of [AKey,legacy,ext])assert.equal(localStorage.getItem(key),null,key);
   assert.equal(localStorage.getItem(BKey),'sessions-b');
