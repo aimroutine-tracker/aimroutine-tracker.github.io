@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {synchronize,setEnabled,readUserLocal,collectFavoriteDeletion,deleteCloudProgress} from '../cloud-sync-v7.mjs';
-import {scopedKey,TRAINING_KEY,LEGACY_KEY} from '../cloud-core-v7.mjs';
+import {scopedKey,TRAINING_KEY,LEGACY_KEY,EXT_KEY} from '../cloud-core-v7.mjs';
 
 // Deterministic in-memory Supabase API: emulates owner-only RLS for sync logic.
 // Live PostgreSQL RLS is tested separately, inside a fully rolled-back transaction.
@@ -338,4 +338,68 @@ test('in-flight A sync cannot cache cloud data after the authenticated session c
   ]);
  });
  assert.deepEqual(db.aim_sessions.map(r=>r.session_id),['cloud-a','private-b'],'Neither account cloud data should be changed');
+});
+
+test('two devices converge on real player profile and weekly goal without leaking between accounts',async()=>{
+ const db=makeDb();
+ const deviceA1=new MemoryStorage(),deviceA2=new MemoryStorage(),deviceB=new MemoryStorage();
+ const cloudA=clientFor(db,USER_A),cloudB=clientFor(db,USER_B);
+ // First A device saves a genuine locally authored profile (no fictitious
+ // account statistics) and a customized weekly goal.
+ await use(deviceA1,async()=>{
+  write(deviceA1,USER_A,[session('a-profile-session')]);
+  deviceA1.setItem(scopedKey(EXT_KEY,USER_A),
+   JSON.stringify({profile:{nickname:'AlphaTrainer',dpi:1600,sensitivity:0.215}}));
+  await synchronize(cloudA,USER_A);
+  assert.equal(db.aim_profiles.find(r=>r.user_id===USER_A).profile.profile.nickname,'AlphaTrainer');
+  assert.equal(db.aim_preferences.find(r=>r.user_id===USER_A).weekly_goal,4);
+ });
+ // Device 2 must receive the profile and goal automatically after sync,
+ // not just the session records already covered by the older integration test.
+ await use(deviceA2,async()=>{
+  await synchronize(cloudA,USER_A);
+  const local=readUserLocal(USER_A);
+  assert.equal(local.ext.profile.nickname,'AlphaTrainer');
+  assert.equal(local.ext.profile.dpi,1600);
+  assert.equal(local.store.weeklyGoal,4);
+  assert.deepEqual(local.store.sessions.map(x=>x.id),['a-profile-session']);
+ });
+ // B remains completely independent, even though both users share one DB.
+ await use(deviceB,async()=>{
+  write(deviceB,USER_B,[session('private-b-profile')]);
+  deviceB.setItem(scopedKey(EXT_KEY,USER_B),
+   JSON.stringify({profile:{nickname:'BravoTrainer',dpi:800,sensitivity:0.3}}));
+  await synchronize(cloudB,USER_B);
+  assert.equal(readUserLocal(USER_B).ext.profile.nickname,'BravoTrainer');
+  assert.deepEqual(readUserLocal(USER_B).store.sessions.map(x=>x.id),['private-b-profile']);
+ });
+ assert.equal(db.aim_profiles.length,2);
+ assert.equal(db.aim_profiles.find(r=>r.user_id===USER_B).profile.profile.nickname,'BravoTrainer');
+ // Edit A's profile and weekly target on device 2, after previously syncing.
+ // Hash tracking must propagate the changes back to device 1.
+ await use(deviceA2,async()=>{
+  write(deviceA2,USER_A,[session('a-profile-session')]);
+  deviceA2.setItem(scopedKey(TRAINING_KEY,USER_A),
+   JSON.stringify({sessions:[session('a-profile-session')],presets:[],weeklyGoal:6}));
+  deviceA2.setItem(scopedKey(EXT_KEY,USER_A),
+   JSON.stringify({profile:{nickname:'AlphaUpdated',dpi:1200,sensitivity:0.22}}));
+  await synchronize(cloudA,USER_A);
+ });
+ await use(deviceA1,async()=>{
+  await synchronize(cloudA,USER_A);
+  const local=readUserLocal(USER_A);
+  assert.equal(local.ext.profile.nickname,'AlphaUpdated');
+  assert.equal(local.ext.profile.dpi,1200);
+  assert.equal(local.store.weeklyGoal,6);
+  assert.deepEqual(local.store.sessions.map(x=>x.id),['a-profile-session']);
+ });
+ await use(deviceB,async()=>{
+  await synchronize(cloudB,USER_B);
+  assert.equal(readUserLocal(USER_B).ext.profile.nickname,'BravoTrainer');
+  assert.equal(readUserLocal(USER_B).store.weeklyGoal,4);
+  assert.deepEqual(readUserLocal(USER_B).store.sessions.map(x=>x.id),['private-b-profile']);
+  assert.equal(deviceB.getItem(scopedKey(EXT_KEY,USER_A)),null);
+ });
+ assert.equal(db.aim_preferences.find(r=>r.user_id===USER_A).weekly_goal,6);
+ assert.equal(db.aim_preferences.find(r=>r.user_id===USER_B).weekly_goal,4);
 });
