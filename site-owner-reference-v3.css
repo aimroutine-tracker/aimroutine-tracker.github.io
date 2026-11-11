@@ -1910,3 +1910,24 @@ body.site31.r20 .r17-progress-wrap .v3-chart-period select:focus-visible{
   white-space:nowrap!important;
  }
 }
+
+
+/* V3 / pass 45 — vertical registration against the original guest Cloud PNG.
+   Reference signup card starts at y≈702; pass-44 rendering starts at y≈723.
+   Compact unused gaps, not input hit areas or the Google OAuth control.
+   Keep registration/recovery modes and mobile spacing as they were. */
+@media (min-width:1600px) and (max-width:1780px){
+ body.site31.r20 .r17-account-wrap #auth-panel:has(#login-form:not([hidden])){
+  padding-bottom:8px!important;
+  margin-bottom:8px!important;
+ }
+ body.site31.r20 .r17-account-wrap #auth-panel:has(#login-form:not([hidden])) .ar7-form-switch{
+  margin-bottom:4px!important;
+ }
+ body.site31.r20 .r17-account-wrap #auth-panel:has(#login-form:not([hidden])) #login-form{
+  row-gap:4px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-auth:has(#login-form:not([hidden]))>.r17-guest-registration{
+  margin-top:8px!important;
+ }
+}
