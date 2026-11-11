@@ -44,12 +44,15 @@ export function scheduledDay(program,index){
  return {index,date:dayISO(local),focus,minutes,rest:focus===null,tool:program.tool,
    label:focus?FOCUS[focus]:'Repos / récupération'};
 }
-export function programCalendar(program,sessions=[]){
+export function programCalendar(program,sessions=[],now=new Date()){
  if(!validProgram(program))return [];
+ // A recorded timestamp in the future cannot complete a scheduled day.
+ // Keep the raw history untouched for clock-drift troubleshooting.
+ const observed=periodSessions(sessions,0,now);
  const used=new Set();
  return Array.from({length:program.days},(_,i)=>{
   const entry=scheduledDay(program,i);
-  const matched=sessions.find(s=>!used.has(s.id)&&entry.focus&&validSession(s)&&
+  const matched=observed.find(s=>!used.has(s.id)&&entry.focus&&validSession(s)&&
     dayISO(s.date)===entry.date&&s.focus===entry.focus&&s.tool===entry.tool&&
     Date.parse(s.date)>=Date.parse(program.startedAt));
   if(matched)used.add(matched.id);
@@ -61,9 +64,9 @@ export function periodSessions(sessions,range=30,now=new Date()){
  const end=new Date(now).getTime();const start=Number(range)?end-Number(range)*86400000:-Infinity;
  return sessions.filter(s=>{const t=Date.parse(s.date);return validSession(s)&&t<=end&&t>=start});
 }
-export function scenarioOptions(sessions,focus,tool){
+export function scenarioOptions(sessions,focus,tool,now=new Date()){
  const counts=new Map();
- sessions.filter(s=>validSession(s)&&s.accuracy!==null&&s.focus===focus&&
+ periodSessions(sessions,0,now).filter(s=>s.accuracy!==null&&s.focus===focus&&
    (!tool||s.tool===tool)&&typeof s.scenario==='string'&&s.scenario.trim())
  .forEach(s=>{const name=s.scenario.trim();counts.set(name,(counts.get(name)||0)+1)});
  return [...counts.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).map(([name,count])=>({name,count}));
@@ -83,18 +86,23 @@ export function scenarioMetrics(sessions,{focus,tool,scenario,range=30,now=new D
    comparisonValid:comparable};
 }
 export function calendarGrid(sessions,now=new Date(),days=35){
+ // Including a later-today timestamp would visually award activity early.
+ const observed=periodSessions(sessions,0,now);
  const end=new Date(now.getFullYear(),now.getMonth(),now.getDate());
  return Array.from({length:days},(_,i)=>{
    const day=new Date(end.getFullYear(),end.getMonth(),end.getDate()-(days-1-i));
    const date=dayISO(day);
-   const count=sessions.filter(s=>validSession(s)&&dayISO(s.date)===date).length;
+   const count=observed.filter(s=>dayISO(s.date)===date).length;
    return {date,count};
  });
 }
 export function achievements(sessions,now=new Date()){
- const total=sessions.filter(validSession).length;
- const month=periodSessions(sessions,30,now).length;
- const days=new Set(sessions.filter(validSession).map(s=>dayISO(s.date)));
+ // Rewards reflect completed, observed sessions only; future cache rows
+ // may be retained but can never unlock a badge or extend a streak.
+ const observed=periodSessions(sessions,0,now);
+ const total=observed.length;
+ const month=periodSessions(observed,30,now).length;
+ const days=new Set(observed.map(s=>dayISO(s.date)));
  let longest=0,streak=0,previous=null;
  for(const day of [...days].sort()){
   const dayMs=new Date(day+'T12:00:00').getTime();
