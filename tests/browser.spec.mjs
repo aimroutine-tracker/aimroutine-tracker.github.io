@@ -3137,3 +3137,38 @@ test('V3 Progress panel anchors preserve original desktop proportions without in
  // Empty UI must never borrow the illustrative statistics in the design PNG.
  await expect(page.locator('#v14-p-sessions')).toHaveText('0');
 });
+
+
+test('V3 Cloud guest signup stays above the 1672px fold while keeping all real auth paths',async({page})=>{
+ await page.setViewportSize({width:1672,height:941});
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await page.waitForFunction(()=>document.body?.classList.contains('r20'));
+ await page.evaluate(async()=>{await document.fonts.ready;});
+ await page.waitForTimeout(1400);
+ await expect(page.locator('#login-form')).toBeVisible();
+ await expect(page.locator('#google-signin')).toBeVisible();
+ await expect(page.locator('#login-email')).toBeVisible();
+ await expect(page.locator('#login-password')).toBeVisible();
+ await expect(page.locator('#reset-link')).toBeVisible();
+ await expect(page.locator('#signup-mode')).toBeVisible();
+ const {loginBottom,signupTop,signupActionBottom}=await page.evaluate(()=>{
+  const bounds=selector=>document.querySelector(selector).getBoundingClientRect();
+  return {
+   loginBottom:Math.round(bounds('#auth-panel').bottom),
+   signupTop:Math.round(bounds('.r17-guest-registration').top),
+   signupActionBottom:Math.round(bounds('.r17-guest-signup-button').bottom)
+  };
+ });
+ // This is an honest, unauthenticated screenshot: the owner mockup may
+ // contain illustrative signed-in values, but the live UI must not invent any.
+ expect(signupTop).toBeGreaterThanOrEqual(loginBottom-2);
+ expect(Math.abs(signupTop-702),`Cloud signup top=${signupTop}, source reference y≈702`).toBeLessThanOrEqual(30);
+ expect(signupActionBottom,`Cloud signup CTA ends at ${signupActionBottom}`).toBeLessThanOrEqual(941);
+ await page.locator('.r17-guest-signup-button').click();
+ await expect(page.locator('#signup-form')).toBeVisible();
+ await expect(page.locator('#signup-username')).toBeVisible();
+ await page.locator('#login-mode').click();
+ await expect(page.locator('#login-form')).toBeVisible();
+ await page.locator('#reset-link').click();
+ await expect(page.locator('#reset-form')).toBeVisible();
+});
