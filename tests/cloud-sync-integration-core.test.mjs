@@ -57,7 +57,7 @@ function clientFor(db,uid){
     assert.equal(typeof args?.expected_uid,'string','Client must pass expected_uid');
     // The new RPC rejects a mismatched expected owner even if the JWT belongs to
     // an authenticated but different user.
-    if(args?.expected_uid!==uid)return {data:null,error:Error('account_mismatch')};
+    if(args?.expected_uid!==uid)return {data:null,error:Object.assign(Error('account_mismatch'),{code:'42501'})};
     // Real function uses SECURITY INVOKER + RLS and returns the reset cursor.
     for(const table of ['aim_sessions','aim_presets','aim_profiles']){
      db[table]=db[table].filter(row=>row.user_id!==uid);
@@ -102,7 +102,7 @@ test('account-bound RPC rejects a late JWT switch from A to B without deleting e
  };
  await use(store,async()=>{
   write(store,USER_A,[session('cached-a')]);
-  await assert.rejects(deleteCloudProgress(client,USER_A),/account_mismatch/);
+  await assert.rejects(deleteCloudProgress(client,USER_A),/Suppression annulée.*session/);
   assert.equal(identityChecks,2,'A was verified before the destructive request');
   assert.equal(requests,1,'New bound RPC was invoked exactly once');
   assert.deepEqual(readUserLocal(USER_A).store.sessions.map(s=>s.id),['cached-a']);
@@ -119,11 +119,11 @@ test('Cloud deletion fails closed if bound RPC is not deployed, keeping local pr
   calls++;
   assert.equal(name,'aim_reset_my_progress_for_user');
   assert.deepEqual(args,{expected_uid:USER_A});
-  return {data:null,error:Error('PGRST202: account-bound RPC not deployed')};
+  return {data:null,error:Object.assign(Error('Could not find the function'),{code:'PGRST202'})};
  }};
  await use(store,async()=>{
   write(store,USER_A,[session('never-erase-without-server')]);
-  await assert.rejects(deleteCloudProgress(client,USER_A),/not deployed/);
+  await assert.rejects(deleteCloudProgress(client,USER_A),/Suppression indisponible.*serveur Cloud.*conservée/);
   assert.equal(calls,1);
   assert.deepEqual(readUserLocal(USER_A).store.sessions.map(s=>s.id),
    ['never-erase-without-server']);
