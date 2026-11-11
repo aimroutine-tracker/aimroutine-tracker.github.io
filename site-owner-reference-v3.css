@@ -1939,3 +1939,27 @@ body.site31.r20 .r17-progress-wrap .v3-chart-period select:focus-visible{
 /* V3 / pass 47 — private 1672px original-vs-candidate feature matching.
    Routines source art lies ~2px below the current render, Cloud ~2px above.
    Correct only vertical artwork coordinates; leave all copy, data and CTAs. */
+
+
+/* V3 / pass 50 — Progress hero action widths from the owner's real 1672x941
+   reference image. Source CTA bounds: first x≈80..372 (292px),
+   second x≈387..650 (263px), gap 15px. Candidate was about
+   x81..327 (246px), x350..539 (189px). This is geometry only:
+   both genuine links, their focus states and their destinations remain. */
+@media (min-width:1600px) and (max-width:1780px){
+ body.site31.r20 .r17-progress-wrap .r17-hero-actions{
+  gap:15px!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-hero-actions>.r17-button:first-child{
+  width:292px!important;
+  min-width:292px!important;
+  max-width:292px!important;
+  justify-content:space-between!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-hero-actions>.r17-button:nth-child(2){
+  width:263px!important;
+  min-width:263px!important;
+  max-width:263px!important;
+  justify-content:space-between!important;
+ }
+}
