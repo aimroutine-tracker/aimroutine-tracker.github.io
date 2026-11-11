@@ -363,9 +363,9 @@ test('reset waits for the in-flight save and queues subsequent syncs, preventing
 test('failed reset releases its lock and preserves data for a safe retry',async()=>{
  const db=makeDb(),store=new MemoryStorage(),base=clientFor(db,USER_A);
  let rejectFirst=true;
- const client={...base,async rpc(name){
+ const client={...base,async rpc(name,args){
   if(rejectFirst){rejectFirst=false;return {data:null,error:Error('temporary reset error')};}
-  return base.rpc(name);
+  return base.rpc(name,args);
  }};
  await use(store,async()=>{
   write(store,USER_A,[session('retain-until-confirmed')]);
