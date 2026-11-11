@@ -80,3 +80,19 @@ Ne confirmer aucune publication tant que les quatre sources privées, les essais
 - Tests Playwright `tests/browser.spec.mjs` : vérification de l'accord entre KPI et barres avec deux séances d'essai locales sur deux semaines différentes, et de la sémantique du plan de cinq jours.
 
 Ces tests utilisent exclusivement des comptes et dates simulés ou une session mockée en navigateur. Ils ne modifient pas les données Supabase réelles et ne constituent toujours pas les essais de production avec comptes jetables décrits en section 2.
+
+
+## 6. Nouveau blocage de publication : suppression Cloud liée à l'UID attendu (V3)
+
+**État : EN ATTENTE de migration et d'essais réels — pas de publication.**
+
+L'ancienne fonction actuellement déployée, `public.aim_reset_my_progress()`, supprime les données du compte associé au JWT reçu. Elle respecte RLS mais ne peut pas vérifier qu'un onglet client ayant demandé la suppression pour A n'a pas changé accidentellement pour B **entre** la dernière vérification client et l'appel RPC.
+
+- La proposition SQL non appliquée est dans `docs/supabase-reset-bound-rpc-v3.proposal.sql`. Elle prévoit une fonction distincte `aim_reset_my_progress_for_user(expected_uid uuid)` exécutée en `SECURITY INVOKER`. Avant toute suppression, elle exige `auth.uid() = expected_uid` ; sinon la transaction doit échouer.
+- Générer une **nouvelle migration Supabase CLI** depuis cette proposition, relire les droits `EXECUTE` et les RLS, la tester sur un environnement de test, puis la déployer de manière coordonnée **avant** d'activer le nouvel appel RPC côté client V3.
+- Modifier `cloud-sync-v7.mjs` pour appeler exclusivement `aim_reset_my_progress_for_user` avec `{expected_uid:uid}`, **sans repli** vers la RPC sans paramètre. Tester une réponse refusée quand A est demandé avec un JWT B, ainsi que le scénario normal A/A, les erreurs réseau, la propagation du `reset_at` et deux appareils.
+- Une fois tous les clients anciens retirés, révoquer puis supprimer l'ancienne RPC par une migration séparée ; ne pas la supprimer prématurément pendant que la version publiée en dépend.
+- Le futur déploiement Pages exige maintenant l'attestation `account_bound_reset_verified` **et** l'exécution réussie de `scripts/check_reset_release_ready.py` dans la tâche de publication. Ce script bloque délibérément tant que le nouveau contrat client et une migration réelle (dans `supabase/migrations/`) ne sont pas présents.
+- Les tests `tests/test_deployment_freeze_v3.py` couvrent le verrou et utilisent un SQL synthétique. Ils ne remplacent pas un test PostgreSQL ni une démonstration RLS réelle.
+
+**Ne jamais appliquer cette proposition sur la base de production simplement pour faire passer la CI.** La PR reste en brouillon et l'approbation du propriétaire reste obligatoire.
