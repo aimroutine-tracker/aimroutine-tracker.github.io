@@ -68,6 +68,31 @@ test('V1 import merges data without duplicates',()=>{
  const res=importPayload(incoming,state);
  assert.equal(res.added,1);assert.equal(res.store.sessions.length,2);
 });
+test('One imported backup cannot count duplicated session or routine IDs twice',()=>{
+ const original=sample('2026-11-01T17:00:00Z',70,'existing');
+ const first=sample('2026-11-02T17:00:00Z',75,'new');
+ const later=sample('2026-11-03T17:00:00Z',82,'later');
+ const routine={id:'p1',name:'Routine initiale',...createRoutine('silver','flick','VALORANT',25,30)};
+ const secondRoutine={id:'p2',name:'Nouvelle routine',...createRoutine('iron','micro','Aim Lab',20,30)};
+ const state=normalizeStore({sessions:[original],presets:[routine],weeklyGoal:3},null);
+ const backup={format:'aimroutine-web-v2',sessions:[
+  original,first,{...first,accuracy:100},later,{...later,accuracy:99}
+ ],presets:[routine,{...routine,name:'Ne pas remplacer'},secondRoutine,
+   {...secondRoutine,name:'Doublon ignoré'}],weeklyGoal:5};
+ const snapshot=JSON.stringify(backup);
+ const result=importPayload(backup,state);
+ assert.equal(result.added,2,'Only two new unique sessions were imported');
+ assert.deepEqual(result.store.sessions.map(x=>x.id),['test-existing','test-new','test-later']);
+ assert.equal(result.store.sessions.find(x=>x.id==='test-new').accuracy,75,
+  'First occurrence wins, even when a duplicate has a higher score');
+ assert.equal(result.store.sessions.find(x=>x.id==='test-later').accuracy,82);
+ assert.deepEqual(result.store.presets.map(x=>x.id),['p1','p2']);
+ assert.equal(result.store.presets[0].name,'Routine initiale');
+ assert.equal(result.store.presets[1].name,'Nouvelle routine');
+ assert.equal(result.store.weeklyGoal,5);
+ assert.equal(JSON.stringify(backup),snapshot,'Import must not mutate user backup');
+});
+
 test('V2 export and import preserve favorites and settings',()=>{
  const state=normalizeStore({sessions:[sample()],weeklyGoal:5},null);
  state.presets=[{id:'p1',name:'My routine',...createRoutine('iron','micro','Oblivity',15,15)}];
