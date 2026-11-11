@@ -18,7 +18,7 @@ function refreshSourceNotice(){
   guestNotice();
  if(source.textContent!==message)source.textContent=message;
 }
-const recent=(items,days)=>!days?items.slice():items.filter(x=>{const age=Date.now()-Date.parse(x.date);return age>=0&&age<=days*86400000;});
+const recent=(items,days,now=new Date())=>!days?items.slice():items.filter(x=>{const age=now.getTime()-Date.parse(x.date);return age>=0&&age<=days*86400000;});
 function svgEl(name,props){
  const e=document.createElementNS('http://www.w3.org/2000/svg',name);
  for(const [key,value] of Object.entries(props))e.setAttribute(key,String(value));
@@ -63,14 +63,14 @@ function lineChart(items){
   return date+' : '+fmt(point.accuracy)+' %';
  }).join(' ; '));
 }
-function barChart(items){
+function barChart(items,now=new Date()){
  const root=$('#v14-p-bars');root.replaceChildren();
  const choice=Number($('#v14-week-range')?.value);
  const weeks=[4,8,12].includes(choice)?choice:8;
  // Group by calendar week (Monday through Sunday), exactly like the
  // weekly-goal KPI. Rolling 7-day buckets would mislabel previous Sunday's
  // sessions as "This week" on Monday and drift across DST boundaries.
- const counts=weeklySessionCounts(items,weeks);
+ const counts=weeklySessionCounts(items,weeks,now);
  const max=Math.max(1,...counts);
  const svg=svgEl('svg',{viewBox:'0 0 600 235','aria-hidden':'true'});
  const slot=560/weeks,barWidth=weeks===8?42:Math.min(52,slot*.68);
@@ -167,8 +167,11 @@ function distribution(items){
 }
 function render(){
  refreshSourceNotice();
+ // A single clock snapshot prevents the KPI, rolling accuracy filter and
+ // Monday–Sunday weekly bars from disagreeing exactly at midnight.
+ const now=new Date();
  const period=Number($('#v14-progress-range').value)||0;
- const subset=recent(sessions,period),stats=computeStats(subset,goal),all=computeStats(sessions,goal);
+ const subset=recent(sessions,period,now),stats=computeStats(subset,goal,now),all=computeStats(sessions,goal,now);
  const percent=x=>x===null?'—':fmt(x)+' %';
  $('#v14-p-average').textContent=percent(stats.avg);
  $('#v14-p-minutes').textContent=fmt(stats.minutes);
@@ -180,7 +183,7 @@ function render(){
  $('#v14-p-goal').textContent=all.week+' / '+all.goal;
  $('#v14-p-goalbar').style.width=Math.min(100,Math.round(all.week/all.goal*100))+'%';
  // Weekly chart uses its own explicit 4/8/12-week range; every bar reflects recorded sessions.
- lineChart(subset);barChart(sessions);distribution(subset);
+ lineChart(subset);barChart(sessions,now);distribution(subset);
 }
 // Cancel any pending verified-account load when another tab signs out or switches
 // accounts. An obsolete getUser()/cloud response may not repopulate private KPIs.
