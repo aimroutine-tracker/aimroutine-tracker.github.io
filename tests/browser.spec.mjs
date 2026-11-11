@@ -3314,7 +3314,9 @@ test('Training insight chart never treats future-dated cache records as observed
  await page.locator('#tab-insights').click();
  await page.locator('#insight-focus').selectOption('flick');
  await page.locator('#insight-tool').selectOption('VALORANT');
- await expect(page.locator('#chart-count')).toHaveText('1 valeur');
+ // The locale layer may render the generic suffix "valeur(s)"; assert
+ // the actual observed count, not its singular/plural punctuation.
+ await expect(page.locator('#chart-count')).toContainText('1 valeur');
  await expect(page.locator('#chart svg circle')).toHaveCount(1);
  await expect(page.locator('#insight-advice')).toContainText('quatre précisions');
  await expect(page.locator('#focus-breakdown')).toContainText('1 séance(s)');
