@@ -1963,3 +1963,19 @@ body.site31.r20 .r17-progress-wrap .v3-chart-period select:focus-visible{
   justify-content:space-between!important;
  }
 }
+
+
+/* V3 / pass 51 — semantic SVG CTA glyphs instead of font-dependent Unicode.
+   Icons are aria-hidden/focusable=false, preserving text-based accessible names.
+   Widths below remain unchanged from pass 50 at the original reference size. */
+body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon{
+ display:block;
+ flex:0 0 auto;
+ pointer-events:none;
+}
+body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--bars{
+ width:24px;height:24px;
+}
+body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
+ width:28px;height:28px;
+}
