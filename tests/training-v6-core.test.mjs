@@ -77,3 +77,45 @@ test('Portable imports reject malformed or executable structures',()=>{
  assert.throws(()=>parseInterchange({format:INTERCHANGE,sessions:[{notes:'malicious'}],presets:[],weeklyGoal:3}));
  assert.throws(()=>parseInterchange({format:INTERCHANGE,sessions:[],presets:[],weeklyGoal:99}));
 });
+
+
+test('V6 advanced scenarios, activity calendar and records ignore unobserved future timestamps',()=>{
+ const now=new Date('2026-11-06T12:00:00.000Z');
+ const past=ses('2026-11-06T09:00:00.000Z','past',72,'Microshot');
+ const laterToday=ses('2026-11-06T16:00:00.000Z','later-today',98,'Microshot');
+ const tomorrow=ses('2026-11-07T09:00:00.000Z','tomorrow',99,'FutureOnly');
+ const entries=[laterToday,tomorrow,past];
+ assert.deepEqual(scenarioOptions(entries,'micro','Aim Lab',now),
+  [{name:'Microshot',count:1}],'future-only scenarios must not become selectable');
+ const metrics=scenarioMetrics(entries,{focus:'micro',tool:'Aim Lab',scenario:'Microshot',range:0,now});
+ assert.equal(metrics.count,1);assert.equal(metrics.best,72);
+ assert.deepEqual(metrics.sessions.map(x=>x.id),['past']);
+ const calendar=calendarGrid(entries,now,35);
+ assert.equal(calendar.at(-1).count,1,'later today should not be pre-awarded');
+ assert.equal(calendar.reduce((total,day)=>total+day.count,0),1);
+ const badges=achievements(entries,now);
+ assert.equal(badges.find(x=>x.id==='first').done,true);
+ assert.equal(badges.find(x=>x.id==='regular').progress,1);
+ assert.equal(badges.find(x=>x.id==='regular').done,false);
+ assert.equal(badges.find(x=>x.id==='streak').progress,1);
+ assert.deepEqual(entries.map(s=>s.id),['later-today','tomorrow','past'],'the raw stored history is not mutated');
+});
+
+test('V6 future-only cache cannot unlock any achievement or advance a program',()=>{
+ const now=new Date('2026-11-06T12:00:00.000Z');
+ const future=Array.from({length:5},(_,i)=>ses(
+  new Date(Date.UTC(2026,10,6+i,18)).toISOString(),'future-'+i,98
+ ));
+ const badges=achievements(future,now);
+ for(const badge of badges){
+  assert.equal(badge.done,false,badge.id+' must remain locked');
+  assert.equal(badge.progress,0,badge.id+' has no observed progress');
+ }
+ assert.equal(scenarioOptions(future,'micro','Aim Lab',now).length,0);
+ assert.equal(calendarGrid(future,now,35).reduce((total,day)=>total+day.count,0),0);
+ const program=startProgram(7,'immortal','VALORANT',new Date('2026-11-06T08:00:00.000Z'));
+ const projected={...ses('2026-11-06T18:00:00.000Z','program-future'),focus:'flick',tool:'VALORANT'};
+ assert.equal(programCalendar(program,[projected],now)[0].completed,false);
+ assert.equal(programCalendar(program,[projected],new Date('2026-11-06T19:00:00.000Z'))[0].completed,true,
+  'the record becomes eligible when the real time catches up');
+});
