@@ -403,3 +403,52 @@ test('two devices converge on real player profile and weekly goal without leakin
  assert.equal(db.aim_preferences.find(r=>r.user_id===USER_A).weekly_goal,6);
  assert.equal(db.aim_preferences.find(r=>r.user_id===USER_B).weekly_goal,4);
 });
+
+test('offline device cannot resurrect reset profile and weekly goal or alter a second account',async()=>{
+ const db=makeDb(),a1=new MemoryStorage(),a2=new MemoryStorage(),b1=new MemoryStorage();
+ const clientA=clientFor(db,USER_A),clientB=clientFor(db,USER_B);
+ const profile=(name)=>JSON.stringify({profile:{nickname:name,dpi:1600,sensitivity:0.215}});
+ // A and B have independent real user-owned settings.
+ await use(a1,async()=>{
+  write(a1,USER_A,[session('before-delete')]);
+  a1.setItem(scopedKey(TRAINING_KEY,USER_A),JSON.stringify({
+   sessions:[session('before-delete')],presets:[],weeklyGoal:6
+  }));
+  a1.setItem(scopedKey(EXT_KEY,USER_A),profile('BeforeReset'));
+  await synchronize(clientA,USER_A);
+ });
+ await use(a2,async()=>{
+  await synchronize(clientA,USER_A);
+  assert.equal(readUserLocal(USER_A).ext.profile.nickname,'BeforeReset');
+  assert.equal(readUserLocal(USER_A).store.weeklyGoal,6);
+ });
+ await use(b1,async()=>{
+  write(b1,USER_B,[session('private-b-stays')]);
+  b1.setItem(scopedKey(EXT_KEY,USER_B),profile('PrivateBravo'));
+  await synchronize(clientB,USER_B);
+ });
+ // A1 deletes its own progress while A2 is offline with obsolete cache.
+ await use(a1,async()=>{
+  assert.equal(await deleteCloudProgress(clientA,USER_A),true);
+  assert.equal(readUserLocal(USER_A).ext.profile.nickname,'');
+  assert.equal(readUserLocal(USER_A).store.sessions.length,0);
+ });
+ await use(a2,async()=>{
+  assert.equal(readUserLocal(USER_A).ext.profile.nickname,'BeforeReset');
+  assert.equal(readUserLocal(USER_A).store.weeklyGoal,6);
+  await synchronize(clientA,USER_A);
+  const after=readUserLocal(USER_A);
+  assert.equal(after.ext.profile.nickname,'','Offline profile must not resurrect after remote reset');
+  assert.equal(after.store.weeklyGoal,3,'Old weekly goal must not be reuploaded after reset');
+  assert.deepEqual(after.store.sessions,[],'Old offline session must not come back');
+ });
+ assert.equal(db.aim_sessions.filter(row=>row.user_id===USER_A).length,0);
+ assert.equal(db.aim_profiles.find(row=>row.user_id===USER_A)?.profile?.profile?.nickname??'','');
+ assert.equal(db.aim_preferences.find(row=>row.user_id===USER_A)?.weekly_goal,3);
+ await use(b1,async()=>{
+  await synchronize(clientB,USER_B);
+  assert.equal(readUserLocal(USER_B).ext.profile.nickname,'PrivateBravo');
+  assert.deepEqual(readUserLocal(USER_B).store.sessions.map(s=>s.id),['private-b-stays']);
+  assert.equal(db.aim_profiles.find(row=>row.user_id===USER_B).profile.profile.nickname,'PrivateBravo');
+ });
+});
