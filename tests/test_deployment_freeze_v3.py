@@ -80,14 +80,14 @@ class AccountBoundResetPreflightTests(unittest.TestCase):
         return """
         create or replace function public.aim_reset_my_progress_for_user(expected_uid uuid)
         returns text language plpgsql security invoker
-        as $ declare actor_id uuid := auth.uid();
+        as $fn$ declare actor_id uuid := auth.uid();
         begin
          if actor_id is distinct from expected_uid then raise exception 'account_mismatch'; end if;
          delete from public.aim_sessions where user_id=expected_uid;
          delete from public.aim_presets where user_id=expected_uid;
          delete from public.aim_profiles where user_id=expected_uid;
          return 'cursor';
-        end $;
+        end $fn$;
         revoke all on function public.aim_reset_my_progress_for_user(uuid) from public, anon;
         grant execute on function public.aim_reset_my_progress_for_user(uuid) to authenticated;
         """
