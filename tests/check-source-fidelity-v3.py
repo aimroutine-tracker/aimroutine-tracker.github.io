@@ -47,6 +47,21 @@ for name in names:
         errors.append(f'{name}: source-to-baseline error missing; cannot prove before/after improvement.')
     if row and row.get('source_visual_regressed') is True:
         errors.append(f'{name}: candidate visually regressed by more than 0.25 RGB MAE against original.')
+    # Also protect the best privately verified V3 result, not merely the old
+    # public production baseline. An apparently improved PR could otherwise
+    # regress repeatedly while still beating the original public homepage.
+    candidate_mae=row.get('reference_mae_0_to_255') if row else None
+    best_mae=meta.get('verified_best_mae_0_to_255')
+    tolerance=manifest.get('quality_regression_tolerance_mae',0.25)
+    if isinstance(candidate_mae,(int,float)) and isinstance(best_mae,(int,float)):
+        if candidate_mae>best_mae+tolerance:
+            errors.append(
+                f'{name}: owner reference visual quality regressed from the best '
+                f'validated MAE {best_mae:.3f} to {candidate_mae:.3f} '
+                f'(maximum allowed {best_mae+tolerance:.3f}).'
+            )
+    else:
+        errors.append(f'{name}: source-backed best MAE budget or candidate measurement is missing.')
     if row and set(row.get('source_region_mae',{}))!={'header','hero','mid','lower'}:
         errors.append(f'{name}: regional source comparison is missing or incomplete.')
     # The right-side hero artwork is a source-backed, fixed visual region.
