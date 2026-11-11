@@ -88,12 +88,52 @@ function routinePage(){
  $$('[data-r17-day]').forEach(el=>el.addEventListener('click',()=>{day=Number(el.dataset.r17Day);update()}));
  function create(){const rank=$('#rank'),focus=$('#focus'),duration=$('#duration');if(rank)rank.value=level;if(focus)focus.value=days[day].f;if(duration)duration.value=String(levels[level][2]);$('#tab-builder')?.click();$('#builder-form button[type="submit"]')?.click();$('#panel-builder')?.scrollIntoView({block:'start',behavior:'smooth'})}
  $$('[data-r17-create]').forEach(el=>el.addEventListener('click',create));
- function stats(){const store=window.AIMWeb?.getStore?.();if(!store)return;const sessions=Array.isArray(store.sessions)?store.sessions:[];const scores=sessions.filter(s=>Number.isFinite(s.accuracy));const minutes=sessions.reduce((sum,s)=>sum+(Number(s.minutes)||0),0);const avg=scores.length?scores.reduce((sum,s)=>sum+s.accuracy,0)/scores.length:null;const now=new Date();
+ function stats(){
+  const store=window.AIMWeb?.getStore?.();
+  const now=new Date(),cutoff=now.getTime();
+  // Treat future timestamps as unobserved. Keep the stored sessions intact
+  // and never carry a previous account's graph into a zero-data guest view.
+  const sessions=(Array.isArray(store?.sessions)?store.sessions:[]).filter(s=>{
+   const timestamp=Date.parse(s?.date);
+   return Number.isFinite(timestamp)&&timestamp<=cutoff;
+  });
+  const scores=sessions.filter(s=>typeof s.accuracy==='number'&&Number.isFinite(s.accuracy)&&s.accuracy>=0&&s.accuracy<=100);
+  const minutes=sessions.reduce((sum,s)=>sum+(Number(s.minutes)||0),0);
+  const avg=scores.length?scores.reduce((sum,s)=>sum+s.accuracy,0)/scores.length:null;
   const monday=new Date(now.getFullYear(),now.getMonth(),now.getDate()-(now.getDay()+6)%7);
-  const week=sessions.filter(s=>{
-   const timestamp=Date.parse(s.date);
-   return Number.isFinite(timestamp)&&timestamp>=monday.getTime()&&timestamp<=now.getTime();
-  }).length,goal=store.weeklyGoal||3;const values={minutes:minutes+' min',count:String(sessions.length),accuracy:avg===null?'—':avg.toFixed(1)+' %',streak:$('#streak-days')?.textContent||'0',goal:week+' / '+goal,week:week+' / '+goal,avg:avg===null?'—':avg.toFixed(1)+' %'};for(const [key,v] of Object.entries(values))if($('[data-r17-'+key+']'))$('[data-r17-'+key+']').textContent=v;for(const el of $$('[data-r17-meter],[data-r17-week-meter]'))el.style.width=Math.min(100,week/goal*100)+'%';const chart=$('[data-r17-chart]');if(chart&&scores.length){const items=scores.sort((a,b)=>a.date.localeCompare(b.date)).slice(-8),points=items.map((s,i)=>`${10+(items.length===1?.5:i/(items.length-1))*280},${125-s.accuracy}`).join(' ');chart.innerHTML=`<svg viewBox="0 0 300 145" role="img" aria-label="Précision déclarée"><path d="M10 125 H290" stroke="#496273"/><polyline points="${points}" stroke="#37e3dd" stroke-width="3" fill="none"/></svg>`}}
+  const currentWeek=sessions.filter(s=>Date.parse(s.date)>=monday.getTime());
+  const week=currentWeek.length,goal=store?.weeklyGoal||3;
+  // The five-day plan is measured in distinct weekdays, not number of
+  // sessions: two Monday sessions count as one training day.
+  const planDays=new Set(currentWeek.map(s=>{
+   const d=new Date(s.date);
+   return d.getDay()>=1&&d.getDay()<=5?d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate():null;
+  }).filter(Boolean)).size;
+  const values={
+   minutes:minutes+' min',count:String(sessions.length),
+   accuracy:avg===null?'—':avg.toFixed(1)+' %',
+   streak:store?($('#streak-days')?.textContent||'0'):'0',
+   goal:week+' / '+goal,week:planDays+' / 5',
+   avg:avg===null?'—':avg.toFixed(1)+' %'
+  };
+  for(const [key,v] of Object.entries(values)){
+   const node=$('[data-r17-'+key+']');
+   if(node)node.textContent=v;
+  }
+  for(const el of $$('[data-r17-meter]'))el.style.width=Math.min(100,week/goal*100)+'%';
+  for(const el of $$('[data-r17-week-meter]'))el.style.width=(planDays/5*100)+'%';
+  const chart=$('[data-r17-chart]');
+  if(!chart)return;
+  // Explicit reset is essential after A->B switch or global sign-out.
+  if(!scores.length){
+   chart.textContent=phrase('Enregistre une séance pour voir la courbe.','Log a session to see your chart.');
+   return;
+  }
+  const items=scores.slice().sort((a,b)=>a.date.localeCompare(b.date)).slice(-8);
+  const points=items.map((s,k)=>`${10+(items.length===1?.5:k/(items.length-1))*280},${125-s.accuracy}`).join(' ');
+  chart.innerHTML=`<svg viewBox="0 0 300 145" role="img" aria-label="Précision déclarée"><path d="M10 125 H290" stroke="#496273"/><polyline points="${points}" stroke="#37e3dd" stroke-width="3" fill="none"/></svg>`;
+ }
+
  window.addEventListener('aim-v5-ready',stats);window.addEventListener('aim-store-updated',stats);window.addEventListener('aim-cloud-data-changed',stats);update();stats();
 }
 function accountPage(){
