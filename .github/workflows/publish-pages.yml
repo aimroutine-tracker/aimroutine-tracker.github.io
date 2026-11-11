@@ -1,8 +1,24 @@
 name: Publish verified public site
+# V3 release freeze: merging a draft PR must never trigger automatic deployment.
+# A human operator must attest that the four private owner PNG comparisons,
+# disposable-account auth/sync tests and visual approval are complete.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
+    inputs:
+      release_confirmation:
+        description: 'Type PUBLIER_AIMROUTINE_V3 after completing all release checks'
+        required: true
+        type: string
+      four_originals_reviewed:
+        description: 'Four verified original PNG comparisons and human visual review complete'
+        required: true
+        type: boolean
+        default: false
+      disposable_accounts_verified:
+        description: 'Email, Google and multi-device sync tested with disposable accounts'
+        required: true
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -15,6 +31,14 @@ concurrency:
 
 jobs:
   publish:
+    # Only a manually approved dispatch FROM MAIN can deploy.
+    # GitHub Pages' environment may impose additional review protections.
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.ref == 'refs/heads/main' &&
+      inputs.release_confirmation == 'PUBLIER_AIMROUTINE_V3' &&
+      inputs.four_originals_reviewed == true &&
+      inputs.disposable_accounts_verified == true
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -30,6 +54,8 @@ jobs:
         run: |
           for script in *.js *.mjs; do node --check "$script"; done
           node --test tests/*core.test.mjs
+          python3 -m unittest discover -s tests -p 'test_stage_public_visual_evidence_v3.py' -v
+          python3 -m unittest discover -s tests -p 'test_private_source_fidelity_gate_v3.py' -v
           python3 tests/check_secrets.py
       - name: Prepare public-only artifact
         run: python3 scripts/build_public.py
