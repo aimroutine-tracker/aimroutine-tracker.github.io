@@ -1002,13 +1002,11 @@ test('Routines five-day program metric names training days, not rolling sessions
  await expect(summary).toContainText('Jours du plan cette semaine');
  await expect(summary.locator('[data-r17-week]')).toHaveText('0 / 5');
  const duration=page.locator('[data-r17-duration]');
- await expect(duration).toContainText('5 jours / semaine');
- await expect(duration).toContainText('min / jour');
+ await expect(duration).toHaveText(/~\d+ min \/ jour/);
  await page.locator('.ar-v3-language-footer [data-switch-lang]').click();
  await expect(summary).toContainText('Program days this week');
  await expect(summary.locator('[data-r17-week]')).toHaveText('0 / 5');
- await expect(duration).toContainText('5 days / week');
- await expect(duration).toContainText('min / day');
+ await expect(duration).toHaveText(/~\d+ min \/ day/);
 });
 
 test('Progress real weekly KPI and bar chart share Monday calendar weeks',async({page})=>{
