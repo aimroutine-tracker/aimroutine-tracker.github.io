@@ -7,23 +7,28 @@
     "home": {
       "filename": "home.png",
       "source_file": "Image ChatGPT 8 nov. 2026, 08_18_34(4).png",
-      "sha256": "282d589fbbaa041af05e615334dddfcf72ec10e6245f113927e280f216c94675"
+      "sha256": "282d589fbbaa041af05e615334dddfcf72ec10e6245f113927e280f216c94675",
+      "verified_best_mae_0_to_255": 21.62524
     },
     "routines": {
       "filename": "routines.png",
       "source_file": "Image ChatGPT 8 nov. 2026, 08_18_31(4).png",
-      "sha256": "fbb08ce2a2fb44ab4e77f8e14478c5ce522ee343ca34f2898b4045a3b0f393b3"
+      "sha256": "fbb08ce2a2fb44ab4e77f8e14478c5ce522ee343ca34f2898b4045a3b0f393b3",
+      "verified_best_mae_0_to_255": 26.435744
     },
     "progress": {
       "filename": "progress.png",
       "source_file": "Image ChatGPT 8 nov. 2026, 08_18_36(4).png",
-      "sha256": "93557dd0eb3ae08956e4bde4d767b5a7fd27debf7a07472bdfd52ab5f633d467"
+      "sha256": "93557dd0eb3ae08956e4bde4d767b5a7fd27debf7a07472bdfd52ab5f633d467",
+      "verified_best_mae_0_to_255": 26.024374
     },
     "account": {
       "filename": "account.png",
       "source_file": "Image ChatGPT 8 nov. 2026, 08_18_38(4).png",
-      "sha256": "712a1501a530b5573bb17a6c9ba35f81d65b8d406ffcd3a8b4f0cdd9da32dfd2"
+      "sha256": "712a1501a530b5573bb17a6c9ba35f81d65b8d406ffcd3a8b4f0cdd9da32dfd2",
+      "verified_best_mae_0_to_255": 26.500401
     }
   },
-  "note": "No synthetic comparison images. CI checks actual original reference bytes only when all four owner PNGs are present."
+  "note": "No synthetic reference images. Exact owner PNG bytes + SHA-256 required for every comparison. Private owner-to-candidate MAE bests measured on 2026-11-11 at 1672x941; the regression tolerance is 0.25 RGB MAE, not a pixel-perfect signoff. CI still blocks when originals are unavailable.",
+  "quality_regression_tolerance_mae": 0.25
 }
