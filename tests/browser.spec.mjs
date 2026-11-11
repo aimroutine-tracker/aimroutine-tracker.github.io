@@ -3314,11 +3314,19 @@ test('Training insight chart never treats future-dated cache records as observed
  await page.locator('#tab-insights').click();
  await page.locator('#insight-focus').selectOption('flick');
  await page.locator('#insight-tool').selectOption('VALORANT');
+ // Advanced analytics deliberately draw performance dots only after a named
+ // scenario is chosen; without it the chart must display a warning instead.
+ await page.locator('#analysis-scenario').selectOption('Stand de tir');
  // The locale layer may render the generic suffix "valeur(s)"; assert
  // the actual observed count, not its singular/plural punctuation.
  await expect(page.locator('#chart-count')).toContainText('1 valeur');
  await expect(page.locator('#chart svg circle')).toHaveCount(1);
- await expect(page.locator('#insight-advice')).toContainText('quatre précisions');
+ await expect(page.locator('#insight-advice')).toContainText('au moins six résultats');
+ await expect(page.locator('#scenario-records')).toContainText('72.0 %');
+ await expect(page.locator('#scenario-records')).not.toContainText('99.0 %');
+ await expect(page.locator('#scenario-records')).not.toContainText('98.0 %');
+ await expect(page.locator('#training-calendar .ar6-cal-cell.has-sessions')).toHaveCount(1);
+ await expect(page.locator('#achievement-grid .ar6-achievement.achieved')).toHaveCount(1);
  await expect(page.locator('#focus-breakdown')).toContainText('1 séance(s)');
  await page.locator('#tab-dashboard').click();
  await expect(page.locator('#total-sessions')).toHaveText('1');
