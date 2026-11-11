@@ -194,18 +194,24 @@ export function deleteCloudProgress(client,uid){
    if(previous){
     // A failed save must not prevent the owner from deleting their data.
     try{await previous}catch{}
-    // The account may have changed while the earlier save was pending.
-    // This RPC deletes the CURRENT authenticated user's progress, so a
-    // validation performed before the await is no longer sufficient.
-    const {data:latest,error:latestError}=await client.auth.getUser();
-    if(latestError||latest?.user?.id!==uid){
-     throw Error('Session modifiée pendant la suppression : reconnecte-toi à ton compte.');
-    }
+   }
+   // Always revalidate immediately before a destructive RPC, even if there
+   // was no pending save. A different tab can change the shared Auth session
+   // while the initial getUser() request is in flight.
+   const {data:latest,error:latestError}=await client.auth.getUser();
+   if(latestError||latest?.user?.id!==uid){
+    throw Error('Session modifiée pendant la suppression : reconnecte-toi à ton compte.');
    }
    // One RLS-protected database transaction: a failed request cannot partially
    // erase the cloud or leave the reset marker unpublished.
    const {data:resetValue,error:resetError}=await client.rpc('aim_reset_my_progress');
    if(resetError)throw resetError;
+   // Never clear the initiating account's local cache if a different account
+   // replaced it while the server request was pending.
+   const {data:confirmed,error:confirmedError}=await client.auth.getUser();
+   if(confirmedError||confirmed?.user?.id!==uid){
+    throw Error('Session modifiée pendant la suppression : reconnecte-toi à ton compte.');
+   }
    if(typeof resetValue!=='string'||!Number.isFinite(Date.parse(resetValue))){
     throw Error('La suppression cloud a répondu sans accusé de réinitialisation valide.');
    }
