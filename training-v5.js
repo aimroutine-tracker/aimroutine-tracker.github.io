@@ -360,10 +360,16 @@ $('#export-data').addEventListener('click',()=>{
 });
 $('#import-data').addEventListener('change',async event=>{
  const file=event.target.files?.[0];if(!file)return;
+ const importUid=activeUid();
  try{
+  if(!importUid)throw Error('Connecte-toi pour importer une sauvegarde.');
   if(file.size>2e6)throw Error('La sauvegarde dépasse 2 Mo.');
   const payload=JSON.parse(await file.text());
+  // A cross-tab logout/switch can happen while the browser reads the file.
+  // Never merge A's backup into B's account-scoped cache after that await.
+  if(activeUid()!==importUid)throw Error('Compte modifié pendant l’import : recommence après connexion.');
   const result=importPayload(payload,store);
+  if(activeUid()!==importUid)throw Error('Compte modifié pendant l’import : recommence après connexion.');
   if(!save(result.store))return;
   renderDashboard();renderInsights();renderCoach();renderFavorites();
   showMessage(result.added+' nouvelle(s) séance(s) importée(s), favoris conservés.');
