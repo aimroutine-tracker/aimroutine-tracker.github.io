@@ -202,9 +202,10 @@ export function deleteCloudProgress(client,uid){
    if(latestError||latest?.user?.id!==uid){
     throw Error('Session modifiée pendant la suppression : reconnecte-toi à ton compte.');
    }
-   // One RLS-protected database transaction: a failed request cannot partially
-   // erase the cloud or leave the reset marker unpublished.
-   const {data:resetValue,error:resetError}=await client.rpc('aim_reset_my_progress');
+   // V3 requires the new account-bound RPC. Do not fall back to the legacy
+   // no-argument function: it cannot reject a late JWT switch from A to B.
+   // Until the matching SQL migration is deployed, deletion MUST fail closed.
+   const {data:resetValue,error:resetError}=await client.rpc('aim_reset_my_progress_for_user',{expected_uid:uid});
    if(resetError)throw resetError;
    // Never clear the initiating account's local cache if a different account
    // replaced it while the server request was pending.
