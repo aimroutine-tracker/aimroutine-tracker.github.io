@@ -35,6 +35,21 @@ test('Migration ignores invalid sessions and duplicate ids',()=>{
  const next=normalizeStore({sessions:[s,s,bad]},null);
  assert.equal(next.sessions.length,1);
 });
+test('Legacy cache normalization removes duplicate favorite IDs without losing unique routines',()=>{
+ const p1={id:'legacy-p1',name:'Premier',...createRoutine('iron','flick','VALORANT',25,30)};
+ const p2={id:'legacy-p2',name:'Deuxième',...createRoutine('silver','tracking','Aim Lab',30,30)};
+ const cached={sessions:[sample(),sample()],presets:[
+  p1,{...p1,name:'Ancienne copie répétée'},p2,p2
+ ],weeklyGoal:4};
+ const original=JSON.stringify(cached);
+ const clean=normalizeStore(cached,null);
+ assert.deepEqual(clean.sessions.map(s=>s.id),['test-1']);
+ assert.deepEqual(clean.presets.map(p=>p.id),['legacy-p1','legacy-p2']);
+ assert.equal(clean.presets[0].name,'Premier','Keep the first valid stored routine');
+ assert.equal(clean.weeklyGoal,4);
+ assert.equal(JSON.stringify(cached),original,'Normalization must not modify the local backup');
+});
+
 test('Metrics use only submitted accuracy and session minutes',()=>{
  const sessions=[sample('2026-11-03T12:00:00.000Z',80,'a'),sample('2026-11-04T12:00:00.000Z',null,'b')];
  const stats=computeStats(sessions,4,new Date('2026-11-06T12:00:00.000Z'));
