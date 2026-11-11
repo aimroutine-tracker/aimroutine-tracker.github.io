@@ -982,6 +982,7 @@ test('Routines never marks a future imported training day as completed',async({p
    scenario:'Stand de tir',minutes:15,accuracy:82,feeling:'good',notes:''
   });
   const sessions=[
+   make('previous-sunday','2026-11-08T18:00:00.000Z'),
    make('done-monday','2026-11-09T08:00:00.000Z'),
    make('future-tuesday','2026-11-10T12:00:00.000Z')
   ];
@@ -991,6 +992,9 @@ test('Routines never marks a future imported training day as completed',async({p
   window.dispatchEvent(new Event('aim-store-updated'));
  });
  await expect(page.locator('.r17-weekprogress [data-r17-week]')).toHaveText('1 / 5');
+ // Sidebar must agree with Progress: previous Sunday's session belongs
+ // to last week, and tomorrow's session is not completed yet.
+ await expect(page.locator('.r17-metric [data-r17-goal]')).toHaveText('1 / 3');
  await expect(page.locator('.r17-weekday.r20-complete')).toHaveCount(1);
  await expect(page.locator('.r17-weekdays [data-r17-day="1"]')).not.toHaveClass(/r20-complete/);
 });
