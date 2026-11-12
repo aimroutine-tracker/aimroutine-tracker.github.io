@@ -9,6 +9,7 @@ on:
       - "cloud-sync-v7.mjs"
       - "scripts/check_reset_release_ready.py"
       - "tests/account-bound-reset-postgres.sql"
+      - "scripts/check_live_reset_readiness_v3.sql"
       - "tests/cloud-sync-integration-core.test.mjs"
   workflow_dispatch:
 permissions:
@@ -45,3 +46,18 @@ jobs:
           set -euo pipefail
           psql --version
           psql -v ON_ERROR_STOP=1 -f tests/account-bound-reset-postgres.sql
+      - name: Validate hosted preflight using the migrated isolated database
+        run: |
+          set -euo pipefail
+          report=$(psql -X -q -t -A -v ON_ERROR_STOP=1 -f scripts/check_live_reset_readiness_v3.sql)
+          python3 -c '
+          import json,sys
+          report=json.loads(sys.argv[1])
+          required=("ready_for_private_qa","rpc_installed","rpc_security_invoker",
+                    "rpc_anon_denied","rpc_authenticated_execute",
+                    "rpc_owner_guard_present","four_owner_only_tables")
+          failed=[key for key in required if report.get(key) is not True]
+          if failed:
+              raise SystemExit("Isolated migrated database did not satisfy readiness: "+", ".join(failed))
+          print("PASS: catalog-only reset readiness checks against migrated synthetic DB.")
+          ' "$report"
