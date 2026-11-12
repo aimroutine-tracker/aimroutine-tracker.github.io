@@ -3527,3 +3527,71 @@ test('Optional home insights guide stays lazy and remains interactive when scrol
  await page.locator('#ti-help-close').click();
  await expect(page.locator('#ti-start-tour')).toBeEnabled();
 });
+
+
+test('Web Locks serialize real cross-tab Cloud sync and reset in the browser',async({page,context})=>{
+ test.skip(!(await page.evaluate(()=>Boolean(navigator.locks?.request))),
+  'This browser does not expose the Web Locks API');
+ const uid='11111111-1111-4111-8111-111111111111';
+ const otherUid='22222222-2222-4222-8222-222222222222';
+ const second=await context.newPage();
+ try{
+  await second.goto('/privacy.html',{waitUntil:'domcontentloaded'});
+  // Tab one deliberately blocks in getUser while holding its real Web Lock.
+  await page.evaluate(async id=>{
+   const {synchronize}=await import('/cloud-sync-v7.mjs');
+   let resume;
+   const pending=new Promise(resolve=>{resume=resolve});
+   window.__qaReleaseFirstTabSync=()=>resume({data:{user:null},error:Error('Offline QA')});
+   window.__qaFirstTabEnteredAuth=false;
+   window.__qaFirstTabOutcome='pending';
+   const client={auth:{getUser:()=>{
+    window.__qaFirstTabEnteredAuth=true;
+    return pending;
+   }},from(){throw Error('QA should not read Cloud rows')}};
+   void synchronize(client,id).then(
+    ()=>window.__qaFirstTabOutcome='success',
+    ()=>window.__qaFirstTabOutcome='rejected'
+   );
+  },uid);
+  await expect.poll(()=>page.evaluate(()=>window.__qaFirstTabEnteredAuth)).toBe(true);
+  await second.evaluate(async({uid,otherUid})=>{
+   const {deleteCloudProgress}=await import('/cloud-sync-v7.mjs');
+   const prefix='aimroutine_cloud_user_';
+   localStorage.setItem(prefix+uid+'_aimroutine_web_training_v2','old-a');
+   localStorage.setItem(prefix+otherUid+'_aimroutine_web_training_v2','keep-b');
+   window.__qaSecondTabRpcCalls=0;
+   window.__qaSecondTabOutcome='pending';
+   const client={
+    auth:{getUser:async()=>({data:{user:{id:uid}},error:null})},
+    rpc:async(name,args)=>{
+     window.__qaSecondTabRpcCalls++;
+     if(name!=='aim_reset_my_progress_for_user'||args?.expected_uid!==uid)
+      throw Error('Account-bound RPC request did not match A');
+     return {data:'2026-11-12T13:00:00.000Z',error:null};
+    }
+   };
+   void deleteCloudProgress(client,uid).then(
+    ()=>window.__qaSecondTabOutcome='success',
+    error=>window.__qaSecondTabOutcome='error:'+error.message
+   );
+  },{uid,otherUid});
+  // Tab two cannot begin its destructive RPC until the first tab releases.
+  await second.waitForTimeout(100);
+  expect(await second.evaluate(()=>window.__qaSecondTabRpcCalls)).toBe(0);
+  await page.evaluate(()=>window.__qaReleaseFirstTabSync());
+  await expect.poll(()=>page.evaluate(()=>window.__qaFirstTabOutcome)).toBe('rejected');
+  await expect.poll(()=>second.evaluate(()=>window.__qaSecondTabOutcome)).toBe('success');
+  expect(await second.evaluate(()=>window.__qaSecondTabRpcCalls)).toBe(1);
+  const keys=await second.evaluate(({uid,otherUid})=>{
+   const prefix='aimroutine_cloud_user_';
+   return [
+    localStorage.getItem(prefix+uid+'_aimroutine_web_training_v2'),
+    localStorage.getItem(prefix+otherUid+'_aimroutine_web_training_v2')
+   ];
+  },{uid,otherUid});
+  expect(keys).toEqual([null,'keep-b']);
+ }finally{
+  await second.close();
+ }
+});
