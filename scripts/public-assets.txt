@@ -39,6 +39,7 @@ hero-v2-static.css
 index.html
 insights-guide.css
 insights-guide.js
+insights-guide-lazy-v1.js
 insights-v2.css
 insights-v2.js
 insights.css
