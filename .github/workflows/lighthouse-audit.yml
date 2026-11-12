@@ -14,10 +14,14 @@ on:
       - "training*.css"
       - "training*.mjs"
       - ".github/workflows/lighthouse-audit.yml"
+      - "scripts/check_lighthouse_budgets_v3.py"
+      - "tests/test_lighthouse_budgets_v3.py"
   push:
     branches: [main]
     paths:
       - ".github/workflows/lighthouse-audit.yml"
+      - "scripts/check_lighthouse_budgets_v3.py"
+      - "tests/test_lighthouse_budgets_v3.py"
       - "index.html"
       - "training.html"
       - "account.html"
@@ -120,6 +124,8 @@ jobs:
           }
           NODE
           cat lighthouse-summary.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Enforce four-page Lighthouse regression floors
+        run: python3 scripts/check_lighthouse_budgets_v3.py lh-reports
       - uses: actions/upload-artifact@v4
         if: always()
         with:
