@@ -24,6 +24,12 @@ function withAccountCloudLock(uid,action){
 }
 const parseJSON=s=>{try{return JSON.parse(s)}catch{return null}};
 const equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+// Reset marker is server-authoritative and normalized for stable comparison.
+const resetCursor=settings=>{
+ const value=settings?.reset_at;
+ return typeof value==='string'&&Number.isFinite(Date.parse(value))
+  ?new Date(value).toISOString():null;
+};
 const metaKey=uid=>CLOUD_META_PREFIX+uid;
 const enabledKey=uid=>'aimroutine_cloud_enabled_'+uid;
 export const isEnabled=uid=>validUid(uid); // Automatic Cloud for every signed-in account.
@@ -81,9 +87,7 @@ async function synchronizeOnce(client,uid,{guestImport=false}={}){
  // Progress deletion must propagate even to offline devices that still have
  // their old records in localStorage. The cloud reset cursor is authoritative:
  // never upload stale local sessions/presets from an older device.
- const remoteResetAt=typeof prefResult.data?.settings?.reset_at==='string'&&
-   Number.isFinite(Date.parse(prefResult.data.settings.reset_at))
-    ?new Date(prefResult.data.settings.reset_at).toISOString():null;
+ const remoteResetAt=resetCursor(prefResult.data?.settings);
  const unseenReset=Boolean(remoteResetAt&&remoteResetAt!==meta.resetAt);
  if(unseenReset){
    local={store:normalizeStore({},null),ext:cleanExtension({})};
@@ -107,6 +111,18 @@ async function synchronizeOnce(client,uid,{guestImport=false}={}){
  const presetById=new Map(remotePresets.map(r=>[r.preset_id,r]));
  const pending=new Set(meta.presetDeletedIds);
  const validDeleted=[...pending].filter(id=>presetById.has(id)&&!presetById.get(id).deleted_at);
+ // Another device can reset progress after our first cloud reads but before
+ // we write anything. Re-check the server reset epoch immediately before the
+ // first mutation; never upload a snapshot known to predate deletion.
+ // This narrows a cross-device race; strict atomic protection still needs
+ // server-side write gating in a future coordinated migration.
+ const {data:latestPreferences,error:latestPreferencesError}=await client.from('aim_preferences')
+   .select('settings').eq('user_id',uid).maybeSingle();
+ if(latestPreferencesError)throw latestPreferencesError;
+ const latestResetAt=resetCursor(latestPreferences?.settings);
+ if(latestResetAt!==remoteResetAt){
+  throw Error('La progression Cloud a été réinitialisée pendant la synchronisation. Relance la synchronisation pour récupérer le nouvel état.');
+ }
  for(const id of validDeleted){
   const row=presetById.get(id);
   const {error}=await client.from('aim_presets').update({deleted_at:new Date().toISOString()}).eq('user_id',uid).eq('preset_id',id);
