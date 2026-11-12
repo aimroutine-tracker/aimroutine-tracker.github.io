@@ -8,6 +8,20 @@ const STORAGE_LIMIT=1000;
 // Serialize destructive resets against outstanding saves for the same account.
 const inflightSyncs=new Map();
 const inflightResets=new Map();
+// An exclusive same-origin Web Lock coordinates V3 clients across browser tabs.
+// In-memory maps above cover only a single JS realm. Without this lock, a
+// second tab could upload stale sessions while another tab resets its owner.
+// A different device or legacy V2 tab is NOT protected by this client lock;
+// the server reset cursor and RLS remain the authoritative safety layers.
+function withAccountCloudLock(uid,action){
+ const manager=typeof navigator!=='undefined'?navigator.locks:null;
+ if(manager&&typeof manager.request==='function'){
+  return manager.request('aimroutine-cloud-account-'+uid,{mode:'exclusive'},action);
+ }
+ // Web Locks are optional in old/insecure browsers. Keep the existing
+ // per-realm serialization; do not claim cross-tab protection in fallback.
+ return action();
+}
 const parseJSON=s=>{try{return JSON.parse(s)}catch{return null}};
 const equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const metaKey=uid=>CLOUD_META_PREFIX+uid;
@@ -188,6 +202,7 @@ export function deleteCloudProgress(client,uid){
  // and previously started saves finish before the deletion transaction begins.
  const task=(async()=>{
   try{
+   return await withAccountCloudLock(uid,async()=>{
    const {data:{user},error}=await client.auth.getUser();
    if(error||!user||user.id!==uid)throw Error('Session non validée.');
    const previous=inflightSyncs.get(uid);
@@ -235,6 +250,7 @@ export function deleteCloudProgress(client,uid){
    localStorage.removeItem(scopedKey(LEGACY_KEY,uid));
    localStorage.removeItem(scopedKey(EXT_KEY,uid));
    return true;
+   });
   }finally{
    if(inflightResets.get(uid)===task)inflightResets.delete(uid);
   }
@@ -250,7 +266,7 @@ export function synchronize(client,uid,options={}){
  if(reset)return reset.then(()=>synchronize(client,uid,options));
  const pending=inflightSyncs.get(uid);
  if(pending)return options.guestImport?pending.then(()=>synchronize(client,uid,options)):pending;
- const task=synchronizeOnce(client,uid,options);
+ const task=withAccountCloudLock(uid,()=>synchronizeOnce(client,uid,options));
  inflightSyncs.set(uid,task);
  void task.finally(()=>{if(inflightSyncs.get(uid)===task)inflightSyncs.delete(uid)}).catch(()=>{});
  return task;
