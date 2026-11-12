@@ -1,6 +1,6 @@
 # AimRoutine Tracker V3 — recette finale privée et autorisation de publication
 
-**État au 11 novembre 2026 : NON PRÊT À PUBLIER.** Ce document est une procédure, pas une attestation que des tests réels ont eu lieu. Conserver la PR #27 en brouillon et ne pas fusionner.
+**État au 12 novembre 2026 : NON PRÊT À PUBLIER.** Ce document est une procédure, pas une attestation que des tests réels ont eu lieu. Conserver la PR #27 en brouillon et ne pas fusionner.
 
 ## Contrôles déjà effectués sans toucher aux données personnelles
 
@@ -26,6 +26,18 @@ Pour **Accueil**, **Routines**, **Progression** et **Compte**, joindre dans une 
 Ne jamais copier les PNG sources, les superpositions propriétaires ou leurs pixels dans le dépôt public, dans un commentaire PR ou dans un artefact GitHub public. Le contrôle public sans les originaux reste bloquant ; ne pas le transformer artificiellement en succès.
 
 **Budgets anti-régression (pas des objectifs pixel-perfect)** : Accueil 21,625240 ; Routines 26,435744 ; Progression **25,603400** (passe 58 : espacement des cartes du bas corrigé) ; Compte 26,500401 de MAE RGB. Tolérance 0,25, définie dans le manifeste.
+
+## Contrôle supplémentaire — état réel de la migration Supabase (12 novembre 2026)
+
+Le fichier `scripts/check_live_reset_readiness_v3.sql` est un **SELECT en lecture seule** sur les catalogues PostgreSQL. Exécute-le depuis l'éditeur SQL du projet concerné **après revue et déploiement autorisé** de la migration, sans saisir d'identité utilisateur ni de mot de passe dans GitHub. Il vérifie :
+
+- l'existence de `aim_reset_my_progress_for_user(uuid)`, sa sécurité `INVOKER`, son contrôle de correspondance `auth.uid()` / `expected_uid` et ses droits `EXECUTE` ;
+- les quatre tables, leur RLS, les droits d'accès `anon` et `authenticated`, et la présence de politiques utilisant le propriétaire en lecture comme en écriture ;
+- une sortie JSON `ready_for_private_qa` : cette valeur **autorise uniquement à commencer les essais privés**, jamais à publier.
+
+**Résultat effectivement observé sur le projet hébergé le 12 novembre, en lecture seule** : `rpc_installed=false`, `four_owner_only_tables=true`, donc `ready_for_private_qa=false`. C'est attendu tant que la migration V3 n'a pas été appliquée. Il n'a été exécuté aucun changement de schéma ni aucune suppression de données.
+
+Le même SELECT est exécuté par `.github/workflows/prepare-account-bound-reset.yml` sur PostgreSQL 17 éphémère **après** la migration synthétique. Son retour doit être entièrement positif. Ne pas déclarer la recette réelle validée avant les vérifications de comptes jetables A/B et du fournisseur Google sur le serveur hébergé.
 
 ## 2. Recette réelle : trois comptes d'essai exclusivement
 
