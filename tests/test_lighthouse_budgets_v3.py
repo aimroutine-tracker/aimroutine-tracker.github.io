@@ -81,6 +81,17 @@ class LighthouseBudgetsTests(unittest.TestCase):
             (directory / "account.report.json").unlink()
             self.assertTrue(BUDGET.check_directory(directory))
 
+    def test_workflow_repeats_failed_sample_without_disabling_budgets(self):
+        workflow = (PATH.parents[1] / ".github" / "workflows" /
+                    "lighthouse-audit.yml").read_text(encoding="utf-8")
+        self.assertIn("if python3 scripts/check_lighthouse_budgets_v3.py lh-reports; then", workflow)
+        self.assertIn("mkdir -p lh-reports-first-sample", workflow)
+        self.assertIn("cp lh-reports/*.report.json lh-reports-first-sample/", workflow)
+        self.assertIn("lighthouse-second-sample.md", workflow)
+        # Check that the final re-test is still mandatory and not ignored.
+        self.assertIn("          python3 scripts/check_lighthouse_budgets_v3.py lh-reports", workflow)
+        self.assertNotIn("continue-on-error: true\n        run: python3 scripts/check_lighthouse_budgets_v3.py", workflow)
+
     def test_invalid_json_is_not_silently_ignored(self):
         with tempfile.TemporaryDirectory() as tmp:
             directory = Path(tmp)
