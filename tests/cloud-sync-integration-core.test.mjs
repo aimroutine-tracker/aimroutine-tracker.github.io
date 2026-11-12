@@ -546,3 +546,52 @@ test('offline device cannot resurrect reset profile and weekly goal or alter a s
   assert.equal(db.aim_profiles.find(row=>row.user_id===USER_B).profile.profile.nickname,'PrivateBravo');
  });
 });
+
+
+test('cross-device reset between cloud reads and writes rejects stale uploads and later converges',async()=>{
+ const db=makeDb(),storage=new MemoryStorage(),base=clientFor(db,USER_A);
+ // B must be completely isolated from both the reset and the retry.
+ db.aim_sessions.push({user_id:USER_B,session_id:'b-private',
+  payload:session('b-private'),deleted_at:null});
+ let preferenceReads=0,resetCalls=0,remoteResetAt=null;
+ const client={...base,
+  from(table){
+   const q=base.from(table);
+   if(table==='aim_preferences'){
+    const original=q.maybeSingle.bind(q);
+    q.maybeSingle=async()=>{
+     preferenceReads++;
+     // A second device resets A precisely after the first snapshot is read,
+     // just before the first device starts its cloud mutations.
+     if(preferenceReads===2){
+      resetCalls++;
+      const result=await base.rpc('aim_reset_my_progress_for_user',{expected_uid:USER_A});
+      assert.equal(result.error,null);
+      remoteResetAt=result.data;
+     }
+     return original();
+    };
+   }
+   return q;
+  }
+ };
+ await use(storage,async()=>{
+  write(storage,USER_A,[session('stale-offline-a')]);
+  await assert.rejects(synchronize(client,USER_A),
+   /réinitialisée pendant la synchronisation/,
+   'The first device must fail closed rather than restore stale progress');
+  assert.equal(resetCalls,1);
+  assert.equal(preferenceReads,2,'Second read must happen before writes');
+  assert.ok(Number.isFinite(Date.parse(remoteResetAt)));
+  assert.deepEqual(db.aim_sessions.filter(r=>r.user_id===USER_A),[],
+   'Old sessions must not be uploaded after another device reset');
+  assert.deepEqual(readUserLocal(USER_A).store.sessions.map(s=>s.id),['stale-offline-a'],
+   'On a failed sync, local cache stays untouched until a successful retry');
+  await synchronize(client,USER_A);
+  assert.deepEqual(readUserLocal(USER_A).store.sessions,[],
+   'Retry must apply authoritative remote reset to local stale cache');
+  assert.deepEqual(db.aim_sessions.filter(r=>r.user_id===USER_A),[]);
+  assert.deepEqual(db.aim_sessions.filter(r=>r.user_id===USER_B).map(r=>r.session_id),
+   ['b-private'],'B records must remain untouched');
+ });
+});
