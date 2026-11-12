@@ -59,12 +59,32 @@ jobs:
           done
       - name: Audit home, training, progress and account pages
         run: |
+          set -euo pipefail
           mkdir -p lh-reports
           for page in index training progress account; do
-            npx lighthouse "http://127.0.0.1:8765/$page.html" \
-              --chrome-flags="--headless --no-sandbox" \
-              --only-categories=performance,accessibility,best-practices,seo \
-              --output=json --output=html --output-path="lh-reports/$page" --quiet
+            passed=0
+            for attempt in 1 2; do
+              echo "Lighthouse $page attempt $attempt/2"
+              if npx lighthouse "http://127.0.0.1:8765/$page.html" \
+                --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage --disable-gpu --no-first-run" \
+                --only-categories=performance,accessibility,best-practices,seo \
+                --output=json --output=html --output-path="lh-reports/$page" --quiet \
+                2>"/tmp/lh-$page.log"; then
+                passed=1
+                break
+              fi
+              cat "/tmp/lh-$page.log"
+              if [ "$attempt" -lt 2 ]; then
+                echo "::warning::Lighthouse failed to launch/audit $page; retrying once"
+                sleep 5
+              fi
+            done
+            if [ "$passed" -ne 1 ]; then
+              echo "::error::Lighthouse could not audit $page after two attempts"
+              exit 1
+            fi
+            test -s "lh-reports/$page.report.json"
+            test -s "lh-reports/$page.report.html"
           done
       - name: Summarize Lighthouse scores
         run: |
