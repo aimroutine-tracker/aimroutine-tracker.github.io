@@ -18,9 +18,9 @@ rpc_checks AS (
   COALESCE((SELECT NOT prosecdef FROM reset_rpc),FALSE) AS rpc_security_invoker,
   COALESCE((SELECT NOT pg_catalog.has_function_privilege('anon',oid,'EXECUTE') FROM reset_rpc),FALSE) AS rpc_anon_denied,
   COALESCE((SELECT pg_catalog.has_function_privilege('authenticated',oid,'EXECUTE') FROM reset_rpc),FALSE) AS rpc_authenticated_execute,
-  COALESCE((SELECT source LIKE '%actor_id is distinct from expected_uid%'
+  COALESCE((SELECT source ~ 'actor_id[[:space:]]+is[[:space:]]+distinct[[:space:]]+from[[:space:]]+expected_uid'
                    AND source LIKE '%auth.uid()%'
-                   AND source LIKE '%where user_id=expected_uid%'
+                   AND source ~ 'where[[:space:]]+user_id[[:space:]]*=[[:space:]]*expected_uid'
             FROM reset_rpc),FALSE) AS rpc_owner_guard_present
 ),
 table_checks AS (
@@ -36,10 +36,10 @@ table_checks AS (
    SELECT 1 FROM pg_catalog.pg_policies pol
    WHERE pol.schemaname='public' AND pol.tablename=e.name
      AND pol.cmd='ALL'
-     AND pg_catalog.position('auth.uid()' IN pol.qual)>0
-     AND pg_catalog.position('user_id' IN pol.qual)>0
-     AND pg_catalog.position('auth.uid()' IN pol.with_check)>0
-     AND pg_catalog.position('user_id' IN pol.with_check)>0
+     AND pg_catalog.strpos(pol.qual,'auth.uid()')>0
+     AND pg_catalog.strpos(pol.qual,'user_id')>0
+     AND pg_catalog.strpos(pol.with_check,'auth.uid()')>0
+     AND pg_catalog.strpos(pol.with_check,'user_id')>0
   ) AS owner_policy_both_directions
  FROM expected_tables e
  LEFT JOIN pg_catalog.pg_class c
