@@ -27,6 +27,14 @@ Ne jamais copier les PNG sources, les superpositions propriétaires ou leurs pix
 
 **Budgets anti-régression (pas des objectifs pixel-perfect)** : Accueil 21,625240 ; Routines 26,435744 ; Progression **25,603400** (passe 58 : espacement des cartes du bas corrigé) ; Compte 26,500401 de MAE RGB. Tolérance 0,25, définie dans le manifeste.
 
+## Protection complémentaire contre la suppression concurrente entre onglets
+
+Depuis la V3 sur la PR #27, `cloud-sync-v7.mjs` utilise les **Web Locks** exclusifs par identifiant de compte pour sérialiser les opérations de synchronisation et de suppression **entre les onglets d'un même navigateur et de la même origine HTTPS**. Si le navigateur ne fournit pas cette API, la sérialisation en mémoire reste limitée à l'onglet courant.
+
+Deux tests Node utilisent deux instances de module simulant deux onglets et vérifient l'ordre de traitement et l'indépendance des comptes A/B. Un test Playwright vérifie aussi le verrou partagé avec **deux véritables onglets**.
+
+**Limite à ne pas masquer :** les Web Locks ne synchronisent pas les appareils différents, les navigateurs distincts ni les anciens clients non migrés. Le marqueur serveur `reset_at` empêche les importations hors ligne observées *après* la suppression, mais la fenêtre de concurrence lorsqu'un appareil distant a déjà lu l'ancien marqueur et écrit pendant la suppression doit encore être homologuée avec plusieurs appareils et comptes jetables. Ce contrôle n'est **pas** une preuve absolue d'absence de résurrection après une suppression inter-appareils. Tant que l'atomicité de ce scénario n'est pas validée, la recette de suppression multi-appareils ne doit pas être attestée.
+
 ## Contrôle supplémentaire — état réel de la migration Supabase (12 novembre 2026)
 
 Le fichier `scripts/check_live_reset_readiness_v3.sql` est un **SELECT en lecture seule** sur les catalogues PostgreSQL. Exécute-le depuis l'éditeur SQL du projet concerné **après revue et déploiement autorisé** de la migration, sans saisir d'identité utilisateur ni de mot de passe dans GitHub. Il vérifie :
