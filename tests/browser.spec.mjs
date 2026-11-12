@@ -3500,3 +3500,30 @@ test('Routines previews never count future rows or carry an old accuracy chart i
  await expect(page.locator('[data-r17-chart] svg')).toHaveCount(0);
  await expect(page.locator('[data-r17-chart]')).toContainText('Enregistre des résultats');
 });
+
+
+test('Optional home insights guide stays lazy and remains interactive when scrolled into view',async({page})=>{
+ let guideRequests=0;
+ await page.route('**/insights-guide.js?v=2',async route=>{
+  guideRequests++;
+  await route.continue();
+ });
+ await page.goto('/index.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#insights')).toBeAttached();
+ const initial=await page.locator('#insights').boundingBox();
+ const viewport=page.viewportSize();
+ // Guide content is below the first paint; do not download or execute it
+ // while the user is still reading the homepage hero.
+ if(initial&&viewport&&initial.y>viewport.height+1400){
+  await page.waitForTimeout(250);
+  expect(guideRequests).toBe(0);
+  await expect(page.locator('#ti-start-tour')).toHaveCount(0);
+ }
+ await page.locator('#insights').scrollIntoViewIfNeeded();
+ await expect(page.locator('#ti-start-tour')).toBeVisible({timeout:15000});
+ expect(guideRequests).toBe(1);
+ await page.locator('#ti-start-tour').click();
+ await expect(page.locator('#ti-explainer-title')).not.toBeEmpty();
+ await page.locator('#ti-help-close').click();
+ await expect(page.locator('#ti-start-tour')).toBeEnabled();
+});
