@@ -27,7 +27,10 @@ table_checks AS (
  SELECT
   e.name,
   COALESCE(c.relrowsecurity,FALSE) AS rls_enabled,
-  COALESCE(NOT pg_catalog.has_table_privilege('anon',c.oid,'SELECT'),FALSE) AS anon_select_denied,
+  (COALESCE(NOT pg_catalog.has_table_privilege('anon',c.oid,'SELECT'),FALSE)
+   AND COALESCE(NOT pg_catalog.has_table_privilege('anon',c.oid,'INSERT'),FALSE)
+   AND COALESCE(NOT pg_catalog.has_table_privilege('anon',c.oid,'UPDATE'),FALSE)
+   AND COALESCE(NOT pg_catalog.has_table_privilege('anon',c.oid,'DELETE'),FALSE)) AS anon_crud_denied,
   COALESCE(pg_catalog.has_table_privilege('authenticated',c.oid,'SELECT'),FALSE)
    AND COALESCE(pg_catalog.has_table_privilege('authenticated',c.oid,'INSERT'),FALSE)
    AND COALESCE(pg_catalog.has_table_privilege('authenticated',c.oid,'UPDATE'),FALSE)
@@ -35,7 +38,7 @@ table_checks AS (
   EXISTS(
    SELECT 1 FROM pg_catalog.pg_policies pol
    WHERE pol.schemaname='public' AND pol.tablename=e.name
-     AND pol.cmd='ALL'
+     AND pol.cmd='ALL' AND 'authenticated'=ANY(pol.roles)
      AND pg_catalog.strpos(pol.qual,'auth.uid()')>0
      AND pg_catalog.strpos(pol.qual,'user_id')>0
      AND pg_catalog.strpos(pol.with_check,'auth.uid()')>0
@@ -48,7 +51,7 @@ table_checks AS (
 table_summary AS (
  SELECT COUNT(*)=4
   AND COALESCE(BOOL_AND(
-   rls_enabled AND anon_select_denied AND authenticated_crud_granted
+   rls_enabled AND anon_crud_denied AND authenticated_crud_granted
    AND owner_policy_both_directions
   ),FALSE) AS four_owner_only_tables
  FROM table_checks
