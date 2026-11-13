@@ -121,7 +121,11 @@ async function synchronizeOnce(client,uid,{guestImport=false}={}){
  if(latestPreferencesError)throw latestPreferencesError;
  const latestResetAt=resetCursor(latestPreferences?.settings);
  if(latestResetAt!==remoteResetAt){
-  throw Error('La progression Cloud a été réinitialisée pendant la synchronisation. Relance la synchronisation pour récupérer le nouvel état.');
+  // A typed conflict allows one safe, automatic reload. Never retry for Auth,
+  // network, RLS or other unrelated failures.
+  const conflict=Error('La progression Cloud a été réinitialisée pendant la synchronisation. Relance la synchronisation pour récupérer le nouvel état.');
+  conflict.code='AIM_RESET_CURSOR_CHANGED';
+  throw conflict;
  }
  for(const id of validDeleted){
   const row=presetById.get(id);
@@ -282,7 +286,18 @@ export function synchronize(client,uid,options={}){
  if(reset)return reset.then(()=>synchronize(client,uid,options));
  const pending=inflightSyncs.get(uid);
  if(pending)return options.guestImport?pending.then(()=>synchronize(client,uid,options)):pending;
- const task=withAccountCloudLock(uid,()=>synchronizeOnce(client,uid,options));
+ const task=withAccountCloudLock(uid,async()=>{
+  try{
+   return await synchronizeOnce(client,uid,options);
+  }catch(error){
+   if(error?.code!=='AIM_RESET_CURSOR_CHANGED')throw error;
+   // Re-read the server-authoritative reset marker under the same per-account
+   // lock. This deliberately retries at most ONCE: repeated resets must
+   // surface as an error instead of looping or restoring stale records.
+   // synchronizeOnce revalidates the authenticated user on every attempt.
+   return synchronizeOnce(client,uid,options);
+  }
+ });
  inflightSyncs.set(uid,task);
  void task.finally(()=>{if(inflightSyncs.get(uid)===task)inflightSyncs.delete(uid)}).catch(()=>{});
  return task;
