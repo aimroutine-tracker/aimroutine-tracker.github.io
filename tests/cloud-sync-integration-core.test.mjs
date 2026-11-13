@@ -662,3 +662,46 @@ test('network errors are not automatically retried by remote-reset reconciliatio
    ['keep-after-network-failure']);
  });
 });
+
+
+test('automatic reset retry revalidates account identity before any cloud write',async()=>{
+ const db=makeDb(),storage=new MemoryStorage(),base=clientFor(db,USER_A);
+ db.aim_sessions.push({user_id:USER_B,session_id:'other-account',
+  payload:session('other-account'),deleted_at:null});
+ let activeUser=USER_A,authChecks=0,preferenceReads=0;
+ const client={...base,
+  auth:{getUser:async()=>{
+   authChecks++;
+   return {data:{user:{id:activeUser}},error:null};
+  }},
+  from(table){
+   const q=base.from(table);
+   if(table==='aim_preferences'){
+    const original=q.maybeSingle.bind(q);
+    q.maybeSingle=async()=>{
+     preferenceReads++;
+     if(preferenceReads===2){
+      const result=await base.rpc('aim_reset_my_progress_for_user',{expected_uid:USER_A});
+      assert.equal(result.error,null);
+      activeUser=USER_B;
+     }
+     return original();
+    };
+   }
+   return q;
+  }
+ };
+ await use(storage,async()=>{
+  write(storage,USER_A,[session('old-a-session')]);
+  await assert.rejects(synchronize(client,USER_A),/Session non validée/);
+  assert.equal(authChecks,2,'Every retry must revalidate JWT identity');
+  assert.equal(preferenceReads,2,'A retry under B must stop before querying cloud data');
+  assert.deepEqual(readUserLocal(USER_A).store.sessions.map(s=>s.id),['old-a-session'],
+   'A cache must not be touched by a retry after an account switch');
+  assert.equal(storage.getItem(scopedKey(TRAINING_KEY,USER_B)),null,
+   'B cache must not receive old A data');
+  assert.deepEqual(db.aim_sessions.filter(row=>row.user_id===USER_A),[]);
+  assert.deepEqual(db.aim_sessions.filter(row=>row.user_id===USER_B).map(row=>row.session_id),
+   ['other-account'],'B cloud data must remain untouched');
+ });
+});
