@@ -595,3 +595,70 @@ test('cross-device reset between cloud reads and writes auto-recovers without st
    ['b-private'],'B records must remain untouched');
  });
 });
+
+
+test('repeated cross-device resets stop after one retry and never erase local cache on failure',async()=>{
+ const db=makeDb(),storage=new MemoryStorage(),base=clientFor(db,USER_A);
+ let preferenceReads=0,resetCalls=0;
+ const client={...base,from(table){
+  const q=base.from(table);
+  if(table==='aim_preferences'){
+   const original=q.maybeSingle.bind(q);
+   q.maybeSingle=async()=>{
+    preferenceReads++;
+    if(preferenceReads===2||preferenceReads===4){
+     resetCalls++;
+     const response=await base.rpc('aim_reset_my_progress_for_user',{expected_uid:USER_A});
+     assert.equal(response.error,null);
+     // Force distinct markers even when both synthetic resets share a millisecond.
+     const p=db.aim_preferences.find(row=>row.user_id===USER_A);
+     p.settings.reset_at=`2026-11-13T13:00:0${resetCalls}.000Z`;
+    }
+    return original();
+   };
+  }
+  return q;
+ }};
+ await use(storage,async()=>{
+  write(storage,USER_A,[session('retain-until-recovered')]);
+  await assert.rejects(synchronize(client,USER_A),error=>{
+   assert.equal(error.code,'AIM_RESET_CURSOR_CHANGED');
+   assert.match(error.message,/réinitialisée pendant la synchronisation/);
+   return true;
+  });
+  assert.equal(resetCalls,2);
+  assert.equal(preferenceReads,4,'Only two complete snapshots may be attempted');
+  assert.deepEqual(readUserLocal(USER_A).store.sessions.map(s=>s.id),
+   ['retain-until-recovered'],'A failed automatic retry must not wipe unconfirmed local data');
+  assert.equal(db.aim_sessions.filter(row=>row.user_id===USER_A).length,0);
+  const result=await synchronize(client,USER_A);
+  assert.equal(result.synced,true,'Later explicit attempts are not permanently locked');
+  assert.equal(preferenceReads,6);
+  assert.deepEqual(readUserLocal(USER_A).store.sessions,[],
+   'Next successful sync must accept the authoritative cloud reset');
+ });
+});
+
+test('network errors are not automatically retried by remote-reset reconciliation',async()=>{
+ const db=makeDb(),storage=new MemoryStorage(),base=clientFor(db,USER_A);
+ let preferenceReads=0;
+ const client={...base,from(table){
+  const q=base.from(table);
+  if(table==='aim_preferences'){
+   const original=q.maybeSingle.bind(q);
+   q.maybeSingle=async()=>{
+    preferenceReads++;
+    if(preferenceReads===2)return {data:null,error:Error('simulated transient network failure')};
+    return original();
+   };
+  }
+  return q;
+ }};
+ await use(storage,async()=>{
+  write(storage,USER_A,[session('keep-after-network-failure')]);
+  await assert.rejects(synchronize(client,USER_A),/simulated transient network failure/);
+  assert.equal(preferenceReads,2,'Only reset conflicts may be auto-retried');
+  assert.deepEqual(readUserLocal(USER_A).store.sessions.map(s=>s.id),
+   ['keep-after-network-failure']);
+ });
+});
