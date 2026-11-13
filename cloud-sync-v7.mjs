@@ -27,8 +27,13 @@ const equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 // Reset marker is server-authoritative and normalized for stable comparison.
 const resetCursor=settings=>{
  const value=settings?.reset_at;
- return typeof value==='string'&&Number.isFinite(Date.parse(value))
-  ?new Date(value).toISOString():null;
+ if(value==null)return null; // Legacy accounts may predate reset markers.
+ if(typeof value!=='string'||!Number.isFinite(Date.parse(value))){
+  // A corrupt or unexpected authoritative marker must never be treated as
+  // "not reset": that could re-upload stale offline data after deletion.
+  throw Error('Marqueur de réinitialisation Cloud invalide : sauvegarde annulée sans modifier les données locales.');
+ }
+ return new Date(value).toISOString();
 };
 const metaKey=uid=>CLOUD_META_PREFIX+uid;
 const enabledKey=uid=>'aimroutine_cloud_enabled_'+uid;
