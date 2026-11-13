@@ -35,6 +35,14 @@ Deux tests Node utilisent deux instances de module simulant deux onglets et vér
 
 **Limite à ne pas masquer :** les Web Locks ne synchronisent pas les appareils différents, les navigateurs distincts ni les anciens clients non migrés. Le marqueur serveur `reset_at` empêche les importations hors ligne observées *après* la suppression, mais la fenêtre de concurrence lorsqu'un appareil distant a déjà lu l'ancien marqueur et écrit pendant la suppression doit encore être homologuée avec plusieurs appareils et comptes jetables. Ce contrôle n'est **pas** une preuve absolue d'absence de résurrection après une suppression inter-appareils. Tant que l'atomicité de ce scénario n'est pas validée, la recette de suppression multi-appareils ne doit pas être attestée.
 
+## Reprise automatique après reset distant (13 novembre 2026)
+
+Dans `cloud-sync-v7.mjs`, la synchronisation V3 compare une seconde fois le curseur `reset_at` **avant ses premières écritures**. Si un autre appareil a supprimé la progression entre les deux lectures, le premier essai s'arrête **sans envoyer son ancien snapshot**. La synchronisation relit alors automatiquement le Cloud **une seule fois**, toujours sous le verrou du même compte quand Web Locks est disponible. Elle revalide le compte authentifié à chaque passage.
+
+Les tests Node simulent : (1) reset A entre lectures suivi d'une reprise sans séances obsolètes ; (2) deux resets successifs, qui terminent en erreur après un seul réessai, sans boucle ; (3) erreur réseau, qui **ne déclenche aucun réessai automatique** ; (4) passage du compte A au compte B avant la reprise, qui interdit tout nouvel accès aux données de A ou de B. Le client ne considère pas un échec comme une suppression confirmée.
+
+**Limite maintenue :** la reprise ne donne **pas** de garantie transactionnelle entre appareils. Un reset peut encore intervenir **après** la seconde lecture et **avant** un UPSERT REST. Cette fenêtre nécessite une opération de validation et d'écriture atomique côté PostgreSQL, une migration coordonnée et une recette réelle multi-appareils sur comptes jetables. Ces tests restent **simulés** et n'autorisent pas de publication.
+
 ## Contrôle supplémentaire — état réel de la migration Supabase (12 novembre 2026)
 
 Le fichier `scripts/check_live_reset_readiness_v3.sql` est un **SELECT en lecture seule** sur les catalogues PostgreSQL. Exécute-le depuis l'éditeur SQL du projet concerné **après revue et déploiement autorisé** de la migration, sans saisir d'identité utilisateur ni de mot de passe dans GitHub. Il vérifie :
@@ -68,7 +76,7 @@ Utiliser uniquement des **comptes jetables créés pour ce test**, avec des boî
 
 - Sur deux **comptes jetables A et B**, interrompre ou retarder une opération de sauvegarde A puis déclencher « supprimer ma progression » ; changer de compte avant la reprise réseau. **B doit conserver toutes ses données**, aucune RPC de suppression ne doit partir avec une identité B au nom de A.
 - Reproduire aussi un changement de compte pendant la réponse de la RPC. L'interface ne doit pas effacer le cache local d'une identité précédente ni afficher un succès périmé à B.
-- Côté navigateur, la branche V3 effectue un `auth.getUser()` supplémentaire **avant et après** `aim_reset_my_progress` et dispose de tests Node déterministes pour ces cas. Ce contrôle est une **défense en profondeur** : il ne peut pas éliminer toute fenêtre de course entre la dernière vérification et l'envoi effectif du JWT.
+- Côté navigateur, la branche V3 effectue un `auth.getUser()` supplémentaire **avant et après** `aim_reset_my_progress_for_user(expected_uid)` et dispose de tests Node déterministes pour ces cas. Ce contrôle est une **défense en profondeur** : il ne peut pas éliminer toute fenêtre de course entre la dernière vérification et l'envoi effectif du JWT.
 - **Limite bloquante à vérifier** : la RPC serveur actuelle `aim_reset_my_progress()` agit sur `auth.uid()` du JWT réellement reçu et ne reçoit pas encore d'UID attendu. Ne pas annoncer une isolation destructive totalement prouvée sans test A/B réel et, si le scénario révèle une course, une RPC serveur liant explicitement l'UID attendu à `auth.uid()`. Tout changement serveur devra faire l'objet d'une migration, d'une revue et d'une validation avant déploiement.
 
 Ne pas supprimer les comptes d'essai avant d'avoir conservé **uniquement** les résultats non sensibles du protocole. Après validation, les supprimer de manière contrôlée. **État actuel de toute cette section : NON EXÉCUTÉE en vrai**, sauf si le propriétaire fournit séparément un compte rendu de test vérifiable.
