@@ -705,3 +705,45 @@ test('automatic reset retry revalidates account identity before any cloud write'
    ['other-account'],'B cloud data must remain untouched');
  });
 });
+
+
+test('invalid remote reset cursor at initial read fails closed without uploading old sessions',async()=>{
+ const db=makeDb(),storage=new MemoryStorage(),client=clientFor(db,USER_A);
+ db.aim_preferences.push({user_id:USER_A,weekly_goal:3,
+  settings:{format:'aimroutine-web-v2',reset_at:'not-a-valid-date'}});
+ await use(storage,async()=>{
+  write(storage,USER_A,[session('must-not-upload')]);
+  await assert.rejects(synchronize(client,USER_A),/Marqueur de réinitialisation Cloud invalide/);
+  assert.deepEqual(db.aim_sessions.filter(row=>row.user_id===USER_A),[]);
+  assert.deepEqual(readUserLocal(USER_A).store.sessions.map(s=>s.id),['must-not-upload'],
+   'Malformed server reset metadata must never erase the device cache');
+ });
+});
+
+test('invalid remote reset cursor in final pre-write check also fails closed',async()=>{
+ const db=makeDb(),storage=new MemoryStorage(),base=clientFor(db,USER_A);
+ let reads=0;
+ const client={...base,from(table){
+  const q=base.from(table);
+  if(table==='aim_preferences'){
+   const original=q.maybeSingle.bind(q);
+   q.maybeSingle=async()=>{
+    reads++;
+    if(reads===2){
+     db.aim_preferences.push({user_id:USER_A,weekly_goal:3,
+      settings:{format:'aimroutine-web-v2',reset_at:123}});
+    }
+    return original();
+   };
+  }
+  return q;
+ }};
+ await use(storage,async()=>{
+  write(storage,USER_A,[session('retained-on-invalid-marker')]);
+  await assert.rejects(synchronize(client,USER_A),/Marqueur de réinitialisation Cloud invalide/);
+  assert.equal(reads,2,'Invalid cursor is not retried as a valid reset conflict');
+  assert.deepEqual(db.aim_sessions.filter(row=>row.user_id===USER_A),[]);
+  assert.deepEqual(readUserLocal(USER_A).store.sessions.map(s=>s.id),
+   ['retained-on-invalid-marker']);
+ });
+});
