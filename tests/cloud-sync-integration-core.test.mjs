@@ -333,6 +333,64 @@ test('valid guest import copies progress only into its account and leaves origin
  });
 });
 
+test('guest import preserves customized account profile and goal with zero recorded sessions',async()=>{
+ const storage=new MemoryStorage(),db=makeDb(),cloud=clientFor(db,USER_A);
+ await use(storage,async()=>{
+  storage.setItem(TRAINING_KEY,JSON.stringify({
+   sessions:[session('guest-safe')],presets:[preset('guest-favorite')],weeklyGoal:4
+  }));
+  storage.setItem(EXT_KEY,JSON.stringify({profile:{nickname:'GuestPlayer',rank:'silver'}}));
+  // No training sessions on this account, but preferences are already saved.
+  storage.setItem(scopedKey(TRAINING_KEY,USER_A),
+   JSON.stringify({sessions:[],presets:[],weeklyGoal:9}));
+  storage.setItem(scopedKey(EXT_KEY,USER_A),
+   JSON.stringify({profile:{nickname:'AccountPro',rank:'diamond'}}));
+  write(storage,USER_B,[session('private-b')]);
+  const previousB=storage.getItem(scopedKey(TRAINING_KEY,USER_B));
+  const previousGuest=storage.getItem(TRAINING_KEY);
+  const result=importGuestIntoAccount(USER_A);
+  assert.deepEqual(result,{sessions:1,favorites:1});
+  assert.deepEqual(readUserLocal(USER_A).store.sessions.map(s=>s.id),['guest-safe']);
+  assert.deepEqual(readUserLocal(USER_A).store.presets.map(p=>p.id),['guest-favorite']);
+  assert.equal(readUserLocal(USER_A).store.weeklyGoal,9);
+  assert.equal(readUserLocal(USER_A).ext.profile.nickname,'AccountPro');
+  assert.equal(readUserLocal(USER_A).ext.profile.rank,'diamond');
+  await synchronize(cloud,USER_A,{guestImport:true});
+  assert.equal(db.aim_preferences.find(x=>x.user_id===USER_A).weekly_goal,9);
+  assert.equal(db.aim_profiles.find(x=>x.user_id===USER_A).profile.profile.nickname,'AccountPro');
+  assert.deepEqual(db.aim_sessions.map(x=>x.session_id),['guest-safe']);
+  assert.equal(storage.getItem(TRAINING_KEY),previousGuest);
+  assert.equal(storage.getItem(scopedKey(TRAINING_KEY,USER_B)),previousB);
+ });
+});
+
+test('guest import after Cloud hydration preserves remote profile and goals with no history',async()=>{
+ const db=makeDb(),storage=new MemoryStorage(),client=clientFor(db,USER_A);
+ db.aim_profiles.push({user_id:USER_A,profile:{
+  version:1,profile:{nickname:'RemotePlayer',avatar:'star',rank:'immortal',
+   dpi:1600,sensitivity:0.2,mouse:'',goal:'',tool:'VALORANT'},program:null
+ }});
+ db.aim_preferences.push({user_id:USER_A,weekly_goal:11,
+  settings:{format:'aimroutine-web-v2'}});
+ await use(storage,async()=>{
+  storage.setItem(TRAINING_KEY,JSON.stringify({
+   sessions:[session('guest-record')],presets:[],weeklyGoal:5
+  }));
+  storage.setItem(EXT_KEY,JSON.stringify({profile:{nickname:'OldGuest'}}));
+  await synchronize(client,USER_A);
+  assert.deepEqual(readUserLocal(USER_A).store.sessions,[]);
+  assert.equal(readUserLocal(USER_A).store.weeklyGoal,11);
+  assert.equal(readUserLocal(USER_A).ext.profile.nickname,'RemotePlayer');
+  importGuestIntoAccount(USER_A);
+  await synchronize(client,USER_A,{guestImport:true});
+  assert.deepEqual(db.aim_sessions.map(x=>x.session_id),['guest-record']);
+  assert.equal(db.aim_profiles.find(x=>x.user_id===USER_A).profile.profile.nickname,'RemotePlayer');
+  assert.equal(db.aim_preferences.find(x=>x.user_id===USER_A).weekly_goal,11);
+  assert.equal(readUserLocal(USER_A).ext.profile.nickname,'RemotePlayer');
+  assert.equal(readUserLocal(USER_A).store.weeklyGoal,11);
+ });
+});
+
 test('concurrent inserts of the same session ID preserve the first database writer',async()=>{
  const db=makeDb(),storage=new MemoryStorage(),client=clientFor(db,USER_A);
  let raceInjected=false;
