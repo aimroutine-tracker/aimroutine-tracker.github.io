@@ -48,6 +48,31 @@ test('V3 desktop wordmark sizing matches owner header without breaking mobile',a
  expect(mobile.viewport).toBeLessThanOrEqual(390);
 });
 
+test('V3 Routines hero fills its right skyline without affecting mobile or controls',async({page})=>{
+ await page.setViewportSize({width:1672,height:941});
+ await page.goto('/training.html',{waitUntil:'domcontentloaded'});
+ const artwork=page.locator('.r17-training-wrap .r17-hero-art');
+ await expect(artwork).toBeVisible();
+ const desktop=await artwork.evaluate(node=>{
+  const s=getComputedStyle(node,'::after');
+  return {content:s.content,background:s.backgroundImage,size:s.backgroundSize,
+   mask:s.maskImage||s.webkitMaskImage,overflow:document.documentElement.scrollWidth};
+ });
+ expect(desktop.content).not.toBe('none');
+ expect(desktop.background).toContain('r17-hero.webp');
+ expect(desktop.size).toBe('cover');
+ expect(desktop.mask).toContain('linear-gradient');
+ expect(desktop.overflow).toBeLessThanOrEqual(1672);
+ await page.setViewportSize({width:390,height:844});
+ const mobile=await artwork.evaluate(node=>({
+  content:getComputedStyle(node,'::after').content,
+  width:document.documentElement.scrollWidth
+ }));
+ expect(mobile.content).toBe('none');
+ expect(mobile.width).toBeLessThanOrEqual(390);
+ await expect(page.locator('[data-r17-day="0"]').first()).toBeVisible();
+});
+
 test('Build, edit, run and save a player session',async ({page})=>{
  await useVerifiedTestAccount(page);
  await page.locator('#tab-builder').click();
