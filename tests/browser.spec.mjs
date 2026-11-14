@@ -24,6 +24,47 @@ test.beforeEach(async ({page})=>{
  await expect(page.locator('#tab-dashboard')).toBeVisible();
  await expect.poll(()=>page.evaluate(()=>Boolean(window.AIMWeb)),{timeout:15000}).toBe(true);
 });
+test('V3 favorite deletion blocked by full Cloud tombstone queue keeps the real UI and saved favorite',async({page})=>{
+ await useVerifiedTestAccount(page);
+ const uid='11111111-1111-4111-8111-111111111111';
+ page.on('dialog',async dialog=>{
+  if(dialog.type()==='prompt')await dialog.accept('QA favori protégé');
+  else await dialog.accept();
+ });
+ await page.locator('#tab-builder').click();
+ await page.locator('#builder-form button[type="submit"]').click();
+ await page.getByRole('button',{name:'☆ Enregistrer comme favori'}).click();
+ const favorite=page.locator('#favorite-list .ar5-favorite');
+ await expect(favorite).toHaveCount(1);
+ await expect(favorite).toContainText('QA favori protégé');
+ // Wait for the real auto-sync triggered by the prior successful save before
+ // installing the full local tombstone queue. Nothing below reaches production.
+ await expect.poll(()=>page.evaluate(()=>window.__testCloudWrites?.length||0)).toBeGreaterThan(0);
+ const before=await page.evaluate(uid=>{
+  const storeKey='aimroutine_cloud_user_'+uid+'_aimroutine_web_training_v2';
+  const metaKey='aimroutine_cloud_meta_'+uid;
+  const current=localStorage.getItem(storeKey);
+  const old=JSON.parse(localStorage.getItem(metaKey)||'{}');
+  const ids=Array.from({length:100},(_,i)=>'pending-'+String(i).padStart(3,'0'));
+  const next={...old,presetDeletedIds:ids};
+  localStorage.setItem(metaKey,JSON.stringify(next));
+  return {store:current,meta:localStorage.getItem(metaKey),
+   writes:window.__testCloudWrites?.length||0};
+ },uid);
+ await favorite.getByRole('button',{name:'Supprimer'}).click();
+ await expect(favorite).toHaveCount(1);
+ await expect(favorite).toContainText('QA favori protégé');
+ await expect(page.locator('#data-message')).toContainText('Trop de suppressions de favoris en attente');
+ const after=await page.evaluate(uid=>({
+  store:localStorage.getItem('aimroutine_cloud_user_'+uid+'_aimroutine_web_training_v2'),
+  meta:localStorage.getItem('aimroutine_cloud_meta_'+uid),
+  writes:window.__testCloudWrites?.length||0
+ }),uid);
+ expect(after.store).toBe(before.store);
+ expect(after.meta).toBe(before.meta);
+ expect(after.writes).toBe(before.writes);
+});
+
 test('V3 desktop wordmark sizing matches owner header without breaking mobile',async({page})=>{
  await page.setViewportSize({width:1672,height:941});
  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
