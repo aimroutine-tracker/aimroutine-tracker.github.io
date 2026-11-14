@@ -49,6 +49,16 @@ begin
        or pg_catalog.has_table_privilege('anon',c.oid,'REFERENCES'))
   )
  then raise exception 'anon has unrelated public write powers: audit required'; end if;
+ -- Writer inherits anon. An anonymous or PUBLIC RLS policy on these same
+ -- tables would be OR-combined with writer owner policies. Reject it instead
+ -- of assuming it is restrictive.
+ if exists (
+  select 1 from pg_catalog.pg_policies
+  where schemaname='public'
+    and tablename in ('aim_sessions','aim_presets','aim_profiles','aim_preferences')
+    and ('anon'=any(roles) or 'public'=any(roles))
+ )
+ then raise exception 'Anonymous or PUBLIC RLS policy must be reviewed before writer cutover'; end if;
  if pg_catalog.to_regprocedure('public.aim_reset_my_progress_for_user(uuid)') is null
  or pg_catalog.to_regprocedure(
   'public.aim_apply_progress_for_user(uuid,text,jsonb,jsonb,text[],jsonb,smallint)'
