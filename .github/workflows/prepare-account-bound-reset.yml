@@ -10,6 +10,7 @@ on:
       - "scripts/check_reset_release_ready.py"
       - "tests/account-bound-reset-postgres.sql"
       - "tests/atomic-reset-guard-prototype-postgres.sql"
+      - "tests/atomic-v3-cloud-patch-postgres.sql"
       - "tests/test_atomic_reset_concurrency.sh"
       - "scripts/check_live_reset_readiness_v3.sql"
       - "tests/cloud-sync-integration-core.test.mjs"
@@ -54,6 +55,10 @@ jobs:
           psql -v ON_ERROR_STOP=1 -f tests/atomic-reset-guard-prototype-postgres.sql
       - name: Verify both real transaction interleavings in two SQL connections
         run: bash tests/test_atomic_reset_concurrency.sh
+      - name: Exercise V3 all-table atomic Cloud patch contract
+        run: |
+          set -euo pipefail
+          psql -v ON_ERROR_STOP=1 -f tests/atomic-v3-cloud-patch-postgres.sql
       - name: Validate hosted preflight using the migrated isolated database
         run: |
           set -euo pipefail
