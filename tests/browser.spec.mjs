@@ -560,6 +560,44 @@ test('Google deletion UX uses exactly SUPPRIMER without a second Google login (m
  expect(dialogCalls).toBe(0);
 });
 
+test('Account deletion aborts on a changed verified Auth owner (mock only)',async({page})=>{
+ const uid='66666666-6666-4666-8666-666666666666';
+ const other='77777777-7777-4777-8777-777777777777';
+ const user={id:uid,email:'deletion-guard@example.invalid',
+  app_metadata:{provider:'google',providers:['google']},
+  user_metadata:{aim_username:'GuardPlayer'},
+  identities:[{provider:'google',id:'qa-guard'}],
+  aud:'authenticated',role:'authenticated',created_at:'2026-11-14T00:00:00Z'};
+ const session={access_token:'mock-guard-token',token_type:'bearer',
+  expires_at:Math.floor(Date.now()/1000)+7200,expires_in:7200,
+  refresh_token:'mock-guard-refresh-token',user};
+ await page.addInitScript(({session,uid})=>{
+  localStorage.setItem('sb-lmzswtzboobpokumxzhy-auth-token',JSON.stringify(session));
+  localStorage.setItem('aimroutine_cloud_user_'+uid+'_aimroutine_web_training_v2',
+   JSON.stringify({sessions:[],presets:[],weeklyGoal:3,qa:'must-stay'}));
+ },{session,uid});
+ let switched=false,deleteCalls=0;
+ await page.route('https://lmzswtzboobpokumxzhy.supabase.co/auth/v1/user',route=>
+  route.fulfill({status:200,contentType:'application/json',
+   body:JSON.stringify(switched?{...user,id:other}:user)}));
+ await page.route('https://lmzswtzboobpokumxzhy.supabase.co/functions/v1/delete-aim-account',route=>{
+  deleteCalls++;
+  return route.fulfill({status:500,contentType:'application/json',body:'{}'});
+ });
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ const details=page.locator('.ar7-delete-account');
+ await expect(details).toBeVisible();
+ await details.locator('summary').click();
+ await page.locator('#delete-account-confirmation').fill('SUPPRIMER');
+ switched=true; // A's cached UI is stale, but getUser() now verifies B.
+ await page.locator('#delete-account-final').click();
+ await expect(page.locator('#account-status')).toContainText('Identité différente');
+ expect(deleteCalls).toBe(0,'Never invoke a destructive Edge Function for a different owner');
+ const local=await page.evaluate(uid=>
+  localStorage.getItem('aimroutine_cloud_user_'+uid+'_aimroutine_web_training_v2'),uid);
+ expect(local).toContain('must-stay','Failed deletion must retain offline training data');
+});
+
 test('Google account must choose a nickname before cloud dashboard (mock Auth)',async({page})=>{
  const uid='55555555-5555-4555-8555-555555555555';
  let mockUser={id:uid,email:'test-google-onboarding@example.invalid',
