@@ -134,7 +134,7 @@ function measureDifference(original,candidate,width,height,regions=REGIONS,colum
    tile.sum+=error;tile.pixels++;
   }
  }
- const hotspots=tiles.map(tile=>{
+ const hotspots=tiles.filter(tile=>tile.sum>0).map(tile=>{
   const col=tile.index%columns,row=Math.floor(tile.index/columns);
   return {zone:String.fromCharCode(65+col)+(row+1),
    x:Math.ceil(col*width/columns),y:Math.ceil(row*height/rows),
@@ -148,7 +148,7 @@ function measureDifference(original,candidate,width,height,regions=REGIONS,colum
   regional_rgb_mae:Object.fromEntries(Object.entries(bands).map(([k,v])=>[
    k,v.pixels?Number((v.sum/(v.pixels*3)).toFixed(4)):null])),
   hotspot_grid:{columns,rows},
-  priority_hotspots:total?hotspots.slice(0,5):[],
+  priority_hotspots:hotspots.slice(0,5),
   visually_identical:total===0
  };
 }
