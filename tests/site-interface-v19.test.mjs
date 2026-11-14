@@ -1,3 +1,4 @@
+import {stylesheetIndex} from './helpers/styles-v3.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -5,7 +6,7 @@ const get=n=>readFileSync(new URL('../'+n,import.meta.url),'utf8');
 test('V19 reference screens load the native interaction layer',()=>{
  for(const page of ['index.html','training.html','account.html','progress.html']){
   const html=get(page);
-  assert.ok(html.includes('site-interface-v19.css?v=1'),page);
+  assert.ok(stylesheetIndex(page,'site-interface-v19.css')>=0,page);
   assert.ok(html.includes('site-interface-v19.mjs?v=1'),page);
  }
  for(const name of ['site-interface-v19.css','site-interface-v19.mjs']){
