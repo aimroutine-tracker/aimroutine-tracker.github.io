@@ -24,6 +24,30 @@ test.beforeEach(async ({page})=>{
  await expect(page.locator('#tab-dashboard')).toBeVisible();
  await expect.poll(()=>page.evaluate(()=>Boolean(window.AIMWeb)),{timeout:15000}).toBe(true);
 });
+test('V3 desktop wordmark sizing matches owner header without breaking mobile',async({page})=>{
+ await page.setViewportSize({width:1672,height:941});
+ await page.goto('/index.html',{waitUntil:'domcontentloaded'});
+ const brand=page.locator('.site31-brand');
+ await expect(brand).toBeVisible();
+ const desktop=await brand.evaluate(node=>{
+  const css=getComputedStyle(node);
+  return {size:parseFloat(css.fontSize),gap:parseFloat(css.gap),
+   right:node.getBoundingClientRect().right};
+ });
+ expect(desktop.size).toBeCloseTo(24.6,1);
+ expect(desktop.gap).toBeCloseTo(16,1);
+ expect(desktop.right).toBeLessThan(415);
+ await page.setViewportSize({width:390,height:844});
+ const mobile=await brand.evaluate(node=>{
+  const css=getComputedStyle(node);
+  return {size:parseFloat(css.fontSize),gap:parseFloat(css.gap),
+   viewport:document.documentElement.scrollWidth};
+ });
+ expect(mobile.size).toBeLessThan(desktop.size);
+ expect(mobile.gap).toBeLessThan(desktop.gap);
+ expect(mobile.viewport).toBeLessThanOrEqual(390);
+});
+
 test('Build, edit, run and save a player session',async ({page})=>{
  await useVerifiedTestAccount(page);
  await page.locator('#tab-builder').click();
