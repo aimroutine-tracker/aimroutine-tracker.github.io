@@ -1,0 +1,34 @@
+{
+  "viewport": {
+    "width": 1672,
+    "height": 941
+  },
+  "references": {
+    "home": {
+      "filename": "home.png",
+      "source_file": "Image ChatGPT 8 nov. 2026, 08_18_34(4).png",
+      "sha256": "282d589fbbaa041af05e615334dddfcf72ec10e6245f113927e280f216c94675",
+      "verified_best_mae_0_to_255": 21.62524
+    },
+    "routines": {
+      "filename": "routines.png",
+      "source_file": "Image ChatGPT 8 nov. 2026, 08_18_31(4).png",
+      "sha256": "fbb08ce2a2fb44ab4e77f8e14478c5ce522ee343ca34f2898b4045a3b0f393b3",
+      "verified_best_mae_0_to_255": 26.435744
+    },
+    "progress": {
+      "filename": "progress.png",
+      "source_file": "Image ChatGPT 8 nov. 2026, 08_18_36(4).png",
+      "sha256": "93557dd0eb3ae08956e4bde4d767b5a7fd27debf7a07472bdfd52ab5f633d467",
+      "verified_best_mae_0_to_255": 25.6034
+    },
+    "account": {
+      "filename": "account.png",
+      "source_file": "Image ChatGPT 8 nov. 2026, 08_18_38(4).png",
+      "sha256": "712a1501a530b5573bb17a6c9ba35f81d65b8d406ffcd3a8b4f0cdd9da32dfd2",
+      "verified_best_mae_0_to_255": 26.500401
+    }
+  },
+  "note": "No synthetic comparison images. Exact owner PNG bytes + SHA-256 required for every comparison. Verified best owner-to-candidate RGB MAE at 1672x941, latest Progress pass 58 at GitHub visual artifact 13830387044 (commit 141cfa19). Regression tolerance is 0.25 RGB MAE, not a pixel-perfect signoff. CI remains blocked when private originals are unavailable.",
+  "quality_regression_tolerance_mae": 0.25
+}

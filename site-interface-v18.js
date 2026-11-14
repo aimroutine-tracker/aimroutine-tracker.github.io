@@ -34,6 +34,15 @@
       '<span class="r18-cloud-icon" aria-hidden="true">☁</span> Sync Cloud <span class="r18-cloud-indicator" aria-hidden="true"></span></a>'+
       '<a class="r18-signin" href="account.html#auth-panel">'+tr('Se connecter','Sign in')+'</a>'+
       '<a class="r18-register" href="account.html?mode=signup#auth-panel">'+tr('Créer un compte','Create account')+'</a>';
+    if (route === 'account.html') {
+      const current=document.createElement('a');
+      current.className='r18-account-link';
+      current.href='account.html#dashboard-panel';
+      current.setAttribute('aria-current','page');
+      current.innerHTML=tr('Mon compte','My account');
+      const login=$('.r18-signin',actions);
+      if(login)login.before(current);else actions.append(current);
+    }
     controls.before(actions);
     const mobile = $('.site31-mobile-links');
     if (mobile) {

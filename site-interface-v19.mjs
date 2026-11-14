@@ -28,8 +28,11 @@ function installWorkspace(){
  const engineTool=$('#tool');
  select.value=engineTool?.value||TOOLS[0];
  picker.append(select);
+ // Keep the genuine game selector in the scrollable controls below
+ // the exercise preview. The reference header remains compact.
+ const footer=$('.r17-training-plan .r17-plan-footer',screen);
  const title=$('.r17-training-plan .r17-panel-title',screen);
- if(title)title.append(picker);
+ if(footer)footer.append(picker);else if(title)title.append(picker);
 
  const extra=document.createElement('div');
  extra.className='r19-plan-summary';
@@ -83,7 +86,8 @@ function installWorkspace(){
   ['profile','◉','Mon profil','My profile'],['data','☁','Sauvegardes','Backups']
  ].map(([key,icon,fr,english])=>'<button type="button" class="r19-tool-btn" data-r19-panel="'+key+'"><span aria-hidden="true">'+icon+'</span>'+tag(fr,english)+'<b aria-hidden="true">↗</b></button>').join('')+'</div>';
  const week=$('.r17-weekline',screen);
- if(week)week.before(toolbar);else screen.append(toolbar);
+ // Keep the real AIM toolkit accessible, but place it after the reference week's timeline.
+ if(week)week.after(toolbar);else screen.append(toolbar);
 
  const dialog=document.createElement('dialog');
  dialog.className='r19-workspace-dialog';
@@ -172,7 +176,10 @@ function installAccountActions(){
  '<button type="button" data-r19-cloud="cloud-import-guest">'+tag('Importer mon historique','Import guest history')+'</button>'+
  '<a href="#auth-panel" class="r19-cloud-login">'+tag('Se connecter pour utiliser le cloud','Sign in to use cloud')+' ↗</a>'+
  '</div>';
- panel.after(controls);
+ // Keep Cloud management actions fully functional, but below the main
+ // synchronization/preferences panels so the reference layout stays compact.
+ const accountRight=$('.r17-account-right');
+ if(accountRight)accountRight.append(controls);else panel.after(controls);
  const actions=$$('[data-r19-cloud]',controls);
  const login=$('.r19-cloud-login',controls);
  function render(){
@@ -226,8 +233,10 @@ function installHomeActions(){
  action.className='r19-home-progress';
  action.href='progress.html';
  action.innerHTML='▥ '+tag('Mes statistiques détaillées','My detailed statistics')+' <span aria-hidden="true">↗</span>';
+ const bottom=$('.r17-home-bottom',home);
  const heading=$('.r17-home-paths',home);
- if(heading)heading.append(action);
+ // Keep the real analytics link but do not stretch the mockup's compact path cards.
+ if(bottom)bottom.after(action);else if(heading)heading.append(action);
 }
 
 function init(){

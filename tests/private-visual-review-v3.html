@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data: blob:; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>AimRoutine V3 — comparateur privé hors ligne</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#070e17;color:#eaf4fd}
+*{box-sizing:border-box}body{margin:0 auto;max-width:1440px;padding:22px}
+header{display:flex;gap:20px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;border-bottom:1px solid #283c50;padding-bottom:18px}
+h1{margin:0 0 6px;font-size:clamp(23px,3vw,35px)}h2{font-size:21px;margin:0}
+p{color:#a4bacb;line-height:1.55}strong{color:#fff}.notice{padding:14px;background:#112337;border:1px solid #2d4d63;border-radius:12px;margin:16px 0}
+.page{margin-top:20px;border:1px solid #30445b;border-radius:14px;background:#0d1927;padding:18px}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:13px 0}
+label{display:block;font-weight:600;font-size:13px;color:#b9d7e5}input[type=file]{display:block;width:100%;padding:9px 3px;font-size:13px;color:#eaf4fd}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:12px 0}
+button,select{border:1px solid #5c8297;background:#132a3d;color:#fff;border-radius:9px;padding:9px 14px;font:inherit;cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.45}button:hover:not(:disabled){border-color:#fb6174}
+button.primary{background:#eb5162;border-color:#eb5162;color:#100b10;font-weight:700}
+input[type=range]{accent-color:#ed6575;width:155px}
+.output{background:#03080d;border:1px solid #233446;border-radius:9px;overflow:hidden;min-height:140px}
+canvas{display:block;max-width:100%;height:auto;margin:auto}
+.metrics{font-variant-numeric:tabular-nums;color:#d8e8f3;min-height:22px}
+small{color:#9caebb}.good{color:#69e3c7}.bad{color:#ff8c95}
+footer{margin:25px 0;color:#93a8b8;font-size:13px}
+@media(max-width:680px){.fields{grid-template-columns:1fr}body{padding:12px}.page{padding:12px}}
+</style>
+</head>
+<body>
+<header>
+<div><h1>AimRoutine Tracker · comparaison privée V3</h1>
+<p>Charge les fichiers PNG originaux et les captures de la V3. Les calculs et les images restent dans ce navigateur.</p></div>
+<button id="report" disabled>Exporter les mesures (JSON)</button>
+</header>
+<p class="notice"><strong>Confidentialité :</strong> aucun téléchargement vers un serveur, aucune bibliothèque externe et aucune connexion réseau. N'ajoute pas les PNG originaux, les overlays ou les différences à une PR GitHub publique. Ouvre ce fichier directement sur ton ordinateur et conserve les résultats en privé.</p>
+<main id="pages"></main>
+<footer>Viewport obligatoire : 1672 × 941 px. Les écarts mesurent une différence d'image, pas une note de qualité fonctionnelle. Les statistiques de démonstration des maquettes ne doivent jamais remplacer les données réelles de l'application.</footer>
+<script>
+'use strict';
+const TARGET={width:1672,height:941};
+const CONFIG=[
+ {id:'home',label:'Accueil',sha:'282d589fbbaa041af05e615334dddfcf72ec10e6245f113927e280f216c94675'},
+ {id:'routines',label:'Routines',sha:'fbb08ce2a2fb44ab4e77f8e14478c5ce522ee343ca34f2898b4045a3b0f393b3'},
+ {id:'progress',label:'Progression',sha:'93557dd0eb3ae08956e4bde4d767b5a7fd27debf7a07472bdfd52ab5f633d467'},
+ {id:'account',label:'Compte / Cloud',sha:'712a1501a530b5573bb17a6c9ba35f81d65b8d406ffcd3a8b4f0cdd9da32dfd2'}
+];
+const REGIONS=[['entête',0,55],['bandeau',55,300],['milieu',300,650],['bas',650,941]];
+const results={};
+const elements={};
+function $(id){return document.getElementById(id)}
+function appendCard(entry){
+ const section=document.createElement('section');
+ section.className='page';
+ section.innerHTML='<h2>'+entry.label+'</h2><div class="fields">'+
+  '<label>PNG de référence original (empreinte vérifiée)<input type="file" accept="image/png" id="'+entry.id+'-ref"></label>'+
+  '<label>Capture V3 correspondante — '+entry.id+'-after.png<input type="file" accept="image/png" id="'+entry.id+'-out"></label></div>'+
+  '<div class="controls"><button class="primary" id="'+entry.id+'-compare">Comparer</button>'+
+  '<label>Vue <select id="'+entry.id+'-mode"><option value="overlay">Superposition</option><option value="diff">Différences amplifiées</option>'+
+  '<option value="original">Original</option><option value="candidate">V3</option></select></label>'+
+  '<label>Opacité V3 <input id="'+entry.id+'-alpha" type="range" min="0" max="100" value="50"></label>'+
+  '<button id="'+entry.id+'-save" disabled>Enregistrer la vue PNG</button></div>'+
+  '<p id="'+entry.id+'-status" role="status">En attente des deux PNG.</p>'+
+  '<p class="metrics" id="'+entry.id+'-metrics"></p>'+
+  '<div class="output"><canvas width="1672" height="941" id="'+entry.id+'-canvas"></canvas></div>';
+ $('pages').append(section);
+ const state={revision:0};
+ elements[entry.id]=state;
+ state.canvas=$(entry.id+'-canvas');
+ state.mode=$(entry.id+'-mode');
+ state.alpha=$(entry.id+'-alpha');
+ $(entry.id+'-compare').addEventListener('click',()=>void compare(entry));
+ state.mode.addEventListener('change',()=>render(entry.id));
+ state.alpha.addEventListener('input',()=>render(entry.id));
+ $(entry.id+'-save').addEventListener('click',()=>saveView(entry.id));
+ for(const kind of ['ref','out']){
+  $(entry.id+'-'+kind).addEventListener('change',()=>invalidate(entry.id));
+ }
+}
+function invalidate(id){
+ // Selecting another image invalidates old measurements immediately: it is
+ // unsafe to export a report computed for files no longer selected.
+ const state=elements[id];
+ state.revision++;
+ state.original=null;state.candidate=null;
+ delete results[id];
+ $(id+'-save').disabled=true;
+ $(id+'-compare').disabled=false; // A new file can start a new comparison.
+ $('report').disabled=true;
+ const label=$(id+'-status');
+ label.className='';
+ label.textContent='Fichiers modifiés : lance une nouvelle comparaison.';
+ $(id+'-metrics').textContent='';
+ state.canvas.getContext('2d').clearRect(0,0,TARGET.width,TARGET.height);
+}
+async function digest(file){
+ if(!globalThis.crypto?.subtle)throw new Error('SHA-256 indisponible dans ce navigateur / ce contexte. Aucune validation possible.');
+ const bytes=await file.arrayBuffer();
+ const raw=await crypto.subtle.digest('SHA-256',bytes);
+ return Array.from(new Uint8Array(raw),n=>n.toString(16).padStart(2,'0')).join('');
+}
+async function pixels(file){
+ if(!file||file.type!=='image/png')throw new Error('Le fichier doit être un PNG.');
+ const bitmap=await createImageBitmap(file);
+ try{
+  if(bitmap.width!==TARGET.width||bitmap.height!==TARGET.height)throw new Error('Dimensions incorrectes : '+bitmap.width+'×'+bitmap.height+' (attendues : 1672×941).');
+  const cv=document.createElement('canvas');cv.width=TARGET.width;cv.height=TARGET.height;
+  const ctx=cv.getContext('2d',{willReadFrequently:true});
+  ctx.drawImage(bitmap,0,0);
+  return ctx.getImageData(0,0,TARGET.width,TARGET.height);
+ }finally{bitmap.close?.()}
+}
+function render(id){
+ const state=elements[id];
+ if(!state?.original||!state?.candidate)return;
+ const ctx=state.canvas.getContext('2d');
+ const a=state.original.data,b=state.candidate.data,mode=state.mode.value,alpha=Number(state.alpha.value)/100;
+ const output=ctx.createImageData(TARGET.width,TARGET.height),dst=output.data;
+ for(let i=0;i<a.length;i+=4){
+  for(let c=0;c<3;c++){
+   const diff=Math.abs(a[i+c]-b[i+c]);
+   dst[i+c]=mode==='original'?a[i+c]:
+    mode==='candidate'?b[i+c]:
+    mode==='diff'?Math.min(255,diff*4):
+    Math.round(a[i+c]*(1-alpha)+b[i+c]*alpha);
+  }
+  dst[i+3]=255;
+ }
+ ctx.putImageData(output,0,0);
+}
+async function compare(entry){
+ const id=entry.id,state=elements[id],ref=$(id+'-ref').files[0],candidate=$(id+'-out').files[0];
+ const label=$(id+'-status'),metrics=$(id+'-metrics');
+ if(!ref||!candidate){
+  invalidate(id);
+  label.textContent='Choisis les deux images.';
+  return;
+ }
+ const run=++state.revision;
+ state.original=null;state.candidate=null;
+ metrics.textContent='';
+ state.canvas.getContext('2d').clearRect(0,0,TARGET.width,TARGET.height);
+ $(id+'-compare').disabled=true;$(id+'-save').disabled=true;delete results[id];
+ $('report').disabled=true;
+ try{
+  label.textContent='Vérification des empreintes et analyse locale en cours…';
+  const sha=await digest(ref);
+  if(state.revision!==run)return;
+  if(sha!==entry.sha)throw new Error('SHA-256 de référence différent de celui du manifeste. Refus de comparaison : fichier réencodé ou mauvaise maquette.');
+  // Bind each locally exported report to the exact V3 capture bytes as well:
+  // visual metrics alone cannot prove which GitHub Actions ZIP was checked.
+  const candidateSha=await digest(candidate);
+  if(state.revision!==run)return;
+  const original=await pixels(ref),output=await pixels(candidate);
+  if(state.revision!==run)return;
+  let total=0,changed=0;
+  const regions={};
+  for(const [name,y0,y1] of REGIONS)regions[name]={total:0,pixels:0};
+  const a=original.data,b=output.data,w=TARGET.width,h=TARGET.height;
+  for(let y=0;y<h;y++){
+   let region=REGIONS.find(r=>y>=r[1]&&y<r[2])[0];
+   for(let x=0;x<w;x++){
+    const i=(y*w+x)*4;
+    const error=Math.abs(a[i]-b[i])+Math.abs(a[i+1]-b[i+1])+Math.abs(a[i+2]-b[i+2]);
+    total+=error;regions[region].total+=error;regions[region].pixels++;
+    if(error!==0)changed++;
+   }
+  }
+  const mae=total/(w*h*3);
+  const report={screen:id,reference_sha256:sha,reference_verified:true,
+   capture_sha256:candidateSha,
+   reference_file:ref.name,capture_file:candidate.name,
+   viewport:{width:w,height:h},rgb_mae_0_to_255:Number(mae.toFixed(4)),
+   different_pixel_percent:Number((100*changed/(w*h)).toFixed(3)),
+   regional_rgb_mae:Object.fromEntries(Object.entries(regions).map(([k,v])=>[k,Number((v.total/(v.pixels*3)).toFixed(4))])),
+   visually_identical:total===0};
+  if(state.revision!==run)return;
+  state.original=original;state.candidate=output;results[id]=report;render(id);
+  label.className='';
+  label.innerHTML='<span class="good">Empreinte SHA-256 originale vérifiée</span> · '+(total?'Écarts détectés':'Pixels identiques');
+  metrics.textContent='MAE RGB : '+report.rgb_mae_0_to_255+' / 255 · Pixels différents : '+
+   report.different_pixel_percent+' % · Régions : '+Object.entries(report.regional_rgb_mae).map(([k,v])=>k+' '+v).join(' | ');
+  $(id+'-save').disabled=false;
+ }catch(error){
+  if(state.revision!==run)return;
+  state.original=null;state.candidate=null;label.textContent=error.message;
+  label.className='bad';
+  metrics.textContent='';
+ }finally{
+  if(state.revision===run){
+   $(id+'-compare').disabled=false;
+   $('report').disabled=Object.keys(results).length!==4;
+  }
+ }
+}
+function download(blob,filename){
+ const a=document.createElement('a');
+ const url=URL.createObjectURL(blob);a.href=url;a.download=filename;a.click();
+ setTimeout(()=>URL.revokeObjectURL(url),5000);
+}
+function saveView(id){
+ const cv=elements[id].canvas;
+ cv.toBlob(blob=>{if(blob)download(blob,id+'-private-'+elements[id].mode.value+'.png')},'image/png');
+}
+$('report').addEventListener('click',()=>{
+ if(Object.keys(results).length!==4)return;
+ const body={tool:'AimRoutine local-only visual comparator',note:'No pixel-perfect signoff; human review is still required.',
+  viewport:TARGET,scenes:CONFIG.map(entry=>results[entry.id])};
+ download(new Blob([JSON.stringify(body,null,2)],{type:'application/json'}),'aimroutine-v3-private-diff-report.json');
+});
+CONFIG.forEach(appendCard);
+</script>
+</body>
+</html>

@@ -1,16 +1,16 @@
 /* AimRoutine offline shell — V7 cache refresh fix.
    All same-origin static assets are network-first to stop stale CSS from persisting
    across deployments. Offline fallback allows a guest preview, but saving now requires a verified account. */
-const CACHE='aimroutine-v9-account-cloud-auto-20261108';
+const CACHE='aimroutine-v10-owner-reference-20261109';
 const BASE=new URL(self.registration.scope);
 const OFFLINE=[
- './','./index.html','./training.html','./account.html','./product.html','./releases.html',
+ './','./index.html','./training.html','./progress.html','./account.html','./product.html','./releases.html',
  './training.css','./training-v5.css','./training-v6.css','./account-v7.css',
  './training-v5.js','./training-v6.js','./training-core-v5.mjs','./training-v6-core.mjs',
  './training-entry-v7.mjs','./cloud-core-v7.mjs','./cloud-sync-v7.mjs',
  './training-i18n-v6.js','./pwa-v6.js','./cloud-client-v7.mjs',
  './google-delete-v7.mjs','./password-security-v7.mjs','./session-security-v7.mjs','./username-v7.mjs','./turnstile-v7.mjs','./account-v7.mjs',
- './site-global-v31.css','./site-shared-v5.css','./visual-v8.css','./site-quality-v34.js','./site-motion-v10.css','./site-motion-v10.js','./site-arcade-v11.css','./site-arcade-v11.js','./site-arcade-v12.css','./site-arcade-v12.js','./site-future-v13.css','./site-future-v13.js','./site-v14-gallery.css','./site-v14-gallery.js','./progress-v14.mjs','./progress.html','./mockup-hero-v15.webp','./site-v15-fidelity.css','./site-v15-fidelity.js','./site-v15-data.mjs','./aimroutine-brand-a-v2.svg','./aimroutine-official-tokens-v2.css','./site-official-v16.css','./site-rebuild-v17.css','./site-rebuild-v17.js','./site-interface-v18.css','./site-interface-v18.js','./site-interface-v19.css','./site-interface-v19.mjs','./site-reference-v20.css','./site-reference-v20.mjs','./r17-hero.webp','./site.js',
+ './site-global-v31.css','./site-shared-v5.css','./visual-v8.css','./site-quality-v34.js','./site-motion-v10.css','./site-motion-v10.js','./site-arcade-v11.css','./site-arcade-v11.js','./site-arcade-v12.css','./site-arcade-v12.js','./site-future-v13.css','./site-future-v13.js','./site-v14-gallery.css','./site-v14-gallery.js','./progress-v14.mjs','./progress.html','./mockup-hero-v15.webp','./site-v15-fidelity.css','./site-v15-fidelity.js','./site-v15-data.mjs','./aimroutine-brand-a-v2.svg','./aimroutine-official-tokens-v2.css','./site-official-v16.css','./site-rebuild-v17.css','./site-rebuild-v17.js','./site-interface-v18.css','./site-interface-v18.js','./site-interface-v19.css','./site-interface-v19.mjs','./site-reference-v20.css','./site-reference-v20.mjs','./r17-hero.webp','./site-owner-reference-v3.css','./aimroutine-avatar-reference.svg','./site.js',
  './favicon.svg','./manifest.webmanifest','./aimroutine-logo.png'
 ].map(x=>new URL(x,BASE).toString());
 

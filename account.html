@@ -1,5 +1,6 @@
 <!doctype html><html lang="fr"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preload" as="image" href="r17-hero.webp" type="image/webp" fetchpriority="high">
 <meta name="theme-color" content="#0b141f">
 <title>Mon compte et sauvegarde cloud — AimRoutine Tracker</title>
 <meta name="description" content="AimRoutine Tracker Cloud : compte personnel, connexion et sauvegarde de progression AIM. Service en préparation.">
@@ -49,6 +50,7 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
 <link rel="stylesheet" href="site-interface-v18.css?v=1">
 <link rel="stylesheet" href="site-interface-v19.css?v=1">
 <link rel="stylesheet" href="site-reference-v20.css?v=1">
+<link rel="stylesheet" href="site-owner-reference-v3.css?v=3">
 </head><body class="site31 site31-account">
 <a class="site31-skip" href="#main"><span class="fr">Aller au contenu</span><span class="en">Skip to content</span></a>
 <header class="site31-header"><nav class="site31-nav" aria-label="Navigation principale / Main navigation">
@@ -80,7 +82,7 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
 <main id="main" class="ar7-account-main">
 <section class="ar7-account-hero">
  <div><span class="ar7-eyebrow">AIMROUTINE / CLOUD V7</span>
- <h1><span class="fr">Ton profil <em>cloud.</em></span><span class="en">Your <em>cloud profile.</em></span></h1>
+ <h1><span class="fr">Ton profil <em>cloud</em></span><span class="en">Your <em>cloud profile</em></span></h1>
  <p><span class="fr">Retrouve tes routines et tes progrès avec ton compte personnel. La sauvegarde et la synchronisation cloud sont automatiques. Sans compte, seul l’aperçu est disponible.</span><span class="en">Save your routines and progress with a personal account and automatic cloud synchronization. Without an account, only the preview is available.</span></p>
  <div class="ar7-account-highlights" aria-label="Avantages du compte Cloud"><div class="ar7-account-chip"><span class="fr">Comptes personnels</span><span class="en">Private accounts</span></div><div class="ar7-account-chip"><span class="fr">Données protégées</span><span class="en">Protected data</span></div><div class="ar7-account-chip"><span class="fr">Aperçu sans sauvegarde</span><span class="en">Preview without saving</span></div></div>
  <a class="ar7-guest-link" href="training.html"><span class="fr">Découvrir sans sauvegarder</span><span class="en">Explore without saving</span> ↗</a>
@@ -91,7 +93,7 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
 <div class="v14-account-stage">
  <section class="v14-account-profile v14-panel" data-v14-account-profile hidden aria-label="Profil connecté / Signed-in profile">
   <div class="v14-profile-avatar" aria-hidden="true">AR</div>
-  <div><span class="v14-kicker">PLAYER PROFILE</span><h2 data-v14-profile-name>—</h2><small data-v14-profile-email>—</small></div>
+  <div><span class="v14-kicker"><span class="fr">PROFIL JOUEUR</span><span class="en">PLAYER PROFILE</span></span><h2 data-v14-profile-name>—</h2><small data-v14-profile-email>—</small></div>
   <div class="v14-profile-stat"><span><span class="fr">SÉANCES LOCALES</span><span class="en">LOCAL SESSIONS</span></span><strong data-v14-profile-sessions>—</strong></div>
   <div class="v14-profile-stat"><span><span class="fr">ROUTINES</span><span class="en">ROUTINES</span></span><strong data-v14-profile-routines>—</strong></div>
   <div class="v14-profile-sync"><span class="v14-cyan">☁</span><div><strong><span class="fr">Sauvegarde Cloud</span><span class="en">Cloud backup</span></strong><small data-v14-profile-sync>—</small></div><button type="button" data-v14-account-action="cloud"><span class="fr">Gérer</span><span class="en">Manage</span> ↗</button></div>
@@ -122,13 +124,13 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
     <span class="ar7-google-icon" aria-hidden="true">G</span>
     <span class="fr">Continuer avec Google</span><span class="en">Continue with Google</span>
   </button>
-  <p id="google-login-note" class="ar7-social-note"><span class="fr">Connexion Google disponible en bêta. Premier test : connecte-toi avec un compte Google autorisé dans Google Auth Platform.</span><span class="en">Google sign-in is available in beta. For the first test, use a Google account allowed in Google Auth Platform.</span></p>
+  <p id="google-login-note" class="ar7-social-note"><span class="fr">Connecte-toi avec Google pour retrouver tes routines et ta progression.</span><span class="en">Sign in with Google to access your routines and progress.</span></p>
   <div class="ar7-divider"><span class="fr">OU PAR E-MAIL</span><span class="en">OR WITH EMAIL</span></div>
 </div>
 <form id="login-form" class="ar7-auth-form">
   <label><span class="fr">Adresse e-mail</span><span class="en">Email address</span><input id="login-email" type="email" autocomplete="username" required maxlength="254" placeholder="joueur@exemple.fr"></label>
   <label><span class="fr">Mot de passe</span><span class="en">Password</span><input id="login-password" type="password" autocomplete="current-password" minlength="6" required></label>
-  <div class="ar7-captcha" id="captcha-login" aria-label="Vérification anti-robots de connexion"></div>
+  <div class="ar7-captcha" id="captcha-login" role="group" aria-label="Vérification anti-robots de connexion"></div>
   <button type="submit" class="ar7-primary"><span class="fr">Se connecter</span><span class="en">Sign in</span> ↗</button>
   <button class="ar7-link" type="button" id="reset-link"><span class="fr">Mot de passe oublié ?</span><span class="en">Forgot password?</span></button>
  </form>
@@ -139,13 +141,13 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
   <label><span class="fr">Adresse e-mail</span><span class="en">Email address</span><input id="signup-email" type="email" autocomplete="email" required maxlength="254"></label>
   <label><span class="fr">Mot de passe (8 caractères minimum)</span><span class="en">Password (8 characters minimum)</span><input id="signup-password" type="password" autocomplete="new-password" minlength="8" required></label>
   <p class="ar7-social-note"><span class="fr">Minimum 8 caractères : une minuscule, une majuscule, un chiffre et un symbole. Un contrôle gratuit vérifie les mots de passe déjà exposés dans des fuites, sans transmettre le mot de passe complet.</span><span class="en">At least 8 characters: lowercase, uppercase, a number and a symbol. Free screening checks known breaches without sharing your full password.</span></p>
-  <div class="ar7-captcha" id="captcha-signup" aria-label="Vérification anti-robots d’inscription"></div>
+  <div class="ar7-captcha" id="captcha-signup" role="group" aria-label="Vérification anti-robots d’inscription"></div>
   <button type="submit" class="ar7-primary" id="signup-submit"><span class="fr">Créer mon compte</span><span class="en">Create my account</span></button>
  </form>
  <form id="reset-form" class="ar7-auth-form" hidden>
   <h3><span class="fr">Réinitialiser mon mot de passe</span><span class="en">Reset my password</span></h3>
   <label>E-mail<input id="reset-email" type="email" autocomplete="email" required maxlength="254"></label>
-  <div class="ar7-captcha" id="captcha-reset" aria-label="Vérification anti-robots de récupération"></div>
+  <div class="ar7-captcha" id="captcha-reset" role="group" aria-label="Vérification anti-robots de récupération"></div>
   <button class="ar7-primary" type="submit"><span class="fr">Envoyer le lien</span><span class="en">Send reset link</span></button>
   <button type="button" class="ar7-link" id="back-to-login"><span class="fr">Retour</span><span class="en">Back</span></button>
  </form>

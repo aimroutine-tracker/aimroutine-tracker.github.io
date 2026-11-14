@@ -3,7 +3,7 @@
     document.documentElement.lang=v;
     try { localStorage.setItem('aimroutine_site_lang',v); } catch(e) {}
     document.querySelectorAll('[data-switch-lang]').forEach(b=>{
-       b.setAttribute('aria-label',v==='en'?'Switch to French':'Passer en anglais');
+       b.setAttribute('aria-label',v==='en'?'FR — Switch to French':'EN — Passer en anglais');
        b.textContent=v==='en'?'FR':'EN';
     });
   }

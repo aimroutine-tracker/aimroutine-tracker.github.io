@@ -5,57 +5,90 @@ import {synchronize,isEnabled} from './cloud-sync-v7.mjs';
 
 const status=document.getElementById('cloud-training-status');
 const authStorage='sb-lmzswtzboobpokumxzhy-auth-token';
+// A validated getUser() response can arrive after an unrelated tab logs out
+// or changes accounts. Recheck the browser's CURRENT session before exposing
+// the scoped store, and again after the first (possibly slow) Cloud fetch.
+// A normal same-owner Supabase token refresh must remain uninterrupted.
+const tokenOwner=raw=>{
+ try{const value=JSON.parse(raw);return validUid(value?.user?.id)?value.user.id:null}
+ catch{return null}
+};
+const sessionStillCurrent=(initialToken,accountId)=>{
+ const latest=localStorage.getItem(authStorage);
+ return Boolean(latest&&(latest===initialToken||
+  (tokenOwner(initialToken)===accountId&&tokenOwner(latest)===accountId)));
+};
 let api=null,uid=null,syncing=false,queued=false;
-const report=message=>{if(status)status.textContent=message};
+let currentNotice={fr:'',en:''};
+const updateNoticeLanguage=()=>{
+ if(status)status.textContent=document.documentElement.lang==='en'?currentNotice.en:currentNotice.fr;
+};
+const report=(fr,english=fr)=>{
+ currentNotice={fr,en:english};
+ updateNoticeLanguage();
+};
+// The same verified status must remain accurate after an instant FR/EN switch.
+document.querySelectorAll('[data-switch-lang]').forEach(button=>
+ button.addEventListener('click',()=>queueMicrotask(updateNoticeLanguage)));
+window.addEventListener('aim-v3-locale-changed',updateNoticeLanguage);
+const initialToken=localStorage.getItem(authStorage);
 try{
- if(localStorage.getItem(authStorage)){
+ if(initialToken){
   api=await import('./cloud-client-v7.mjs');
   const session=await api.supabase.auth.getSession();
   const candidate=session.data?.session?.user?.id;
   if(!session.error&&validUid(candidate)){
    // Never grant access to an account namespace from an unverified cache.
    const {data,error}=await api.supabase.auth.getUser();
-   if(!error&&data?.user?.id===candidate){
+   if(!error&&data?.user?.id===candidate&&sessionStillCurrent(initialToken,candidate)){
     uid=candidate;
     window.__aimCloudUserId=uid;
     localStorage.setItem(UID_STORAGE_KEY,uid);
-    report('Compte connecté · Récupération cloud automatique…');
-    try{await synchronize(api.supabase,uid);report('Cloud automatique : progression à jour ✓')}
-    catch(e){report('Cloud indisponible · Tes données de compte restent en cache et seront synchronisées : '+e.message)}
+    report('Compte connecté · Récupération cloud automatique…','Signed in · Restoring your Cloud progress…');
+    try{await synchronize(api.supabase,uid);report('Cloud automatique : progression à jour ✓','Automatic Cloud: progress is up to date ✓')}
+    catch(e){report('Cloud indisponible · Tes données de compte restent en cache et seront synchronisées : '+e.message,'Cloud unavailable · Your account data is cached and will sync later: '+e.message)}
+    // An old Cloud request finishing after sign-out must not re-enable the
+    // former account's namespace during initial page hydration.
+    if(!sessionStillCurrent(initialToken,candidate)){
+     uid=null;api=null;window.__aimCloudUserId=null;
+    }
    }
   }
  }
-}catch(e){report('Connexion non vérifiée · Aucune nouvelle sauvegarde : '+e.message)}
+}catch(e){report('Connexion non vérifiée · Aucune nouvelle sauvegarde : '+e.message,'Sign-in not verified · No new data is saved: '+e.message)}
 if(!uid){
  document.body.classList.add('ar-guest-preview');
  document.getElementById('ar-account-required')?.removeAttribute('hidden');
  window.__aimCloudUserId=null;
  localStorage.removeItem(UID_STORAGE_KEY);
- report('Mode aperçu sans sauvegarde · Connecte-toi pour enregistrer tes résultats.');
+ report('Mode aperçu sans sauvegarde · Connecte-toi pour enregistrer tes résultats.','Preview only · Sign in to save your training results.');
 }
 
 await import('./training-v5.js?v=3');
 await import('./training-v6.js?v=2');
 
 async function syncChanges(){
- if(!uid||!api||!isEnabled(uid))return;
+ const requestedUid=uid,requestedApi=api;
+ if(!requestedUid||!requestedApi||!isEnabled(requestedUid))return;
  if(syncing){queued=true;return}
  syncing=true;
- report('Synchronisation automatique de la progression…');
+ report('Synchronisation automatique de la progression…','Automatically syncing your training progress…');
  try{
   const before=JSON.stringify(window.AIMWeb?.getStore?.()||{});
-  await synchronize(api.supabase,uid);
-  const afterRaw=localStorage.getItem('aimroutine_cloud_user_'+uid+'_aimroutine_web_training_v2');
+  await synchronize(requestedApi.supabase,requestedUid);
+  if(uid!==requestedUid)return; // Never repaint data after another tab signs out.
+  const afterRaw=localStorage.getItem('aimroutine_cloud_user_'+requestedUid+'_aimroutine_web_training_v2');
   const after=JSON.stringify(JSON.parse(afterRaw||'{}'));
   if(before!==after){
    window.AIMWeb?.reloadFromCache?.();
    window.dispatchEvent(new CustomEvent('aim-sync-applied'));
   }
-  report('Cloud automatique : progression à jour ✓');
- }catch(e){report('Sauvegarde cloud en attente · Données locales du compte conservées : '+e.message)}
+  report('Cloud automatique : progression à jour ✓','Automatic Cloud: progress is up to date ✓');
+ }catch(e){if(uid===requestedUid)report('Sauvegarde cloud en attente · Données locales du compte conservées : '+e.message,'Cloud save pending · Local account data has been retained: '+e.message)}
  finally{
   syncing=false;
-  if(queued){queued=false;setTimeout(syncChanges,400)}
+  if(uid!==requestedUid)queued=false;
+  else if(queued){queued=false;setTimeout(syncChanges,400)}
  }
 }
 let debounce;
@@ -65,7 +98,23 @@ window.addEventListener('aim-cloud-data-changed',schedule);
 window.addEventListener('online',schedule);
 window.addEventListener('focus',schedule);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule()});
+// An access-token refresh for the same verified user is not a logout.
+// React immediately when another tab signs out or switches accounts.
 window.addEventListener('storage',e=>{
+ // A bulk storage.clear() in another tab also invalidates verified-account state.
+ if(e.key===null||e.key===authStorage){
+  const nextOwner=tokenOwner(e.newValue);
+  if(!e.newValue||nextOwner!==uid){
+   clearTimeout(debounce);
+   queued=false;uid=null;api=null;
+   window.__aimCloudUserId=null;
+   document.body.classList.add('ar-guest-preview');
+   document.getElementById('ar-account-required')?.removeAttribute('hidden');
+   report('Session modifiée · Vérification du compte en cours…','Session changed · Verifying your account…');
+   location.reload();
+  }
+  return;
+ }
  if(e.key===UID_STORAGE_KEY&&e.newValue!==uid)location.reload();
  else if(uid&&e.key?.startsWith('aimroutine_cloud_user_'+uid+'_'))schedule();
 });

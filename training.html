@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="preconnect" href="https://cmsassets.rgpub.io" crossorigin>
-<link rel="preload" as="image" href="https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/8f0df8efd5b986039cd37a4d5f3bf31b815d0c54-3840x2160.jpg?w=1200&amp;q=72&amp;auto=format" imagesrcset="https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/8f0df8efd5b986039cd37a4d5f3bf31b815d0c54-3840x2160.jpg?w=640&amp;q=72&amp;auto=format 640w, https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/8f0df8efd5b986039cd37a4d5f3bf31b815d0c54-3840x2160.jpg?w=960&amp;q=72&amp;auto=format 960w, https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/8f0df8efd5b986039cd37a4d5f3bf31b815d0c54-3840x2160.jpg?w=1440&amp;q=72&amp;auto=format 1440w, https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/8f0df8efd5b986039cd37a4d5f3bf31b815d0c54-3840x2160.jpg?w=1920&amp;q=72&amp;auto=format 1920w" imagesizes="(max-width:680px) 94vw, (max-width:1000px) 90vw, 48vw" fetchpriority="high">
+<link rel="preload" as="image" href="r17-hero.webp" type="image/webp" fetchpriority="high">
 <meta name="theme-color" content="#0b141f"><meta name="description" content="Espace entraînement AIM : crée des routines VALORANT, chronomètre tes exercices et suis tes progrès localement.">
 <title>Mon espace AIM — AimRoutine Tracker</title><link rel="canonical" href="https://aimroutine-tracker.github.io/training.html"><link rel="stylesheet" href="site-global-v31.css?v=3"><link rel="stylesheet" href="training.css?v=2"><script type="module" src="training-entry-v7.mjs?v=1"></script><script src="site-quality-v34.js?v=1" defer></script><link rel="stylesheet" href="training-v5.css?v=1">
 
@@ -30,6 +30,7 @@
 <link rel="stylesheet" href="site-interface-v18.css?v=1">
 <link rel="stylesheet" href="site-interface-v19.css?v=1">
 <link rel="stylesheet" href="site-reference-v20.css?v=1">
+<link rel="stylesheet" href="site-owner-reference-v3.css?v=3">
 </head>
 <body class="site31 site31-training"><a class="skip" href="#app">Aller au contenu</a>
 <header class="site31-header"><nav class="site31-nav" aria-label="Navigation principale"><a class="site31-brand" href="index.html" aria-label="AimRoutine Tracker, accueil"><img src="aimroutine-brand-a-v2.svg?v=1" width="32" height="32" alt="">AimRoutine <span>Tracker</span></a><div class="site31-links"><a href="index.html">Accueil</a>
@@ -57,7 +58,7 @@
 <section class="intro ar5-hero" aria-labelledby="workspace-title">
  <div class="ar5-hero-copy">
   <p class="eyebrow">AIMROUTINE // TRAIN // ROUTINES <span>· WEB 6.0</span></p>
-  <h1 id="workspace-title"><span class="fr">Tes routines<br><em>d’entraînement.</em></span><span class="en">Your training<br><em>routines.</em></span></h1>
+  <h1 id="workspace-title"><span class="fr">Tes routines<br><em>d’entraînement</em></span><span class="en">Your training<br><em>routines</em></span></h1>
   <p>Une routine claire, des données à toi, des objectifs réalistes. Entraîne-toi avec méthode et visualise ton évolution.</p>
   <div class="ar5-hero-actions"><button class="primary" type="button" data-go="builder">Créer une routine <span aria-hidden="true">↗</span></button><button type="button" class="outline" data-go="insights">Voir mes statistiques</button></div>
   <div class="ar5-proof"><span>100 % local</span><span>4 outils compatibles</span><span>Sans connexion Riot</span></div>
@@ -135,9 +136,9 @@
  </div>
  <div class="two">
   <article class="surface ar5-goal"><div class="surface-title"><h3>Objectif de la semaine</h3><span id="goal-status" class="ar5-pill">0 / 3</span></div>
-   <p class="muted">Un rythme à ton niveau, pas une course aux heures.</p><label class="ar5-field ar5-goal-input">Séances visées sur 7 jours <input type="number" id="weekly-goal" min="1" max="14" value="3" inputmode="numeric"></label>
+   <p class="muted">Un rythme à ton niveau, pas une course aux heures.</p><label class="ar5-field ar5-goal-input">Séances visées cette semaine <input type="number" id="weekly-goal" min="1" max="14" value="3" inputmode="numeric"></label>
    <div class="ar5-meter" role="progressbar" id="weekly-meter" aria-label="Avancement de l'objectif hebdomadaire" aria-valuemin="0" aria-valuemax="3" aria-valuenow="0"><span id="weekly-meter-bar"></span></div>
-   <div class="ar5-badges"><span><strong id="weekly-sessions">0</strong> séances / 7 j</span><span><strong id="streak-days">0</strong> jours de suite</span></div>
+   <div class="ar5-badges"><span><strong id="weekly-sessions">0</strong> séances / sem.</span><span><strong id="streak-days">0</strong> jours de suite</span></div>
   </article>
   <article class="surface"><p class="eyebrow">PROCHAINES ÉTAPES</p><h3 id="tip-title">Construire la régularité</h3><p id="coaching-tip" class="muted">Commence par une séance pour débloquer les tendances.</p><button class="text-button" data-go="coach">Ouvrir le coach AIM →</button></article>
  </div>

@@ -35,6 +35,21 @@ test('Migration ignores invalid sessions and duplicate ids',()=>{
  const next=normalizeStore({sessions:[s,s,bad]},null);
  assert.equal(next.sessions.length,1);
 });
+test('Legacy cache normalization removes duplicate favorite IDs without losing unique routines',()=>{
+ const p1={id:'legacy-p1',name:'Premier',...createRoutine('iron','flick','VALORANT',25,30)};
+ const p2={id:'legacy-p2',name:'Deuxième',...createRoutine('silver','tracking','Aim Lab',30,30)};
+ const cached={sessions:[sample(),sample()],presets:[
+  p1,{...p1,name:'Ancienne copie répétée'},p2,p2
+ ],weeklyGoal:4};
+ const original=JSON.stringify(cached);
+ const clean=normalizeStore(cached,null);
+ assert.deepEqual(clean.sessions.map(s=>s.id),['test-1']);
+ assert.deepEqual(clean.presets.map(p=>p.id),['legacy-p1','legacy-p2']);
+ assert.equal(clean.presets[0].name,'Premier','Keep the first valid stored routine');
+ assert.equal(clean.weeklyGoal,4);
+ assert.equal(JSON.stringify(cached),original,'Normalization must not modify the local backup');
+});
+
 test('Metrics use only submitted accuracy and session minutes',()=>{
  const sessions=[sample('2026-11-03T12:00:00.000Z',80,'a'),sample('2026-11-04T12:00:00.000Z',null,'b')];
  const stats=computeStats(sessions,4,new Date('2026-11-06T12:00:00.000Z'));
@@ -68,6 +83,31 @@ test('V1 import merges data without duplicates',()=>{
  const res=importPayload(incoming,state);
  assert.equal(res.added,1);assert.equal(res.store.sessions.length,2);
 });
+test('One imported backup cannot count duplicated session or routine IDs twice',()=>{
+ const original=sample('2026-11-01T17:00:00Z',70,'existing');
+ const first=sample('2026-11-02T17:00:00Z',75,'new');
+ const later=sample('2026-11-03T17:00:00Z',82,'later');
+ const routine={id:'p1',name:'Routine initiale',...createRoutine('silver','flick','VALORANT',25,30)};
+ const secondRoutine={id:'p2',name:'Nouvelle routine',...createRoutine('iron','micro','Aim Lab',20,30)};
+ const state=normalizeStore({sessions:[original],presets:[routine],weeklyGoal:3},null);
+ const backup={format:'aimroutine-web-v2',sessions:[
+  original,first,{...first,accuracy:100},later,{...later,accuracy:99}
+ ],presets:[routine,{...routine,name:'Ne pas remplacer'},secondRoutine,
+   {...secondRoutine,name:'Doublon ignoré'}],weeklyGoal:5};
+ const snapshot=JSON.stringify(backup);
+ const result=importPayload(backup,state);
+ assert.equal(result.added,2,'Only two new unique sessions were imported');
+ assert.deepEqual(result.store.sessions.map(x=>x.id),['test-existing','test-new','test-later']);
+ assert.equal(result.store.sessions.find(x=>x.id==='test-new').accuracy,75,
+  'First occurrence wins, even when a duplicate has a higher score');
+ assert.equal(result.store.sessions.find(x=>x.id==='test-later').accuracy,82);
+ assert.deepEqual(result.store.presets.map(x=>x.id),['p1','p2']);
+ assert.equal(result.store.presets[0].name,'Routine initiale');
+ assert.equal(result.store.presets[1].name,'Nouvelle routine');
+ assert.equal(result.store.weeklyGoal,5);
+ assert.equal(JSON.stringify(backup),snapshot,'Import must not mutate user backup');
+});
+
 test('V2 export and import preserve favorites and settings',()=>{
  const state=normalizeStore({sessions:[sample()],weeklyGoal:5},null);
  state.presets=[{id:'p1',name:'My routine',...createRoutine('iron','micro','Oblivity',15,15)}];
@@ -92,4 +132,77 @@ test('Core exports remain defined',()=>{
 test('Coach never compares a mixture of different scenarios',()=>{
  const mixed=[65,63,77,79].map((x,i)=>({...sample(new Date(Date.UTC(2026,10,1+i)).toISOString(),x,'s'+i),scenario:i%2?'Cible B':'Cible A'}));
  assert.match(coach(mixed,'flick','VALORANT').confidence,/insuffisantes/);
+});
+
+
+test('Future timestamps cannot inflate totals, accuracy or the current streak',()=>{
+ const now=new Date('2026-11-09T12:00:00.000Z');
+ const yesterday=sample('2026-11-08T10:00:00.000Z',75,'past','flick');
+ const tomorrow=sample('2026-11-10T10:00:00.000Z',99,'tomorrow','tracking');
+ const laterToday=sample('2026-11-09T22:00:00.000Z',98,'future-today','micro');
+ const invalid=sample('not a timestamp',99,'invalid','control');
+ const entries=[yesterday,tomorrow,laterToday,invalid];
+ const stats=computeStats(entries,3,now);
+ assert.equal(stats.count,1);
+ assert.equal(stats.minutes,25);
+ assert.equal(stats.week,0);
+ assert.equal(stats.avg,75);
+ assert.equal(stats.best,75);
+ assert.equal(stats.streak,1,'a future session on the same calendar day cannot extend a streak');
+ assert.deepEqual(stats.byFocus,{flick:1,micro:0,tracking:0,control:0});
+ assert.equal(streak(entries,now),1);
+ assert.equal(normalizeStore({sessions:[tomorrow]},null).sessions.length,1,
+  'stored history is preserved, even though a future timestamp is not yet counted');
+});
+
+test('At the exact timestamp, a valid session becomes eligible for all statistics',()=>{
+ const now=new Date('2026-11-09T12:00:00.000Z');
+ const yesterday=sample('2026-11-08T10:00:00.000Z',70,'yesterday');
+ const nowSession=sample(now.toISOString(),90,'now');
+ const future=sample('2026-11-09T12:00:00.001Z',100,'one-ms-future');
+ const stats=computeStats([yesterday,nowSession,future],3,now);
+ assert.equal(stats.count,2);
+ assert.equal(stats.minutes,50);
+ assert.equal(stats.week,1);
+ assert.equal(stats.avg,80);
+ assert.equal(stats.best,90);
+ assert.equal(stats.streak,2);
+});
+
+test('Coaching never infers improvement from future or invalid sessions',()=>{
+ const now=new Date('2026-11-09T12:00:00.000Z');
+ const past=[
+  sample('2026-11-09T09:00:00.000Z',65,'a'),
+  sample('2026-11-09T11:00:00.000Z',67,'b')
+ ];
+ const projected=[
+  sample('2026-11-09T14:00:00.000Z',88,'c'),
+  sample('2026-11-09T16:00:00.000Z',96,'d'),
+  sample('invalid date',99,'bad')
+ ];
+ const result=coach([...past,...projected],'flick','VALORANT',3,now);
+ assert.match(result.confidence,/insuffisantes/);
+ assert.doesNotMatch(result.title,/Consolider/);
+ const onlyFuture=coach(projected,'flick','VALORANT',3,now);
+ assert.equal(onlyFuture.title,'Premiers pas');
+});
+
+
+test('Insight comparisons never plot future, invalid or nonnumeric accuracy records',()=>{
+ const now=new Date('2026-11-11T12:00:00.000Z');
+ const past=sample('2026-11-10T11:00:00.000Z',67,'past');
+ const current=sample(now.toISOString(),74,'current');
+ const tomorrow=sample('2026-11-12T11:00:00.000Z',99,'tomorrow');
+ const futureToday=sample('2026-11-11T16:00:00.000Z',100,'future-today');
+ const invalidDate=sample('invalid',99,'invalid');
+ const missingAccuracy=sample('2026-11-10T12:00:00.000Z',null,'missing');
+ const differentFocus=sample('2026-11-10T12:00:00.000Z',78,'other-focus','micro');
+ const wrongTool=sample('2026-11-10T12:00:00.000Z',80,'wrong-tool','flick','Aim Lab');
+ const rows=[tomorrow,current,invalidDate,missingAccuracy,past,futureToday,differentFocus,wrongTool];
+ const selection=comparable(rows,'flick','VALORANT',now);
+ assert.deepEqual(selection.map(s=>s.id),['test-past','test-current']);
+ assert.equal(selection[0].accuracy,67);
+ assert.equal(selection[1].accuracy,74);
+ assert.equal(rows[0].id,'test-tomorrow','input rows must not be mutated');
+ assert.deepEqual(comparable([tomorrow,futureToday], 'flick','VALORANT', now),[]);
 });

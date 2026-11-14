@@ -320,7 +320,9 @@ $('#finish-form').addEventListener('submit',event=>{
 });
 function renderInsights(){
  const focus=$('#insight-focus').value,tool=$('#insight-tool').value;
- const xs=comparable(store.sessions,focus,tool).slice(-20);
+ // One clock snapshot for the insight chart, breakdown and coaching message.
+ const now=new Date();
+ const xs=comparable(store.sessions,focus,tool,now).slice(-20);
  $('#chart-count').textContent=xs.length+' valeur'+(xs.length>1?'s':'');
  const chart=$('#chart');chart.replaceChildren();
  if(!xs.length){chart.append(make('p','Pas encore de précision renseignée pour cette sélection.','muted'))}
@@ -333,10 +335,10 @@ function renderInsights(){
   xs.forEach((s,i)=>{const dot=el('circle',{cx:points[i][0],cy:points[i][1],r:5,fill:'#8bded3'});const title=el('title');title.textContent=labelDate(s)+' · '+formatPercent(s.accuracy);dot.append(title);svg.append(dot)});
   chart.append(svg);
  }
- const counts=computeStats(store.sessions,store.weeklyGoal).byFocus;
+ const counts=computeStats(store.sessions,store.weeklyGoal,now).byFocus;
  const target=$('#focus-breakdown');target.replaceChildren();
  Object.entries(FOCUS).forEach(([k,v])=>{const row=make('div',undefined,'breakdown');row.append(make('span',v),make('strong',counts[k]+' séance(s)'));target.append(row)});
- $('#insight-advice').textContent=coach(store.sessions,focus,tool,store.weeklyGoal).message;
+ $('#insight-advice').textContent=coach(store.sessions,focus,tool,store.weeklyGoal,now).message;
 }
 ['insight-focus','insight-tool'].forEach(id=>$('#'+id).addEventListener('change',()=>{renderInsights();renderCoach();renderDashboard()}));
 function renderCoach(){
@@ -358,10 +360,16 @@ $('#export-data').addEventListener('click',()=>{
 });
 $('#import-data').addEventListener('change',async event=>{
  const file=event.target.files?.[0];if(!file)return;
+ const importUid=activeUid();
  try{
+  if(!importUid)throw Error('Connecte-toi pour importer une sauvegarde.');
   if(file.size>2e6)throw Error('La sauvegarde dépasse 2 Mo.');
   const payload=JSON.parse(await file.text());
+  // A cross-tab logout/switch can happen while the browser reads the file.
+  // Never merge A's backup into B's account-scoped cache after that await.
+  if(activeUid()!==importUid)throw Error('Compte modifié pendant l’import : recommence après connexion.');
   const result=importPayload(payload,store);
+  if(activeUid()!==importUid)throw Error('Compte modifié pendant l’import : recommence après connexion.');
   if(!save(result.store))return;
   renderDashboard();renderInsights();renderCoach();renderFavorites();
   showMessage(result.added+' nouvelle(s) séance(s) importée(s), favoris conservés.');

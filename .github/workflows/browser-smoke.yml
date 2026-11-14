@@ -3,12 +3,20 @@ on:
   pull_request:
     paths:
       - "site-rebuild-v17.*"
+      - "site-interface-v19.mjs"
+      - "site-reference-v20.css"
+      - "site-owner-reference-v3.css"
       - "r17-hero.webp"
       - "index.html"
       - "training.html"
       - "account.html"
       - "progress.html"
+      - "progress-v14.mjs"
+      - "site-v15-data.mjs"
+      - "training-entry-v7.mjs"
       - "tests/browser.spec.mjs"
+      - "sw-v6.js"
+      - "pwa-v6.js"
       - ".github/workflows/browser-smoke.yml"
   push:
     branches: [main]
@@ -25,8 +33,10 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+
+# Ignore superseded commits: only the current PR/head build matters.
 concurrency:
-  group: aimroutine-browser-\${{ github.ref }}
+  group: aimroutine-cross-browser-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   browsers:

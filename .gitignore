@@ -1,0 +1,17 @@
+# Never stage the four owner's reference screenshots in this PUBLIC repo.
+# Git ignore is an accident guard, not an access-control boundary.
+/tests/visual-references/home.png
+/tests/visual-references/routines.png
+/tests/visual-references/progress.png
+/tests/visual-references/account.png
+
+# Generated evidence and local build output.
+/visual-results/
+/public-visual-evidence/
+/.public-site/
+/node_modules/
+
+# Local configuration and credentials.
+.env
+.env.*
+!.env.example
