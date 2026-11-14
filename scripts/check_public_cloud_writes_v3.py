@@ -51,7 +51,7 @@ def inspect_script(name: str, source: str) -> list[str]:
         # The sole Cloud module may READ aim tables directly, never stash a
         # table Query for later direct INSERT/UPSERT/UPDATE/DELETE. This also
         # rejects aliased mutations which would evade the immediate-chain regex.
-        if not re.match(r"\\s*\\.\\s*select\\s*\\(", source[match.end():]):
+        if not re.match(r"\s*\.\s*select\s*\(", source[match.end():]):
             errors.append(f"{name}: table access must select; all writes use atomic RPC")
             break
     if name != OWNER_MODULE and GUARDED_RPC.search(source):
