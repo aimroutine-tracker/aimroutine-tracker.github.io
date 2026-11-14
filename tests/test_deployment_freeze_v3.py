@@ -37,6 +37,32 @@ class PublicationFreezeTests(unittest.TestCase):
                      'atomic_cloud_writes_verified:'):
             self.assertIn(item,self.publish)
 
+    def test_release_attestation_explicitly_requires_legacy_rest_write_cutoff(self):
+        self.assertIn("V2 direct table writes revoked",self.publish)
+        self.assertIn("inputs.atomic_cloud_writes_verified == true",self.publish)
+
+    def test_role_cutover_proposal_is_never_auto_deployed(self):
+        root=Path(__file__).resolve().parents[1]
+        proposal=root/'docs'/'supabase-v3-writer-role-cutover.proposal.sql'
+        self.assertTrue(proposal.is_file())
+        sql=proposal.read_text(encoding='utf-8')
+        for clause in (
+            'nologin nobypassrls',
+            'owner to aim_cloud_writer',
+            'security definer',
+            'revoke all on',
+            'grant select on',
+            'to authenticated',
+            'create policy aim_writer_sessions_v3',
+            'create policy aim_writer_presets_v3',
+            'create policy aim_writer_profiles_v3',
+            'create policy aim_writer_preferences_v3',
+        ):
+            self.assertIn(clause,sql)
+        # The proposal must remain outside deployable migration artifacts.
+        self.assertNotIn('supabase/migrations',str(proposal))
+        self.assertNotIn('apply_migration',self.publish)
+
     def test_archived_recovery_cannot_deploy_or_cancel_pages(self):
         header=self.recover.split('\npermissions:',1)[0]
         self.assertNotIn('\n  push:',header)
