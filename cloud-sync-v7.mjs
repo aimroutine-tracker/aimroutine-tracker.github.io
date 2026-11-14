@@ -62,7 +62,12 @@ function readMeta(uid){
  // the owner repairs this device's metadata against the server.
  if(!parsed||typeof parsed!=='object'||Array.isArray(parsed)||
     ('resetAt' in parsed&&parsed.resetAt!==null&&
-     (typeof parsed.resetAt!=='string'||!Number.isFinite(Date.parse(parsed.resetAt))))){
+     (typeof parsed.resetAt!=='string'||!Number.isFinite(Date.parse(parsed.resetAt))))||
+    ('presetDeletedIds' in parsed&&
+     (!Array.isArray(parsed.presetDeletedIds)||
+      parsed.presetDeletedIds.some(id=>typeof id!=='string'||id.length===0||id.length>100)))){
+  // A corrupted deletion-tombstone list must not be normalized to []:
+  // doing so can restore favorites the owner already deleted offline.
   throw Error('Métadonnées locales Cloud illisibles : synchronisation annulée sans supprimer les séances locales.');
  }
  return safeMeta(parsed);
