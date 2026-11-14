@@ -45,6 +45,10 @@ jobs:
         run: python3 -m unittest discover -s tests -p 'test_home_css_bundle_parity.py' -v
       - name: Unit-test Lighthouse budget checks using synthetic reports
         run: python3 -m unittest discover -s tests -p 'test_lighthouse_budgets_v3.py' -v
+      - name: Reject unguarded Cloud mutations in public JavaScript
+        run: |
+          python3 scripts/check_public_cloud_writes_v3.py
+          python3 -m unittest discover -s tests -p 'test_public_cloud_write_guard_v3.py' -v
       - name: Prevent accidental secret commits
         run: python3 tests/check_secrets.py
       - name: Validate internal HTML links and assets
