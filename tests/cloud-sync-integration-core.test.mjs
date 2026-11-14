@@ -896,6 +896,58 @@ test('corrupted local reset metadata blocks upload without erasing guest, A or B
  }
 });
 
+test('malformed favorite-deletion tombstones block Cloud restoration and preserve local recovery data',async()=>{
+ for(const corrupted of [
+  {presetDeletedIds:'favorite-deleted'},
+  {presetDeletedIds:[42]},
+  {presetDeletedIds:[null]},
+  {presetDeletedIds:['x'.repeat(101)]},
+  {presetDeletedIds:['favorite-deleted',{}]}
+ ]){
+  const db=makeDb(),storage=new MemoryStorage(),base=clientFor(db,USER_A);
+  db.aim_presets.push({user_id:USER_A,preset_id:'favorite-deleted',
+   payload:preset('favorite-deleted'),deleted_at:null});
+  db.aim_presets.push({user_id:USER_B,preset_id:'other-b',
+   payload:preset('other-b'),deleted_at:null});
+  let rpcCalls=0,tableReads=0;
+  const client={...base,
+   async rpc(...args){rpcCalls++;return base.rpc(...args)},
+   from(...args){tableReads++;return base.from(...args)}};
+  await use(storage,async()=>{
+   write(storage,USER_A,[session('safe-a')]);
+   write(storage,USER_B,[session('safe-b')]);
+   const aKey=scopedKey(TRAINING_KEY,USER_A),bKey=scopedKey(TRAINING_KEY,USER_B);
+   const metaKey=CLOUD_META_PREFIX+USER_A;
+   const meta=JSON.stringify({version:1,resetAt:null,...corrupted});
+   storage.setItem(metaKey,meta);
+   const beforeA=storage.getItem(aKey),beforeB=storage.getItem(bKey);
+   await assert.rejects(synchronize(client,USER_A),/Métadonnées locales Cloud illisibles/);
+   assert.throws(()=>collectFavoriteDeletion(USER_A,['favorite-new']),
+    /Métadonnées locales Cloud illisibles/);
+   assert.throws(()=>importGuestIntoAccount(USER_A),
+    /Métadonnées locales Cloud illisibles/);
+   assert.equal(rpcCalls,0);
+   assert.equal(tableReads,0);
+   assert.equal(storage.getItem(metaKey),meta);
+   assert.equal(storage.getItem(aKey),beforeA);
+   assert.equal(storage.getItem(bKey),beforeB);
+  });
+  assert.deepEqual(db.aim_presets.map(x=>x.preset_id),['favorite-deleted','other-b']);
+ }
+});
+
+test('well-formed legacy metadata without tombstones remains compatible with Cloud sync',async()=>{
+ const db=makeDb(),storage=new MemoryStorage(),client=clientFor(db,USER_A);
+ await use(storage,async()=>{
+  write(storage,USER_A,[session('legacy-valid')]);
+  storage.setItem(CLOUD_META_PREFIX+USER_A,JSON.stringify({version:1,resetAt:null}));
+  const result=await synchronize(client,USER_A);
+  assert.equal(result.synced,true);
+  assert.deepEqual(db.aim_sessions.map(x=>x.session_id),['legacy-valid']);
+  assert.deepEqual(readUserLocal(USER_A).store.sessions.map(x=>x.id),['legacy-valid']);
+ });
+});
+
 test('missing or older remote reset cursor cannot revive sessions after a known reset',async()=>{
  const lastKnownReset='2026-11-14T18:30:00.000Z';
  for(const remoteResetAt of [null,'2026-11-14T18:29:59.999Z']){
