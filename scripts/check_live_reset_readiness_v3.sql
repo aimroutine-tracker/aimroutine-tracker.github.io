@@ -12,6 +12,27 @@ reset_rpc AS (
  FROM pg_catalog.pg_proc p
  WHERE p.oid=pg_catalog.to_regprocedure('public.aim_reset_my_progress_for_user(uuid)')
 ),
+write_rpc AS (
+ SELECT p.oid,p.prosecdef,
+   pg_catalog.lower(pg_catalog.pg_get_functiondef(p.oid)) AS source
+ FROM pg_catalog.pg_proc p
+ WHERE p.oid=pg_catalog.to_regprocedure(
+  'public.aim_apply_progress_for_user(uuid,text,jsonb,jsonb,text[],jsonb,smallint)')
+),
+write_checks AS (
+ SELECT
+  EXISTS(SELECT 1 FROM write_rpc) AS write_rpc_installed,
+  COALESCE((SELECT NOT prosecdef FROM write_rpc),FALSE) AS write_rpc_security_invoker,
+  COALESCE((SELECT NOT pg_catalog.has_function_privilege('anon',oid,'EXECUTE') FROM write_rpc),FALSE) AS write_rpc_anon_denied,
+  COALESCE((SELECT pg_catalog.has_function_privilege('authenticated',oid,'EXECUTE') FROM write_rpc),FALSE) AS write_rpc_authenticated_execute,
+  COALESCE((SELECT
+     source LIKE '%stale_reset_cursor%'
+     AND source LIKE '%pg_advisory_xact_lock%'
+     AND source LIKE '%hashtextextended%'
+     AND source LIKE '%actor_id is distinct from expected_uid%'
+     AND source LIKE '%current_reset_at is distinct from expected_reset_at%'
+   FROM write_rpc),FALSE) AS write_rpc_owner_epoch_guard
+),
 rpc_checks AS (
  SELECT
   EXISTS(SELECT 1 FROM reset_rpc) AS rpc_installed,
@@ -60,13 +81,20 @@ SELECT pg_catalog.jsonb_build_object(
  'ready_for_private_qa',
   r.rpc_installed AND r.rpc_security_invoker AND r.rpc_anon_denied
   AND r.rpc_authenticated_execute AND r.rpc_owner_guard_present
-  AND t.four_owner_only_tables,
+  AND w.write_rpc_installed AND w.write_rpc_security_invoker
+  AND w.write_rpc_anon_denied AND w.write_rpc_authenticated_execute
+  AND w.write_rpc_owner_epoch_guard AND t.four_owner_only_tables,
  'rpc_installed',r.rpc_installed,
  'rpc_security_invoker',r.rpc_security_invoker,
  'rpc_anon_denied',r.rpc_anon_denied,
  'rpc_authenticated_execute',r.rpc_authenticated_execute,
  'rpc_owner_guard_present',r.rpc_owner_guard_present,
+ 'write_rpc_installed',w.write_rpc_installed,
+ 'write_rpc_security_invoker',w.write_rpc_security_invoker,
+ 'write_rpc_anon_denied',w.write_rpc_anon_denied,
+ 'write_rpc_authenticated_execute',w.write_rpc_authenticated_execute,
+ 'write_rpc_owner_epoch_guard',w.write_rpc_owner_epoch_guard,
  'four_owner_only_tables',t.four_owner_only_tables,
- 'note','Metadata checks only; still requires disposable A/B and Google end-to-end testing'
+ 'note','Catalog readiness only; direct REST clients still bypass guarded write RPC. Requires V2 cutover, disposable A/B, Google and multi-device tests before release'
 ) AS readiness_report
-FROM rpc_checks r CROSS JOIN table_summary t;
+FROM rpc_checks r CROSS JOIN write_checks w CROSS JOIN table_summary t;
