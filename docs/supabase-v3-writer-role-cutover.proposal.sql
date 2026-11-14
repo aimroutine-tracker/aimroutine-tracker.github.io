@@ -18,7 +18,11 @@
 -- all direct writes (and any TRUNCATE/TRIGGER table privileges).
 --
 -- Run only as reviewed role-managing migration after confirming there is
--- NO existing role named aim_cloud_writer and the V3 RPCs are installed.
+-- NO existing role named aim_cloud_writer, the V3 RPCs are installed, and
+-- that the anon role does not have direct write privileges on progress tables.
+-- ROLE MEMBERSHIP MATTERS: aim_cloud_writer inherits anon (one direction
+-- only), never the reverse. This is necessary on Supabase hosted, where
+-- postgres cannot grant usage on auth schema directly.
 begin;
 
 do $cutover_preflight$
@@ -26,6 +30,9 @@ begin
  if exists(select 1 from pg_catalog.pg_roles
    where rolname='aim_cloud_writer')
  then raise exception 'aim_cloud_writer already exists: manual role audit required'; end if;
+ if not pg_catalog.has_schema_privilege('anon','auth','USAGE')
+   or not pg_catalog.has_function_privilege('anon','auth.uid()','EXECUTE')
+ then raise exception 'Hosted Supabase auth privileges for anon must be reviewed'; end if;
  if pg_catalog.to_regprocedure('public.aim_reset_my_progress_for_user(uuid)') is null
  or pg_catalog.to_regprocedure(
   'public.aim_apply_progress_for_user(uuid,text,jsonb,jsonb,text[],jsonb,smallint)'
@@ -34,9 +41,14 @@ begin
 end
 $cutover_preflight$;
 
-create role aim_cloud_writer nologin nobypassrls noinherit;
-grant usage on schema public,auth to aim_cloud_writer;
-grant execute on function auth.uid() to aim_cloud_writer;
+-- On hosted Supabase, postgres may NOT GRANT on schema auth or on
+-- auth.uid(), both owned by internal roles. The existing anon role already
+-- has USAGE/EXECUTE. Writer inherits those permissions as a MEMBER of anon;
+-- anon is NEVER a member of writer, so anonymous API calls gain no writes.
+-- Preflight below verifies this privilege contract before changing grants.
+create role aim_cloud_writer nologin nobypassrls inherit;
+grant anon to aim_cloud_writer;
+grant usage on schema public to aim_cloud_writer;
 grant select,insert,update,delete on
  public.aim_sessions,public.aim_presets,
  public.aim_profiles,public.aim_preferences
@@ -107,10 +119,15 @@ begin
  select oid into role_oid from pg_catalog.pg_roles
   where rolname='aim_cloud_writer'
     and not rolcanlogin and not rolbypassrls
-    and not rolsuper and not rolcreaterole;
+    and not rolsuper and not rolcreaterole and rolinherit;
  if role_oid is null then raise exception 'Writer role privileges are unsafe'; end if;
+ if not pg_catalog.pg_has_role('aim_cloud_writer','anon','USAGE')
+ or not pg_catalog.has_schema_privilege('aim_cloud_writer','auth','USAGE')
+ or not pg_catalog.has_function_privilege('aim_cloud_writer','auth.uid()','EXECUTE')
+ then raise exception 'Writer did not inherit required hosted auth helpers'; end if;
  if pg_catalog.pg_has_role('authenticated','aim_cloud_writer','MEMBER')
  or pg_catalog.pg_has_role('anon','aim_cloud_writer','MEMBER')
+ or pg_catalog.pg_has_role('authenticator','aim_cloud_writer','MEMBER')
  then raise exception 'API roles must not inherit dedicated writer identity'; end if;
  foreach t in array array[
   'public.aim_sessions'::regclass,
