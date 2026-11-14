@@ -16,6 +16,7 @@ on:
       - "training-entry-v7.mjs"
       - "tests/browser.spec.mjs"
       - "tests/home-css-render-parity-v1.mjs"
+      - "tests/check-home-css-pixel-parity-v1.py"
       - "site-home-bundle-v1-*.css"
       - "sw-v6.js"
       - "pwa-v6.js"
@@ -31,6 +32,7 @@ on:
       - "sw-v6.js"
       - "tests/browser.spec.mjs"
       - "tests/home-css-render-parity-v1.mjs"
+      - "tests/check-home-css-pixel-parity-v1.py"
       - "site-home-bundle-v1-*.css"
       - "tests/playwright.config.mjs"
       - ".github/workflows/browser-smoke.yml"
@@ -61,8 +63,12 @@ jobs:
           for i in $(seq 1 25); do curl -fsS http://127.0.0.1:8765/training.html >/dev/null && exit 0; sleep 1; done
           cat /tmp/aimroutine-http.log
           exit 1
-      - name: Prove home CSS consolidation preserves exact desktop/mobile pixels
-        run: node tests/home-css-render-parity-v1.mjs
+      - name: Prove home CSS consolidation preserves desktop/mobile visuals
+        run: |
+          set -euo pipefail
+          node tests/home-css-render-parity-v1.mjs
+          python3 -m pip install --quiet Pillow==11.3.0
+          python3 tests/check-home-css-pixel-parity-v1.py
       - name: Run desktop and mobile browser scenarios
         run: npx playwright test --config=tests/playwright.config.mjs
       - name: Export CSS comparison screenshots only if pixel proof fails
