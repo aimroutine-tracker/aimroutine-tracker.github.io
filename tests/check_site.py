@@ -105,6 +105,34 @@ for page in PAGES:
             if marker not in page.read_text(encoding="utf-8"):
                 issues.append(f"training.html: missing {marker}")
 
+# Validate local section links, not just target file existence. A link to
+# training.html#panel-builder must point to an ID actually rendered by HTML.
+# Dynamic JavaScript navigation should use explicit route state rather than an
+# unresolved static fragment. Cache the parsed target IDs for cross-page links.
+page_ids = {}
+for document in PAGES:
+    parser = PageParser()
+    parser.feed(document.read_text(encoding="utf-8"))
+    page_ids[document.name] = parser.ids
+
+for document in PAGES:
+    parser = PageParser()
+    parser.feed(document.read_text(encoding="utf-8"))
+    for tag, raw in parser.refs:
+        if tag != "a":
+            continue
+        link = urlsplit(raw)
+        if not link.fragment or link.scheme or link.netloc or raw.startswith("//"):
+            continue
+        fragment = unquote(link.fragment)
+        target = unquote(link.path).lstrip("/") or document.name
+        if target not in page_ids:
+            continue  # External or non-HTML targets already checked above.
+        if fragment not in page_ids[target]:
+            issues.append(
+                f"{document.name}: missing section #{fragment} in {target}"
+            )
+
 print(f"Checked {len(PAGES)} HTML pages and their local references.")
 if issues:
     print("\n".join("ERROR: " + line for line in issues))
