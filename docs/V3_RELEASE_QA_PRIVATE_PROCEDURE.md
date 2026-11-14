@@ -52,7 +52,10 @@ La migration **non déployée** `supabase/migrations/20261111210933_reset_expect
 - séance autorisée avec curseur actuel ;
 - séance ancienne rejetée après réinitialisation de A ;
 - reprise autorisée avec nouveau curseur ;
+- deux réinitialisations immédiates de A produisent des curseurs **strictement croissants** ;
 - un JWT B ne peut jamais écrire A et les données de B sont préservées.
+
+Le test supplémentaire `tests/test_atomic_reset_concurrency.sh` ouvre **deux connexions PostgreSQL distinctes**, avec transactions chevauchantes et attente contrôlée sur le même verrou. Il démontre les deux ordres de validation : **sauvegarde puis suppression**, où la séance est effacée ; et **suppression puis tentative périmée**, où l'écriture est refusée après acquisition du verrou. [Preuve CI PostgreSQL réelle sur base jetable](https://github.com/aimroutine-tracker/aimroutine-tracker.github.io/actions/runs/43551447931). Ce n'est pas un essai avec de vrais comptes Supabase hébergés.
 
 **Aucune RPC `qa_*` ne doit être déployée.** Le client réel V3 utilise encore des `upsert`/`update` REST sur `aim_sessions`, `aim_presets`, `aim_profiles` et `aim_preferences`. Ces écritures directes ne participent pas au verrou consultatif et le protocole de test ne leur garantit **aucune atomicité**. Avant toute mise en production, concevoir puis versionner une migration distincte proposant des RPC d'écriture protégées pour les quatre catégories de données, intégrer ces appels dans le client, traiter la compatibilité des clients V2 encore actifs et vérifier les courses concurrentes réelles entre appareils. Un verrou partagé sur la suppression sans contrôle de version des écritures ne suffit pas.
 
