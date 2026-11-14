@@ -73,6 +73,26 @@ test('V3 Routines hero fills its right skyline without affecting mobile or contr
  await expect(page.locator('[data-r17-day="0"]').first()).toBeVisible();
 });
 
+test('V3 home lower panels align with owner reference at 1672px and remain mobile-safe',async({page})=>{
+ await page.setViewportSize({width:1672,height:941});
+ await page.goto('/index.html',{waitUntil:'domcontentloaded'});
+ const result=await page.evaluate(()=>{
+  const bottom=document.querySelector('.r17-home-wrap .r17-home-bottom');
+  const challenge=bottom.querySelector('.r17-challenge');
+  const b=bottom.getBoundingClientRect(),c=challenge.getBoundingClientRect();
+  return {left:b.left,width:b.width,right:b.right,challengeRight:c.right,scroll:document.documentElement.scrollWidth};
+ });
+ expect(result.left).toBeGreaterThanOrEqual(53);
+ expect(result.left).toBeLessThanOrEqual(57);
+ expect(result.width).toBeGreaterThanOrEqual(1570);
+ expect(result.width).toBeLessThanOrEqual(1574);
+ expect(Math.abs(result.right-result.challengeRight)).toBeLessThanOrEqual(2);
+ expect(result.scroll).toBeLessThanOrEqual(1672);
+ await page.setViewportSize({width:390,height:844});
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+ await expect(page.locator('.r17-home-wrap .r17-challenge .r17-button')).toBeVisible();
+});
+
 test('Build, edit, run and save a player session',async ({page})=>{
  await useVerifiedTestAccount(page);
  await page.locator('#tab-builder').click();
