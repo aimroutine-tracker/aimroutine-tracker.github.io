@@ -1,3 +1,4 @@
+import {stylesheetIndex} from './helpers/styles-v3.mjs';
 import {test,expect} from '@playwright/test';
 
 /* Verified mocked account: no real Supabase requests or data mutations. */
@@ -797,7 +798,8 @@ test('V13 tactical design loads across routes without hiding interactive element
  await expect(page.locator('.v5-hero .ar13-frame-corners')).toHaveCount(1);
  await expect(page.locator('.v5-hero .ar13-frame-corners')).toHaveAttribute('aria-hidden','true');
  await expect(page.locator('.ar9-path-grid .ar9-path-card')).toHaveCount(3);
- await expect(page.locator('link[href="site-future-v13.css?v=1"]')).toHaveCount(1);
+ await expect(page.locator('link[href="site-home-bundle-v1-4.css?v=1"]')).toHaveCount(1);
+ expect(stylesheetIndex('index.html','site-future-v13.css')).toBeGreaterThanOrEqual(0);
  await expect(page.locator('#aim-challenge [data-ar11-start]')).toBeAttached();
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.ar7-account-hero .ar13-frame-corners')).toHaveCount(1);
@@ -852,8 +854,14 @@ test('V16 official A logo renders in every flagship navigation and semantic colo
   const logo=page.locator('.site31-brand img[src="aimroutine-brand-a-v2.svg?v=1"]');
   await expect(logo).toHaveCount(1);
   await expect.poll(()=>logo.evaluate(img=>img.complete && img.naturalWidth>0)).toBe(true);
-  await expect(page.locator('link[href="site-official-v16.css?v=1"]')).toHaveCount(1);
-  await expect(page.locator('link[href="aimroutine-official-tokens-v2.css?v=1"]')).toHaveCount(1);
+  if(route==='index.html'){
+   await expect(page.locator('link[href="site-home-bundle-v1-4.css?v=1"]')).toHaveCount(1);
+   expect(stylesheetIndex(route,'site-official-v16.css')).toBeGreaterThan(
+    stylesheetIndex(route,'aimroutine-official-tokens-v2.css'));
+  }else{
+   await expect(page.locator('link[href="site-official-v16.css?v=1"]')).toHaveCount(1);
+   await expect(page.locator('link[href="aimroutine-official-tokens-v2.css?v=1"]')).toHaveCount(1);
+  }
   expect(await page.evaluate(()=>getComputedStyle(document.documentElement).getPropertyValue('--ar-coral').trim())).toBe('#FF5B69');
   expect(await page.evaluate(()=>getComputedStyle(document.documentElement).getPropertyValue('--ar-cyan').trim())).toBe('#37E3DD');
  }
