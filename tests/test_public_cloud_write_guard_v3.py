@@ -39,6 +39,16 @@ class CloudWriteAuditTests(unittest.TestCase):
             "site.js", "const x=await supabase.from('aim_sessions').select('*')"
         ))
 
+    def test_rejects_aliased_mutations_inside_owner(self):
+        aliases = (
+            "const q=client.from('aim_sessions'); await q.upsert([{id:'x'}])",
+            "const q=client.from('aim_presets'); await q.delete()",
+            "const q=client.from('aim_profiles'); await q.update({})",
+        )
+        for source in aliases:
+            with self.subTest(source=source):
+                self.assertTrue(guard.inspect_script(guard.OWNER_MODULE, source))
+
     def test_preserves_owner_read_only_and_guarded_rpc(self):
         source = (
             "await client.from('aim_sessions').select('payload')\n"
