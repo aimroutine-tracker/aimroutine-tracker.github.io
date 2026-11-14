@@ -29,6 +29,15 @@ begin
     raise exception 'account_mismatch' using errcode='42501';
   end if;
 
+  -- Serialize reset RPCs for the same account at transaction scope.
+  -- A future atomic V3 write RPC MUST acquire this exact advisory lock
+  -- BEFORE checking the reset cursor and writing any account rows.
+  -- IMPORTANT: legacy/direct PostgREST table writes do NOT take this lock.
+  -- Therefore this alone does not guarantee cross-device reset atomicity.
+  perform pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended(expected_uid::text, 27012026::bigint)
+  );
+
   delete from public.aim_sessions where user_id=expected_uid;
   delete from public.aim_presets where user_id=expected_uid;
   delete from public.aim_profiles where user_id=expected_uid;
