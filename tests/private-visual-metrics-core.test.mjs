@@ -43,6 +43,7 @@ test('private visual hotspot reports the exact changed tile and RGB MAE',()=>{
  assert.equal(r.regional_rgb_mae.bottom,15.9375);
  assert.equal(r.priority_hotspots[0].zone,'H4');
  assert.equal(r.priority_hotspots[0].rgb_mae_0_to_255,255);
+ assert.equal(r.priority_hotspots.length,1,'Only the changed tile is relevant');
  assert.equal(r.priority_hotspots[0].x,7);
  assert.equal(r.priority_hotspots[0].y,3);
  assert.equal(r.priority_hotspots[0].width,1);
@@ -58,7 +59,7 @@ test('private visual hotspot sorts the most divergent region first',()=>{
  assert.equal(r.priority_hotspots[0].rgb_mae_0_to_255,160);
  assert.equal(r.priority_hotspots[1].zone,'A1');
  assert.equal(r.priority_hotspots[1].rgb_mae_0_to_255,20);
- assert.equal(r.priority_hotspots.length,5);
+ assert.equal(r.priority_hotspots.length,2,'Unchanged tiles must not be highlighted');
 });
 
 test('private visual comparator rejects mismatched dimensions or pixel arrays',()=>{
