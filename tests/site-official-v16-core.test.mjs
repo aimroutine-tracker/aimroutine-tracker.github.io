@@ -46,7 +46,7 @@ test('Official PNG, style and logo are publicly packaged and cached',()=>{
  for(const f of ['aimroutine-brand-a-v2.svg','aimroutine-official-tokens-v2.css','site-official-v16.css']){
   assert.ok(worker.includes("'./"+f+"'"),f+' not offline');
  }
- assert.match(worker,/aimroutine-v10-owner-reference-20261109/);
+ assert.match(worker,/aimroutine-v11-home-bundles-20261114/);
  assert.match(read('manifest.webmanifest'),/"sizes": "256x256"/);
 });
 
