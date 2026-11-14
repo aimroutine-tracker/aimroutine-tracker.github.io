@@ -11,9 +11,9 @@ role_ok as (
    where not rolcanlogin and not rolbypassrls and not rolsuper
      and not rolcreaterole and not rolinherit)
    and exists(select 1 from roles)
-   and coalesce(not pg_catalog.pg_has_role('authenticated','aim_cloud_writer','MEMBER'),false)
-   and coalesce(not pg_catalog.pg_has_role('anon','aim_cloud_writer','MEMBER'),false)
-   and coalesce(not pg_catalog.has_schema_privilege('aim_cloud_writer','public','CREATE'),false)
+   and coalesce((select not pg_catalog.pg_has_role('authenticated'::regrole,oid,'MEMBER') from roles),false)
+   and coalesce((select not pg_catalog.pg_has_role('anon'::regrole,oid,'MEMBER') from roles),false)
+   and coalesce((select not pg_catalog.has_schema_privilege(oid,'public','CREATE') from roles),false)
  as trusted_role_ok
 ),
 expected(name) as (
@@ -31,10 +31,10 @@ table_checks as (
    and coalesce(not pg_catalog.has_table_privilege('authenticated',c.oid,'TRUNCATE'),false)
    and coalesce(not pg_catalog.has_table_privilege('authenticated',c.oid,'TRIGGER'),false)
    and coalesce(not pg_catalog.has_table_privilege('authenticated',c.oid,'REFERENCES'),false)
-   and coalesce(pg_catalog.has_table_privilege('aim_cloud_writer',c.oid,'SELECT'),false)
-   and coalesce(pg_catalog.has_table_privilege('aim_cloud_writer',c.oid,'INSERT'),false)
-   and coalesce(pg_catalog.has_table_privilege('aim_cloud_writer',c.oid,'UPDATE'),false)
-   and coalesce(pg_catalog.has_table_privilege('aim_cloud_writer',c.oid,'DELETE'),false)
+   and coalesce(pg_catalog.has_table_privilege(r.oid,c.oid,'SELECT'),false)
+   and coalesce(pg_catalog.has_table_privilege(r.oid,c.oid,'INSERT'),false)
+   and coalesce(pg_catalog.has_table_privilege(r.oid,c.oid,'UPDATE'),false)
+   and coalesce(pg_catalog.has_table_privilege(r.oid,c.oid,'DELETE'),false)
    and exists (
      select 1 from pg_catalog.pg_policies pol
      where pol.schemaname='public' and pol.tablename=e.name
