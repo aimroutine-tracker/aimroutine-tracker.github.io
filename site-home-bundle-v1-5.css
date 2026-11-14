@@ -2519,4 +2519,24 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
  }
 }
 
+/* V3 / pass 60 — right-edge city fill on Routines at owner reference viewport.
+   The character is geometrically registered on the smaller original layer;
+   that layer leaves an unpainted vertical strip at the far right (roughly
+   x1513..1672). Reuse the SAME local asset only in the right-hand strip,
+   feathering its edge; leave the character, labels and controls untouched. */
+@media (min-width:1600px) and (max-width:1780px){
+ body.site31.r20 .r17-training-wrap .r17-hero-art::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background-image:url('r17-hero.webp');
+  background-size:cover;
+  background-position:center 40%;
+  background-repeat:no-repeat;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,transparent 79%,#000 93%,#000 100%);
+  mask-image:linear-gradient(90deg,transparent 0%,transparent 79%,#000 93%,#000 100%);
+ }
+}
+
 /* END site-owner-reference-v3.css */
