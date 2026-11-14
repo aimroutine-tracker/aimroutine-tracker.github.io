@@ -462,6 +462,64 @@ test('reset response cannot clear the old account cache after a session change',
  });
 });
 
+test('interrupted local cleanup after Cloud reset cannot revive deleted sessions on next sync',async()=>{
+ for(const failureStep of ['clear-training','persist-reset-cursor']){
+  const db=makeDb(),storage=new MemoryStorage(),client=clientFor(db,USER_A);
+  db.aim_sessions.push(
+   {user_id:USER_A,session_id:'cloud-old-a',payload:session('cloud-old-a'),deleted_at:null},
+   {user_id:USER_B,session_id:'cloud-untouched-b',payload:session('cloud-untouched-b'),deleted_at:null}
+  );
+  await use(storage,async()=>{
+   write(storage,USER_A,[session('local-old-a')],[preset('local-old-favorite')]);
+   write(storage,USER_B,[session('local-b')]);
+   storage.setItem(scopedKey(LEGACY_KEY,USER_A),
+    JSON.stringify({sessions:[session('legacy-old-a')],presets:[],weeklyGoal:3}));
+   storage.setItem(TRAINING_KEY,JSON.stringify({sessions:[session('guest-keep')],presets:[],weeklyGoal:3}));
+   const aKey=scopedKey(TRAINING_KEY,USER_A),bKey=scopedKey(TRAINING_KEY,USER_B);
+   const metaKey=CLOUD_META_PREFIX+USER_A;
+   const beforeMeta=storage.getItem(metaKey),beforeB=storage.getItem(bKey);
+   const beforeGuest=storage.getItem(TRAINING_KEY);
+   const remove=storage.removeItem.bind(storage),set=storage.setItem.bind(storage);
+   let interrupted=false;
+   storage.removeItem=(key)=>{
+    if(!interrupted&&failureStep==='clear-training'&&key===aKey){
+     interrupted=true;throw Error('simulated local cleanup interruption');
+    }
+    return remove(key);
+   };
+   storage.setItem=(key,value)=>{
+    if(!interrupted&&failureStep==='persist-reset-cursor'&&key===metaKey){
+     interrupted=true;throw Error('simulated local cleanup interruption');
+    }
+    return set(key,value);
+   };
+   await assert.rejects(deleteCloudProgress(client,USER_A),/simulated local cleanup interruption/);
+   assert.equal(interrupted,true);
+   assert.equal(storage.getItem(metaKey),beforeMeta,
+    'Never advance local reset marker before all local snapshots are cleared');
+   assert.equal(storage.getItem(bKey),beforeB);
+   assert.equal(storage.getItem(TRAINING_KEY),beforeGuest);
+   assert.deepEqual(db.aim_sessions.filter(row=>row.user_id===USER_A),[],
+    'Server reset completed despite local storage interruption');
+   const remoteReset=db.aim_preferences.find(row=>row.user_id===USER_A)?.settings?.reset_at;
+   assert.ok(Number.isFinite(Date.parse(remoteReset)));
+   storage.removeItem=remove;
+   storage.setItem=set;
+   const result=await synchronize(client,USER_A);
+   assert.equal(result.synced,true);
+   assert.deepEqual(db.aim_sessions.filter(row=>row.user_id===USER_A),[],
+    'No obsolete local session may be re-uploaded after recovery');
+   assert.deepEqual(readUserLocal(USER_A).store.sessions,[]);
+   assert.equal(storage.getItem(scopedKey(LEGACY_KEY,USER_A)),null);
+   assert.equal(JSON.parse(storage.getItem(metaKey)).resetAt,remoteReset);
+   assert.deepEqual(db.aim_sessions.filter(row=>row.user_id===USER_B).map(x=>x.session_id),
+    ['cloud-untouched-b']);
+   assert.equal(storage.getItem(bKey),beforeB);
+   assert.equal(storage.getItem(TRAINING_KEY),beforeGuest);
+  });
+ }
+});
+
 test('reset waits for the in-flight save and queues subsequent syncs, preventing resurrection',async()=>{
  const db=makeDb(),store=new MemoryStorage(),base=clientFor(db,USER_A);
  let unblockSave,markSaveStarted;
