@@ -13,10 +13,9 @@ set search_path = pg_catalog
 as $function$
 declare
   actor_id uuid := auth.uid();
-  reset_marker text := pg_catalog.to_char(
-    pg_catalog.clock_timestamp() at time zone 'UTC',
-    'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'
-  );
+  reset_marker text;
+  prior_reset_time timestamptz;
+  marker_clock timestamptz;
 begin
   if actor_id is null then
     raise exception 'authentication_required' using errcode='28000';
@@ -36,6 +35,28 @@ begin
   -- Therefore this alone does not guarantee cross-device reset atomicity.
   perform pg_catalog.pg_advisory_xact_lock(
     pg_catalog.hashtextextended(expected_uid::text, 27012026::bigint)
+  );
+
+  -- A second reset in the same millisecond must still produce a DISTINCT,
+  -- strictly increasing reset cursor, or an offline device could miss it.
+  -- Generate the cursor AFTER acquiring the per-account transaction lock.
+  -- Malformed legacy settings must not prevent the owner deleting their data.
+  begin
+    select nullif(settings->>'reset_at','')::timestamptz
+      into prior_reset_time
+      from public.aim_preferences
+      where user_id=expected_uid;
+  exception when invalid_datetime_format or datetime_field_overflow then
+    prior_reset_time := null;
+  end;
+  marker_clock := pg_catalog.clock_timestamp();
+  if prior_reset_time is not null
+     and prior_reset_time >= pg_catalog.date_trunc('milliseconds',marker_clock) then
+    marker_clock := prior_reset_time + interval '1 millisecond';
+  end if;
+  reset_marker := pg_catalog.to_char(
+    marker_clock at time zone 'UTC',
+    'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'
   );
 
   delete from public.aim_sessions where user_id=expected_uid;
