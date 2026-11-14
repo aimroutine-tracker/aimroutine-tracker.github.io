@@ -27,6 +27,7 @@ test.beforeEach(async ({page})=>{
 test('V3 favorite deletion blocked by full Cloud tombstone queue keeps the real UI and saved favorite',async({page})=>{
  await useVerifiedTestAccount(page);
  const uid='11111111-1111-4111-8111-111111111111';
+ const initialWrites=await page.evaluate(()=>window.__testCloudWrites?.length||0);
  page.on('dialog',async dialog=>{
   if(dialog.type()==='prompt')await dialog.accept('QA favori protégé');
   else await dialog.accept();
@@ -39,7 +40,7 @@ test('V3 favorite deletion blocked by full Cloud tombstone queue keeps the real 
  await expect(favorite).toContainText('QA favori protégé');
  // Wait for the real auto-sync triggered by the prior successful save before
  // installing the full local tombstone queue. Nothing below reaches production.
- await expect.poll(()=>page.evaluate(()=>window.__testCloudWrites?.length||0)).toBeGreaterThan(0);
+ await expect.poll(()=>page.evaluate(()=>window.__testCloudWrites?.length||0)).toBeGreaterThan(initialWrites);
  const before=await page.evaluate(uid=>{
   const storeKey='aimroutine_cloud_user_'+uid+'_aimroutine_web_training_v2';
   const metaKey='aimroutine_cloud_meta_'+uid;
