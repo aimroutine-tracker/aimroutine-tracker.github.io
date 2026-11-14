@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {synchronize,setEnabled,readUserLocal,collectFavoriteDeletion,deleteCloudProgress} from '../cloud-sync-v7.mjs';
+import {synchronize,setEnabled,readUserLocal,collectFavoriteDeletion,deleteCloudProgress,importGuestIntoAccount} from '../cloud-sync-v7.mjs';
 import {scopedKey,TRAINING_KEY,LEGACY_KEY,EXT_KEY} from '../cloud-core-v7.mjs';
 
 // Deterministic in-memory Supabase API: emulates owner-only RLS for sync logic.
@@ -287,6 +287,27 @@ test('missing Supabase Auth data rejects Cloud sync and reset without touching l
    assert.equal(storage.getItem(scopedKey(TRAINING_KEY,USER_A)),original);
   });
  }
+});
+
+test('invalid account guest import and favorite deletion never overwrite guest progress',async()=>{
+ const storage=new MemoryStorage();
+ const guest={sessions:[session('guest-must-survive')],presets:[preset('guest-preset')],weeklyGoal:4};
+ const guestExt={profile:{nickname:'GuestPlayer'}};
+ await use(storage,async()=>{
+  storage.setItem(TRAINING_KEY,JSON.stringify(guest));
+  storage.setItem(EXT_KEY,JSON.stringify(guestExt));
+  storage.setItem(LEGACY_KEY,JSON.stringify(guest));
+  const original=[TRAINING_KEY,LEGACY_KEY,EXT_KEY].map(key=>storage.getItem(key));
+  for(const uid of [null,undefined,'','not-a-valid-uuid']){
+   assert.throws(()=>importGuestIntoAccount(uid),/Identifiant de compte Cloud invalide/);
+   collectFavoriteDeletion(uid,['favorite-id']);
+  }
+  // A valid account with malformed deletion input should not create metadata.
+  collectFavoriteDeletion(USER_A,'favorite-id');
+  collectFavoriteDeletion(USER_A,{0:'favorite-id',length:1});
+  assert.deepEqual([TRAINING_KEY,LEGACY_KEY,EXT_KEY].map(key=>storage.getItem(key)),original);
+  assert.equal(storage.length,3,'No guest or arbitrary Cloud metadata was modified');
+ });
 });
 
 test('concurrent inserts of the same session ID preserve the first database writer',async()=>{
