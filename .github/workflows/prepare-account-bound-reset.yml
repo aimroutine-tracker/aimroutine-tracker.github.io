@@ -11,6 +11,7 @@ on:
       - "tests/account-bound-reset-postgres.sql"
       - "tests/atomic-reset-guard-prototype-postgres.sql"
       - "tests/atomic-v3-cloud-patch-postgres.sql"
+      - "tests/test_atomic_v3_patch_concurrency.sh"
       - "tests/test_atomic_reset_concurrency.sh"
       - "scripts/check_live_reset_readiness_v3.sql"
       - "tests/cloud-sync-integration-core.test.mjs"
@@ -59,6 +60,8 @@ jobs:
         run: |
           set -euo pipefail
           psql -v ON_ERROR_STOP=1 -f tests/atomic-v3-cloud-patch-postgres.sql
+      - name: Check parallel reset races against actual V3 all-table RPC
+        run: bash tests/test_atomic_v3_patch_concurrency.sh
       - name: Validate hosted preflight using the migrated isolated database
         run: |
           set -euo pipefail
