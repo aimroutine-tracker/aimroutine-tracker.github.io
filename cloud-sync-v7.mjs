@@ -64,7 +64,7 @@ function readMeta(uid){
     ('resetAt' in parsed&&parsed.resetAt!==null&&
      (typeof parsed.resetAt!=='string'||!Number.isFinite(Date.parse(parsed.resetAt))))||
     ('presetDeletedIds' in parsed&&
-     (!Array.isArray(parsed.presetDeletedIds)||
+     (!Array.isArray(parsed.presetDeletedIds)||parsed.presetDeletedIds.length>100||
       parsed.presetDeletedIds.some(id=>typeof id!=='string'||id.length===0||id.length>100)))){
   // A corrupted deletion-tombstone list must not be normalized to []:
   // doing so can restore favorites the owner already deleted offline.
@@ -250,7 +250,16 @@ export function collectFavoriteDeletion(uid,removed){
  // Invalid account IDs and malformed event payloads must never write Cloud metadata.
  if(!validUid(uid)||!Array.isArray(removed)||!removed.length)return;
  const meta=readMeta(uid);
- meta.presetDeletedIds=[...new Set([...meta.presetDeletedIds,...removed.map(x=>String(x))])].slice(-100);
+ // Never discard pending deletions to fit the RPC's 100-ID limit.
+ // Losing a tombstone can restore a favorite not yet deleted on the server.
+ if(removed.some(id=>typeof id!=='string'||id.length===0||id.length>100)){
+  throw Error('Identifiant de favori supprimé invalide : aucune suppression locale enregistrée.');
+ }
+ const pending=[...new Set([...meta.presetDeletedIds,...removed])];
+ if(pending.length>100){
+  throw Error('Trop de suppressions de favoris en attente : synchronise ce compte avant de continuer.');
+ }
+ meta.presetDeletedIds=pending;
  localStorage.setItem(metaKey(uid),JSON.stringify(meta));
 }
 export function importGuestIntoAccount(uid){
