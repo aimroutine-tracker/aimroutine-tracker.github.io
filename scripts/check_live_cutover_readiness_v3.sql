@@ -9,10 +9,14 @@ with roles as (
 role_ok as (
  select exists(select 1 from roles
    where not rolcanlogin and not rolbypassrls and not rolsuper
-     and not rolcreaterole and not rolinherit)
+     and not rolcreaterole and rolinherit)
    and exists(select 1 from roles)
    and coalesce((select not pg_catalog.pg_has_role('authenticated'::regrole,oid,'MEMBER') from roles),false)
    and coalesce((select not pg_catalog.pg_has_role('anon'::regrole,oid,'MEMBER') from roles),false)
+   and coalesce((select not pg_catalog.pg_has_role('authenticator'::regrole,oid,'MEMBER') from roles),false)
+   and coalesce((select pg_catalog.pg_has_role(oid,'anon'::regrole,'USAGE') from roles),false)
+   and coalesce((select pg_catalog.has_schema_privilege(oid,'auth','USAGE') from roles),false)
+   and coalesce((select pg_catalog.has_function_privilege(oid,'auth.uid()','EXECUTE') from roles),false)
    and coalesce((select not pg_catalog.has_schema_privilege(oid,'public','CREATE') from roles),false)
  as trusted_role_ok
 ),
