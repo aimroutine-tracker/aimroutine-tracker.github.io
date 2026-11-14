@@ -68,7 +68,10 @@ jobs:
           report=json.loads(sys.argv[1])
           required=("ready_for_private_qa","rpc_installed","rpc_security_invoker",
                     "rpc_anon_denied","rpc_authenticated_execute",
-                    "rpc_owner_guard_present","four_owner_only_tables")
+                    "rpc_owner_guard_present","four_owner_only_tables",
+                    "write_rpc_installed","write_rpc_security_invoker",
+                    "write_rpc_anon_denied","write_rpc_authenticated_execute",
+                    "write_rpc_owner_epoch_guard")
           failed=[key for key in required if report.get(key) is not True]
           if failed:
               raise SystemExit("Isolated migrated database did not satisfy readiness: "+", ".join(failed))
