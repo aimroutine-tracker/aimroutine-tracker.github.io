@@ -31,6 +31,8 @@ Le workflow `prepare-account-bound-reset.yml` lance sur PostgreSQL 17 éphémèr
 
 **Preuve GitHub Actions :** [workflow PostgreSQL 17 vérifié](https://github.com/aimroutine-tracker/aimroutine-tracker.github.io/actions/runs/43556144014). La même requête de précontrôle sur le projet Supabase hébergé retourne `ready_for_atomic_cutover=false`, ce qui est attendu puisque rien n'y a été appliqué.
 
+Le test Node `tests/legacy-v2-cutover-core.test.mjs` utilise une **copie figée de `cloud-sync-v7.mjs` tirée de la branche publique `main`**, enregistrée uniquement dans `tests/fixtures/`. Il simule un rôle `authenticated` dont les anciennes écritures REST et la RPC de suppression V2 échouent avec `42501`. Résultat : les séances locales de A (y compris la clé de secours V1) sont préservées et les séances locales de B restent intactes. Ce scénario est **synthétique** : il ne valide ni les données des utilisateurs réels, ni une éventuelle interface de mise à jour affichée dans un navigateur V2 encore ouvert.
+
 Ces contrôles isolés sont indispensables mais **ne prouvent pas** la bonne configuration, la continuité de service ou la sécurité fonctionnelle sur le serveur hébergé.
 
 ## Ordre de recette avant toute action réelle
