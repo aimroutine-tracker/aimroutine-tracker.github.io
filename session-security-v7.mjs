@@ -9,5 +9,6 @@ export async function signOutEverywhere(auth){
 // before any destructive action. Missing/malformed Auth responses fail closed.
 export function verifiedAuthUser(response,expectedUid){
  const user=response?.data?.user;
- return !response?.error&&user?.id===expectedUid?user:null;
+ return !response?.error&&typeof expectedUid==='string'&&expectedUid.length>0&&
+  user?.id===expectedUid?user:null;
 }
