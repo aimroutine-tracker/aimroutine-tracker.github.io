@@ -3,6 +3,7 @@
 -- It does not connect to hosted Supabase, use user data or require secrets.
 create role anon;
 create role authenticated;
+create role authenticator; -- Hosted Supabase role membership must be audited too.
 create schema auth;
 create function auth.uid() returns uuid language sql stable
 as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
