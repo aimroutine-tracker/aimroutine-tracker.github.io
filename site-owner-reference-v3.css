@@ -2084,3 +2084,14 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
   mask-image:linear-gradient(90deg,transparent 0%,transparent 62%,#000 75%,#000 100%);
  }
 }
+
+/* V3 / pass 61 — home lower row horizontal registration.
+   At 1672px, measured candidate before: x=65, width=1542. The owner's
+   reference outer region starts near x=55 and ends near x=1627. Only
+   adjust this lower row; the feature row already registers at x=54. */
+@media (min-width:1600px) and (max-width:1780px){
+ body.site31.r20 .r17-home-wrap .r17-home-bottom{
+  max-width:1572px!important;
+  transform:translateX(5px)!important;
+ }
+}
