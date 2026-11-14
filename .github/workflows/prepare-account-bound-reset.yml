@@ -11,6 +11,7 @@ on:
       - "tests/account-bound-reset-postgres.sql"
       - "tests/atomic-reset-guard-prototype-postgres.sql"
       - "tests/atomic-v3-cloud-patch-postgres.sql"
+      - "tests/role-cutover-prototype-postgres.sql"
       - "tests/test_atomic_v3_patch_concurrency.sh"
       - "tests/test_atomic_reset_concurrency.sh"
       - "scripts/check_live_reset_readiness_v3.sql"
@@ -80,3 +81,7 @@ jobs:
               raise SystemExit("Isolated migrated database did not satisfy readiness: "+", ".join(failed))
           print("PASS: catalog-only reset readiness checks against migrated synthetic DB.")
           ' "$report"
+      - name: Demonstrate V2 REST cutoff with least-privilege RLS writer
+        run: |
+          set -euo pipefail
+          psql -v ON_ERROR_STOP=1 -f tests/role-cutover-prototype-postgres.sql
