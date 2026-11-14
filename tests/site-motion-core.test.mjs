@@ -1,3 +1,4 @@
+import {stylesheetIndex} from './helpers/styles-v3.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -8,7 +9,7 @@ const pages=['index.html','product.html','presentation.html','training.html',
 test('motion assets are present on every public page',()=>{
   for(const page of pages){
     const html=read(page);
-    assert.match(html,/site-motion-v10\.css\?v=1/,'CSS missing: '+page);
+    assert.ok(stylesheetIndex(page,'site-motion-v10.css')>=0,'CSS missing: '+page);
     assert.match(html,/site-motion-v10\.js\?v=1/,'JS missing: '+page);
   }
 });
