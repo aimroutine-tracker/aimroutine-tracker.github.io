@@ -87,6 +87,16 @@ export async function runPreprodRlsReadOnly({env=process.env,fetchImpl=fetch}={}
  const results=[];
  for(const table of TABLES){
   await checkAnonymousSelect(fetchImpl,origin,table,key);
+  // Checking only A-versus-B can miss a policy that accidentally reveals a
+  // third account C. Query every row NOT owned by the viewer; the filter is
+  // evaluated server-side, before the limit, regardless of row order.
+  for(const viewer of [a,b]){
+   const foreign=new URLSearchParams({select:'user_id',user_id:'neq.'+viewer.uid,limit:'1'});
+   const visible=await checkedGet(fetchImpl,origin,
+    '/rest/v1/'+table+'?'+foreign,key,viewer.token);
+   if(!Array.isArray(visible)||visible.length!==0)
+    throw Error('RLS QA : le compte peut lire des lignes appartenant à un autre utilisateur sur '+table+'.');
+  }
   for(const [viewer,owner,allowed] of [[a,a,true],[b,b,true],[a,b,false],[b,a,false]]){
    const params=new URLSearchParams({select:'user_id',user_id:'eq.'+owner.uid,limit:'2'});
    const rows=await checkedGet(fetchImpl,origin,'/rest/v1/'+table+'?'+params,key,viewer.token);
@@ -97,7 +107,7 @@ export async function runPreprodRlsReadOnly({env=process.env,fetchImpl=fetch}={}
    if(!allowed&&rows.length>0)
     throw Error('RLS QA : isolation A/B non respectée sur '+table+'.');
   }
-  results.push({table,anonymousReadBlocked:true,ownRead:true,crossAccountBlocked:true});
+  results.push({table,anonymousReadBlocked:true,ownRead:true,crossAccountBlocked:true,foreignAccountBlocked:true});
  }
  return {stagingVerified:true,tables:results};
 }
