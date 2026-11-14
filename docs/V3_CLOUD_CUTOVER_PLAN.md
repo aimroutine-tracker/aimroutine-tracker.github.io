@@ -63,6 +63,6 @@ Après déploiement autorisé seulement : suivre les erreurs `42501`, `40001` et
 
 En cas de problème, **ne pas restaurer aveuglément les droits `INSERT/UPDATE/DELETE` au rôle `authenticated`** : cela rouvrirait la fenêtre de résurrection des séances. Priorité à une correction en avant ou à une procédure de retour arrière **revalidée** sur la préproduction. Toute récupération de droits ou de données réelles est une opération distincte demandant l'approbation du propriétaire.
 
-L'ancienne RPC `aim_reset_my_progress()` doit rester présente tant que des clients V2 légitimes en dépendent ; sa révocation/suppression fera l'objet d'une décision et d'une migration de retrait séparées après homologation.
+L'ancienne RPC `aim_reset_my_progress()` peut rester présente pendant la transition, mais **elle ne restera pas forcément utilisable** lorsque les droits directs de `authenticated` seront révoqués : cette RPC historique est `SECURITY INVOKER` et dépend de ces droits. Ne pas lui accorder `SECURITY DEFINER` pour la réactiver, car elle ne reçoit pas l'identité attendue `expected_uid`. Prévoir explicitement la mise à niveau des anciens clients et les erreurs contrôlées avant le basculement. Sa révocation ou suppression fera l'objet d'une décision et d'une migration séparées après homologation.
 
 **État : proposition et démonstration isolée réussies ; préproduction, basculement hébergé et homologation du site restent À FAIRE.**
