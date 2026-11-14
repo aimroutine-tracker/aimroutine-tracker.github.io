@@ -25,6 +25,10 @@ Pour **Accueil**, **Routines**, **Progression** et **Compte**, joindre dans une 
 
 Ne jamais copier les PNG sources, les superpositions propriétaires ou leurs pixels dans le dépôt public, dans un commentaire PR ou dans un artefact GitHub public. Le contrôle public sans les originaux reste bloquant ; ne pas le transformer artificiellement en succès.
 
+**Diagnostic fin hors ligne :** le comparateur local `tests/private-visual-review-v3.html` permet désormais le mode **Zones prioritaires**. Après vérification du SHA-256 de chaque original et de la capture correspondante à 1 672 × 941, il découpe l'image en **8 colonnes × 4 lignes** (A1 à H4), classe les **cinq secteurs** présentant la plus forte erreur RGB moyenne et les affiche sur la superposition. Le JSON privé exporté contient uniquement les métriques, les coordonnées des secteurs et les empreintes des fichiers ; il ne doit pas être versé au dépôt public. Ce classement aide à cibler les corrections de style : il **ne vaut ni comparaison réussie ni attestation de fidélité exacte**.
+
+Les cinq scénarios `tests/private-visual-metrics-core.test.mjs` valident ces calculs sur des images **entièrement synthétiques**, dont le cas sans différence et un pixel modifié dans H4. Ils ne remplacent pas la comparaison réelle des quatre originaux.
+
 **Budgets anti-régression (pas des objectifs pixel-perfect)** : Accueil 21,625240 ; Routines 26,435744 ; Progression **25,603400** (passe 58 : espacement des cartes du bas corrigé) ; Compte 26,500401 de MAE RGB. Tolérance 0,25, définie dans le manifeste.
 
 ## Protection complémentaire contre la suppression concurrente entre onglets
