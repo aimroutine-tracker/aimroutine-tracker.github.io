@@ -65,14 +65,37 @@ async function fetchAll(client,table,order,uid){
  }
  throw Error('Trop de données pour la synchronisation automatique : contactez le support.');
 }
-async function upsertChunks(client,table,records,idColumn){
- // Concurrent devices may discover the same ID as new before either writes.
- // First committed record wins: never overwrite an existing cloud entry.
- for(let i=0;i<records.length;i+=80){
-  const {error}=await client.from(table).upsert(records.slice(i,i+80),{
-   onConflict:'user_id,'+idColumn,ignoreDuplicates:true
+// The V3 server validates ownership, reset epoch and all writes under one
+// PostgreSQL transaction lock. Never fall back to unguarded table mutations.
+function cloudWriteError(error){
+ if(error?.code==='PGRST202'){
+  return Error('Synchronisation indisponible : le serveur Cloud doit être mis à jour avant cette version. Tes données locales sont conservées.');
+ }
+ if(error?.code==='40001'&&/stale_reset_cursor/i.test(String(error.message||''))){
+  const conflict=Error('La progression Cloud a été réinitialisée pendant la synchronisation. Relance la synchronisation pour récupérer le nouvel état.');
+  conflict.code='AIM_RESET_CURSOR_CHANGED';
+  return conflict;
+ }
+ if(error?.code==='42501'&&/account_mismatch/i.test(String(error.message||''))){
+  return Error('Synchronisation annulée : la session ne correspond plus au compte sélectionné.');
+ }
+ return error;
+}
+async function applyGuardedProgress(client,uid,resetAt,sessions,presets,removedIds,profile,goal){
+ // Cap every invocation to 80 payloads per table, preserving the old import
+ // limit. A reset between chunks invalidates the next RPC before its writes.
+ const pages=Math.max(1,Math.ceil(sessions.length/80),Math.ceil(presets.length/80));
+ for(let i=0;i<pages;i++){
+  const {error}=await client.rpc('aim_apply_progress_for_user',{
+   expected_uid:uid,
+   expected_reset_at:resetAt,
+   new_sessions:sessions.slice(i*80,(i+1)*80),
+   new_presets:presets.slice(i*80,(i+1)*80),
+   deleted_preset_ids:i===0?removedIds:[],
+   new_profile:i===0?profile:null,
+   new_weekly_goal:i===0?goal:null
   });
-  if(error)throw error;
+  if(error)throw cloudWriteError(error);
  }
 }
 async function synchronizeOnce(client,uid,{guestImport=false}={}){
@@ -132,39 +155,36 @@ async function synchronizeOnce(client,uid,{guestImport=false}={}){
   conflict.code='AIM_RESET_CURSOR_CHANGED';
   throw conflict;
  }
+ // Update the in-memory snapshot only. The actual tombstone is committed
+ // together with all other pending writes inside the guarded server RPC.
  for(const id of validDeleted){
-  const row=presetById.get(id);
-  const {error}=await client.from('aim_presets').update({deleted_at:new Date().toISOString()}).eq('user_id',uid).eq('preset_id',id);
-  if(error)throw error;
-  row.deleted_at=new Date().toISOString();
+  presetById.get(id).deleted_at=new Date().toISOString();
  }
  const cloudPresets=remotePresets.filter(r=>!r.deleted_at).map(r=>r.payload).filter(validPreset);
  const tombstones=[...pending,...remotePresets.filter(x=>x.deleted_at).map(x=>x.preset_id)];
  const mergedPresets=mergeRecords(local.store.presets,cloudPresets,tombstones).filter(validPreset).slice(-25);
  const newPresets=local.store.presets.filter(p=>!presetById.has(p.id)&&!pending.has(p.id));
- await upsertChunks(client,'aim_sessions',newSessions.map(x=>({user_id:uid,session_id:x.id,payload:x,deleted_at:null})),'session_id');
- await upsertChunks(client,'aim_presets',newPresets.map(x=>({user_id:uid,preset_id:x.id,payload:x,deleted_at:null})),'preset_id');
 
  const localProfile=cleanExtension(local.ext);
  const remoteProfile=profileResult.data?.profile?cleanExtension(profileResult.data.profile):null;
  const localProfileString=JSON.stringify(localProfile);
  const profileWasModified=meta.profileHash!==null&&meta.profileHash!==localProfileString;
- let finalProfile=remoteProfile||localProfile;
- if(!remoteProfile||profileWasModified||guestImport){
-   finalProfile=localProfile;
-   if(jsonSize(finalProfile)>16000)throw Error('Le profil dépasse la taille maximale du cloud.');
-   const {error}=await client.from('aim_profiles').upsert({user_id:uid,profile:finalProfile});
-   if(error)throw error;
+ const saveProfile=!remoteProfile||profileWasModified||guestImport;
+ const finalProfile=saveProfile?localProfile:(remoteProfile||localProfile);
+ if(saveProfile&&jsonSize(finalProfile)>16000){
+  throw Error('Le profil dépasse la taille maximale du cloud.');
  }
  const localGoal=local.store.weeklyGoal;
  const localPrefsString=JSON.stringify({weeklyGoal:localGoal});
  const prefsChanged=meta.prefsHash!==null&&meta.prefsHash!==localPrefsString;
- let finalGoal=prefResult.data?.weekly_goal??localGoal;
- if(!prefResult.data||prefsChanged||guestImport){
-   finalGoal=localGoal;
-   const {error}=await client.from('aim_preferences').upsert({user_id:uid,weekly_goal:finalGoal,settings:{format:'aimroutine-web-v2',...(remoteResetAt?{reset_at:remoteResetAt}:{})}});
-   if(error)throw error;
- }
+ const saveGoal=!prefResult.data||prefsChanged||guestImport;
+ const finalGoal=saveGoal?localGoal:(prefResult.data?.weekly_goal??localGoal);
+
+ // No direct REST upserts/updates: all four table categories share the
+ // account-bound reset lock and an authoritative reset-epoch comparison.
+ // A missing migration fails closed without deleting any local training data.
+ await applyGuardedProgress(client,uid,remoteResetAt,newSessions,newPresets,
+  validDeleted,saveProfile?finalProfile:null,saveGoal?finalGoal:null);
  // Preserve edits made while the network request was in flight.
  // This is essential for rapid consecutive sessions and multiple open tabs.
  const newest=unseenReset?local:readUserLocal(uid); // Do not resurrect stale data after remote reset.
