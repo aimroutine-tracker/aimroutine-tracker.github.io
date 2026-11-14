@@ -25,7 +25,7 @@ on:
         type: boolean
         default: false
       atomic_cloud_writes_verified:
-        description: 'V3 guarded uploads deployed and A/B concurrent reset races verified'
+        description: 'V3 guarded RPC active, V2 direct table writes revoked, real A/B races passed'
         required: true
         type: boolean
         default: false
