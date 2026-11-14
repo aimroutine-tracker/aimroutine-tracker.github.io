@@ -5,7 +5,7 @@ import {synchronize,isEnabled,setEnabled,readUserLocal,importGuestIntoAccount,de
 import {checkLeakedPassword} from './password-security-v7.mjs';
 import {validateUsername,usernameFromUser,saveUsername} from './username-v7.mjs';
 import {hasGoogleIdentity} from './google-delete-v7.mjs';
-import {signOutEverywhere} from './session-security-v7.mjs';
+import {signOutEverywhere,verifiedAuthUser} from './session-security-v7.mjs';
 import {TURNSTILE_SITE_KEY,createAuthCaptcha} from './turnstile-v7.mjs';
 const SIGNUPS_READY=true; // Email signups: Turnstile enforced by Supabase Auth, confirmation required, provider allowlisted by server hook.
 const GOOGLE_READY=true; // Provider enabled by project owner; live OAuth is in beta until end-to-end testing.
@@ -358,8 +358,8 @@ $('#delete-account-form').addEventListener('submit',event=>{
    if(authResult.error)throw Error('Mot de passe invalide ou reconnexion impossible.');
   }
   // Validate the signed-in identity after the recent Google or password auth.
-  const {data:{user:checked},error:authError}=await supabase.auth.getUser();
-  if(authError||checked?.id!==oldUid||user?.id!==oldUid)
+  const checked=verifiedAuthUser(await supabase.auth.getUser(),oldUid);
+  if(!checked||user?.id!==oldUid)
    throw Error('Identité différente : aucune suppression effectuée.');
   
   const {data,error:deleteError}=await supabase.functions.invoke('delete-aim-account',{
