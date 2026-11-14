@@ -1,3 +1,4 @@
+import {stylesheetIndex} from './helpers/styles-v3.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -12,9 +13,9 @@ test('V14 stylesheet and script load last on all existing pages',()=>{
  const pages=['index.html','product.html','presentation.html','training.html','account.html','changelog.html','releases.html','updates.html','riot-integration.html','privacy.html','terms.html','404.html'];
  for(const p of pages){
   const s=load(p);
-  assert.match(s,/site-v14-gallery\.css\?v=1/);
+  assert.ok(stylesheetIndex(p,'site-v14-gallery.css')>=0,p);
   assert.match(s,/site-v14-gallery\.js\?v=1/);
-  assert.ok(s.indexOf('site-v14-gallery.css?v=1')>s.indexOf('site-future-v13.css?v=1'));
+  assert.ok(stylesheetIndex(p,'site-v14-gallery.css')>stylesheetIndex(p,'site-future-v13.css'));
  }
 });
 test('V14 analytics is based on validated, scoped user sessions',()=>{
