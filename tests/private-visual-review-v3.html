@@ -57,7 +57,7 @@ function appendCard(entry){
   '<label>Capture V3 correspondante — '+entry.id+'-after.png<input type="file" accept="image/png" id="'+entry.id+'-out"></label></div>'+
   '<div class="controls"><button class="primary" id="'+entry.id+'-compare">Comparer</button>'+
   '<label>Vue <select id="'+entry.id+'-mode"><option value="overlay">Superposition</option><option value="diff">Différences amplifiées</option>'+
-  '<option value="original">Original</option><option value="candidate">V3</option></select></label>'+
+  '<option value="original">Original</option><option value="candidate">V3</option><option value="hotspots">Zones prioritaires</option></select></label>'+
   '<label>Opacité V3 <input id="'+entry.id+'-alpha" type="range" min="0" max="100" value="50"></label>'+
   '<button id="'+entry.id+'-save" disabled>Enregistrer la vue PNG</button></div>'+
   '<p id="'+entry.id+'-status" role="status">En attente des deux PNG.</p>'+
@@ -110,6 +110,48 @@ async function pixels(file){
   return ctx.getImageData(0,0,TARGET.width,TARGET.height);
  }finally{bitmap.close?.()}
 }
+/* Pure numeric analysis; only SHA-verified original pixels reach this function.
+ * Eight columns x four rows identify visual hotspots without exporting pixels. */
+function measureDifference(original,candidate,width,height,regions=REGIONS,columns=8,rows=4){
+ if(!Number.isInteger(width)||width<1||!Number.isInteger(height)||height<1||
+    original?.length!==width*height*4||candidate?.length!==width*height*4)
+  throw new Error('Images invalides pour la comparaison privée.');
+ const bands=Object.fromEntries(regions.map(([name])=>[name,{sum:0,pixels:0}]));
+ const tiles=Array.from({length:columns*rows},(_,index)=>({index,sum:0,pixels:0}));
+ let total=0,changed=0;
+ for(let y=0;y<height;y++){
+  const band=regions.find(([,a,b])=>y>=a&&y<b)?.[0];
+  const tileRow=Math.min(rows-1,Math.floor(y*rows/height));
+  for(let x=0;x<width;x++){
+   const i=(y*width+x)*4;
+   const error=Math.abs(original[i]-candidate[i])+
+     Math.abs(original[i+1]-candidate[i+1])+
+     Math.abs(original[i+2]-candidate[i+2]);
+   total+=error;
+   if(error!==0)changed++;
+   if(band){bands[band].sum+=error;bands[band].pixels++}
+   const tile=tiles[tileRow*columns+Math.min(columns-1,Math.floor(x*columns/width))];
+   tile.sum+=error;tile.pixels++;
+  }
+ }
+ const hotspots=tiles.map(tile=>{
+  const col=tile.index%columns,row=Math.floor(tile.index/columns);
+  return {zone:String.fromCharCode(65+col)+(row+1),
+   x:Math.ceil(col*width/columns),y:Math.ceil(row*height/rows),
+   width:Math.ceil((col+1)*width/columns)-Math.ceil(col*width/columns),
+   height:Math.ceil((row+1)*height/rows)-Math.ceil(row*height/rows),
+   rgb_mae_0_to_255:Number((tile.sum/(tile.pixels*3)).toFixed(4))};
+ }).sort((a,b)=>b.rgb_mae_0_to_255-a.rgb_mae_0_to_255||a.zone.localeCompare(b.zone));
+ return {
+  rgb_mae_0_to_255:Number((total/(width*height*3)).toFixed(4)),
+  different_pixel_percent:Number((100*changed/(width*height)).toFixed(3)),
+  regional_rgb_mae:Object.fromEntries(Object.entries(bands).map(([k,v])=>[
+   k,v.pixels?Number((v.sum/(v.pixels*3)).toFixed(4)):null])),
+  hotspot_grid:{columns,rows},
+  priority_hotspots:total?hotspots.slice(0,5):[],
+  visually_identical:total===0
+ };
+}
 function render(id){
  const state=elements[id];
  if(!state?.original||!state?.candidate)return;
@@ -127,6 +169,19 @@ function render(id){
   dst[i+3]=255;
  }
  ctx.putImageData(output,0,0);
+ if(mode==='hotspots'){
+  const hotspots=results[id]?.priority_hotspots||[];
+  ctx.textBaseline='top';ctx.font='bold 21px system-ui,sans-serif';
+  for(const h of hotspots){
+   const opacity=Math.min(.54,.16+h.rgb_mae_0_to_255/400);
+   ctx.fillStyle='rgba(255,83,99,'+opacity+')';
+   ctx.fillRect(h.x,h.y,h.width,h.height);
+   ctx.lineWidth=3;ctx.strokeStyle='#ffdb80';
+   ctx.strokeRect(h.x+2,h.y+2,h.width-4,h.height-4);
+   ctx.fillStyle='#07121b';ctx.fillRect(h.x+8,h.y+8,140,30);
+   ctx.fillStyle='#fff';ctx.fillText(h.zone+'  '+h.rgb_mae_0_to_255,h.x+12,h.y+11);
+  }
+ }
 }
 async function compare(entry){
  const id=entry.id,state=elements[id],ref=$(id+'-ref').files[0],candidate=$(id+'-out').files[0];
@@ -153,33 +208,18 @@ async function compare(entry){
   if(state.revision!==run)return;
   const original=await pixels(ref),output=await pixels(candidate);
   if(state.revision!==run)return;
-  let total=0,changed=0;
-  const regions={};
-  for(const [name,y0,y1] of REGIONS)regions[name]={total:0,pixels:0};
-  const a=original.data,b=output.data,w=TARGET.width,h=TARGET.height;
-  for(let y=0;y<h;y++){
-   let region=REGIONS.find(r=>y>=r[1]&&y<r[2])[0];
-   for(let x=0;x<w;x++){
-    const i=(y*w+x)*4;
-    const error=Math.abs(a[i]-b[i])+Math.abs(a[i+1]-b[i+1])+Math.abs(a[i+2]-b[i+2]);
-    total+=error;regions[region].total+=error;regions[region].pixels++;
-    if(error!==0)changed++;
-   }
-  }
-  const mae=total/(w*h*3);
+  const measured=measureDifference(original.data,output.data,TARGET.width,TARGET.height);
   const report={screen:id,reference_sha256:sha,reference_verified:true,
    capture_sha256:candidateSha,
    reference_file:ref.name,capture_file:candidate.name,
-   viewport:{width:w,height:h},rgb_mae_0_to_255:Number(mae.toFixed(4)),
-   different_pixel_percent:Number((100*changed/(w*h)).toFixed(3)),
-   regional_rgb_mae:Object.fromEntries(Object.entries(regions).map(([k,v])=>[k,Number((v.total/(v.pixels*3)).toFixed(4))])),
-   visually_identical:total===0};
+   viewport:{width:TARGET.width,height:TARGET.height},...measured};
   if(state.revision!==run)return;
   state.original=original;state.candidate=output;results[id]=report;render(id);
   label.className='';
-  label.innerHTML='<span class="good">Empreinte SHA-256 originale vérifiée</span> · '+(total?'Écarts détectés':'Pixels identiques');
+  label.innerHTML='<span class="good">Empreinte SHA-256 originale vérifiée</span> · '+(report.visually_identical?'Pixels identiques':'Écarts détectés');
   metrics.textContent='MAE RGB : '+report.rgb_mae_0_to_255+' / 255 · Pixels différents : '+
-   report.different_pixel_percent+' % · Régions : '+Object.entries(report.regional_rgb_mae).map(([k,v])=>k+' '+v).join(' | ');
+   report.different_pixel_percent+' % · Régions : '+Object.entries(report.regional_rgb_mae).map(([k,v])=>k+' '+v).join(' | ')+
+   (report.priority_hotspots.length?' · Secteurs prioritaires : '+report.priority_hotspots.map(z=>z.zone+' '+z.rgb_mae_0_to_255).join(', '):'');
   $(id+'-save').disabled=false;
  }catch(error){
   if(state.revision!==run)return;
