@@ -2508,4 +2508,15 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
  }
 }
 
+/* V3 / pass 59 — reference-sized desktop brand. The original owner's four
+   1672px screenshots place the wordmark ~6px farther from the SVG mark and
+   give the "AimRoutine Tracker" text slightly more width. Match that visible
+   header geometry without touching mobile, navigation links, or any data. */
+@media (min-width:1600px) and (max-width:1780px){
+ body.site31.r20 .site31-brand{
+  gap:16px!important;
+  font-size:24.6px!important;
+ }
+}
+
 /* END site-owner-reference-v3.css */
