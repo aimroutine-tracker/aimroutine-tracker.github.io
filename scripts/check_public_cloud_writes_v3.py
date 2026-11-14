@@ -44,8 +44,16 @@ def inspect_script(name: str, source: str) -> list[str]:
         errors.append(f"{name}: legacy unbound deletion RPC is forbidden")
     if MUTATION.search(source):
         errors.append(f"{name}: direct REST mutation bypasses reset transaction lock")
-    if name != OWNER_MODULE and DIRECT_TABLE_ACCESS.search(source):
-        errors.append(f"{name}: Cloud table access must remain in {OWNER_MODULE}")
+    for match in DIRECT_TABLE_ACCESS.finditer(source):
+        if name != OWNER_MODULE:
+            errors.append(f"{name}: Cloud table access must remain in {OWNER_MODULE}")
+            break
+        # The sole Cloud module may READ aim tables directly, never stash a
+        # table Query for later direct INSERT/UPSERT/UPDATE/DELETE. This also
+        # rejects aliased mutations which would evade the immediate-chain regex.
+        if not re.match(r"\\s*\\.\\s*select\\s*\\(", source[match.end():]):
+            errors.append(f"{name}: table access must select; all writes use atomic RPC")
+            break
     if name != OWNER_MODULE and GUARDED_RPC.search(source):
         errors.append(f"{name}: guarded write RPC must remain in {OWNER_MODULE}")
     return errors
