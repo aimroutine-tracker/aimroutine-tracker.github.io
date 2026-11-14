@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {synchronize,setEnabled,readUserLocal,collectFavoriteDeletion,deleteCloudProgress,importGuestIntoAccount} from '../cloud-sync-v7.mjs';
-import {scopedKey,TRAINING_KEY,LEGACY_KEY,EXT_KEY} from '../cloud-core-v7.mjs';
+import {scopedKey,TRAINING_KEY,LEGACY_KEY,EXT_KEY,CLOUD_META_PREFIX} from '../cloud-core-v7.mjs';
 
 // Deterministic in-memory Supabase API: emulates owner-only RLS for sync logic.
 // Live PostgreSQL RLS is tested separately, inside a fully rolled-back transaction.
@@ -800,6 +800,35 @@ test('automatic reset retry revalidates account identity before any cloud write'
  });
 });
 
+
+test('missing or older remote reset cursor cannot revive sessions after a known reset',async()=>{
+ const lastKnownReset='2026-11-14T18:30:00.000Z';
+ for(const remoteResetAt of [null,'2026-11-14T18:29:59.999Z']){
+  const db=makeDb(),storage=new MemoryStorage(),base=clientFor(db,USER_A);
+  db.aim_sessions.push({user_id:USER_B,session_id:'untouched-b',
+   payload:session('untouched-b'),deleted_at:null});
+  if(remoteResetAt)db.aim_preferences.push({
+   user_id:USER_A,weekly_goal:3,
+   settings:{format:'aimroutine-web-v2',reset_at:remoteResetAt}});
+  let mutations=0;
+  const client={...base,async rpc(...args){mutations++;return base.rpc(...args)}};
+  await use(storage,async()=>{
+   write(storage,USER_A,[session('preserve-local-until-repair')],[preset('preserve-favorite')]);
+   storage.setItem(CLOUD_META_PREFIX+USER_A,
+    JSON.stringify({version:1,resetAt:lastKnownReset}));
+   const originalTraining=storage.getItem(scopedKey(TRAINING_KEY,USER_A));
+   const originalMeta=storage.getItem(CLOUD_META_PREFIX+USER_A);
+   await assert.rejects(synchronize(client,USER_A),
+    /Marqueur de réinitialisation Cloud régressé ou absent/);
+   assert.equal(mutations,0,'Never upload data against a regressed reset cursor');
+   assert.equal(storage.getItem(scopedKey(TRAINING_KEY,USER_A)),originalTraining);
+   assert.equal(storage.getItem(CLOUD_META_PREFIX+USER_A),originalMeta);
+   assert.equal(storage.getItem(scopedKey(TRAINING_KEY,USER_B)),null);
+  });
+  assert.deepEqual(db.aim_sessions.map(x=>x.session_id),['untouched-b'],
+   'No deleted A progress can be resurrected; B remains unchanged');
+ }
+});
 
 test('invalid remote reset cursor at initial read fails closed without uploading old sessions',async()=>{
  const db=makeDb(),storage=new MemoryStorage(),client=clientFor(db,USER_A);
