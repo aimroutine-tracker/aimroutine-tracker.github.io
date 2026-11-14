@@ -53,7 +53,20 @@ export function readUserLocal(uid){
  const ext=parseJSON(localStorage.getItem(scopedKey(EXT_KEY,uid)));
  return {store:normalizeStore(s,old),ext:cleanExtension(ext)};
 }
-function readMeta(uid){return safeMeta(parseJSON(localStorage.getItem(metaKey(uid))))}
+function readMeta(uid){
+ const raw=localStorage.getItem(metaKey(uid));
+ if(raw===null)return freshCloudMeta(); // A new account has no prior cursor.
+ const parsed=parseJSON(raw);
+ // A corrupt local cursor is NOT equivalent to never having seen a reset.
+ // Failing closed preserves local training and prevents stale uploads until
+ // the owner repairs this device's metadata against the server.
+ if(!parsed||typeof parsed!=='object'||Array.isArray(parsed)||
+    ('resetAt' in parsed&&parsed.resetAt!==null&&
+     (typeof parsed.resetAt!=='string'||!Number.isFinite(Date.parse(parsed.resetAt))))){
+  throw Error('Métadonnées locales Cloud illisibles : synchronisation annulée sans supprimer les séances locales.');
+ }
+ return safeMeta(parsed);
+}
 function jsonSize(value){return new TextEncoder().encode(JSON.stringify(value)).length}
 function writeLocal(uid,store,ext,meta){
  // Persist the validated data, then the synchronization cursor.
