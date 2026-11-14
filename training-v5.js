@@ -21,11 +21,27 @@ function save(next=store){
   }
   try{
     const removed=store.presets.filter(p=>!next.presets.some(n=>n.id===p.id)).map(p=>p.id);
-    const uid=activeUid();
-    if(uid&&removed.length)collectFavoriteDeletion(uid,removed);
-    localStorage.setItem(storageKey(STORAGE_KEY),JSON.stringify(next));store=next;
-      window.dispatchEvent(new CustomEvent('aim-store-updated'));
-      return true}
+    const uid=activeUid(),key=storageKey(STORAGE_KEY);
+    const previous=localStorage.getItem(key),serialized=JSON.stringify(next);
+    // Save the new training snapshot before queuing Cloud tombstones.
+    // Otherwise a failed training write leaves a deletion pending for a
+    // favorite still present locally, causing an unintended Cloud deletion.
+    localStorage.setItem(key,serialized);
+    try{
+      if(uid&&removed.length)collectFavoriteDeletion(uid,removed);
+    }catch(error){
+      // An overflow/corrupt cursor must not leave locally removed favorites
+      // with no matching Cloud tombstone. Roll back only our own write:
+      // another tab may have replaced the key while this callback ran.
+      if(localStorage.getItem(key)===serialized){
+        if(previous===null)localStorage.removeItem(key);
+        else localStorage.setItem(key,previous);
+      }
+      throw error;
+    }
+    store=next;
+    window.dispatchEvent(new CustomEvent('aim-store-updated'));
+    return true}
   catch{alert('Le navigateur ne permet pas cet enregistrement. Vérifie son espace de stockage et ses paramètres.');return false}
 }
 function chooseTab(name,focus=false){
