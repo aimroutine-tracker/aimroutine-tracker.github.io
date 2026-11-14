@@ -311,11 +311,11 @@ $('#cloud-sync').addEventListener('click',()=>run(async()=>{
 $('#cloud-import-guest').addEventListener('click',()=>run(async()=>{
  if(!user||!confirm('Importer les données invitées de ce navigateur dans ton compte ? Leurs copies locales ne seront pas supprimées.'))return;
  const uid=user.id;
- if(!isEnabled(uid)){
-  setEnabled(uid,true);
-  try{await synchronize(supabase,uid)}
-  catch(e){setEnabled(uid,false);if(user?.id===uid)throw e;return}
- }
+ // Hydrate account-owned profile and preferences before merging guest
+ // sessions. Otherwise a slow initial sync can race this import and
+ // accidentally overwrite a profile saved on another device.
+ // If Cloud is unavailable, leave the original guest copy untouched.
+ await synchronize(supabase,uid);
  if(user?.id!==uid)return;
  const result=importGuestIntoAccount(uid);
  const sync=await synchronize(supabase,uid,{guestImport:true});
