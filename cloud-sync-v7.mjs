@@ -337,11 +337,15 @@ export function deleteCloudProgress(client,uid){
    }
    const resetAt=new Date(resetValue).toISOString();
    const resetMeta={...freshCloudMeta(),resetAt};
-   localStorage.setItem(metaKey(uid),JSON.stringify(resetMeta));
+   // Commit the new reset cursor LAST. If storage cleanup throws or crashes
+   // midway, the old cursor remains and the next sync detects the newer
+   // server epoch. Writing the cursor first could re-upload stale sessions
+   // left behind by a failed removeItem().
    localStorage.removeItem(scopedKey(TRAINING_KEY,uid));
    // Clear the legacy fallback too, or old data could reappear on next visit.
    localStorage.removeItem(scopedKey(LEGACY_KEY,uid));
    localStorage.removeItem(scopedKey(EXT_KEY,uid));
+   localStorage.setItem(metaKey(uid),JSON.stringify(resetMeta));
    return true;
    });
   }finally{
