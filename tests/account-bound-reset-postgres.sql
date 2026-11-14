@@ -6,8 +6,10 @@ create role authenticated;
 create schema auth;
 create function auth.uid() returns uuid language sql stable
 as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
-grant usage on schema auth to authenticated;
-grant execute on function auth.uid() to authenticated;
+grant usage on schema auth to authenticated,anon;
+grant execute on function auth.uid() to authenticated,anon;
+-- Hosted Supabase gives anon these helper privileges, while postgres does not
+-- have GRANT OPTION on its internal auth schema. Mirror that contract in CI.
 
 create table public.aim_sessions(
   user_id uuid not null, session_id text not null,
