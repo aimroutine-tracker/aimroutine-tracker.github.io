@@ -83,6 +83,12 @@ for page in PAGES:
         issues.append(f"{page.name}: shared V9 visual stylesheet link missing")
     if page.name == "index.html":
         html = page.read_text(encoding="utf-8")
+        # Keep the visible LCP candidate discoverable immediately, with the
+        # same URL in preload and <img> (otherwise preload causes a double fetch).
+        hero_preload = '<link rel="preload" as="image" href="mockup-hero-v15.webp" type="image/webp" fetchpriority="high">'
+        hero_image = '<img src="mockup-hero-v15.webp" width="420" height="157" loading="eager" fetchpriority="high" decoding="async"'
+        if html.count(hero_preload) != 1 or html.count(hero_image) != 1:
+            issues.append("index.html: first-screen hero image priority or preload mismatched")
         for link in ('id="choose-path"', 'class="ar9-path-grid"', 'href="training.html"', 'href="product.html"', 'href="account.html"'):
             if link not in html:
                 issues.append("index.html: missing V9 navigation destination " + link)
