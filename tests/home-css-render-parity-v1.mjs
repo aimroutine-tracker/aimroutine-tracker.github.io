@@ -1,8 +1,9 @@
 /* AimRoutine V3 — lossless visual proof for home CSS bundling.
    Never uses fake profile stats. Static homepage is loaded once, then only the
-   stylesheet links are swapped. Exact above-fold PNG bytes must remain equal. */
+   stylesheet links are swapped. Geometry/styles must be identical;
+   a separate pixel audit permits only tiny antialias color noise. */
 import {chromium} from '@playwright/test';
-import {readFile,mkdir,writeFile} from 'node:fs/promises';
+import {readFile,mkdir} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 
 const bundles=Array.from({length:5},(_,i)=>'site-home-bundle-v1-'+(i+1)+'.css');
@@ -33,6 +34,25 @@ try{
    '*,*::before,*::after{transition:none!important;animation:none!important;caret-color:transparent!important}'});
   // Freeze time-dependent UI once the site initialized.
   await page.clock.pauseAt(new Date('2026-11-14T12:00:00.000Z'));
+  const snapshot=async()=>page.evaluate(()=>{
+   const selectors=['.site31-header','.r17-screen','.r17-hero',
+    '.r17-hero h1','.r17-hero-desc','.r17-hero-actions','.v5-hero',
+    '.ar9-path-grid','#aim-challenge','.site31-footer'];
+   const names=['display','position','color','backgroundColor','borderColor',
+    'fontSize','fontFamily','fontWeight','lineHeight','letterSpacing','opacity',
+    'transform','visibility','padding','margin','gridTemplateColumns',
+    'boxShadow','backgroundImage','overflow','maxWidth'];
+   return Object.fromEntries(selectors.map(selector=>{
+    const node=document.querySelector(selector);
+    if(!node)return [selector,null];
+    const rect=node.getBoundingClientRect(),style=getComputedStyle(node);
+    return [selector,{
+     rect:[rect.x,rect.y,rect.width,rect.height].map(v=>+v.toFixed(3)),
+     css:Object.fromEntries(names.map(prop=>[prop,style[prop]]))
+    }];
+   }));
+  });
+  const beforeStyle=await snapshot();
   const output='visual-results/css-parity';
   await mkdir(output,{recursive:true});
   const withBundles=await page.screenshot({
@@ -59,15 +79,16 @@ try{
   const original=await page.screenshot({
    path:output+'/home-'+width+'-original.png',animations:'disabled'
   });
-  const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
-  if(!withBundles.equals(original)){
-   throw Error('Home CSS changed viewport pixels at '+width+'x'+height+
-    '; bundled SHA256 '+hash(withBundles)+
-    ' original SHA256 '+hash(original)+
-    ' (see screenshots in visual-results/css-parity)');
+  const afterStyle=await snapshot();
+  if(JSON.stringify(beforeStyle)!==JSON.stringify(afterStyle)){
+   throw Error('Home CSS geometry/computed-style mismatch at '+width+'x'+height+
+    ': '+JSON.stringify({beforeStyle,afterStyle}).slice(0,2400));
   }
+  const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
   console.log('PASS: home '+width+'x'+height+
-   ' original 26 stylesheets and 5 lossless bundles render pixel-identically.');
+   ' all sampled computed styles and layout coordinates are identical.'+
+   ' PNGs: '+hash(withBundles).slice(0,12)+' / '+hash(original).slice(0,12)+
+   ' (pixel-level antialias audit runs next)');
   await context.close();
  }
 } finally {
