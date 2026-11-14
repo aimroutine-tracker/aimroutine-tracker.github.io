@@ -9,6 +9,7 @@ on:
       - "cloud-sync-v7.mjs"
       - "scripts/check_reset_release_ready.py"
       - "tests/account-bound-reset-postgres.sql"
+      - "tests/atomic-reset-guard-prototype-postgres.sql"
       - "scripts/check_live_reset_readiness_v3.sql"
       - "tests/cloud-sync-integration-core.test.mjs"
   workflow_dispatch:
@@ -46,6 +47,10 @@ jobs:
           set -euo pipefail
           psql --version
           psql -v ON_ERROR_STOP=1 -f tests/account-bound-reset-postgres.sql
+      - name: Prove version-gated write prototype on isolated PostgreSQL
+        run: |
+          set -euo pipefail
+          psql -v ON_ERROR_STOP=1 -f tests/atomic-reset-guard-prototype-postgres.sql
       - name: Validate hosted preflight using the migrated isolated database
         run: |
           set -euo pipefail
