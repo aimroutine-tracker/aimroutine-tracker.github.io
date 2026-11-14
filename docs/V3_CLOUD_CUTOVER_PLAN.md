@@ -68,3 +68,14 @@ En cas de problème, **ne pas restaurer aveuglément les droits `INSERT/UPDATE/D
 L'ancienne RPC `aim_reset_my_progress()` peut rester présente pendant la transition, mais **elle ne restera pas forcément utilisable** lorsque les droits directs de `authenticated` seront révoqués : cette RPC historique est `SECURITY INVOKER` et dépend de ces droits. Ne pas lui accorder `SECURITY DEFINER` pour la réactiver, car elle ne reçoit pas l'identité attendue `expected_uid`. Prévoir explicitement la mise à niveau des anciens clients et les erreurs contrôlées avant le basculement. Sa révocation ou suppression fera l'objet d'une décision et d'une migration séparées après homologation.
 
 **État : proposition et démonstration isolée réussies ; préproduction, basculement hébergé et homologation du site restent À FAIRE.**
+
+
+## Précontrôle RLS automatisé à coût nul et en lecture seule (branche V3)
+
+Le script `scripts/preprod-rls-readonly-v3.mjs` prépare les essais réels sur un **projet Supabase indépendant**, créé et configuré seulement après choix explicite du propriétaire. L'organisation actuelle est en Free et ne comporte, à la vérification du 14 novembre, qu'un seul projet actif ; Supabase documente deux projets Free au maximum par compte éligible. Cette information ne vaut ni création de projet ni garantie de disponibilité au moment de la recette.
+
+**Garde-fous :** le script refuse explicitement `lmzswtzboobpokumxzhy.supabase.co`, toute URL HTTP, le moindre sous-chemin et les identifiants QA incomplets. Il ne lance **que des requêtes GET** et ne contient aucun secret. Il exige deux JWT d'essai distincts validés par `/auth/v1/user`, puis au moins une ligne QA appartenant à chacun dans chacune des quatre tables, avant de vérifier que l'autre compte ne peut pas la lire par REST. Des tables vides ne sont jamais interprétées comme une preuve de RLS.
+
+Variables à injecter **localement et temporairement**, jamais dans Git, une capture ou une issue : `AIM_QA_SUPABASE_URL`, `AIM_QA_SUPABASE_ANON_KEY`, `AIM_QA_UID_A`, `AIM_QA_UID_B`, `AIM_QA_JWT_A`, `AIM_QA_JWT_B`. Préparer les données factices des deux comptes **uniquement dans la préproduction** puis exécuter `node scripts/preprod-rls-readonly-v3.mjs` sur une machine de test. Ne pas confondre un JWT utilisateur QA avec une clé `service_role`.
+
+Ce script **n'effectue pas** l'inscription, la connexion Google, les écritures atomiques, les resets, la suppression de compte, ni la migration V2. Ces parcours restent soumis à la recette manuelle/automatisée distincte du plan ci-dessus. Les tests de `tests/preprod-rls-readonly-core.test.mjs` ne font que simuler le réseau ; ils attestent les garde-fous, **pas** une réussite sur le projet Supabase hébergé.
