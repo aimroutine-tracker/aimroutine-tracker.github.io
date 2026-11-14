@@ -63,7 +63,7 @@ class HomeBundleParity(unittest.TestCase):
             with self.subTest(source=source):
                 self.assertEqual((ROOT / source).parent, ROOT)
                 text = (ROOT / source).read_text(encoding="utf-8")
-                self.assertIsNone(re.search(r"@(?:import|charset)\\b", text,
+                self.assertIsNone(re.search(r"@(?:import|charset)\b", text,
                                             flags=re.IGNORECASE))
 
 
