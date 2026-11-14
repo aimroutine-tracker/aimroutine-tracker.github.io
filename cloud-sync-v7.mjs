@@ -220,12 +220,16 @@ async function synchronizeOnce(client,uid,{guestImport=false}={}){
  };
 }
 export function collectFavoriteDeletion(uid,removed){
- if(!uid||!removed?.length)return;
+ // Invalid account IDs and malformed event payloads must never write Cloud metadata.
+ if(!validUid(uid)||!Array.isArray(removed)||!removed.length)return;
  const meta=readMeta(uid);
  meta.presetDeletedIds=[...new Set([...meta.presetDeletedIds,...removed.map(x=>String(x))])].slice(-100);
  localStorage.setItem(metaKey(uid),JSON.stringify(meta));
 }
 export function importGuestIntoAccount(uid){
+ // scopedKey() intentionally falls back to guest storage for invalid UIDs.
+ // Import must reject them before touching either guest or account storage.
+ if(!validUid(uid))throw Error('Identifiant de compte Cloud invalide : import annulé.');
  const guest=normalizeStore(parseJSON(localStorage.getItem(TRAINING_KEY)),parseJSON(localStorage.getItem(LEGACY_KEY)));
  const guestExt=cleanExtension(parseJSON(localStorage.getItem(EXT_KEY)));
  const current=readUserLocal(uid),meta=readMeta(uid);
