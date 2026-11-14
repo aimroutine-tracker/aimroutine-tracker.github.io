@@ -108,6 +108,20 @@ class AccountBoundResetPreflightTests(unittest.TestCase):
             'actor_id is distinct from expected_uid','actor_id = expected_uid')
         self.assertTrue(self.guard.check_migration(sql))
 
+    def test_guarded_cloud_write_contract_is_required_for_release(self):
+        root=Path(__file__).resolve().parents[1]
+        migration=(root/'supabase/migrations/20261111210933_reset_expected_uid.sql').read_text()
+        client=(root/'cloud-sync-v7.mjs').read_text()
+        self.assertEqual(self.guard.check_atomic_migration(migration),[])
+        self.assertEqual(self.guard.check_atomic_client(client),[])
+        self.assertTrue(self.guard.check_atomic_migration(
+            migration.replace('stale_reset_cursor','no_conflict_detection')))
+        self.assertTrue(self.guard.check_atomic_client(
+            client.replace("client.rpc('aim_apply_progress_for_user'",
+                           "client.rpc('legacy_unprotected_cloud_write'")))
+        self.assertTrue(self.guard.check_atomic_client(
+            client+"\\nclient.from('aim_sessions').upsert([{payload:{}}]);"))
+
     def test_reject_delete_before_identity_guard(self):
         sql=self.safe_sql().replace(
             "delete from public.aim_sessions where user_id=expected_uid;",
