@@ -39,6 +39,14 @@ Deux tests Node utilisent deux instances de module simulant deux onglets et vér
 
 **Limite à ne pas masquer :** les Web Locks ne synchronisent pas les appareils différents, les navigateurs distincts ni les anciens clients non migrés. Le marqueur serveur `reset_at` empêche les importations hors ligne observées *après* la suppression, mais la fenêtre de concurrence lorsqu'un appareil distant a déjà lu l'ancien marqueur et écrit pendant la suppression doit encore être homologuée avec plusieurs appareils et comptes jetables. Ce contrôle n'est **pas** une preuve absolue d'absence de résurrection après une suppression inter-appareils. Tant que l'atomicité de ce scénario n'est pas validée, la recette de suppression multi-appareils ne doit pas être attestée.
 
+## Métadonnées locales illisibles — protection contre les anciens enregistrements
+
+La PR V3 ne considère plus une entrée de métadonnées Cloud **présente mais invalide** comme équivalente à un compte neuf. Si la clé locale `aimroutine_cloud_meta_<uid>` contient un JSON illisible, une valeur de type inattendu, ou un `resetAt` non valide, le client s'arrête **avant toute lecture de table ou RPC Cloud**. L'import des séances invitées et l'enregistrement d'une suppression de favori sont également refusés pour ce compte. Les copies des séances locales, données invitées, métadonnées défectueuses et données d'un autre compte ne sont pas modifiées.
+
+Une absence réelle de clé (nouvel appareil) et une métadonnée historique correctement structurée sont traitées séparément. **Ne pas effacer aveuglément cette clé pour réparer l'erreur** : l'appareil pourrait perdre le souvenir d'un reset Cloud et proposer de réimporter d'anciennes données. Pour une reprise sécurisée, effectuer une recette de réparation sur un appareil de test avec validation du curseur serveur avant toute réouverture de l'écriture.
+
+Le test `corrupted local reset metadata blocks upload without erasing guest, A or B data` vérifie cinq formes de corruption, zéro lecture de base, zéro RPC et conservation exacte des caches A/B et invité. Cette preuve est simulée et ne remplace pas les tests réels multi-appareils en préproduction.
+
 ## Reprise automatique après reset distant (13 novembre 2026)
 
 Dans `cloud-sync-v7.mjs`, la synchronisation V3 compare une seconde fois le curseur `reset_at` **avant ses premières écritures**. Si un autre appareil a supprimé la progression entre les deux lectures, le premier essai s'arrête **sans envoyer son ancien snapshot**. La synchronisation relit alors automatiquement le Cloud **une seule fois**, toujours sous le verrou du même compte quand Web Locks est disponible. Elle revalide le compte authentifié à chaque passage.
