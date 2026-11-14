@@ -49,6 +49,17 @@ class CloudWriteAuditTests(unittest.TestCase):
             with self.subTest(source=source):
                 self.assertTrue(guard.inspect_script(guard.OWNER_MODULE, source))
 
+    def test_rejects_backtick_table_and_legacy_rpc(self):
+        self.assertTrue(guard.inspect_script(
+            guard.OWNER_MODULE, "await client.from(`aim_sessions`).upsert([])"
+        ))
+        self.assertTrue(guard.inspect_script(
+            "other.js", "await client.rpc(`aim_reset_my_progress`)"
+        ))
+        self.assertTrue(guard.inspect_script(
+            "other.js", "await client.rpc(`aim_apply_progress_for_user`, {})"
+        ))
+
     def test_preserves_owner_read_only_and_guarded_rpc(self):
         source = (
             "await client.from('aim_sessions').select('payload')\n"
