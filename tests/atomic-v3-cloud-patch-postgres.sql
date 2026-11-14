@@ -87,13 +87,14 @@ $assert$;
 set role authenticated;
 select set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',false);
 select public.aim_reset_my_progress_for_user('11111111-1111-4111-8111-111111111111');
+select set_config('qa.initial_reset_cursor', current_setting('qa.initial_reset_cursor'), false);
 do $assert$
 declare msg text;
 begin
  begin
   perform public.aim_apply_progress_for_user(
    '11111111-1111-4111-8111-111111111111',
-   :'qa_cursor',
+   current_setting('qa.initial_reset_cursor'),
    '[{"id":"should-not-revive"}]'::jsonb,
    '[{"id":"should-not-revive-preset"}]'::jsonb,
    array[]::text[],null,6::smallint
@@ -153,12 +154,13 @@ where user_id='11111111-1111-4111-8111-111111111111'
 \gset
 set role authenticated;
 select set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',false);
+select set_config('qa.new_reset_cursor', current_setting('qa.new_reset_cursor'), false);
 do $assert$
 declare msg text;
 begin
  begin
   perform public.aim_apply_progress_for_user(
-   '11111111-1111-4111-8111-111111111111', :'qa_new_cursor',
+   '11111111-1111-4111-8111-111111111111', current_setting('qa.new_reset_cursor'),
    '[{"id":"must-roll-back"}]'::jsonb,'[]'::jsonb,
    array[]::text[],'[1,2]'::jsonb,null
   );
