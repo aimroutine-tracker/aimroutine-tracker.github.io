@@ -53,6 +53,41 @@ function clientFor(db,uid){
  return {auth:{getUser:async()=>({data:{user:{id:uid}},error:null})},
    from(table){assert.ok(db[table],table);return new Query(table)},
    async rpc(name,args){
+    if(name==='aim_apply_progress_for_user'){
+     if(args?.expected_uid!==uid)return {data:null,error:Object.assign(Error('account_mismatch'),{code:'42501'})};
+     const ownerPrefs=db.aim_preferences.find(x=>x.user_id===uid);
+     const currentResetAt=ownerPrefs?.settings?.reset_at??null;
+     if(currentResetAt!==(args.expected_reset_at??null)){
+      return {data:null,error:Object.assign(Error('stale_reset_cursor'),{code:'40001'})};
+     }
+     for(const payload of args.new_sessions||[]){
+      if(!db.aim_sessions.some(x=>x.user_id===uid&&x.session_id===payload.id)){
+       db.aim_sessions.push({user_id:uid,session_id:payload.id,payload:structuredClone(payload),deleted_at:null});
+      }
+     }
+     for(const payload of args.new_presets||[]){
+      if(!db.aim_presets.some(x=>x.user_id===uid&&x.preset_id===payload.id)){
+       db.aim_presets.push({user_id:uid,preset_id:payload.id,payload:structuredClone(payload),deleted_at:null});
+      }
+     }
+     for(const id of args.deleted_preset_ids||[]){
+      const row=db.aim_presets.find(x=>x.user_id===uid&&x.preset_id===id);
+      if(row&&!row.deleted_at)row.deleted_at=new Date().toISOString();
+     }
+     if(args.new_profile!==null){
+      const idx=db.aim_profiles.findIndex(x=>x.user_id===uid);
+      const row={user_id:uid,profile:structuredClone(args.new_profile)};
+      if(idx>=0)db.aim_profiles[idx]=row;
+      else db.aim_profiles.push(row);
+     }
+     if(args.new_weekly_goal!==null){
+      const row={user_id:uid,weekly_goal:args.new_weekly_goal,
+       settings:{format:'aimroutine-web-v2',...(currentResetAt?{reset_at:currentResetAt}:{})}};
+      if(ownerPrefs)Object.assign(ownerPrefs,row);
+      else db.aim_preferences.push(row);
+     }
+     return {data:null,error:null};
+    }
     assert.equal(name,'aim_reset_my_progress_for_user');
     assert.equal(typeof args?.expected_uid,'string','Client must pass expected_uid');
     // The new RPC rejects a mismatched expected owner even if the JWT belongs to
@@ -232,22 +267,13 @@ test('concurrent inserts of the same session ID preserve the first database writ
  let raceInjected=false;
  const competingClient={
   ...client,
-  from(table){
-   const query=client.from(table);
-   if(table==='aim_sessions'){
-    const original=query.upsert.bind(query);
-    query.upsert=async(records,options)=>{
-     assert.equal(options?.ignoreDuplicates,true);
-     assert.equal(options?.onConflict,'user_id,session_id');
-     if(!raceInjected){
-      raceInjected=true;
-      const won={...session('same-id'),accuracy:97};
-      db.aim_sessions.push({user_id:USER_A,session_id:won.id,payload:won,deleted_at:null});
-     }
-     return original(records,options);
-    };
+  async rpc(name,args){
+   if(name==='aim_apply_progress_for_user'&&!raceInjected){
+    raceInjected=true;
+    const won={...session('same-id'),accuracy:97};
+    db.aim_sessions.push({user_id:USER_A,session_id:won.id,payload:won,deleted_at:null});
    }
-   return query;
+   return client.rpc(name,args);
   }
  };
  await use(storage,async()=>{
@@ -315,19 +341,13 @@ test('reset waits for the in-flight save and queues subsequent syncs, preventing
  let resetCalls=0;
  const client={
   ...base,
-  from(table){
-   const query=base.from(table);
-   if(table==='aim_sessions'){
-    const original=query.upsert.bind(query);
-    query.upsert=async(...args)=>{
-     markSaveStarted();
-     await saveGate;
-     return original(...args);
-    };
-   }
-   return query;
-  },
-  async rpc(...args){resetCalls++;return base.rpc(...args)}
+  async rpc(name,args){
+   if(name==='aim_apply_progress_for_user'){
+    markSaveStarted();
+    await saveGate;
+   }else if(name==='aim_reset_my_progress_for_user')resetCalls++;
+   return base.rpc(name,args);
+  }
  };
  await use(store,async()=>{
   write(store,USER_A,[session('old-save-in-flight')]);
@@ -364,7 +384,10 @@ test('failed reset releases its lock and preserves data for a safe retry',async(
  const db=makeDb(),store=new MemoryStorage(),base=clientFor(db,USER_A);
  let rejectFirst=true;
  const client={...base,async rpc(name,args){
-  if(rejectFirst){rejectFirst=false;return {data:null,error:Error('temporary reset error')};}
+  if(name==='aim_reset_my_progress_for_user'&&rejectFirst){
+   rejectFirst=false;
+   return {data:null,error:Error('temporary reset error')};
+  }
   return base.rpc(name,args);
  }};
  await use(store,async()=>{
