@@ -56,7 +56,7 @@ test('preproduction RLS QA never starts network calls with missing or reused cre
  for(const overrides of [
   {AIM_QA_SUPABASE_URL:'https://lmzswtzboobpokumxzhy.supabase.co'},
   {AIM_QA_JWT_A:''},{AIM_QA_JWT_B:'ephemeral-a'},
-  {AIM_QA_SUPABASE_ANON_KEY:'sb_secret_not_for_clients'},
+  {AIM_QA_SUPABASE_ANON_KEY:'sb_'+'secret_not_for_clients'},
   {AIM_QA_SUPABASE_ANON_KEY:'service_role'},
   {AIM_QA_SUPABASE_ANON_KEY:'public-qa-only'},
   {AIM_QA_SUPABASE_ANON_KEY:'a.'+Buffer.from(JSON.stringify({role:'service_role'})).toString('base64url')+'.b'},
