@@ -100,7 +100,8 @@ async function applyGuardedProgress(client,uid,resetAt,sessions,presets,removedI
 }
 async function synchronizeOnce(client,uid,{guestImport=false}={}){
  if(!validUid(uid))throw Error('Un compte connecté est nécessaire pour sauvegarder.');
- const {data:{user},error:authError}=await client.auth.getUser();
+ const {data:authData,error:authError}=await client.auth.getUser();
+ const user=authData?.user;
  if(authError||!user||user.id!==uid)throw Error('Session non validée : reconnecte-toi à ton compte.');
  let local=readUserLocal(uid);
  const meta=readMeta(uid);
@@ -248,7 +249,8 @@ export function deleteCloudProgress(client,uid){
  const task=(async()=>{
   try{
    return await withAccountCloudLock(uid,async()=>{
-   const {data:{user},error}=await client.auth.getUser();
+   const {data:authData,error}=await client.auth.getUser();
+    const user=authData?.user;
    if(error||!user||user.id!==uid)throw Error('Session non validée.');
    const previous=inflightSyncs.get(uid);
    if(previous){
