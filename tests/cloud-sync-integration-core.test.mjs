@@ -310,6 +310,29 @@ test('invalid account guest import and favorite deletion never overwrite guest p
  });
 });
 
+test('valid guest import copies progress only into its account and leaves original guest and B data intact',async()=>{
+ const storage=new MemoryStorage();
+ await use(storage,async()=>{
+  const guest={sessions:[session('guest-imported-once')],presets:[preset('guest-preset')],weeklyGoal:4};
+  const guestExt={profile:{nickname:'GuestPlayer'}};
+  storage.setItem(TRAINING_KEY,JSON.stringify(guest));
+  storage.setItem(EXT_KEY,JSON.stringify(guestExt));
+  write(storage,USER_B,[session('private-b')]);
+  const oldGuest=storage.getItem(TRAINING_KEY);
+  const oldExt=storage.getItem(EXT_KEY);
+  const oldB=storage.getItem(scopedKey(TRAINING_KEY,USER_B));
+  const result=importGuestIntoAccount(USER_A);
+  assert.deepEqual(result,{sessions:1,favorites:1});
+  assert.deepEqual(readUserLocal(USER_A).store.sessions.map(s=>s.id),['guest-imported-once']);
+  assert.deepEqual(readUserLocal(USER_A).store.presets.map(p=>p.id),['guest-preset']);
+  assert.equal(readUserLocal(USER_A).store.weeklyGoal,4);
+  assert.equal(readUserLocal(USER_A).ext.profile.nickname,'GuestPlayer');
+  assert.equal(storage.getItem(TRAINING_KEY),oldGuest);
+  assert.equal(storage.getItem(EXT_KEY),oldExt);
+  assert.equal(storage.getItem(scopedKey(TRAINING_KEY,USER_B)),oldB);
+ });
+});
+
 test('concurrent inserts of the same session ID preserve the first database writer',async()=>{
  const db=makeDb(),storage=new MemoryStorage(),client=clientFor(db,USER_A);
  let raceInjected=false;
