@@ -1,63 +1,8 @@
 \set ON_ERROR_STOP on
--- ISOLATED POSTGRESQL ONLY. Experimental V3 role cutover, not a hosted migration.
--- Run AFTER tests/account-bound-reset-postgres.sql and the V3 atomic RPC tests.
--- The current V3 functions are SECURITY INVOKER and require direct authenticated
--- table grants. This prototype verifies a possible permission separation:
--- callable SECURITY DEFINER functions owned by a NOLOGIN, NOBYPASSRLS role,
--- authenticated can SELECT its own rows but cannot mutate tables through REST.
---
--- Do NOT apply in hosted Supabase until rollout of V2 legacy clients is approved.
-begin;
-
-create role aim_cloud_writer nologin nobypassrls noinherit;
-grant usage on schema public,auth to aim_cloud_writer;
-grant execute on function auth.uid() to aim_cloud_writer;
-grant select,insert,update,delete on
-  public.aim_sessions,public.aim_presets,
-  public.aim_profiles,public.aim_preferences
-  to aim_cloud_writer;
-
-create policy qa_writer_sessions on public.aim_sessions
-  for all to aim_cloud_writer
-  using ((select auth.uid()) = user_id)
-  with check ((select auth.uid()) = user_id);
-create policy qa_writer_presets on public.aim_presets
-  for all to aim_cloud_writer
-  using ((select auth.uid()) = user_id)
-  with check ((select auth.uid()) = user_id);
-create policy qa_writer_profiles on public.aim_profiles
-  for all to aim_cloud_writer
-  using ((select auth.uid()) = user_id)
-  with check ((select auth.uid()) = user_id);
-create policy qa_writer_preferences on public.aim_preferences
-  for all to aim_cloud_writer
-  using ((select auth.uid()) = user_id)
-  with check ((select auth.uid()) = user_id);
-
--- The function owner must possess CREATE temporarily to accept ownership.
--- This permission is revoked after the two functions have been transferred.
-grant create on schema public to aim_cloud_writer;
-alter function public.aim_reset_my_progress_for_user(uuid)
-  owner to aim_cloud_writer;
-alter function public.aim_apply_progress_for_user(
-  uuid,text,jsonb,jsonb,text[],jsonb,smallint)
-  owner to aim_cloud_writer;
-revoke create on schema public from aim_cloud_writer;
-alter function public.aim_reset_my_progress_for_user(uuid) security definer;
-alter function public.aim_apply_progress_for_user(
-  uuid,text,jsonb,jsonb,text[],jsonb,smallint) security definer;
-
--- Removing *all* privileges also removes TRUNCATE, REFERENCES and TRIGGER,
--- which RLS alone does not secure. Signed-in users retain SELECT under RLS.
-revoke all on
-  public.aim_sessions,public.aim_presets,
-  public.aim_profiles,public.aim_preferences
-  from public,anon,authenticated;
-grant select on
-  public.aim_sessions,public.aim_presets,
-  public.aim_profiles,public.aim_preferences
-  to authenticated;
-commit;
+-- SYNTHETIC POSTGRESQL ONLY. Execute the EXACT reviewed proposal SQL,
+-- then prove V2 REST denial, V3 RPC availability, and A/B RLS isolation.
+-- Never connect this script to a hosted Supabase database.
+\i docs/supabase-v3-writer-role-cutover.proposal.sql
 
 -- Prevent a privileged function from executing under a RLS-bypass account.
 do $check$
