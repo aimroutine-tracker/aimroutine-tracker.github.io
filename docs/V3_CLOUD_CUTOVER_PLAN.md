@@ -2,7 +2,7 @@
 
 **14 novembre 2026 — DÉPLOIEMENT INTERDIT : procédure préparatoire, non autorisation de publication.**
 
-La PR [#27](https://github.com/aimroutine-tracker/aimroutine-tracker.github.io/pull/27) reste en brouillon. Les quatre PNG originaux complets, les tests de comptes jetables hébergés A/B, la validation visuelle du propriétaire et le déploiement coordonné ne sont pas encore homologués. **Aucun script de ce dossier n'a été appliqué à la base hébergée.**
+La PR [#27](https://github.com/aimroutine-tracker/aimroutine-tracker.github.io/pull/27) reste en brouillon. Le contrôle en lecture seule du 14 novembre a confirmé que le rôle `postgres` de Supabase ne possède **pas** les options nécessaires pour redistribuer `USAGE` sur le schéma `auth` ni `EXECUTE` sur `auth.uid()` : la proposition utilise donc l'héritage contrôlé des permissions déjà attribuées à `anon`. Les quatre PNG originaux complets, les tests de comptes jetables hébergés A/B, la validation visuelle du propriétaire et le déploiement coordonné ne sont pas encore homologués. **Aucun script de ce dossier n'a été appliqué à la base hébergée.**
 
 ## Pourquoi deux phases SQL sont nécessaires
 
@@ -12,7 +12,7 @@ Initialement, ces fonctions sont `SECURITY INVOKER`. Elles ont besoin des droits
 
 Après une revue supplémentaire, le fichier **proposé seulement** [`docs/supabase-v3-writer-role-cutover.proposal.sql`](supabase-v3-writer-role-cutover.proposal.sql) décrit un deuxième changement coordonné :
 
-- Créer un rôle PostgreSQL dédié `aim_cloud_writer`, sans connexion, sans superutilisateur et sans `BYPASSRLS`, qui **n'est propriétaire d'aucune table**.
+- Créer un rôle PostgreSQL dédié `aim_cloud_writer`, sans connexion, sans superutilisateur et sans `BYPASSRLS`, qui **n'est propriétaire d'aucune table**. Sur Supabase hébergé, le rôle `postgres` ne peut pas accorder directement les permissions du schéma interne `auth` : le rôle technique doit donc **hériter des permissions du rôle `anon` dans un seul sens** (le rôle technique est membre de `anon`, jamais l'inverse) pour appeler `auth.uid()`. Les droits de `anon` sur toutes les tables publiques doivent être contrôlés avant cette opération : l'héritage de permissions futures constitue un risque à auditer.
 - Donner exclusivement à ce rôle les privilèges nécessaires sur les quatre tables, avec des politiques RLS `auth.uid() = user_id` en lecture et écriture.
 - Faire exécuter les **deux seules fonctions V3** en `SECURITY DEFINER` sous ce rôle restreint (et **non** sous le compte `postgres` qui contourne RLS), en conservant le `search_path` fixé à `pg_catalog`, le contrôle de l'identité du JWT et les restrictions d'exécution.
 - Révoquer **tous** les droits directs des rôles `anon` et `authenticated` sur les quatre tables, puis redonner uniquement `SELECT` au rôle `authenticated`, toujours soumis à RLS.
