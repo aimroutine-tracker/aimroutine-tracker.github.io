@@ -859,6 +859,43 @@ test('automatic reset retry revalidates account identity before any cloud write'
 });
 
 
+test('corrupted local reset metadata blocks upload without erasing guest, A or B data',async()=>{
+ for(const bad of ['not-json','null','[]','{"resetAt":123}','{"resetAt":"not-a-date"}']){
+  const db=makeDb(),storage=new MemoryStorage(),base=clientFor(db,USER_A);
+  db.aim_sessions.push({user_id:USER_B,session_id:'cloud-b',
+   payload:session('cloud-b'),deleted_at:null});
+  let mutations=0,remoteReads=0;
+  const client={...base,
+   async rpc(...args){mutations++;return base.rpc(...args)},
+   from(...args){remoteReads++;return base.from(...args)}};
+  await use(storage,async()=>{
+   write(storage,USER_A,[session('local-a')],[preset('favorite-a')]);
+   write(storage,USER_B,[session('local-b')]);
+   write(storage,null,[session('guest-original')]);
+   const aKey=scopedKey(TRAINING_KEY,USER_A);
+   const bKey=scopedKey(TRAINING_KEY,USER_B);
+   const meta=CLOUD_META_PREFIX+USER_A;
+   storage.setItem(meta,bad);
+   const aBefore=storage.getItem(aKey);
+   const bBefore=storage.getItem(bKey);
+   const guestBefore=storage.getItem(TRAINING_KEY);
+   await assert.rejects(synchronize(client,USER_A),
+    /Métadonnées locales Cloud illisibles/);
+   assert.throws(()=>importGuestIntoAccount(USER_A),
+    /Métadonnées locales Cloud illisibles/);
+   assert.throws(()=>collectFavoriteDeletion(USER_A,['favorite-a']),
+    /Métadonnées locales Cloud illisibles/);
+   assert.equal(mutations,0,'Never upload against unreadable local reset history');
+   assert.equal(remoteReads,0,'Stop before any database reads');
+   assert.equal(storage.getItem(meta),bad,'Leave damaged metadata intact for recovery');
+   assert.equal(storage.getItem(aKey),aBefore,'Keep account A data for recovery');
+   assert.equal(storage.getItem(bKey),bBefore,'Account B is independent');
+   assert.equal(storage.getItem(TRAINING_KEY),guestBefore,'Guest stays untouched');
+  });
+  assert.deepEqual(db.aim_sessions.map(x=>x.session_id),['cloud-b']);
+ }
+});
+
 test('missing or older remote reset cursor cannot revive sessions after a known reset',async()=>{
  const lastKnownReset='2026-11-14T18:30:00.000Z';
  for(const remoteResetAt of [null,'2026-11-14T18:29:59.999Z']){
