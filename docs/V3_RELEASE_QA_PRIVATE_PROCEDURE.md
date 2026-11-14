@@ -1,6 +1,6 @@
 # AimRoutine Tracker V3 — recette finale privée et autorisation de publication
 
-**État au 12 novembre 2026 : NON PRÊT À PUBLIER.** Ce document est une procédure, pas une attestation que des tests réels ont eu lieu. Conserver la PR #27 en brouillon et ne pas fusionner.
+**État au 14 novembre 2026 : NON PRÊT À PUBLIER.** Ce document est une procédure, pas une attestation que des tests réels ont eu lieu. Conserver la PR #27 en brouillon et ne pas fusionner.
 
 ## Contrôles déjà effectués sans toucher aux données personnelles
 
@@ -42,6 +42,21 @@ Dans `cloud-sync-v7.mjs`, la synchronisation V3 compare une seconde fois le curs
 Les tests Node simulent : (1) reset A entre lectures suivi d'une reprise sans séances obsolètes ; (2) deux resets successifs, qui terminent en erreur après un seul réessai, sans boucle ; (3) erreur réseau, qui **ne déclenche aucun réessai automatique** ; (4) passage du compte A au compte B avant la reprise, qui interdit tout nouvel accès aux données de A ou de B ; (5) marqueur `reset_at` mal formé dès la première lecture ou juste avant les écritures, qui **bloque la sauvegarde sans effacer le cache local**. Le client ne considère pas un échec comme une suppression confirmée.
 
 **Limite maintenue :** la reprise ne donne **pas** de garantie transactionnelle entre appareils. Un reset peut encore intervenir **après** la seconde lecture et **avant** un UPSERT REST. Cette fenêtre nécessite une opération de validation et d'écriture atomique côté PostgreSQL, une migration coordonnée et une recette réelle multi-appareils sur comptes jetables. Ces tests restent **simulés** et n'autorisent pas de publication.
+
+## Protocole d'écritures atomiques — preuve PostgreSQL isolée du 14 novembre 2026
+
+La migration **non déployée** `supabase/migrations/20261111210933_reset_expected_uid.sql` acquiert maintenant un verrou transactionnel consultatif par compte **après vérification de `auth.uid()`** et avant suppression. Les réinitialisations liées au même compte prennent ainsi le même verrou. Le verrou est libéré automatiquement à la fin de la transaction.
+
+`tests/atomic-reset-guard-prototype-postgres.sql` implémente **uniquement dans la base jetable CI** une RPC expérimentale `qa_guarded_session_insert`. Elle vérifie l'identité du JWT, obtient le **même verrou** que la suppression, compare un marqueur `reset_at` fourni par l'appareil au marqueur serveur, puis écrit une séance seulement si les deux correspondent. Les tests PostgreSQL exécutés sur la migration confirment :
+
+- séance autorisée avec curseur actuel ;
+- séance ancienne rejetée après réinitialisation de A ;
+- reprise autorisée avec nouveau curseur ;
+- un JWT B ne peut jamais écrire A et les données de B sont préservées.
+
+**Aucune RPC `qa_*` ne doit être déployée.** Le client réel V3 utilise encore des `upsert`/`update` REST sur `aim_sessions`, `aim_presets`, `aim_profiles` et `aim_preferences`. Ces écritures directes ne participent pas au verrou consultatif et le protocole de test ne leur garantit **aucune atomicité**. Avant toute mise en production, concevoir puis versionner une migration distincte proposant des RPC d'écriture protégées pour les quatre catégories de données, intégrer ces appels dans le client, traiter la compatibilité des clients V2 encore actifs et vérifier les courses concurrentes réelles entre appareils. Un verrou partagé sur la suppression sans contrôle de version des écritures ne suffit pas.
+
+La tâche manuelle `.github/workflows/publish-pages.yml` exige donc désormais l'attestation indépendante `atomic_cloud_writes_verified=true`, **obligatoirement fausse** tant que ce travail et la recette privée multi-appareils ne sont pas terminés. Les autres verrous — quatre références originales, comptes jetables et suppression liée au compte — restent en place.
 
 ## Contrôle supplémentaire — état réel de la migration Supabase (12 novembre 2026)
 
