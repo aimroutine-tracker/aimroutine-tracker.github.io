@@ -70,6 +70,7 @@ jobs:
           python3 -m unittest discover -s tests -p 'test_private_source_fidelity_gate_v3.py' -v
           python3 tests/check_secrets.py
           python3 scripts/check_reset_release_ready.py
+          python3 scripts/check_public_cloud_writes_v3.py
       - name: Prepare public-only artifact
         run: python3 scripts/build_public.py
       - name: Verify artifact and prevent accidental secret publication
