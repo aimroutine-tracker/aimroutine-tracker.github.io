@@ -21,7 +21,7 @@ class PublicationFreezeTests(unittest.TestCase):
         self.assertNotIn('\n  push:',header)
         self.assertNotIn('pull_request:',header)
 
-    def test_release_is_main_only_with_four_manual_attestations(self):
+    def test_release_is_main_only_with_five_manual_attestations(self):
         for check in (
             "github.event_name == 'workflow_dispatch'",
             "github.ref == 'refs/heads/main'",
@@ -29,10 +29,12 @@ class PublicationFreezeTests(unittest.TestCase):
             'inputs.four_originals_reviewed == true',
             'inputs.disposable_accounts_verified == true',
             'inputs.account_bound_reset_verified == true',
+            'inputs.atomic_cloud_writes_verified == true',
         ):
             self.assertIn(check,self.publish)
         for item in ('release_confirmation:','four_originals_reviewed:',
-                     'disposable_accounts_verified:','account_bound_reset_verified:'):
+                     'disposable_accounts_verified:','account_bound_reset_verified:',
+                     'atomic_cloud_writes_verified:'):
             self.assertIn(item,self.publish)
 
     def test_archived_recovery_cannot_deploy_or_cancel_pages(self):
