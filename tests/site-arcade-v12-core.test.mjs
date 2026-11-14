@@ -34,5 +34,5 @@ test('V12 assets are included in verified public build and offline pre-cache',()
   assert.ok(allow.split(/\r?\n/).includes(name));
   assert.ok(sw.includes("'./"+name+"'"));
  }
- assert.match(sw,/aimroutine-v10-owner-reference-20261109/);
+ assert.match(sw,/aimroutine-v11-home-bundles-20261114/);
 });
