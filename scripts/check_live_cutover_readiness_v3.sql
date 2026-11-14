@@ -18,6 +18,18 @@ role_ok as (
    and coalesce((select pg_catalog.has_schema_privilege(oid,'auth','USAGE') from roles),false)
    and coalesce((select pg_catalog.has_function_privilege(oid,'auth.uid()','EXECUTE') from roles),false)
    and coalesce((select not pg_catalog.has_schema_privilege(oid,'public','CREATE') from roles),false)
+   and not pg_catalog.has_schema_privilege('anon','public','CREATE')
+   and not exists (
+    select 1 from pg_catalog.pg_class c
+    join pg_catalog.pg_namespace n on n.oid=c.relnamespace
+    where n.nspname='public' and c.relkind in ('r','p')
+    and (pg_catalog.has_table_privilege('anon',c.oid,'INSERT')
+      or pg_catalog.has_table_privilege('anon',c.oid,'UPDATE')
+      or pg_catalog.has_table_privilege('anon',c.oid,'DELETE')
+      or pg_catalog.has_table_privilege('anon',c.oid,'TRUNCATE')
+      or pg_catalog.has_table_privilege('anon',c.oid,'TRIGGER')
+      or pg_catalog.has_table_privilege('anon',c.oid,'REFERENCES'))
+   )
  as trusted_role_ok
 ),
 expected(name) as (
