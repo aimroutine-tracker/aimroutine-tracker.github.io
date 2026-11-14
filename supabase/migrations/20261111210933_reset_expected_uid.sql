@@ -86,4 +86,127 @@ grant execute on function public.aim_reset_my_progress_for_user(uuid)
 comment on function public.aim_reset_my_progress_for_user(uuid) is
   'Atomically delete caller-owned training progress only when requested UID matches auth.uid(), preserving RLS and a reset cursor.';
 
+
+-- A V3 write must participate in the exact same account transaction lock as
+-- the reset. This is intentionally part of the NOT-YET-DEPLOYED V3 migration.
+-- V2 clients writing directly through REST do not participate in this lock:
+-- retire/block old direct writes before claiming full cross-device atomicity.
+create or replace function public.aim_apply_progress_for_user(
+  expected_uid uuid,
+  expected_reset_at text,
+  new_sessions jsonb,
+  new_presets jsonb,
+  deleted_preset_ids text[],
+  new_profile jsonb,
+  new_weekly_goal smallint
+)
+returns void
+language plpgsql
+security invoker
+set search_path = pg_catalog
+as $write$
+declare
+  actor_id uuid := auth.uid();
+  current_reset_at text;
+  row_value jsonb;
+  record_id text;
+begin
+  if actor_id is null then
+    raise exception 'authentication_required' using errcode='28000';
+  end if;
+  if expected_uid is null or actor_id is distinct from expected_uid then
+    raise exception 'account_mismatch' using errcode='42501';
+  end if;
+
+  perform pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended(expected_uid::text, 27012026::bigint)
+  );
+  select settings->>'reset_at' into current_reset_at
+    from public.aim_preferences where user_id=expected_uid;
+  if current_reset_at is distinct from expected_reset_at then
+    raise exception 'stale_reset_cursor' using errcode='40001';
+  end if;
+
+  if new_sessions is null or pg_catalog.jsonb_typeof(new_sessions)<>'array'
+    or pg_catalog.jsonb_array_length(new_sessions)>80
+    or new_presets is null or pg_catalog.jsonb_typeof(new_presets)<>'array'
+    or pg_catalog.jsonb_array_length(new_presets)>80
+    or deleted_preset_ids is null
+    or pg_catalog.array_length(deleted_preset_ids,1)>100 then
+    raise exception 'invalid_progress_batch' using errcode='22023';
+  end if;
+
+  for row_value in select value from pg_catalog.jsonb_array_elements(new_sessions)
+  loop
+    record_id:=row_value->>'id';
+    if pg_catalog.jsonb_typeof(row_value)<>'object'
+      or record_id is null or pg_catalog.char_length(record_id) not between 1 and 100
+      or pg_catalog.octet_length(row_value::text)>16384 then
+      raise exception 'invalid_session_payload' using errcode='22023';
+    end if;
+    insert into public.aim_sessions(user_id,session_id,payload)
+      values(expected_uid,record_id,row_value)
+      on conflict(user_id,session_id) do nothing;
+  end loop;
+
+  for row_value in select value from pg_catalog.jsonb_array_elements(new_presets)
+  loop
+    record_id:=row_value->>'id';
+    if pg_catalog.jsonb_typeof(row_value)<>'object'
+      or record_id is null or pg_catalog.char_length(record_id) not between 1 and 100
+      or pg_catalog.octet_length(row_value::text)>32768 then
+      raise exception 'invalid_preset_payload' using errcode='22023';
+    end if;
+    insert into public.aim_presets(user_id,preset_id,payload)
+      values(expected_uid,record_id,row_value)
+      on conflict(user_id,preset_id) do nothing;
+  end loop;
+
+  if pg_catalog.coalesce(pg_catalog.array_length(deleted_preset_ids,1),0)>0 then
+    update public.aim_presets set deleted_at=pg_catalog.clock_timestamp()
+      where user_id=expected_uid and preset_id=any(deleted_preset_ids)
+        and deleted_at is null;
+  end if;
+
+  if new_profile is not null then
+    if pg_catalog.jsonb_typeof(new_profile)<>'object'
+       or pg_catalog.octet_length(new_profile::text)>16384 then
+      raise exception 'invalid_profile_payload' using errcode='22023';
+    end if;
+    insert into public.aim_profiles(user_id,profile)
+      values(expected_uid,new_profile)
+      on conflict(user_id) do update set
+        profile=excluded.profile, updated_at=pg_catalog.now();
+  end if;
+
+  if new_weekly_goal is not null then
+    if new_weekly_goal not between 1 and 14 then
+      raise exception 'invalid_weekly_goal' using errcode='22023';
+    end if;
+    insert into public.aim_preferences(user_id,weekly_goal,settings)
+      values(expected_uid,new_weekly_goal,
+        case when current_reset_at is null
+          then pg_catalog.jsonb_build_object('format','aimroutine-web-v2')
+          else pg_catalog.jsonb_build_object(
+            'format','aimroutine-web-v2','reset_at',current_reset_at)
+        end)
+      on conflict(user_id) do update set
+        weekly_goal=excluded.weekly_goal,
+        settings=excluded.settings,
+        updated_at=pg_catalog.now();
+  end if;
+end
+$write$;
+
+revoke all on function public.aim_apply_progress_for_user(
+  uuid,text,jsonb,jsonb,text[],jsonb,smallint
+) from public,anon;
+grant execute on function public.aim_apply_progress_for_user(
+  uuid,text,jsonb,jsonb,text[],jsonb,smallint
+) to authenticated;
+
+comment on function public.aim_apply_progress_for_user(
+  uuid,text,jsonb,jsonb,text[],jsonb,smallint
+) is 'Atomic, account-bound batch writes checked against the server reset epoch. RLS remains in effect.';
+
 commit;
