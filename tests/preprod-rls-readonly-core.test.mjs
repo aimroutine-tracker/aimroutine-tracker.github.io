@@ -4,13 +4,14 @@ import {assertStagingOrigin,runPreprodRlsReadOnly} from '../scripts/preprod-rls-
 
 const A='11111111-1111-4111-8111-111111111111';
 const B='22222222-2222-4222-8222-222222222222';
+const C='33333333-3333-4333-8333-333333333333';
 const STAGING='https://bbbbbbbbbbbbbbbbbbbb.supabase.co';
 const env={
  AIM_QA_SUPABASE_URL:STAGING,AIM_QA_SUPABASE_ANON_KEY:'sb_publishable_qa_only',
  AIM_QA_UID_A:A,AIM_QA_UID_B:B,
  AIM_QA_JWT_A:'ephemeral-a',AIM_QA_JWT_B:'ephemeral-b'
 };
-function fake({leak=false,missing=false,wrongUser=false,anonLeak=false,anonEmpty=false,anonError=false}={}){
+function fake({leak=false,missing=false,wrongUser=false,anonLeak=false,anonEmpty=false,anonError=false,foreignLeak=false}={}){
  const calls=[];
  async function fetchImpl(url,options){
   calls.push({url,options});
@@ -31,7 +32,12 @@ function fake({leak=false,missing=false,wrongUser=false,anonLeak=false,anonEmpty
   }
   const u=new URL(url),table=u.pathname.split('/').pop();
   assert.ok(['aim_sessions','aim_presets','aim_profiles','aim_preferences'].includes(table));
-  const owner=u.searchParams.get('user_id')?.replace(/^eq\./,'');
+  const filter=u.searchParams.get('user_id')||'';
+  if(filter.startsWith('neq.')){
+   assert.equal(filter.slice(4),viewer,'Query must exclude the viewer own UID');
+   return {ok:true,status:200,json:async()=>foreignLeak?[{user_id:C}]:[]};
+  }
+  const owner=filter.replace(/^eq\./,'');
   const rows=leak&&viewer!==owner?[{user_id:owner}]:
    viewer===owner&&!missing?[{user_id:owner}]:[];
   return {ok:true,status:200,json:async()=>rows};
@@ -73,18 +79,18 @@ test('preproduction QA verifies Auth identities and RLS with read-only requests'
  const result=await runPreprodRlsReadOnly({env,fetchImpl:mocked.fetchImpl});
  assert.equal(result.stagingVerified,true);
  assert.equal(result.tables.length,4);
- assert.equal(mocked.calls.length,22); // 2 Auth + 4 anonymous + 4 tables x 4 RLS checks.
+ assert.equal(mocked.calls.length,30); // 2 Auth + 4 anonymous + 8 foreign + 16 A/B.
  assert.equal(mocked.calls.filter(call=>!call.options.headers.Authorization).length,4);
- assert.ok(result.tables.every(table=>table.anonymousReadBlocked===true));
+ assert.ok(result.tables.every(table=>table.anonymousReadBlocked===true&&table.foreignAccountBlocked===true));
  assert.ok(mocked.calls.every(call=>call.options.method==='GET'));
  assert.ok(mocked.calls.every(call=>call.url.startsWith(STAGING)));
 });
 
 test('preproduction QA blocks missing fixtures, mismatched JWT and cross-account leaks',async()=>{
- for(const variant of [{missing:true},{wrongUser:true},{leak:true},{anonLeak:true},{anonError:true}]){
+ for(const variant of [{missing:true},{wrongUser:true},{leak:true},{anonLeak:true},{anonError:true},{foreignLeak:true}]){
   const mocked=fake(variant);
   await assert.rejects(runPreprodRlsReadOnly({env,fetchImpl:mocked.fetchImpl}),
-   /Fixture QA absente|JWT QA différent|isolation A\/B non respectée|lecture anonyme|Accès anonyme QA non vérifiable/);
+   /Fixture QA absente|JWT QA différent|isolation A\/B non respectée|lecture anonyme|Accès anonyme QA non vérifiable|autre utilisateur/);
  }
 });
 
@@ -92,7 +98,7 @@ test('preproduction QA accepts an anonymous empty RLS result without false posit
  const mocked=fake({anonEmpty:true});
  const result=await runPreprodRlsReadOnly({env,fetchImpl:mocked.fetchImpl});
  assert.equal(result.tables.length,4);
- assert.equal(mocked.calls.length,22);
+ assert.equal(mocked.calls.length,30);
 });
 
 test('preproduction QA accepts only an anon legacy JWT and includes it in anonymous requests',async()=>{
@@ -113,4 +119,28 @@ test('preproduction QA accepts only an anon legacy JWT and includes it in anonym
  assert.equal(result.tables.length,4);
  assert.equal(calls.length,4);
  assert.ok(calls.every(call=>call.opts.method==='GET'));
+});
+
+test('preproduction QA checks server-filtered third-party rows for both authenticated accounts',async()=>{
+ const mocked=fake();
+ await runPreprodRlsReadOnly({env,fetchImpl:mocked.fetchImpl});
+ const probes=mocked.calls.filter(({url})=>new URL(url).searchParams.get('user_id')?.startsWith('neq.'));
+ assert.equal(probes.length,8);
+ for(const table of ['aim_sessions','aim_presets','aim_profiles','aim_preferences']){
+  for(const viewer of [A,B]){
+   assert.ok(probes.some(({url,options})=>
+    new URL(url).pathname.endsWith('/'+table)&&
+    new URL(url).searchParams.get('user_id')==='neq.'+viewer&&
+    options.headers.Authorization==='Bearer '+(viewer===A?'ephemeral-a':'ephemeral-b')));
+  }
+ }
+});
+
+test('preproduction QA rejects unexpected rows from a third QA identity C before filtered A/B probes',async()=>{
+ const mocked=fake({foreignLeak:true});
+ await assert.rejects(runPreprodRlsReadOnly({env,fetchImpl:mocked.fetchImpl}),
+  /autre utilisateur/);
+ const firstRls=mocked.calls.find(c=>c.url.includes('/rest/v1/aim_sessions?'));
+ assert.ok(firstRls);
+ assert.equal(mocked.calls.some(c=>new URL(c.url).searchParams.get('user_id')?.startsWith('eq.')),false);
 });
