@@ -262,6 +262,33 @@ test('authenticated uid mismatch rejects sync and cloud deletion',async()=>{
  });
 });
 
+test('missing Supabase Auth data rejects Cloud sync and reset without touching local progress',async()=>{
+ // Supabase can report an unavailable session with data:null or omit the user
+ // while an authentication/network error is being handled by the SDK.
+ for(const response of [
+  {data:null,error:null},
+  {data:null,error:Error('Authentication unavailable')},
+  {data:{user:null},error:null},
+  {error:null}
+ ]){
+  const storage=new MemoryStorage();
+  let operations=0;
+  const client={
+   auth:{getUser:async()=>response},
+   from(){operations++;throw Error('Cloud read must not start without a verified user')},
+   rpc(){operations++;throw Error('Cloud reset must not start without a verified user')}
+  };
+  await use(storage,async()=>{
+   write(storage,USER_A,[session('keep-on-missing-auth')]);
+   const original=storage.getItem(scopedKey(TRAINING_KEY,USER_A));
+   await assert.rejects(synchronize(client,USER_A),/Session non validée/);
+   await assert.rejects(deleteCloudProgress(client,USER_A),/Session non validée/);
+   assert.equal(operations,0,'Neither a read nor a destructive mutation is allowed');
+   assert.equal(storage.getItem(scopedKey(TRAINING_KEY,USER_A)),original);
+  });
+ }
+});
+
 test('concurrent inserts of the same session ID preserve the first database writer',async()=>{
  const db=makeDb(),storage=new MemoryStorage(),client=clientFor(db,USER_A);
  let raceInjected=false;
