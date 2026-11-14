@@ -770,3 +770,79 @@ test('invalid remote reset cursor in final pre-write check also fails closed',as
    ['retained-on-invalid-marker']);
  });
 });
+
+test('guarded Cloud patch aborts safely when matching SQL migration is absent',async()=>{
+ const db=makeDb(),storage=new MemoryStorage(),base=clientFor(db,USER_A);
+ let calls=0;
+ const client={...base,
+  async rpc(name,args){
+   assert.equal(name,'aim_apply_progress_for_user',
+    'Never fall back to direct table writes or legacy unguarded RPC');
+   calls++;
+   return {data:null,error:Object.assign(Error('Could not find the function'),{code:'PGRST202'})};
+  },
+  from(table){
+   const q=base.from(table);
+   q.upsert=async()=>{throw Error('Unsafe direct upsert must not be used')};
+   q.update=()=>{throw Error('Unsafe direct tombstone update must not be used')};
+   return q;
+  }
+ };
+ await use(storage,async()=>{
+  write(storage,USER_A,[session('local-awaiting-migration')],[preset('local-preset')]);
+  await assert.rejects(synchronize(client,USER_A),
+   /Synchronisation indisponible.*serveur Cloud.*conservées/);
+  assert.equal(calls,1);
+  assert.deepEqual(readUserLocal(USER_A).store.sessions.map(x=>x.id),
+   ['local-awaiting-migration']);
+  assert.deepEqual(db.aim_sessions,[]);
+  assert.deepEqual(db.aim_presets,[]);
+ });
+});
+
+test('reset occurring inside guarded RPC after final preflight cannot resurrect offline sessions',async()=>{
+ const db=makeDb(),storage=new MemoryStorage(),base=clientFor(db,USER_A);
+ db.aim_sessions.push({user_id:USER_B,session_id:'safe-b',
+  payload:session('safe-b'),deleted_at:null});
+ let injected=0,guardedCalls=0;
+ const client={...base,
+  async rpc(name,args){
+   if(name==='aim_apply_progress_for_user'){
+    guardedCalls++;
+    if(!injected){
+     injected++;
+     const reset=await base.rpc('aim_reset_my_progress_for_user',{expected_uid:USER_A});
+     assert.equal(reset.error,null);
+    }
+   }
+   return base.rpc(name,args);
+  }
+ };
+ await use(storage,async()=>{
+  write(storage,USER_A,[session('race-to-be-rejected')],[preset('race-preset')]);
+  const result=await synchronize(client,USER_A);
+  assert.equal(result.synced,true);
+  assert.equal(injected,1);
+  assert.equal(guardedCalls,2,'Single bounded retry after server-side conflict');
+  assert.deepEqual(db.aim_sessions.filter(row=>row.user_id===USER_A),[]);
+  assert.deepEqual(db.aim_presets.filter(row=>row.user_id===USER_A),[]);
+  assert.deepEqual(readUserLocal(USER_A).store.sessions,[]);
+  assert.deepEqual(db.aim_sessions.filter(row=>row.user_id===USER_B).map(x=>x.session_id),
+   ['safe-b'],'Other accounts must never be touched');
+ });
+});
+
+test('late JWT switch in guarded write cannot store A progress under B',async()=>{
+ const db=makeDb(),storage=new MemoryStorage();
+ const asA=clientFor(db,USER_A),asB=clientFor(db,USER_B);
+ const client={...asA,auth:{getUser:async()=>({data:{user:{id:USER_A}},error:null})},
+  async rpc(name,args){assert.equal(name,'aim_apply_progress_for_user');return asB.rpc(name,args)}
+ };
+ await use(storage,async()=>{
+  write(storage,USER_A,[session('a-pending')]);
+  await assert.rejects(synchronize(client,USER_A),/session ne correspond plus au compte sélectionné/);
+  assert.deepEqual(readUserLocal(USER_A).store.sessions.map(x=>x.id),['a-pending']);
+  assert.deepEqual(db.aim_sessions,[]);
+  assert.equal(storage.getItem(scopedKey(TRAINING_KEY,USER_B)),null);
+ });
+});
