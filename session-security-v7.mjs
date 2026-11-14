@@ -5,3 +5,9 @@ export async function signOutEverywhere(auth){
  if(error)throw error;
  return true;
 }
+// Use the Auth server's verified identity, never an optimistic cached session,
+// before any destructive action. Missing/malformed Auth responses fail closed.
+export function verifiedAuthUser(response,expectedUid){
+ const user=response?.data?.user;
+ return !response?.error&&user?.id===expectedUid?user:null;
+}
