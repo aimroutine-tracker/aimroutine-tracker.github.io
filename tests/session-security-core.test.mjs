@@ -42,4 +42,7 @@ test('account deletion identity guard rejects missing Auth data and switched acc
  const account=readFileSync(new URL('../account-v7.mjs',import.meta.url),'utf8');
  assert.match(account,/verifiedAuthUser\(await supabase\.auth\.getUser\(\),oldUid\)/);
  assert.doesNotMatch(account,/data:\{user:checked\},error:authError/);
+ assert.match(account,/const loginAuth=await supabase\.auth\.getUser\(\)/);
+ assert.match(account,/const initialAuth=await supabase\.auth\.getUser\(\)/);
+ assert.doesNotMatch(account,/data:\{user:validated\},error/);
 });
