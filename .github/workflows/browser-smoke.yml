@@ -15,6 +15,8 @@ on:
       - "site-v15-data.mjs"
       - "training-entry-v7.mjs"
       - "tests/browser.spec.mjs"
+      - "tests/home-css-render-parity-v1.mjs"
+      - "site-home-bundle-v1-*.css"
       - "sw-v6.js"
       - "pwa-v6.js"
       - ".github/workflows/browser-smoke.yml"
@@ -28,6 +30,8 @@ on:
       - "pwa-v6.js"
       - "sw-v6.js"
       - "tests/browser.spec.mjs"
+      - "tests/home-css-render-parity-v1.mjs"
+      - "site-home-bundle-v1-*.css"
       - "tests/playwright.config.mjs"
       - ".github/workflows/browser-smoke.yml"
   workflow_dispatch:
@@ -59,3 +63,5 @@ jobs:
           exit 1
       - name: Run desktop and mobile browser scenarios
         run: npx playwright test --config=tests/playwright.config.mjs
+      - name: Prove home CSS consolidation preserves exact desktop/mobile pixels
+        run: node tests/home-css-render-parity-v1.mjs
