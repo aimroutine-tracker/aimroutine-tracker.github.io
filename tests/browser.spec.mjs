@@ -2796,6 +2796,60 @@ export const deleteCloudProgress=(client,uid)=>{
  expect(errors).toEqual([]);
 });
 
+test('Guest import waits for Cloud hydration before changing account data',async({page})=>{
+ const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`const current={id:'11111111-1111-4111-8111-111111111111',
+   email:'hydrate-before-import@example.invalid',
+   user_metadata:{aim_username:'CloudPro'}};
+  export const SITE_URL='https://aimroutine-tracker.github.io/';
+  export const supabase={auth:{
+   getUser:async()=>({data:{user:current},error:null}),
+   onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})
+  }};`
+ }));
+ await page.route('**/cloud-sync-v7.mjs*',route=>route.fulfill({
+  status:200,contentType:'application/javascript',
+  body:`let hydrated=false;
+  window.__qaImportedBeforeHydration=false;
+  window.__qaImportUid=null;
+  window.__qaGuestUploadCount=0;
+  const pending=new Promise(resolve=>{
+   window.__qaReleaseHydration=()=>{hydrated=true;resolve({synced:true,downloadedSessions:0,downloadedFavorites:0})};
+  });
+  export const isEnabled=()=>true;
+  export const setEnabled=()=>{};
+  export const readUserLocal=()=>({store:{sessions:[],presets:[],weeklyGoal:9}});
+  export const importGuestIntoAccount=uid=>{
+   if(!hydrated)window.__qaImportedBeforeHydration=true;
+   window.__qaImportUid=uid;
+   return {sessions:1,favorites:0};
+  };
+  export const deleteCloudProgress=async()=>true;
+  export const synchronize=(client,uid,options={})=>{
+   if(options.guestImport){
+    window.__qaGuestUploadCount++;
+    return Promise.resolve({synced:true,downloadedSessions:1,downloadedFavorites:0});
+   }
+   return hydrated?Promise.resolve({synced:true,downloadedSessions:0,downloadedFavorites:0}):pending;
+  };`
+ }));
+ page.on('dialog',dialog=>dialog.accept());
+ await page.goto('/account.html',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#user-email')).toHaveText('hydrate-before-import@example.invalid');
+ await expect.poll(()=>page.evaluate(()=>typeof window.__qaReleaseHydration)).toBe('function');
+ await page.locator('#cloud-import-guest').click();
+ await expect(page.locator('#cloud-import-guest')).toBeDisabled();
+ expect(await page.evaluate(()=>window.__qaImportUid)).toBe(null);
+ await page.evaluate(()=>window.__qaReleaseHydration());
+ await expect(page.locator('#account-status')).toContainText('Import réalisé');
+ expect(await page.evaluate(()=>window.__qaImportedBeforeHydration)).toBe(false);
+ expect(await page.evaluate(()=>window.__qaImportUid)).toBe('11111111-1111-4111-8111-111111111111');
+ expect(await page.evaluate(()=>window.__qaGuestUploadCount)).toBe(1);
+ expect(errors).toEqual([]);
+});
+
 test('Guest import started for A cannot display a completion banner on account B',async({page})=>{
  const errors=[];
  page.on('pageerror',e=>errors.push(e.message));
