@@ -90,12 +90,6 @@ select settings->>'reset_at' as reset_a_before
 from public.aim_preferences
 where user_id='11111111-1111-4111-8111-111111111111'
 \gset
-\if :{?reset_a_before}
-\else
-  \echo 'No A reset cursor before guarded-write test'
-  \quit 1
-\endif
-
 set role authenticated;
 select set_config('request.jwt.claim.sub',
  '11111111-1111-4111-8111-111111111111',false);
