@@ -51,8 +51,59 @@ def check_migration(text: str) -> list[str]:
             problems.append("Reset must restrict "+table+" to expected_uid")
     return problems
 
+
+def check_atomic_client(text: str) -> list[str]:
+    """V3 browser must never bypass the reset epoch with direct REST writes."""
+    problems=[]
+    if not re.search(r"\.rpc\(\s*['\"]aim_apply_progress_for_user['\"]\s*,",text):
+        problems.append("Client must use the reset-epoch guarded Cloud patch RPC")
+    for table in ("aim_sessions","aim_presets","aim_profiles","aim_preferences"):
+        direct=r"\.from\(\s*['\"]"+table+r"['\"]\s*\)\s*\.\s*(?:upsert|insert|update|delete)\s*\("
+        if re.search(direct,text):
+            problems.append("Direct REST mutations bypass reset lock: "+table)
+    if not re.search(r"error\?\.code\s*===\s*['\"]PGRST202['\"]",text):
+        problems.append("Missing guarded RPC must fail closed with clear error")
+    return problems
+
+
+def check_atomic_migration(text: str) -> list[str]:
+    problems=[]
+    found=re.search(
+        r"create\s+or\s+replace\s+function\s+public\.aim_apply_progress_for_user\s*\(",
+        text,re.IGNORECASE)
+    if not found:
+        return ["Missing account-bound guarded Cloud write function"]
+    body=text[found.start():]
+    required={
+        "expected user and reset cursor":
+          r"expected_uid\s+uuid\s*,\s*expected_reset_at\s+text",
+        "invoker-only execution":r"security\s+invoker",
+        "authenticated caller binding":
+          r"actor_id\s+is\s+distinct\s+from\s+expected_uid",
+        "matching transaction advisory lock":
+          r"pg_advisory_xact_lock[\s\S]*?hashtextextended\s*\(\s*expected_uid::text\s*,\s*27012026::bigint",
+        "atomically checked server reset cursor":
+          r"current_reset_at\s+is\s+distinct\s+from\s+expected_reset_at",
+        "stale rejection":r"stale_reset_cursor",
+        "immutable session inserts":r"insert\s+into\s+public\.aim_sessions",
+        "immutable preset inserts":r"insert\s+into\s+public\.aim_presets",
+        "preset tombstones":r"update\s+public\.aim_presets\s+set\s+deleted_at",
+        "profile updates":r"insert\s+into\s+public\.aim_profiles",
+        "goal updates":r"insert\s+into\s+public\.aim_preferences",
+        "revocation of untrusted execution":
+          r"revoke\s+all\s+on\s+function\s+public\.aim_apply_progress_for_user[\s\S]*?\)\s*from\s+public\s*,\s*anon",
+        "execution limited to authenticated":
+          r"grant\s+execute\s+on\s+function\s+public\.aim_apply_progress_for_user[\s\S]*?\)\s*to\s+authenticated",
+    }
+    for label,pattern in required.items():
+        if not re.search(pattern,body,re.IGNORECASE):
+            problems.append("Atomic Cloud migration must contain "+label)
+    return problems
+
+
 def main() -> int:
-    errors=check_client(CLIENT.read_text(encoding="utf-8"))
+    client_source=CLIENT.read_text(encoding="utf-8")
+    errors=check_client(client_source)+check_atomic_client(client_source)
     migrations=[]
     for path in MIGRATIONS.glob("*.sql"):
         body=path.read_text(encoding="utf-8")
@@ -62,6 +113,7 @@ def main() -> int:
         errors.append("Exactly one generated migration must define account-bound reset RPC (found "+str(len(migrations))+")")
     else:
         errors+=check_migration(migrations[0][1])
+        errors+=check_atomic_migration(migrations[0][1])
     if errors:
         print("V3 RELEASE BLOCKED — account-bound reset not ready:")
         for item in errors: print("- "+item)
