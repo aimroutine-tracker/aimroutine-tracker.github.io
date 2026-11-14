@@ -12,6 +12,8 @@ on:
       - "tests/atomic-reset-guard-prototype-postgres.sql"
       - "tests/atomic-v3-cloud-patch-postgres.sql"
       - "tests/role-cutover-prototype-postgres.sql"
+      - "docs/supabase-v3-writer-role-cutover.proposal.sql"
+      - "scripts/check_live_cutover_readiness_v3.sql"
       - "tests/test_atomic_v3_patch_concurrency.sh"
       - "tests/test_atomic_reset_concurrency.sh"
       - "scripts/check_live_reset_readiness_v3.sql"
@@ -85,3 +87,16 @@ jobs:
         run: |
           set -euo pipefail
           psql -v ON_ERROR_STOP=1 -f tests/role-cutover-prototype-postgres.sql
+      - name: Verify post-cutover privileges with read-only catalog audit
+        run: |
+          set -euo pipefail
+          report=$(psql -X -q -t -A -v ON_ERROR_STOP=1 -f scripts/check_live_cutover_readiness_v3.sql)
+          python3 -c '
+          import json,sys
+          x=json.loads(sys.argv[1])
+          keys=("ready_for_atomic_cutover","trusted_role_ok",
+                "four_tables_restricted","both_rpc_owners_and_grants_safe")
+          absent=[key for key in keys if x.get(key) is not True]
+          if absent: raise SystemExit("Post-cutover preflight failed: "+", ".join(absent))
+          print("PASS: role cutover, full REST write denial and trusted V3 RPCs verified via read-only catalog.")
+          ' "$report"
