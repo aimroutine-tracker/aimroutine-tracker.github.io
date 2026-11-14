@@ -1,6 +1,6 @@
 # AimRoutine Tracker — état vérifiable du Prompt Master V3.3
 
-**Au 11 novembre 2026 · PR [#27](https://github.com/aimroutine-tracker/aimroutine-tracker.github.io/pull/27) en brouillon · aucune fusion ni publication autorisée.**
+**Au 14 novembre 2026 · PR [#27](https://github.com/aimroutine-tracker/aimroutine-tracker.github.io/pull/27) en brouillon · aucune fusion ni publication autorisée.**
 
 Ce tableau applique la section 0.11.12 et le protocole anti-boucle du prompt. Il distingue l'**implémentation** d'une **validation réelle**. Ne pas en déduire un niveau de « perfection » exprimé en pourcentage.
 
@@ -12,8 +12,16 @@ Ce tableau applique la section 0.11.12 et le protocole anti-boucle du prompt. Il
 | 3 — Reconstruction des quatre pages | **IMPLÉMENTÉE, NON HOMOLOGUÉE** | Accueil `index.html`, Routines `training.html`, Progression `progress.html`, Compte `account.html` ; captures CI disponibles |
 | 4 — Animations premium et responsive | **IMPLÉMENTÉ, TESTS PARTIELS** | Responsive, FR/EN, reduced motion et navigation testés ; aucune approbation finale du propriétaire |
 | **5 — Fidélité aux quatre originaux** | **BLOQUÉE** | Quatre PNG complets privés non disponibles en CI ; comparaison partielle des extraits de la charte (1672×723) effectuée localement, sans équivalence à la validation SHA-256 des quatre originaux complets |
-| **6 — Validation fonctionnelle** | **EN COURS** | Tests Node / Playwright simulés et contrôles RLS réels en lecture seule ; sauvegardes JSON dédupliquées et imports inter-comptes protégés ; RPC reset liée à l’UID : client et migration présents, vérifiés en CI PostgreSQL isolé, mais migration NON DÉPLOYÉE sur Supabase ; comptes réels jetables et échanges entre appareils non validés |
-| 7 — Livraison / publication | **PRÉPARÉE, NON VALIDÉE** | PR en brouillon ; workflow de publication muni de quatre attestations et d’un verrou technique pour la nouvelle RPC ; aucune fusion ni déploiement |
+| **6 — Validation fonctionnelle** | **EN COURS** | Tests Node/Playwright simulés et contrôles RLS en lecture seule ; RPC reset liée à l’UID vérifiée sous PostgreSQL 17 isolé, avec curseur monotone et verrou transactionnel ; preuve de concept de sauvegarde gardée testée **uniquement en CI**, sans intégration client complète ; migration NON DÉPLOYÉE sur Supabase hébergé ; comptes jetables et sauvegardes atomiques inter-appareils non validés |
+| 7 — Livraison / publication | **PRÉPARÉE, NON VALIDÉE** | PR en brouillon ; workflow de publication muni de **cinq** attestations, dont l'isolation des sauvegardes atomiques inter-appareils ; aucune fusion ni déploiement |
+
+## Mise à jour du 14 novembre — prochaine barrière Cloud
+
+- La migration **non déployée** sérialise les suppressions du même compte avec un verrou transactionnel et génère un marqueur `reset_at` strictement croissant, même pour deux suppressions successives très rapprochées.
+- Une fonction expérimentale **`qa_guarded_session_insert` existe exclusivement dans `tests/atomic-reset-guard-prototype-postgres.sql`**. Les [tests PostgreSQL isolés](https://github.com/aimroutine-tracker/aimroutine-tracker.github.io/actions/runs/43551197199) ont réussi : rejet d'une écriture obsolète, maintien de l'isolation A/B, nouvelle écriture avec curseur actuel et progression du marqueur. **Ce n'est pas une fonction déployée ni utilisée par le site.**
+- Les sauvegardes REST de V3 ne participent pas à ce verrou. Restent à concevoir les RPC transactionnelles de sauvegarde pour sessions, presets, profils et préférences, la compatibilité avec les clients V2 et une recette inter-appareils autorisée.
+- Le workflow de publication manuel exige maintenant `atomic_cloud_writes_verified=true` en plus des validations existantes. Cette attestation reste **fausse** tant que les écritures réelles ne sont pas protégées et testées.
+- Les originaux PNG complets doivent toujours être validés localement par leurs quatre SHA-256 ; les captures candidates seules ne suffisent pas.
 
 ## Ce que les tests démontrent déjà
 
