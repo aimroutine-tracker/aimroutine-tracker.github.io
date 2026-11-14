@@ -42,7 +42,15 @@ function save(next=store){
     store=next;
     window.dispatchEvent(new CustomEvent('aim-store-updated'));
     return true}
-  catch{alert('Le navigateur ne permet pas cet enregistrement. Vérifie son espace de stockage et ses paramètres.');return false}
+  catch(error){
+    const detail=String(error?.message||'');
+    const knownCloudIssue=/^(Trop de suppressions de favoris en attente|Métadonnées locales Cloud illisibles|Identifiant de favori supprimé invalide)/.test(detail);
+    const message=knownCloudIssue?detail:
+      'Le navigateur ne permet pas cet enregistrement. Vérifie son espace de stockage et ses paramètres.';
+    showMessage(message);
+    alert(message);
+    return false;
+  }
 }
 function chooseTab(name,focus=false){
   const tabs=$$('[data-tab]');
