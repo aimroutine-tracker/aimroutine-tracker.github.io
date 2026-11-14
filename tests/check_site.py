@@ -67,8 +67,19 @@ for page in PAGES:
             issues.append(f"{page.name}: official social image missing")
         if 'favicon.svg' in html and 'favicon.svg?v=3' not in html:
             issues.append(f"{page.name}: outdated favicon reference")
-    # V9 design smoke checks: every public route uses the same updated stylesheet.
-    if 'visual-v8.css?v=2' not in page.read_text(encoding='utf-8'):
+    # V9 design smoke checks: the shared visual CSS must REALLY load.
+    # The V3 homepage uses five byte-verified lossless bundles instead of
+    # 26 individual links. Other routes retain their direct CSS links.
+    html_source = page.read_text(encoding='utf-8')
+    visual_css_loaded = 'visual-v8.css?v=2' in html_source
+    if page.name == 'index.html':
+        bundle = ROOT / 'site-home-bundle-v1-3.css'
+        visual_css_loaded = (
+            'site-home-bundle-v1-3.css?v=1' in html_source
+            and bundle.is_file()
+            and '/* BEGIN visual-v8.css */' in bundle.read_text(encoding='utf-8')
+        )
+    if not visual_css_loaded:
         issues.append(f"{page.name}: shared V9 visual stylesheet link missing")
     if page.name == "index.html":
         html = page.read_text(encoding="utf-8")
