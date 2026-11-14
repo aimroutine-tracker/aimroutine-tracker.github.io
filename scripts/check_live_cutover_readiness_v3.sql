@@ -61,6 +61,11 @@ table_checks as (
        and pg_catalog.strpos(pol.with_check,'auth.uid()')>0
        and pg_catalog.strpos(pol.with_check,'user_id')>0
    )
+   and not exists(
+     select 1 from pg_catalog.pg_policies pol
+     where pol.schemaname='public' and pol.tablename=e.name
+       and ('anon'=any(pol.roles) or 'public'=any(pol.roles))
+   )
   as rls_readonly_and_writer_ok
  from expected e
  left join pg_catalog.pg_class c
