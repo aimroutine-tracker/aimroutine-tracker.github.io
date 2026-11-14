@@ -26,9 +26,23 @@ function required(value,name){
  if(typeof value!=='string'||!value.trim())throw Error('Variable QA manquante : '+name);
  return value.trim();
 }
+function publicKey(value){
+ const key=required(value,'AIM_QA_SUPABASE_ANON_KEY');
+ // A service-role/secret key bypasses RLS; using one would invalidate
+ // this entire security check. Refuse every non-public key before any GET.
+ if(key.startsWith('sb_publishable_')&&key.length>'sb_publishable_'.length)return key;
+ const parts=key.split('.');
+ if(parts.length===3){
+  try{
+   const claims=JSON.parse(Buffer.from(parts[1],'base64url').toString('utf8'));
+   if(claims?.role==='anon')return key;
+  }catch{ /* Not a valid public legacy JWT. */ }
+ }
+ throw Error('Clé de préproduction non publique : utilise uniquement publishable ou anon, jamais service_role ou secret.');
+}
 function readConfig(env){
  const origin=assertStagingOrigin(required(env.AIM_QA_SUPABASE_URL,'AIM_QA_SUPABASE_URL'));
- const key=required(env.AIM_QA_SUPABASE_ANON_KEY,'AIM_QA_SUPABASE_ANON_KEY');
+ const key=publicKey(env.AIM_QA_SUPABASE_ANON_KEY);
  const a={uid:required(env.AIM_QA_UID_A,'AIM_QA_UID_A'),
   token:required(env.AIM_QA_JWT_A,'AIM_QA_JWT_A')};
  const b={uid:required(env.AIM_QA_UID_B,'AIM_QA_UID_B'),
@@ -48,6 +62,20 @@ async function checkedGet(fetchImpl,origin,path,key,token){
  return res.json();
 }
 
+async function checkAnonymousSelect(fetchImpl,origin,table,key){
+ // For publishable keys, the API key alone selects the anon role. Legacy
+ // anon JWT keys can explicitly supply that same token as Bearer.
+ const headers={apikey:key,Accept:'application/json'};
+ if(key.split('.').length===3)headers.Authorization='Bearer '+key;
+ const res=await fetchImpl(origin+'/rest/v1/'+table+'?select=user_id&limit=1',{
+  method:'GET',headers,redirect:'error',cache:'no-store'
+ });
+ if(res?.status===401||res?.status===403)return; // No SELECT grant at all.
+ if(!res||res.ok!==true)throw Error('Accès anonyme QA non vérifiable sur '+table+' : HTTP '+(res?.status??'?'));
+ const rows=await res.json();
+ if(!Array.isArray(rows)||rows.length>0)
+  throw Error('RLS QA : une lecture anonyme révèle des données sur '+table+'.');
+}
 export async function runPreprodRlsReadOnly({env=process.env,fetchImpl=fetch}={}){
  // Validate *all* configuration before the first network request.
  const {origin,key,a,b}=readConfig(env);
@@ -58,6 +86,7 @@ export async function runPreprodRlsReadOnly({env=process.env,fetchImpl=fetch}={}
  }
  const results=[];
  for(const table of TABLES){
+  await checkAnonymousSelect(fetchImpl,origin,table,key);
   for(const [viewer,owner,allowed] of [[a,a,true],[b,b,true],[a,b,false],[b,a,false]]){
    const params=new URLSearchParams({select:'user_id',user_id:'eq.'+owner.uid,limit:'2'});
    const rows=await checkedGet(fetchImpl,origin,'/rest/v1/'+table+'?'+params,key,viewer.token);
@@ -68,7 +97,7 @@ export async function runPreprodRlsReadOnly({env=process.env,fetchImpl=fetch}={}
    if(!allowed&&rows.length>0)
     throw Error('RLS QA : isolation A/B non respectée sur '+table+'.');
   }
-  results.push({table,ownRead:true,crossAccountBlocked:true});
+  results.push({table,anonymousReadBlocked:true,ownRead:true,crossAccountBlocked:true});
  }
  return {stagingVerified:true,tables:results};
 }
@@ -77,7 +106,7 @@ if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1]){
  try{
   const result=await runPreprodRlsReadOnly();
   for(const {table} of result.tables)process.stdout.write('PASS RLS (préproduction) : '+table+'\n');
-  process.stdout.write('PASS : deux comptes QA distincts, lecture seule, quatre tables isolées.\n');
+  process.stdout.write('PASS : deux comptes QA distincts, lectures anonymes bloquées, quatre tables isolées.\n');
  }catch(error){
   process.stderr.write('BLOCKED RLS QA : '+error.message+'\n');
   process.exitCode=1;
