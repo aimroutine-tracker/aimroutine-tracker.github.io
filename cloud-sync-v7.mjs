@@ -246,9 +246,15 @@ export function importGuestIntoAccount(uid){
  for(const x of guest.sessions)if(!map.has(x.id))map.set(x.id,x);
  const presets=new Map(current.store.presets.map(x=>[x.id,x]));
  for(const x of guest.presets)if(!presets.has(x.id))presets.set(x.id,x);
+ // Keep account-specific settings even when the account has no recorded
+ // sessions. A pre-existing weekly goal/profile must never be overwritten
+ // merely because the visitor imports their guest training history.
+ const hasAccountTraining=localStorage.getItem(scopedKey(TRAINING_KEY,uid))!==null||
+   localStorage.getItem(scopedKey(LEGACY_KEY,uid))!==null;
+ const hasAccountExtension=localStorage.getItem(scopedKey(EXT_KEY,uid))!==null;
  const store={...current.store,sessions:[...map.values()].slice(-STORAGE_LIMIT),presets:[...presets.values()].slice(-25),
-   weeklyGoal:current.store.sessions.length?current.store.weeklyGoal:guest.weeklyGoal};
- const ext=current.store.sessions.length?current.ext:guestExt;
+   weeklyGoal:hasAccountTraining?current.store.weeklyGoal:guest.weeklyGoal};
+ const ext=hasAccountExtension?current.ext:guestExt;
  // Preserve the guest copy untouched for recovery.
  writeLocal(uid,store,ext,meta);
  return {sessions:guest.sessions.length,favorites:guest.presets.length};
