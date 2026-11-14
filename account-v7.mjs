@@ -199,7 +199,9 @@ $('#login-form').addEventListener('submit',e=>{e.preventDefault();run(async()=>{
  // The SDK or another tab can change accounts while the server verifies login.
  // An old getUser() response must never replace that newer authenticated view.
  const loginRevision=authRevision,loginToken=currentAuthToken();
- const {data:{user:validated},error:validationError}=await supabase.auth.getUser();
+ const loginAuth=await supabase.auth.getUser();
+  const validated=loginAuth?.data?.user??null;
+  const validationError=loginAuth?.error;
  if(authRevision!==loginRevision||loginToken!==currentAuthToken())return;
  if(validationError||!validated)throw validationError||Error('Connexion non validée.');
  const tokenOwner=tokenUserId(loginToken);
@@ -502,7 +504,9 @@ supabase.auth.onAuthStateChange((event,session)=>{
  const startingRevision=authRevision;
  const startingToken=currentAuthToken();
  try{
-  const {data:{user:validated},error}=await supabase.auth.getUser();
+  const initialAuth=await supabase.auth.getUser();
+   const validated=initialAuth?.data?.user??null;
+   const error=initialAuth?.error;
   // SIGNED_OUT, an account switch, or a manual login may have happened
   // while this initial request was in flight; never replace its newer UI.
   if(authRevision!==startingRevision||startingToken!==currentAuthToken())return;
