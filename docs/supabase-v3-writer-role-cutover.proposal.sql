@@ -33,6 +33,22 @@ begin
  if not pg_catalog.has_schema_privilege('anon','auth','USAGE')
    or not pg_catalog.has_function_privilege('anon','auth.uid()','EXECUTE')
  then raise exception 'Hosted Supabase auth privileges for anon must be reviewed'; end if;
+ -- The helper inheritance should not bring unrelated direct write power.
+ -- If anon is ever granted writes to public tables, manual role redesign is
+ -- necessary before this cutover. Never rely on it without a fresh ACL audit.
+ if pg_catalog.has_schema_privilege('anon','public','CREATE')
+  or exists (
+   select 1 from pg_catalog.pg_class c
+   join pg_catalog.pg_namespace n on n.oid=c.relnamespace
+   where n.nspname='public' and c.relkind in ('r','p')
+     and (pg_catalog.has_table_privilege('anon',c.oid,'INSERT')
+       or pg_catalog.has_table_privilege('anon',c.oid,'UPDATE')
+       or pg_catalog.has_table_privilege('anon',c.oid,'DELETE')
+       or pg_catalog.has_table_privilege('anon',c.oid,'TRUNCATE')
+       or pg_catalog.has_table_privilege('anon',c.oid,'TRIGGER')
+       or pg_catalog.has_table_privilege('anon',c.oid,'REFERENCES'))
+  )
+ then raise exception 'anon has unrelated public write powers: audit required'; end if;
  if pg_catalog.to_regprocedure('public.aim_reset_my_progress_for_user(uuid)') is null
  or pg_catalog.to_regprocedure(
   'public.aim_apply_progress_for_user(uuid,text,jsonb,jsonb,text[],jsonb,smallint)'
