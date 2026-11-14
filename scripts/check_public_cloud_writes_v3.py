@@ -20,20 +20,20 @@ TABLE_PATTERN = "(?:" + "|".join(TABLES) + ")"
 # Existing Cloud access is deliberately centralized. A newly introduced module
 # needs a reviewed architectural change instead of silently bypassing this.
 DIRECT_TABLE_ACCESS = re.compile(
-    r"\.from\s*\(\s*['"\x60]" + TABLE_PATTERN + r"['"\x60]\s*\)",
+    r"\.from\s*\(\s*['\"\x60]" + TABLE_PATTERN + r"['\"\x60]\s*\)",
     re.IGNORECASE,
 )
 LEGACY_RPC = re.compile(
-    r"\.rpc\s*\(\s*['"\x60]aim_reset_my_progress['"\x60]",
+    r"\.rpc\s*\(\s*['\"\x60]aim_reset_my_progress['\"\x60]",
     re.IGNORECASE,
 )
 GUARDED_RPC = re.compile(
-    r"\.rpc\s*\(\s*['"\x60]aim_apply_progress_for_user['"\x60]",
+    r"\.rpc\s*\(\s*['\"\x60]aim_apply_progress_for_user['\"\x60]",
     re.IGNORECASE,
 )
 MUTATION = re.compile(
-    r"\.from\s*\(\s*['"\x60]" + TABLE_PATTERN +
-    r"['"\x60]\s*\)\s*\.\s*(?:insert|upsert|update|delete)\s*\(",
+    r"\.from\s*\(\s*['\"\x60]" + TABLE_PATTERN +
+    r"['\"\x60]\s*\)\s*\.\s*(?:insert|upsert|update|delete)\s*\(",
     re.IGNORECASE,
 )
 
