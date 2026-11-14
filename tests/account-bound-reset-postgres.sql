@@ -11,15 +11,20 @@ grant execute on function auth.uid() to authenticated;
 
 create table public.aim_sessions(
   user_id uuid not null, session_id text not null,
+  payload jsonb not null default '{}'::jsonb,
+  deleted_at timestamptz,
   primary key(user_id,session_id)
 );
 create table public.aim_presets(
   user_id uuid not null, preset_id text not null,
+  payload jsonb not null default '{}'::jsonb,
+  deleted_at timestamptz,
   primary key(user_id,preset_id)
 );
 create table public.aim_profiles(
   user_id uuid primary key,
-  profile jsonb not null default '{}'::jsonb
+  profile jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
 );
 create table public.aim_preferences(
   user_id uuid primary key, weekly_goal integer not null default 3,
