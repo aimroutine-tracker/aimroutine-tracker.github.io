@@ -162,7 +162,7 @@ begin
       on conflict(user_id,preset_id) do nothing;
   end loop;
 
-  if pg_catalog.coalesce(pg_catalog.array_length(deleted_preset_ids,1),0)>0 then
+  if coalesce(pg_catalog.array_length(deleted_preset_ids,1),0)>0 then
     update public.aim_presets set deleted_at=pg_catalog.clock_timestamp()
       where user_id=expected_uid and preset_id=any(deleted_preset_ids)
         and deleted_at is null;
