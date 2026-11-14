@@ -17,9 +17,9 @@ const favored=id=>({id,name:'Routine '+id});
 const original={sessions:[],presets:[favored('keep'),favored('remove')],weeklyGoal:4};
 const updated={sessions:[],presets:[favored('keep')],weeklyGoal:4};
 const string=s=>JSON.stringify(s);
-function harness({failTraining=false,failQueue=false,overwriteDuringQueue=false}={}){
+function harness({failTraining=false,failQueue=false,overwriteDuringQueue=false,queueErrorMessage='simulated queue error'}={}){
  const db=new Map([[KEY,string(original)]]);
- const alerts=[],events=[],queued=[];
+ const alerts=[],events=[],queued=[],statuses=[];
  let failStorageWrite=failTraining;
  const storage={
   getItem:key=>db.get(key)??null,
@@ -35,15 +35,15 @@ function harness({failTraining=false,failQueue=false,overwriteDuringQueue=false}
   collectFavoriteDeletion(uid,ids){
    queued.push({uid,ids});
    if(overwriteDuringQueue){db.set(KEY,'{\"otherTab\":true}');throw Error('concurrent update');}
-   if(failQueue)throw Error('simulated queue error');
+   if(failQueue)throw Error(queueErrorMessage);
   },
   window:{dispatchEvent(event){events.push(event.type)}},
   CustomEvent:class{constructor(type){this.type=type}},
   alert:text=>alerts.push(text),
-  showMessage:()=>{}
+  showMessage:text=>statuses.push(text)
  };
  const save=runInNewContext(functionSource+'\nsave;',context);
- return {save,context,db,alerts,events,queued};
+ return {save,context,db,alerts,events,queued,statuses};
 }
 test('training UI saves the new store and its Cloud favorite tombstone as one successful action',()=>{
  const h=harness();
@@ -79,4 +79,14 @@ test('rollback must not erase a concurrent browser tab training write',()=>{
  assert.deepEqual(JSON.parse(JSON.stringify(h.context.store)),original);
  assert.equal(h.events.length,0);
  assert.equal(h.alerts.length,1);
+});
+
+test('Cloud queue overflow shows the actionable sync instruction to the player',()=>{
+ const h=harness({failQueue:true,
+  queueErrorMessage:'Trop de suppressions de favoris en attente : synchronise ce compte avant de continuer.'});
+ assert.equal(h.save(updated),false);
+ assert.deepEqual(JSON.parse(h.db.get(KEY)),original);
+ assert.match(h.alerts[0],/synchronise ce compte/);
+ assert.match(h.statuses[0],/synchronise ce compte/);
+ assert.equal(h.events.length,0);
 });
