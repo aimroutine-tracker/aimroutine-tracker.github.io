@@ -3129,7 +3129,9 @@ export const supabase={auth:{
   status:200,contentType:'application/javascript',
   body:`export const signOutEverywhere=()=>new Promise(resolve=>{
    window.__qaResolveOldLogout=()=>resolve(true);
-  });`
+  });
+  export const verifiedAuthUser=(response,uid)=>
+   !response?.error&&typeof uid==='string'&&uid.length>0&&response?.data?.user?.id===uid?response.data.user:null;`
  }));
  await page.route('**/cloud-sync-v7.mjs*',route=>route.fulfill({
   status:200,contentType:'application/javascript',
