@@ -186,5 +186,59 @@ begin
 end
 $test$;
 
+-- Two immediate resets must advance a unique cursor even when the server
+-- clock has not crossed a millisecond boundary between RPC invocations.
+create temporary table qa_cursor_epochs(
+  epoch_one timestamptz not null,
+  epoch_two timestamptz,
+  epoch_three timestamptz
+);
+insert into qa_cursor_epochs(epoch_one)
+  select (settings->>'reset_at')::timestamptz
+  from public.aim_preferences
+  where user_id='11111111-1111-4111-8111-111111111111';
+
+set role authenticated;
+select set_config('request.jwt.claim.sub',
+ '11111111-1111-4111-8111-111111111111',false);
+select public.aim_reset_my_progress_for_user(
+ '11111111-1111-4111-8111-111111111111'
+);
+reset role;
+update qa_cursor_epochs set epoch_two=(
+ select (settings->>'reset_at')::timestamptz
+ from public.aim_preferences
+ where user_id='11111111-1111-4111-8111-111111111111'
+);
+
+set role authenticated;
+select set_config('request.jwt.claim.sub',
+ '11111111-1111-4111-8111-111111111111',false);
+select public.aim_reset_my_progress_for_user(
+ '11111111-1111-4111-8111-111111111111'
+);
+reset role;
+update qa_cursor_epochs set epoch_three=(
+ select (settings->>'reset_at')::timestamptz
+ from public.aim_preferences
+ where user_id='11111111-1111-4111-8111-111111111111'
+);
+
+do $epoch_test$
+begin
+ if exists(
+  select 1 from qa_cursor_epochs
+  where epoch_two<=epoch_one or epoch_three<=epoch_two
+     or epoch_two is null or epoch_three is null
+ ) then raise exception 'Reset cursor did not strictly advance on consecutive resets'; end if;
+ if (select count(*) from public.aim_sessions
+  where user_id='11111111-1111-4111-8111-111111111111')<>0
+ then raise exception 'Immediate repeated reset did not delete A training'; end if;
+ if (select count(*) from public.aim_sessions
+  where user_id='22222222-2222-4222-8222-222222222222')<>1
+ then raise exception 'Immediate repeated A resets changed B sessions'; end if;
+end
+$epoch_test$;
+
 -- QA helper functions intentionally exist only on disposable PostgreSQL CI.
-\echo 'PASS: guarded-write prototype rejects stale post-reset sessions and cross-account writes in isolated PostgreSQL'
+\echo 'PASS: guarded-write prototype rejects stale writes, isolates B and enforces strictly increasing reset epochs'
