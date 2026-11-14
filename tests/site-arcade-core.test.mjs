@@ -45,5 +45,5 @@ test('public deployment allowlist includes new game assets',()=>{
   assert.ok(m.split(/\r?\n/).includes(name));
   assert.ok(sw.includes("'./"+name+"'"));
  }
- assert.match(sw,/aimroutine-v10-owner-reference-20261109/);
+ assert.match(sw,/aimroutine-v11-home-bundles-20261114/);
 });
