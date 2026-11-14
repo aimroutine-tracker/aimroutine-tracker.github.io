@@ -35,6 +35,14 @@ const resetCursor=settings=>{
  }
  return new Date(value).toISOString();
 };
+// A client that has witnessed a reset must not trust a server snapshot with
+// an older or missing reset epoch. Otherwise a restored/rolled-back preferences
+// row could permit previously deleted offline sessions to be uploaded again.
+function assertResetEpochNotRegressed(knownResetAt,remoteResetAt){
+ if(knownResetAt&&(!remoteResetAt||Date.parse(remoteResetAt)<Date.parse(knownResetAt))){
+  throw Error('Marqueur de réinitialisation Cloud régressé ou absent : synchronisation annulée sans modifier les données locales.');
+ }
+}
 const metaKey=uid=>CLOUD_META_PREFIX+uid;
 const enabledKey=uid=>'aimroutine_cloud_enabled_'+uid;
 export const isEnabled=uid=>validUid(uid); // Automatic Cloud for every signed-in account.
@@ -117,6 +125,7 @@ async function synchronizeOnce(client,uid,{guestImport=false}={}){
  // their old records in localStorage. The cloud reset cursor is authoritative:
  // never upload stale local sessions/presets from an older device.
  const remoteResetAt=resetCursor(prefResult.data?.settings);
+ assertResetEpochNotRegressed(meta.resetAt,remoteResetAt);
  const unseenReset=Boolean(remoteResetAt&&remoteResetAt!==meta.resetAt);
  if(unseenReset){
    local={store:normalizeStore({},null),ext:cleanExtension({})};
