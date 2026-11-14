@@ -902,7 +902,8 @@ test('malformed favorite-deletion tombstones block Cloud restoration and preserv
   {presetDeletedIds:[42]},
   {presetDeletedIds:[null]},
   {presetDeletedIds:['x'.repeat(101)]},
-  {presetDeletedIds:['favorite-deleted',{}]}
+  {presetDeletedIds:['favorite-deleted',{}]},
+  {presetDeletedIds:Array.from({length:101},(_,i)=>'pending-'+i)}
  ]){
   const db=makeDb(),storage=new MemoryStorage(),base=clientFor(db,USER_A);
   db.aim_presets.push({user_id:USER_A,preset_id:'favorite-deleted',
@@ -945,6 +946,32 @@ test('well-formed legacy metadata without tombstones remains compatible with Clo
   assert.equal(result.synced,true);
   assert.deepEqual(db.aim_sessions.map(x=>x.session_id),['legacy-valid']);
   assert.deepEqual(readUserLocal(USER_A).store.sessions.map(x=>x.id),['legacy-valid']);
+ });
+});
+
+test('favorite deletion queue refuses overflow without dropping older pending tombstones',async()=>{
+ const storage=new MemoryStorage();
+ await use(storage,async()=>{
+  write(storage,USER_A,[session('retained-a')]);
+  write(storage,USER_B,[session('retained-b')]);
+  const pending=Array.from({length:100},(_,i)=>'favorite-'+i);
+  collectFavoriteDeletion(USER_A,pending);
+  const key=CLOUD_META_PREFIX+USER_A;
+  const before=storage.getItem(key),a=storage.getItem(scopedKey(TRAINING_KEY,USER_A));
+  const b=storage.getItem(scopedKey(TRAINING_KEY,USER_B));
+  const actual=JSON.parse(before).presetDeletedIds;
+  assert.deepEqual(actual,pending);
+  collectFavoriteDeletion(USER_A,['favorite-19']);
+  assert.equal(storage.getItem(key),before,'Duplicate IDs must not overflow or reorder pending deletions');
+  assert.throws(()=>collectFavoriteDeletion(USER_A,['favorite-100']),
+   /Trop de suppressions de favoris en attente/);
+  assert.throws(()=>collectFavoriteDeletion(USER_A,[123]),
+   /Identifiant de favori supprimé invalide/);
+  assert.throws(()=>collectFavoriteDeletion(USER_A,['']),
+   /Identifiant de favori supprimé invalide/);
+  assert.equal(storage.getItem(key),before,'All 100 original tombstones must survive');
+  assert.equal(storage.getItem(scopedKey(TRAINING_KEY,USER_A)),a);
+  assert.equal(storage.getItem(scopedKey(TRAINING_KEY,USER_B)),b);
  });
 });
 
