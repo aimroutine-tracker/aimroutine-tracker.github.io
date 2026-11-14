@@ -47,6 +47,8 @@ Une absence réelle de clé (nouvel appareil) et une métadonnée historique cor
 
 Le test `corrupted local reset metadata blocks upload without erasing guest, A or B data` vérifie cinq formes de corruption, zéro lecture de base, zéro RPC et conservation exacte des caches A/B et invité. Cette preuve est simulée et ne remplace pas les tests réels multi-appareils en préproduction.
 
+**Favoris supprimés :** le même principe de refus s'applique désormais à un champ `presetDeletedIds` présent mais mal typé, ou à ses identifiants invalides (valeur autre qu'un tableau, entrée non textuelle, identifiant vide ou excessivement long). Une normalisation silencieuse vers `[]` pourrait faire réapparaître des favoris supprimés hors ligne. Le cache, la liste de suppressions et les données des autres comptes sont alors conservés, sans lecture de tables ni RPC. Les anciens objets de métadonnées **valides** qui omettent complètement ce champ restent acceptés. Les deux tests Node `malformed favorite-deletion tombstones block Cloud restoration and preserve local recovery data` et `well-formed legacy metadata without tombstones remains compatible with Cloud sync` démontrent le comportement simulé, sans attester une recette réelle multi-appareils.
+
 ## Reprise automatique après reset distant (13 novembre 2026)
 
 Dans `cloud-sync-v7.mjs`, la synchronisation V3 compare une seconde fois le curseur `reset_at` **avant ses premières écritures**. Si un autre appareil a supprimé la progression entre les deux lectures, le premier essai s'arrête **sans envoyer son ancien snapshot**. La synchronisation relit alors automatiquement le Cloud **une seule fois**, toujours sous le verrou du même compte quand Web Locks est disponible. Elle revalide le compte authentifié à chaque passage.
