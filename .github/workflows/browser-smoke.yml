@@ -61,7 +61,14 @@ jobs:
           for i in $(seq 1 25); do curl -fsS http://127.0.0.1:8765/training.html >/dev/null && exit 0; sleep 1; done
           cat /tmp/aimroutine-http.log
           exit 1
-      - name: Run desktop and mobile browser scenarios
-        run: npx playwright test --config=tests/playwright.config.mjs
       - name: Prove home CSS consolidation preserves exact desktop/mobile pixels
         run: node tests/home-css-render-parity-v1.mjs
+      - name: Run desktop and mobile browser scenarios
+        run: npx playwright test --config=tests/playwright.config.mjs
+      - name: Export CSS comparison screenshots only if pixel proof fails
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-css-bundle-pixel-regression
+          path: visual-results/css-parity/
+          if-no-files-found: ignore
