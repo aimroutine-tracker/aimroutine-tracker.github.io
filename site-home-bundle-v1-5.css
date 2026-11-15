@@ -2625,6 +2625,54 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
  }
 }
 
+/* Match the desktop account columns and panel surfaces to the reference. */
+@media (min-width:1600px) and (max-width:1780px){
+ body.site31.r20 .r17-account-wrap .r17-account-cols{
+  grid-template-columns:minmax(0,28.8fr) minmax(0,71.2fr)!important;
+  gap:22px!important;
+ }
+ body.site31.r20 .r17-account-wrap :is(.r17-account-profile,.r17-account-right>.r17-panel,.r17-guest-registration){
+  border-radius:13px 4px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-right>.r17-panel{
+  background:linear-gradient(145deg,#17232e,#0b1822 86%)!important;
+  border-color:#793e4e!important;
+  box-shadow:inset 0 0 18px #ff53690d,0 0 12px #ff53690f!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-cloud-split{
+  grid-template-columns:minmax(0,41fr) minmax(0,59fr)!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-cloud-status{
+  background:linear-gradient(135deg,#092230,#104154 72%,#103b46)!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-cloud-devices{
+  background:linear-gradient(125deg,#121e29,#101820)!important;
+  border-color:#3a5360!important;
+ }
+ body.site31.r20 .r17-account-wrap :is(.r17-cloud-status,.r17-cloud-devices,.r17-settings-grid>div){
+  border-radius:9px 3px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-right>.r17-panel:first-child .r17-panel-title .r17-icon{
+  background:none!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+  color:#57d8d2!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-cloud-status>span{
+  color:#4aeae2!important;
+  filter:drop-shadow(0 0 7px #41dfe08c);
+ }
+ body.site31.r20 .r17-account-wrap .r17-settings-grid{
+  grid-template-columns:minmax(0,31fr) minmax(0,31fr) minmax(0,38fr)!important;
+  gap:13px!important;
+  margin-top:10px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-settings-grid>div{
+  background:linear-gradient(140deg,#172632,#101721)!important;
+  border-color:#663b4b!important;
+ }
+}
+
 /* V3 / pass 61 — home lower row horizontal registration.
    At 1672px, measured candidate before: x=65, width=1542. The owner's
    reference outer region starts near x=55 and ends near x=1627. Only
