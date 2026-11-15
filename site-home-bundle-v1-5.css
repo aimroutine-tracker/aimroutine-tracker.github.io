@@ -2715,6 +2715,28 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
  }
 }
 
+body.site31.r20 .r17-training-wrap .r17-metric-caption{
+ display:inline-flex;
+ align-items:center;
+ gap:9px;
+}
+body.site31.r20 .r17-training-wrap .r17-metric-icon{
+ display:grid;
+ place-items:center;
+ color:var(--ar-v3-coral);
+ flex:0 0 20px;
+}
+body.site31.r20 .r17-training-wrap .r17-metric-icon .ar-v3-symbol{
+ width:20px;
+ height:20px;
+}
+body.site31.r20 .r17-training-wrap .r17-metric:has([data-r17-minutes]) .r17-metric-icon{
+ color:var(--ar-v3-muted);
+}
+body.site31.r20 .r17-training-wrap .r17-metric:has([data-r17-count],[data-r17-accuracy]) .r17-metric-icon{
+ color:var(--ar-v3-data);
+}
+
 /* Match the desktop Routines panels and the weekly calendar to the reference. */
 @media (min-width:1600px) and (max-width:1780px){
  body.site31.r20 .r17-training-wrap :is(.r17-train-summary,.r17-level-note,.r17-training-plan,.r17-train-right>.r17-panel,.r17-weekline){
@@ -2752,6 +2774,47 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
  }
  body.site31.r20 .r17-training-wrap .r17-train-summary{
   height:316px!important;min-height:316px!important;max-height:316px!important;
+  padding-block:8px 3px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-train-summary .r17-panel-title{
+  height:58px!important;
+  min-height:0!important;
+  padding-bottom:7px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-train-summary .r17-metric{
+  position:relative;
+  min-height:50px;
+  padding:0 0 4px 5px!important;
+  font-size:15px!important;
+  border-bottom-color:transparent;
+ }
+ body.site31.r20 .r17-training-wrap .r17-train-summary .r17-metric:not(:has([data-r17-goal]))::after,
+ body.site31.r20 .r17-training-wrap .r17-train-summary .r17-metric:not(:has([data-r17-goal]))::before{
+  position:absolute;
+  content:"";
+  bottom:-1px;
+  border-bottom:1px solid #546b7273;
+ }
+ body.site31.r20 .r17-training-wrap .r17-train-summary .r17-metric:not(:has([data-r17-goal]))::before{
+  left:5px;
+  width:33px;
+  border-color:#546b724c;
+ }
+ body.site31.r20 .r17-training-wrap .r17-train-summary .r17-metric:not(:has([data-r17-goal]))::after{
+  left:61px;
+  right:0;
+ }
+ body.site31.r20 .r17-training-wrap .r17-train-summary .r17-metric:has([data-r17-goal]){
+  min-height:33px;
+ }
+ body.site31.r20 .r17-training-wrap .r17-metric-caption{gap:23px}
+ body.site31.r20 .r17-training-wrap .r17-metric-icon{flex-basis:33px}
+ body.site31.r20 .r17-training-wrap .r17-metric-icon .ar-v3-symbol{
+  width:33px;
+  height:33px;
+ }
+ body.site31.r20 .r17-training-wrap .r17-train-summary .r17-meter{
+  margin:0 0 0 61px!important;
  }
  body.site31.r20 .r17-training-wrap .r17-days{
   margin-top:7px!important;
@@ -2769,6 +2832,10 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
   background:none!important;
   border-color:transparent!important;
   box-shadow:none!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-train-summary .r17-panel-title .r17-icon{
+  background:linear-gradient(135deg,#2e232e,#2a2026)!important;
+  border-color:#7a4047!important;
  }
  body.site31.r20 .r17-training-wrap .r17-train-right>.r17-panel:first-child .r17-panel-title{
   min-height:52px!important;
@@ -2799,8 +2866,8 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
  }
  body.site31.r20 .r17-progress-wrap .r17-progress-kpis{
   background:
-   radial-gradient(ellipse at 2% 0,#a9313f40,transparent 15%),
-   linear-gradient(100deg,#12202b,#0e1b25 98%)!important;
+   radial-gradient(ellipse at 0 100%,#c64b547a,transparent 8%),
+   linear-gradient(110deg,#352831 0,#14212c 7.5% 25%,#17222c 46%,#35262e 51%,#14212b 56%,#18232d 75%,#352831 78%,#14202b 85%)!important;
  }
  body.site31.r20 .r17-progress-wrap .v14-progress-svgbox{
   background-color:#0d1a24!important;

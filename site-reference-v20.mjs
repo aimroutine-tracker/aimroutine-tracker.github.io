@@ -146,9 +146,6 @@ function home(screen){
 }
 function routines(screen){
  const title=$('.r17-training-grid .r17-train-left .r17-panel-title h2',screen);bindV3Locale(title,'Mon entraînement','My training');
- const sidebar=$$('.r17-train-left .r17-metric',screen);
- const labels=[['Durée moyenne','Average session duration'],['Séances terminées','Completed sessions'],['Précision moyenne','Average accuracy'],['Jours consécutifs','Current streak'],['Objectif hebdo','Weekly goal']];
- sidebar.forEach((el,i)=>{const span=$('span',el);if(span&&labels[i])bindV3Locale(span,...labels[i]);});
  const stats=()=>window.AIMWeb?.getStore?.();
  const update=()=>{
   const store=stats();
@@ -414,6 +411,7 @@ function installV3Icons(screen){
   '☁':'<path d="M9 25h15a6 6 0 0 0 0-12 9 9 0 0 0-17-1 7 7 0 0 0 2 13Z"/>',
   '⚙':'<path d="M13 2h6l1 4 3 1 4-2 4 6-3 3v4l3 3-4 6-4-2-3 1-1 4h-6l-1-4-3-1-4 2-4-6 3-3v-4l-3-3 4-6 4 2 3-1 1-4Z"/><circle cx="16" cy="16" r="5"/>',
   '⚑':'<path d="M6 29V3m0 2c6-4 11 4 21 0v15c-10 4-15-4-21 0"/>',
+  '△':'<path d="m16 5 11 21H5L16 5Zm0 9v5m0 4h.01"/>',
   '◇':'<path d="m16 3 13 8-13 8-13-8 13-8Zm-13 15 13 8 13-8M3 24l13 7 13-7"/>',
   '♛':'<path d="M6 24 4 9l8 6 4-11 4 11 8-6-2 15H6Zm0 5h20"/>',
   '♕':'<path d="M4 9 12 15 16 4l4 11 8-6-2 16H6L4 9Zm2 20h20"/>',
@@ -423,7 +421,7 @@ function installV3Icons(screen){
   '↗':'<path d="M4 25 13 16l5 4 10-13M20 7h8v8"/>',
   '▥▥':'<path d="M5 24v-7m6 7V12m6 12V8m6 16V4" stroke-width="3.5"/>'
  };
- const selectors='.r17-icon,.r17-stat-icon,.r17-level-symbol,.r17-reticle,.r17-challenge-target,.r17-path > span:first-child,.r17-progress-wrap .v14-glyph,.r17-account-wrap .r17-profile-cloud>span,.r17-account-wrap .r17-cloud-status>span';
+ const selectors='.r17-icon,.r17-stat-icon,.r17-metric-icon,.r17-level-symbol,.r17-reticle,.r17-challenge-target,.r17-path > span:first-child,.r17-progress-wrap .v14-glyph,.r17-account-wrap .r17-profile-cloud>span,.r17-account-wrap .r17-cloud-status>span';
  const replaceGlyph=el=>{
   const shape=paths[el.textContent.trim()];
   if(!shape||el.querySelector('svg'))return;

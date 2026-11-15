@@ -1371,12 +1371,18 @@ test('Routines five-day program metric names training days, not rolling sessions
  await page.goto('/training.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.r17-weekdays .r17-weekday')).toHaveCount(5);
  const summary=page.locator('.r17-weekprogress');
+ const metricCaption=page.locator('.r17-metric-caption').first();
+ const metricIcons=page.locator('.r17-metric-icon[aria-hidden=true] svg');
+ await expect(metricCaption).toHaveText('Durée moyenne',{useInnerText:true});
+ await expect(metricIcons).toHaveCount(5);
  await expect(summary).toContainText('Jours du plan cette semaine');
  await expect(summary.locator('[data-r17-week]')).toHaveText('0 / 5');
  const duration=page.locator('[data-r17-duration]');
  await expect(duration).toHaveText(/~\d+ min \/ jour/);
  await page.locator('.ar-v3-language-footer [data-switch-lang]').click();
  await expect(summary).toContainText('Program days this week');
+ await expect(metricCaption).toHaveText('Average session duration',{useInnerText:true});
+ await expect(metricIcons).toHaveCount(5);
  await expect(summary.locator('[data-r17-week]')).toHaveText('0 / 5');
  await expect(duration).toHaveText(/~\d+ min \/ day/);
 });
