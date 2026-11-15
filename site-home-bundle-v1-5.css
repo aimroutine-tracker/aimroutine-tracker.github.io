@@ -2850,4 +2850,69 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
  }
 }
 
+body.site31.r20 .r18-cloud-icon .ar-v3-symbol{
+ width:1em;
+ height:1em;
+ vertical-align:middle;
+}
+
+/* Angled navigation tabs and continuous outlines in the desktop references. */
+@media (min-width:1600px) and (max-width:1780px){
+ body.site31.r20 .site31-links>a.r18-navlink[aria-current="page"]{
+  position:relative;
+  isolation:isolate;
+  padding-inline:24px!important;
+  background:none!important;
+  box-shadow:none!important;
+ }
+ body.site31.r20 .site31-links>a.r18-navlink[aria-current="page"]::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:2px 2px 0;
+  transform:skewX(-18deg);
+  border-radius:8px 7px 7px 2px;
+  border-bottom:2px solid #ff6474;
+  background:linear-gradient(180deg,#241b25,#321e28 65%,#622e37);
+  box-shadow:0 7px 15px #ff566529;
+ }
+ body.site31.r20 .r18-actions a{
+  position:relative;
+  isolation:isolate;
+  justify-content:center;
+  min-height:38px!important;
+  padding-block:7px!important;
+  background:none!important;
+  border-color:transparent!important;
+  clip-path:none!important;
+  box-shadow:none!important;
+ }
+ body.site31.r20 .r18-actions a::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:0 4px;
+  transform:skewX(-17deg);
+  border:1px solid #778492;
+  border-radius:7px 3px;
+  background:linear-gradient(110deg,#0b151d,#0a1118);
+  pointer-events:none;
+ }
+ body.site31.r20 .r18-actions .r18-cloud::before{border-color:#334653}
+ body.site31.r20 .r18-actions .r18-account-link[aria-current="page"]::before{
+  border-color:#df6475;
+  background:linear-gradient(180deg,#291c24,#51303b);
+  box-shadow:inset 0 -1px #ff6879;
+ }
+ body.site31.r20 .r18-actions .r18-register::before{
+  border-color:#ff6875;
+  background:linear-gradient(115deg,#ff6878,#ef485b);
+ }
+ body.site31.r20 .r18-actions a:hover::before{border-color:#ff8593}
+ body.site31.r20 .r18-cloud-icon:has(.ar-v3-symbol){
+  display:flex;
+  font-size:19px;
+ }
+}
+
 /* END site-owner-reference-v3.css */

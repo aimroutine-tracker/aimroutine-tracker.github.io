@@ -429,15 +429,15 @@ function installV3Icons(screen){
   '▥▥':'<path d="M5 24v-7m6 7V12m6 12V8m6 16V4" stroke-width="3.5"/>'
  };
  const selectors='.r17-icon,.r17-stat-icon,.r17-level-symbol,.r17-reticle,.r17-challenge-target,.r17-path > span:first-child,.r17-progress-wrap .v14-glyph,.r17-account-wrap .r17-profile-cloud>span,.r17-account-wrap .r17-cloud-status>span';
+ const replaceGlyph=el=>{
+  const shape=paths[el.textContent.trim()];
+  if(!shape||el.querySelector('svg'))return;
+  el.innerHTML=form(shape);
+ };
+ const headerIcon=$('.site31-header .r18-cloud-icon');
+ if(headerIcon)replaceGlyph(headerIcon);
  const update=()=>{
-  for(const el of $$(selectors,screen)){
-   if(el.querySelector('svg'))continue;
-   const key=el.textContent.trim();
-   const shape=paths[key];
-   if(!shape)continue;
-   el.replaceChildren();
-   el.insertAdjacentHTML('afterbegin',form(shape));
-  }
+  $$(selectors,screen).forEach(replaceGlyph);
  };
  update();
  // Preserve both FR and EN account-benefit labels while replacing only their
