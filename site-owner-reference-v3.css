@@ -2267,10 +2267,10 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
   box-shadow:inset 0 0 16px #ff626d13,0 0 8px #fd567318!important;
  }
  body.site31.r20 .r17-training-wrap :is(.r17-train-summary,.r17-level-note,.r17-training-plan,.r17-train-right>.r17-panel:first-child,.r17-weekline){
-  background:linear-gradient(145deg,#15222b,#0c1720 88%)!important;
+  background:linear-gradient(145deg,#121e29,#0b1721 88%)!important;
  }
  body.site31.r20 .r17-training-wrap .r17-side-challenge{
-  background:radial-gradient(ellipse at right top,#61303c45,transparent 64%),linear-gradient(135deg,#30212a,#131b24)!important;
+  background:radial-gradient(ellipse at right top,#84455559,transparent 62%),linear-gradient(135deg,#30212a,#131b24)!important;
  }
  body.site31.r20 .r17-training-wrap .r17-level-options{
   max-height:61px;
@@ -2314,7 +2314,15 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
   border-color:transparent!important;
   box-shadow:none!important;
  }
+ body.site31.r20 .r17-training-wrap .r17-train-right>.r17-panel:first-child .r17-panel-title{
+  min-height:52px!important;
+  padding-bottom:5px!important;
+ }
  body.site31.r20 .r17-training-wrap .ar20-tabbar{margin-top:0!important}
+ body.site31.r20 .r17-training-wrap .ar20-tabbar button{
+  min-height:31px!important;
+  padding:4px 3px!important;
+ }
 }
 
 /* Desktop Progress panels and complete personal-best tiles. */
@@ -2331,7 +2339,12 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
   box-shadow:inset 0 0 18px #fc5f6c12,0 0 11px #ee536713!important;
  }
  body.site31.r20 .r17-progress-wrap :is(.r17-chart-grid,.r17-secondary-grid,.r17-progress-bottom)>.v14-panel:not(#v14-p-next){
-  background:linear-gradient(145deg,#15212a,#0b161e 88%)!important;
+  background:linear-gradient(145deg,#121e29,#0b1721 88%)!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-progress-kpis{
+  background:
+   radial-gradient(ellipse at 2% 0,#a9313f40,transparent 15%),
+   linear-gradient(100deg,#12202b,#0e1b25 98%)!important;
  }
  body.site31.r20 .r17-progress-wrap .v14-progress-svgbox{
   background-color:#0d1a24!important;
@@ -2353,6 +2366,20 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
  }
  body.site31.r20 .r17-progress-wrap #v14-p-records .v14-personal-grid>div strong{
   margin-top:0!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-progress-streak-stats{
+  margin-top:4px!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-progress-journey-body a{
+  color:#f0f6fa!important;
+  background:#12222e!important;
+  border-color:#526674!important;
+  border-radius:8px 4px;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-progress-journey-body a:hover{
+  color:#071b28!important;
+  background:#ff6678!important;
+  border-color:#ff6678!important;
  }
  body.site31.r20 .r17-progress-wrap #v14-p-next{
   background:radial-gradient(ellipse at right bottom,#632e3c55,transparent 66%),linear-gradient(135deg,#32242d,#151d25)!important;
