@@ -1,7 +1,5 @@
-/* AimRoutine V3 — lossless visual proof for home CSS bundling.
-   Never uses fake profile stats. Static homepage is loaded once, then only the
-   stylesheet links are swapped. Geometry/styles must be identical;
-   a separate pixel audit permits only tiny antialias color noise. */
+/* Verify the five home CSS bundles against their 26 ordered source sheets.
+   Use fresh documents so a live stylesheet swap cannot change paint state. */
 import {chromium} from '@playwright/test';
 import {readFile,mkdir} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
@@ -15,32 +13,45 @@ for(const file of bundles){
  sources.push(...names);
 }
 if(sources.length!==26)throw Error('Incorrect source count '+sources.length);
-const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
-try{
- for(const [width,height] of [[1672,941],[390,844]]){
-  const context=await browser.newContext({
-   viewport:{width,height},deviceScaleFactor:1,
-   locale:'fr-FR',colorScheme:'dark',reducedMotion:'reduce',
-   serviceWorkers:'block'
-  });
+
+const linkPattern=/<link rel="stylesheet" href="(site-home-bundle-v1-[1-5]\.css)\?v=1">/g;
+const html=await readFile('index.html','utf8');
+const linkedBundles=[...html.matchAll(linkPattern)].map(match=>match[1]);
+if(JSON.stringify(linkedBundles)!==JSON.stringify(bundles))throw Error('Expected five ordered home bundles');
+const sourceLinks=sources.map(name=>'<link rel="stylesheet" href="'+name+'">').join('\n');
+let inserted=false;
+const sourceHtml=html.replace(linkPattern,()=>{
+ if(inserted)return '';
+ inserted=true;
+ return sourceLinks;
+});
+const url='http://127.0.0.1:8765/index.html';
+const output='visual-results/css-parity';
+await mkdir(output,{recursive:true});
+
+async function capture(browser,width,height,kind,body){
+ const context=await browser.newContext({
+  viewport:{width,height},deviceScaleFactor:1,
+  locale:'fr-FR',colorScheme:'dark',reducedMotion:'reduce',serviceWorkers:'block'
+ });
+ try{
   const page=await context.newPage();
-  await page.goto('http://127.0.0.1:8765/index.html',
-   {waitUntil:'domcontentloaded',timeout:35000});
-  await page.waitForFunction(()=>document.body?.classList.contains('r20'),
-   null,{timeout:30000});
+  await page.route(url,route=>route.fulfill({status:200,contentType:'text/html; charset=utf-8',body}));
+  await page.clock.setFixedTime(new Date('2026-11-14T12:00:00.000Z'));
+  await page.goto(url,{waitUntil:'domcontentloaded',timeout:35000});
+  await page.waitForFunction(()=>document.body?.classList.contains('r20'),null,{timeout:30000});
   await page.evaluate(()=>document.fonts.ready);
   await page.waitForTimeout(1200);
   await page.addStyleTag({content:
    '*,*::before,*::after{transition:none!important;animation:none!important;caret-color:transparent!important}'});
-  // Freeze time-dependent UI once the site initialized.
-  await page.clock.pauseAt(new Date('2026-11-14T12:00:00.000Z'));
-  const snapshot=async()=>page.evaluate(()=>{
+  const snapshot=await page.evaluate(()=>{
    const selectors=['.site31-header','.r17-screen','.r17-hero',
     '.r17-hero h1','.r17-hero-desc','.r17-hero-actions','.v5-hero',
-    '.ar9-path-grid','#aim-challenge','.site31-footer'];
-   const names=['display','position','color','backgroundColor','borderColor',
+    '.r17-features','.r17-home-bottom','.r17-path','.r17-path p',
+    '.r17-path-foot','.r17-challenge','.ar9-path-grid','#aim-challenge','.site31-footer'];
+   const names=['display','position','color','backgroundColor','borderColor','borderRadius',
     'fontSize','fontFamily','fontWeight','lineHeight','letterSpacing','opacity',
-    'transform','visibility','padding','margin','gridTemplateColumns',
+    'transform','visibility','padding','margin','gridTemplateColumns','gridTemplateRows',
     'boxShadow','backgroundImage','overflow','maxWidth'];
    return Object.fromEntries(selectors.map(selector=>{
     const node=document.querySelector(selector);
@@ -52,44 +63,27 @@ try{
     }];
    }));
   });
-  const beforeStyle=await snapshot();
-  const output='visual-results/css-parity';
-  await mkdir(output,{recursive:true});
-  const withBundles=await page.screenshot({
-   path:output+'/home-'+width+'-bundled.png',animations:'disabled'
-  });
-  const modified=await page.evaluate(async originalSources=>{
-   const active=[...document.querySelectorAll('link[rel="stylesheet"]')]
-    .filter(n=>/^site-home-bundle-v1-[1-5]\.css/.test(n.getAttribute('href')||''));
-   if(active.length!==5)throw Error('Expected five active home bundles');
-   const first=active[0];
-   const loaded=originalSources.map(name=>new Promise((resolve,reject)=>{
-    const link=document.createElement('link');
-    link.rel='stylesheet';link.href=name;
-    link.onload=resolve;
-    link.onerror=()=>reject(Error('Stylesheet failed to load: '+name));
-    first.parentNode.insertBefore(link,first);
-   }));
-   await Promise.all(loaded);
-   active.forEach(link=>link.remove());
-   return originalSources.length;
-  },sources);
-  if(modified!==26)throw Error('Could not restore 26 CSS sources');
-  await page.evaluate(()=>document.fonts.ready);
-  const original=await page.screenshot({
-   path:output+'/home-'+width+'-original.png',animations:'disabled'
-  });
-  const afterStyle=await snapshot();
-  if(JSON.stringify(beforeStyle)!==JSON.stringify(afterStyle)){
-   throw Error('Home CSS geometry/computed-style mismatch at '+width+'x'+height+
-    ': '+JSON.stringify({beforeStyle,afterStyle}).slice(0,2400));
-  }
-  const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
-  console.log('PASS: home '+width+'x'+height+
-   ' all sampled computed styles and layout coordinates are identical.'+
-   ' PNGs: '+hash(withBundles).slice(0,12)+' / '+hash(original).slice(0,12)+
-   ' (pixel-level antialias audit runs next)');
+  const png=await page.screenshot({path:output+'/home-'+width+'-'+kind+'.png',animations:'disabled'});
+  return {snapshot,hash:createHash('sha256').update(png).digest('hex').slice(0,12)};
+ } finally {
   await context.close();
+ }
+}
+
+const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+try{
+ for(const [width,height] of [[1672,941],[390,844]]){
+  const bundled=await capture(browser,width,height,'bundled',html);
+  const original=await capture(browser,width,height,'original',sourceHtml);
+  if(JSON.stringify(bundled.snapshot)!==JSON.stringify(original.snapshot)){
+   const changed=Object.keys(bundled.snapshot).filter(selector=>
+    JSON.stringify(bundled.snapshot[selector])!==JSON.stringify(original.snapshot[selector]));
+   throw Error('Home CSS geometry/computed-style mismatch at '+width+'x'+height+
+    ': '+changed.map(selector=>JSON.stringify({selector,bundled:bundled.snapshot[selector],
+     original:original.snapshot[selector]})).join(', ').slice(0,4000));
+  }
+  console.log('PASS: home '+width+'x'+height+' computed styles and layout coordinates match. PNGs: '+
+   bundled.hash+' / '+original.hash+' (pixel audit runs next)');
  }
 } finally {
  await browser.close();
