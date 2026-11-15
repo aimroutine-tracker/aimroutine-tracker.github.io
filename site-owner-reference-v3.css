@@ -2433,6 +2433,12 @@ body.site31.r20 .r18-cloud-icon .ar-v3-symbol{
   clip-path:none!important;
   box-shadow:none!important;
  }
+ body.site31.r20 .r18-actions .r18-register,
+ body.site31.r20 .r18-actions .r18-account-link[aria-current="page"]{
+  background:none!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+ }
  body.site31.r20 .r18-actions a::before{
   content:"";
   position:absolute;
