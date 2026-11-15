@@ -50,6 +50,13 @@ for name in pages:
                     Image.blend(ref,after,.5).save(root/f'{name}-source-overlay.png',optimize=True)
                     old_mae=mae(before_diff)
                     new_mae=mae(ref_diff)
+                    red,green,blue=ref_diff.split()
+                    changed=ImageChops.lighter(ImageChops.lighter(red,green),blue)
+                    pixels=after.width*after.height
+                    different_pixels=pixels-changed.histogram()[0]
+                    record['reference_total_pixels']=pixels
+                    record['reference_different_pixels']=different_pixels
+                    record['reference_visually_identical']=different_pixels==0
                     record['reference_before_mae_0_to_255']=round(old_mae,3)
                     record['reference_mae_0_to_255']=round(new_mae,3)
                     record['reference_absolute_error_reduction']=round(old_mae-new_mae,3)
@@ -92,3 +99,5 @@ for r in records:
         print('  RGB MAE before:',r['reference_before_mae_0_to_255'],
               'after:',r['reference_mae_0_to_255'],
               'relative reduction:',r['reference_relative_error_reduction_percent'],'%')
+        print('  Different RGB pixels:',r['reference_different_pixels'],
+              'of',r['reference_total_pixels'])

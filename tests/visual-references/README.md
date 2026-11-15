@@ -27,9 +27,10 @@ Pour exécuter une comparaison dans une copie privée **déjà équipée de capt
 python3 -m pip install Pillow==11.3.0
 python3 tests/compare-visual-v3.py
 python3 tests/check-source-fidelity-v3.py
+python3 tests/check-source-fidelity-v3.py --require-exact
 ```
 
-Le second script exige les quatre SHA-256 corrects, les dimensions et les preuves de comparaison. Préserver ces preuves privées ; ne pas les téléverser dans une PR ou un artefact public. La publication requiert encore une revue visuelle explicite et les tests fonctionnels sur des comptes d'essai dédiés. Les valeurs fictives des maquettes ne doivent jamais être injectées dans les statistiques de vrais comptes.
+Le contrôle exige les quatre SHA-256 corrects, les dimensions et les preuves de comparaison. En mode `--require-exact`, chaque capture doit avoir exactement zéro pixel RGB différent, même lorsque l'écart moyen arrondi est nul. Préserver ces preuves privées. La publication requiert encore une revue visuelle explicite et les tests fonctionnels sur des comptes d'essai dédiés. Les statistiques du site proviennent des séances réellement enregistrées.
 
 
 ## Nouvelle méthode sans Python : comparateur privé utilisable dans le navigateur

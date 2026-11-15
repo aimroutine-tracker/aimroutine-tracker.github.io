@@ -3,8 +3,14 @@
 This script intentionally blocks release when the owner's originals are absent.
 A passing gate validates the evidence inputs, NOT pixel-perfect fidelity.
 """
+from argparse import ArgumentParser
 from pathlib import Path
 import hashlib, json, struct, sys
+
+parser=ArgumentParser(description=__doc__)
+parser.add_argument('--require-exact',action='store_true',
+                    help='Require an exact RGB match on every original PNG.')
+require_exact=parser.parse_args().require_exact
 
 root=Path(__file__).parent/'visual-references'
 evidence=Path('visual-results')
@@ -45,6 +51,15 @@ for name in names:
         errors.append(f'{name}: quantitative source pixel error missing.')
     if row and not isinstance(row.get('reference_before_mae_0_to_255'),(int,float)):
         errors.append(f'{name}: source-to-baseline error missing; cannot prove before/after improvement.')
+    if require_exact and row:
+        total=row.get('reference_total_pixels')
+        different=row.get('reference_different_pixels')
+        if total!=width*height or type(different) is not int or not 0<=different<=total:
+            errors.append(f'{name}: exact pixel count missing or invalid.')
+        elif different:
+            errors.append(f'{name}: {different:,} of {total:,} RGB pixels differ.')
+        elif row.get('reference_visually_identical') is not True or row.get('reference_mae_0_to_255')!=0:
+            errors.append(f'{name}: exact pixel count disagrees with the comparison report.')
     if row and row.get('source_visual_regressed') is True:
         errors.append(f'{name}: candidate visually regressed by more than 0.25 RGB MAE against original.')
     # Also protect the best privately verified V3 result, not merely the old
@@ -83,7 +98,10 @@ for name in names:
 if errors:
     print('BLOCKED: release cannot claim reference fidelity.')
     for e in errors: print(' -',e)
-    print('Next: add four byte-identical PNGs listed in tests/visual-references/README.md; rerun CI.')
+    print('Next: resolve the reported differences or missing evidence, then rerun the comparison.')
     sys.exit(1)
 print('SOURCE EVIDENCE VERIFIED for all four pages.')
-print('Note: this input gate is NOT a pixel-perfect signoff. Human visual approval is still required.')
+if require_exact:
+    print('EXACT RGB MATCH for all four captures.')
+else:
+    print('Note: this input gate is NOT a pixel-perfect signoff. Human visual approval is still required.')

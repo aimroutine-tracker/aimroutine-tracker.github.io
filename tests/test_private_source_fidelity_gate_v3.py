@@ -61,7 +61,7 @@ class SourceFidelityGateTests(unittest.TestCase):
                 (self.evidence / (name + "-" + suffix + ".png")).write_bytes(self.sample)
         self.write_report(25.0)
 
-    def write_report(self, value, *, missing=False):
+    def write_report(self, value, *, missing=False, different_pixels=None):
         report = []
         for name in PAGES:
             record = {
@@ -78,14 +78,18 @@ class SourceFidelityGateTests(unittest.TestCase):
             }
             if missing and name == "account":
                 record.pop("reference_mae_0_to_255")
+            if different_pixels is not None:
+                record.update(reference_total_pixels=1672*941,
+                              reference_different_pixels=different_pixels,
+                              reference_visually_identical=different_pixels==0)
             report.append(record)
         (self.evidence / "comparison-report.json").write_text(
             json.dumps(report), encoding="utf-8"
         )
 
-    def gate(self):
+    def gate(self, *args):
         return subprocess.run(
-            [sys.executable, str(self.root / "tests" / GATE.name)],
+            [sys.executable, str(self.root / "tests" / GATE.name), *args],
             cwd=self.root, text=True, capture_output=True, check=False,
         )
 
@@ -122,6 +126,18 @@ class SourceFidelityGateTests(unittest.TestCase):
         result = self.gate()
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("quantitative source pixel error missing", result.stdout)
+
+    def test_exact_gate_rejects_one_pixel_when_rounded_mae_is_zero(self):
+        self.write_report(0.0, different_pixels=1)
+        result = self.gate("--require-exact")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("1 of 1,573,352 RGB pixels differ", result.stdout)
+
+    def test_exact_gate_accepts_verified_zero_different_pixels(self):
+        self.write_report(0.0, different_pixels=0)
+        result = self.gate("--require-exact")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("EXACT RGB MATCH", result.stdout)
 
 
 if __name__ == "__main__":

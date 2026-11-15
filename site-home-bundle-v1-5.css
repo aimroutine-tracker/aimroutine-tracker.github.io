@@ -2693,8 +2693,12 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
  body.site31.r20 .r17-training-wrap .r17-side-challenge{
   background:radial-gradient(ellipse at right top,#61303c45,transparent 64%),linear-gradient(135deg,#30212a,#131b24)!important;
  }
+ body.site31.r20 .r17-training-wrap .r17-level-options{
+  max-height:61px;
+ }
  body.site31.r20 .r17-training-wrap .r17-level-options .r17-level{
   border-radius:10px 4px!important;
+  min-height:58px!important;
  }
  body.site31.r20 .r17-training-wrap .r17-level-options .r17-level.is-active{
   background:linear-gradient(125deg,#63313b,#261c28)!important;
@@ -2704,6 +2708,12 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
  body.site31.r20 .r17-training-wrap .r17-exercise{
   border-radius:8px 3px!important;
   background:linear-gradient(125deg,#172730,#101b24)!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-training-plan .r17-panel-title{
+  padding-bottom:7px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-days{
+  margin-top:7px!important;
  }
  body.site31.r20 .r17-training-wrap .r17-weekline{
   grid-template-columns:minmax(230px,1.1fr) minmax(530px,3fr) minmax(160px,1.07fr)!important;
@@ -2722,6 +2732,12 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
 
 /* Desktop Progress panels and complete personal-best tiles. */
 @media (min-width:1600px) and (max-width:1780px){
+ body.site31.r20 .r17-progress-wrap :is(.r17-chart-grid,.r17-secondary-grid,.r17-progress-bottom) h2{
+  font-size:19px!important;
+ }
+ body.site31.r20 .r17-progress-wrap .v14-panel-head small{
+  font-size:11.5px!important;
+ }
  body.site31.r20 .r17-progress-wrap :is(.r17-chart-grid,.r17-secondary-grid,.r17-progress-bottom)>.v14-panel{
   border-radius:12px 4px!important;
   border-color:#7b4857!important;
@@ -2858,15 +2874,82 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
  }
 }
 
-/* Desktop home cards: keep the pathway titles beside their icons. */
+/* Desktop hero actions and home cards. */
 @media (min-width:1600px) and (max-width:1780px){
+ body.site31.r20 .r17-home-wrap .r17-hero-actions{
+  margin-left:-13px!important;
+  gap:15px!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-hero-actions>.r17-button--hot{
+  min-width:261px!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-hero-actions>.r17-button--outline{
+  min-width:296px!important;
+ }
+ body.site31.r20 :is(.r17-home-wrap,.r17-training-wrap) .r17-hero-actions>.r17-button--outline{
+  position:relative;
+  isolation:isolate;
+  background:none!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+  clip-path:none!important;
+ }
+ body.site31.r20 :is(.r17-home-wrap,.r17-training-wrap) .r17-hero-actions>.r17-button--outline::before{
+  content:"";
+  position:absolute;
+  inset:1px 6px;
+  z-index:-1;
+  transform:skewX(-16deg)!important;
+  border:1px solid #a3b6c2;
+  border-radius:8px 4px;
+  background:linear-gradient(115deg,#122331ef,#0a1721e8);
+  pointer-events:none;
+ }
+ body.site31.r20 :is(.r17-home-wrap,.r17-training-wrap) .r17-hero-actions>.r17-button--outline:hover::before{
+  border-color:#f6e3e8;
+ }
+ body.site31.r20 :is(.r17-home-wrap,.r17-training-wrap) .r17-hero-actions>.r17-button{
+  gap:13px;
+  padding-inline:32px!important;
+ }
+ body.site31.r20 :is(.r17-home-wrap,.r17-training-wrap) .r17-hero-actions .r17-inline-symbol{
+  width:22px;
+  height:22px;
+ }
+ body.site31.r20 .r17-training-wrap .r17-hero-actions>.r17-button--outline .r17-inline-symbol{
+  width:27px;
+  height:27px;
+ }
  body.site31.r20 .r17-home-wrap .r17-feature{
   border-radius:13px 4px!important;
   background:linear-gradient(135deg,#172632,#111b25 90%)!important;
   border-color:#644653!important;
+  grid-template-columns:69px minmax(0,1fr) minmax(105px,29%)!important;
+  gap:18px!important;
+  height:122px;
+  padding-block:10px!important;
  }
  body.site31.r20 .r17-home-wrap .r17-feature .r17-icon{
   border-radius:11px 4px!important;
+  width:61px;
+  height:61px;
+  align-self:start;
+  margin-top:1px;
+ }
+ body.site31.r20 .r17-home-wrap .r17-feature h3{
+  font-size:20px!important;
+  margin-bottom:5px!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-feature .r17-feature-art{
+  align-self:stretch;
+  overflow:hidden;
+  border-radius:9px 3px;
+  background:radial-gradient(ellipse at 80% 70%,#47b5bd2b,transparent 70%);
+  min-height:0;
+ }
+ body.site31.r20 .r17-home-wrap .r17-feature-art svg{
+  width:min(116px,100%);
+  height:92px;
  }
  body.site31.r20 .r17-home-wrap .r17-home-bottom .r17-path{
   display:grid!important;
@@ -2915,6 +2998,7 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
   margin-left:0!important;
  }
 }
+
 
 /* V3 / pass 61 — home lower row horizontal registration.
    At 1672px, measured candidate before: x=65, width=1542. The owner's
