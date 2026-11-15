@@ -97,12 +97,15 @@ test('V3 Routines hero fills its right skyline without affecting mobile or contr
  await expect(artwork).toBeVisible();
  const desktop=await artwork.evaluate(node=>{
   const s=getComputedStyle(node,'::after');
-  return {content:s.content,background:s.backgroundImage,size:s.backgroundSize,
+  return {content:s.content,background:s.backgroundImage,layerWidth:parseFloat(s.width),
+   artWidth:node.getBoundingClientRect().width,right:s.right,position:s.backgroundPositionX,
    mask:s.maskImage||s.webkitMaskImage,overflow:document.documentElement.scrollWidth};
  });
  expect(desktop.content).not.toBe('none');
  expect(desktop.background).toContain('r17-hero.webp');
- expect(desktop.size).toBe('cover');
+ expect(desktop.layerWidth / desktop.artWidth).toBeCloseTo(0.2,2);
+ expect(desktop.right).toBe('0px');
+ expect(desktop.position).toBe('100%');
  expect(desktop.mask).toContain('linear-gradient');
  expect(desktop.overflow).toBeLessThanOrEqual(1672);
  await page.setViewportSize({width:390,height:844});
