@@ -3608,6 +3608,13 @@ test('V3 Progress panel anchors preserve original desktop proportions without in
  await check('.r17-chart-grid > .v14-panel',[33,643,1156]);
  await check('.r17-secondary-grid > .v14-panel',[33,605,1007]);
  await check('.r17-progress-bottom > .v14-panel',[33,1101]);
+ const records=page.locator('#v14-p-records');
+ const recordBounds=await records.boundingBox();
+ for(const tile of await records.locator('.v14-personal-grid>div').all()){
+  const tileBounds=await tile.boundingBox();
+  expect(tileBounds.y+tileBounds.height).toBeLessThanOrEqual(recordBounds.y+recordBounds.height-4);
+ }
+
  // The owner's lower dashboard begins 15–16px after the second row.
  // Compare *relative* vertical anchors: browser smoke and screenshot runner
  // use slightly different fonts, shifting the whole lower group ~10px,
