@@ -96,24 +96,30 @@ test('V3 Routines hero fills its right skyline without affecting mobile or contr
  const artwork=page.locator('.r17-training-wrap .r17-hero-art');
  await expect(artwork).toBeVisible();
  const desktop=await artwork.evaluate(node=>{
-  const s=getComputedStyle(node,'::after');
-  return {content:s.content,background:s.backgroundImage,layerWidth:parseFloat(s.width),
-   artWidth:node.getBoundingClientRect().width,right:s.right,position:s.backgroundPositionX,
-   mask:s.maskImage||s.webkitMaskImage,overflow:document.documentElement.scrollWidth};
+  const city=getComputedStyle(node,'::before');
+  const sign=getComputedStyle(node,'::after');
+  return {cityImage:city.backgroundImage,signImage:sign.backgroundImage,
+   cityWidth:parseFloat(city.width),cityEnd:parseFloat(city.right),
+   signWidth:parseFloat(sign.width),signEnd:sign.right,signPosition:sign.backgroundPositionX,
+   mask:getComputedStyle(node).maskImage,overflow:document.documentElement.scrollWidth};
  });
- expect(desktop.content).not.toBe('none');
- expect(desktop.background).toContain('r17-hero.webp');
- expect(desktop.layerWidth / desktop.artWidth).toBeCloseTo(0.2,2);
- expect(desktop.right).toBe('0px');
- expect(desktop.position).toBe('100%');
+ expect(desktop.cityImage).toContain('r17-hero.webp');
+ expect(desktop.signImage).toContain('r17-hero.webp');
+ expect(desktop.cityWidth).toBeGreaterThan(200);
+ expect(desktop.signWidth).toBeGreaterThan(190);
+ expect(Math.abs(desktop.cityEnd-desktop.signWidth)).toBeLessThan(1);
+ expect(desktop.signEnd).toBe('0px');
+ expect(desktop.signPosition).toBe('100%');
  expect(desktop.mask).toContain('linear-gradient');
  expect(desktop.overflow).toBeLessThanOrEqual(1672);
  await page.setViewportSize({width:390,height:844});
  const mobile=await artwork.evaluate(node=>({
-  content:getComputedStyle(node,'::after').content,
+  city:getComputedStyle(node,'::before').content,
+  sign:getComputedStyle(node,'::after').content,
   width:document.documentElement.scrollWidth
  }));
- expect(mobile.content).toBe('none');
+ expect(mobile.city).toBe('none');
+ expect(mobile.sign).toBe('none');
  expect(mobile.width).toBeLessThanOrEqual(390);
  await expect(page.locator('[data-r17-day="0"]').first()).toBeVisible();
 });
