@@ -133,6 +133,21 @@ test('V3 home lower panels align with owner reference at 1672px and remain mobil
  expect(result.width).toBeLessThanOrEqual(1574);
  expect(Math.abs(result.right-result.challengeRight)).toBeLessThanOrEqual(2);
  expect(result.scroll).toBeLessThanOrEqual(1672);
+ const paths=page.locator('.r17-home-bottom .r17-path');
+ await expect(paths).toHaveCount(3);
+ for(const language of ['fr','en']){
+  if(await page.locator('html').getAttribute('lang')!==language)
+   await page.locator('.ar-v3-language-footer [data-switch-lang]').click();
+  await expect(page.locator('html')).toHaveAttribute('lang',language);
+  for(const path of await paths.all()){
+   const icon=await path.locator('> span').boundingBox();
+   const title=await path.locator('h3').boundingBox();
+   const description=await path.locator('p').boundingBox();
+   const footer=await path.locator('.r17-path-foot').boundingBox();
+   expect(icon.x+icon.width).toBeLessThan(title.x);
+   expect(description.y+description.height).toBeLessThan(footer.y);
+  }
+ }
  await page.setViewportSize({width:390,height:844});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
  await expect(page.locator('.r17-home-wrap .r17-challenge .r17-button')).toBeVisible();
