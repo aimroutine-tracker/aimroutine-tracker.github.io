@@ -1591,32 +1591,48 @@ test('V3 Cloud auth heading matches reference without losing active secure forms
 });
 
 
-test('V3 Cloud hero fills right edge without duplicating its sign artwork',async({page})=>{
- await page.setViewportSize({width:1672,height:941});
- await page.goto('/account.html',{waitUntil:'domcontentloaded'});
- const hero=page.locator('.r17-account-wrap .r17-hero-art');
- await expect(hero).toBeVisible();
- const benefits=page.locator('.r17-account-benefits');
- await expect(benefits.locator('.r17-benefit-copy')).toHaveCount(3);
- const icons=await benefits.locator('svg').evaluateAll(nodes=>nodes.map(icon=>{
-  const rect=icon.getBoundingClientRect();
-  return {left:rect.left,width:rect.width};
- }));
- expect(icons).toHaveLength(3);
- for(const icon of icons)expect(icon.width).toBeGreaterThanOrEqual(32);
- expect(Math.abs((icons[1].left-icons[0].left)-(icons[2].left-icons[1].left)))
-  .toBeLessThan(20);
- const style=await hero.evaluate(el=>({
-  original:getComputedStyle(el).backgroundImage,
-  extension:getComputedStyle(el,'::after').backgroundImage,
-  mask:getComputedStyle(el,'::after').maskImage
- }));
- expect(style.original).toContain('r17-hero.webp');
- expect(style.extension).toContain('linear-gradient');
- expect(style.extension).not.toContain('url(');
- expect(style.mask).toContain('linear-gradient');
- const width=await page.evaluate(()=>document.documentElement.scrollWidth);
- expect(width).toBeLessThanOrEqual(1675);
+test('V3 Progress and Cloud desktop hero artwork spans the right edge without overlapping crops',async({page})=>{
+ for(const [route,screen] of [['progress.html','progress'],['account.html','account']]){
+  await page.setViewportSize({width:1672,height:941});
+  await page.goto('/'+route,{waitUntil:'domcontentloaded'});
+  const hero=page.locator('.r17-'+screen+'-wrap .r17-hero-art');
+  await expect(hero).toBeVisible();
+  if(screen==='account'){
+   const benefits=page.locator('.r17-account-benefits');
+   await expect(benefits.locator('.r17-benefit-copy')).toHaveCount(3);
+   const icons=await benefits.locator('svg').evaluateAll(nodes=>nodes.map(icon=>{
+    const {left,width}=icon.getBoundingClientRect();
+    return {left,width};
+   }));
+   expect(icons).toHaveLength(3);
+   for(const icon of icons)expect(icon.width).toBeGreaterThanOrEqual(32);
+   const [first,second,third]=icons.map(icon=>icon.left);
+   expect(Math.abs((second-first)-(third-second))).toBeLessThan(20);
+  }
+  const layout=await hero.evaluate(art=>{
+   const middle=getComputedStyle(art,'::before');
+   const edge=getComputedStyle(art,'::after');
+   return {
+    artWidth:art.getBoundingClientRect().width,
+    middle:parseFloat(middle.width),
+    middleEnd:parseFloat(middle.right),
+    edge:parseFloat(edge.width),
+    edgeEnd:parseFloat(edge.right),
+    fills:[middle.backgroundImage,edge.backgroundImage],
+    scroll:document.documentElement.scrollWidth
+   };
+  });
+  expect(layout.fills.every(image=>image.includes('r17-hero.webp'))).toBe(true);
+  expect(layout.middle).toBeGreaterThan(150);
+  expect(layout.edge).toBeGreaterThan(150);
+  expect(layout.edgeEnd).toBe(0);
+  expect(Math.abs(layout.middleEnd-layout.edge)).toBeLessThan(1);
+  expect(layout.middle+layout.edge).toBeLessThan(layout.artWidth);
+  expect(layout.scroll).toBeLessThanOrEqual(1672);
+  await page.setViewportSize({width:390,height:844});
+  await expect.poll(()=>hero.evaluate(art=>getComputedStyle(art,'::before').content)).toBe('none');
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+ }
 });
 
 
