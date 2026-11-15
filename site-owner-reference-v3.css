@@ -2079,6 +2079,52 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
  }
 }
 
+/* Desktop hero copy and account benefits aligned to the 1672px references. */
+@media (min-width:1600px) and (max-width:1780px){
+ body.site31.r20 .r17-progress-wrap .r17-hero h1{
+  transform:translate(16px,-1px) scaleX(1.12)!important;
+  transform-origin:left center;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-hero-desc{
+  max-width:570px!important;
+  font-size:14px!important;
+  transform:translateY(-3px);
+ }
+ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--bars{
+  left:32px!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-hero-actions>.r17-button:first-child>:is(.fr,.en){
+  left:calc(50% + 10px)!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-hero-desc{
+  max-width:590px!important;
+  transform:translateY(-5px);
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-benefits{
+  display:grid!important;
+  grid-template-columns:1.09fr 1.02fr .92fr;
+  column-gap:10px!important;
+  padding-inline:30px!important;
+  background:linear-gradient(92deg,#161923,#101c28)!important;
+  clip-path:polygon(3% 0,100% 0,97% 100%,0 100%);
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-benefits>span{
+  gap:15px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-benefits .ar-v3-symbol{
+  font-size:36px!important;
+  width:36px!important;
+  height:36px!important;
+  flex-basis:36px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-benefits .r17-benefit-copy strong{
+  font-size:15px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-benefits .r17-benefit-copy small{
+  font-size:13px!important;
+ }
+}
+
 /* V3 / pass 61 — home lower row horizontal registration.
    At 1672px, measured candidate before: x=65, width=1542. The owner's
    reference outer region starts near x=55 and ends near x=1627. Only

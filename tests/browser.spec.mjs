@@ -1596,6 +1596,16 @@ test('V3 Cloud hero fills right edge without duplicating its sign artwork',async
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
  const hero=page.locator('.r17-account-wrap .r17-hero-art');
  await expect(hero).toBeVisible();
+ const benefits=page.locator('.r17-account-benefits');
+ await expect(benefits.locator('.r17-benefit-copy')).toHaveCount(3);
+ const icons=await benefits.locator('svg').evaluateAll(nodes=>nodes.map(icon=>{
+  const rect=icon.getBoundingClientRect();
+  return {left:rect.left,width:rect.width};
+ }));
+ expect(icons).toHaveLength(3);
+ for(const icon of icons)expect(icon.width).toBeGreaterThanOrEqual(32);
+ expect(Math.abs((icons[1].left-icons[0].left)-(icons[2].left-icons[1].left)))
+  .toBeLessThan(20);
  const style=await hero.evaluate(el=>({
   original:getComputedStyle(el).backgroundImage,
   extension:getComputedStyle(el,'::after').backgroundImage,
@@ -3550,6 +3560,17 @@ test('V3 Progress panel anchors preserve original desktop proportions without in
  await expect(actions.nth(1).locator('svg.r17-cta-icon--target')).toHaveAttribute('aria-hidden','true');
  await expect(actions.nth(0)).toContainText('Mettre à jour mes données');
  await expect(actions.nth(1)).toContainText('Gérer mes objectifs');
+ const hero=page.locator('.r17-progress-wrap .r17-hero');
+ await expect(hero.locator('h1')).toBeVisible();
+ const titleWidth=await hero.locator('h1').evaluate(title=>{
+  const text=document.createRange();
+  text.selectNodeContents(title);
+  return text.getBoundingClientRect().width;
+ });
+ expect(titleWidth).toBeGreaterThan(490);
+ const icon=await actions.nth(0).locator('svg').boundingBox();
+ const label=await actions.nth(0).locator('.fr').boundingBox();
+ expect(label.x-icon.x-icon.width).toBeGreaterThanOrEqual(8);
  await expect(page.locator('.r17-progress-wrap .r17-hero-desc .fr').first())
   .toContainText('des tendances claires et des objectifs personnalisés');
  // Match the visual-evidence runner: measure only after fonts, hydration and
