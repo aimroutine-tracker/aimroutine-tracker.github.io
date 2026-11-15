@@ -2046,25 +2046,13 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
 }
 
 
-/* V3 / pass 53 — controlled home-art luminance experiment.
-   Original reference PNG is brighter in the decorative hero artwork, while
-   the matching geometry is already stable. Only the artwork layer changes:
-   no text, card, button or user-data color is modified. Preserve the
-   saturate/contrast baseline and validate the original-owner RGB MAE. */
+/* Desktop artwork grading, measured against the unmodified owner PNGs. */
 @media (min-width:1600px) and (max-width:1780px){
- body.site31.r20 .r17-home-wrap .r17-hero-art{
-  filter:saturate(1.13) contrast(1.05) brightness(1.08)!important;
+ body.site31.r20 :is(.r17-home-wrap,.r17-training-wrap) .r17-hero-art{
+  filter:saturate(1.03) contrast(.99) brightness(1.035)!important;
  }
-}
-
-
-/* V3 / pass 54 — owner screenshot luminance verified individually.
-   Routines improves RGB MAE (26.546 -> 26.436) with +8% artwork brightness.
-   Cloud *regressed* (26.500 -> 26.528) on the same test and is excluded.
-   No account, chart, button or user-data colors are modified. */
-@media (min-width:1600px) and (max-width:1780px){
- body.site31.r20 .r17-training-wrap .r17-hero-art{
-  filter:saturate(1.13) contrast(1.05) brightness(1.08)!important;
+ body.site31.r20 .r17-progress-wrap .r17-hero-art{
+  filter:saturate(.93) contrast(1.01) brightness(.99)!important;
  }
 }
 
@@ -2088,6 +2076,23 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
  body.site31.r20 .site31-brand{
   gap:16px!important;
   font-size:24.6px!important;
+ }
+ body.site31.r20:has(.r17-home-wrap,.r17-training-wrap,.r17-progress-wrap) .site31-brand{
+  letter-spacing:-.065em!important;
+ }
+ body.site31.r20:has(.r17-home-wrap) .site31-nav{
+  padding-right:44px!important;
+ }
+ body.site31.r20:has(.r17-training-wrap,.r17-progress-wrap) .site31-nav{
+  padding-right:6px!important;
+ }
+ body.site31.r20:has(.r17-training-wrap) .site31-links{
+  margin-left:45px!important;
+  gap:9px!important;
+ }
+ body.site31.r20:has(.r17-progress-wrap) .site31-links{
+  margin-left:63px!important;
+  gap:12px!important;
  }
 }
 
@@ -2155,15 +2160,43 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
 
 /* Desktop hero copy and account benefits aligned to the 1672px references. */
 @media (min-width:1600px) and (max-width:1780px){
- body.site31.r20 :is(.r17-training-wrap,.r17-progress-wrap) .r17-hero::before{
+ body.site31.r20 :is(.r17-home-wrap,.r17-progress-wrap) .r17-hero{
+  background:#101820!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-hero{
+  background:#0b141d!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-hero::before{
+  background:
+   linear-gradient(90deg,#101820 0%,#101820f8 18%,#101820db 33%,#10182063 44%,transparent 60%),
+   linear-gradient(0deg,#10182032,transparent 26%)!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-hero::before{
+  background:
+   linear-gradient(90deg,#101820 0%,#101820fc 19%,#101820db 33%,#10182063 44%,transparent 60%),
+   linear-gradient(0deg,#10182032,transparent 26%)!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-hero::before{
+  background:
+   linear-gradient(90deg,#0b141d 0%,#0b141dfc 19%,#0b141ddb 33%,#0b141d63 44%,transparent 60%),
+   linear-gradient(0deg,#0b141d32,transparent 26%)!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-hero::before{
   background:
    linear-gradient(90deg,#07121b 0%,#07121bfc 19%,#07121bdb 33%,#07121b63 44%,transparent 60%),
    linear-gradient(0deg,#07121b32,transparent 26%)!important;
  }
+ body.site31.r20 .r17-home-wrap .r17-hero h1 em{
+  position:relative;
+  top:2px;
+ }
+ body.site31.r20 .r17-account-wrap .r17-hero h1{
+  transform:translate(1px,-7px) scaleX(1.16)!important;
+ }
  body.site31.r20 .r17-training-wrap .r17-hero-content{top:5px!important}
  body.site31.r20 .r17-training-wrap .r17-hero h1{
   color:#dfdfe1!important;
-  transform:translateX(-4px) scaleX(1.10)!important;
+  transform:translate(-4px,2px) scaleX(1.10)!important;
   transform-origin:left center;
  }
  body.site31.r20 :is(.r17-training-wrap,.r17-progress-wrap) .r17-hero h1 strong{
@@ -2183,7 +2216,7 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
   letter-spacing:.15em!important;
  }
  body.site31.r20 .r17-progress-wrap .r17-hero h1{
-  transform:translate(16px,-1px) scaleX(1.12)!important;
+  transform:translate(18px,1px) scaleX(1.1)!important;
   transform-origin:left center;
  }
  body.site31.r20 .r17-progress-wrap .r17-hero-desc{
