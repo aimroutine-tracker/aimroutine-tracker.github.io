@@ -977,6 +977,11 @@ test('V17 training five days and skill choices prepare the actual routine builde
  await expect(page.locator('.r17-level-options .r17-level')).toHaveCount(3);
  await expect(page.locator('.r17-days [data-r17-day]')).toHaveCount(5);
  await expect(page.locator('[data-r17-level="iron"]')).toHaveAttribute('aria-pressed','true');
+ await page.setViewportSize({width:1672,height:941});
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.evaluate(()=>document.fonts.ready);
+ const week=await page.locator('.r17-weekline').boundingBox();
+ expect(Math.abs(week.y-797)).toBeLessThanOrEqual(6);
  await page.locator('.r17-days [data-r17-day="1"]').click();
  await expect(page.locator('.r17-weekdays [data-r17-day="1"]')).toHaveAttribute('aria-pressed','true');
  await page.locator('.r17-plan-footer [data-r17-create]').click();
@@ -1024,7 +1029,11 @@ test('V19 training preview uses the actual generator and every tool is reachable
  await page.goto('/training.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.r19-tool-grid button')).toHaveCount(8);
  await expect(page.locator('.r17-exercise strong').first()).toContainText('Stand de tir');
- await page.locator('.r19-tool-select').selectOption('Aim Lab');
+ const tool=page.locator('.r19-tool-select');
+ await tool.focus();
+ await expect(tool).toBeFocused();
+ await expect(tool).toBeInViewport();
+ await tool.selectOption('Aim Lab');
  await expect(page.locator('.r17-exercise strong').first()).toContainText('Gridshot');
  await page.locator('[data-r19-panel="program"]').click();
  await expect(page.locator('.r19-workspace-dialog')).toBeVisible();

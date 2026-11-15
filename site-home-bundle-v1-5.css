@@ -2625,6 +2625,46 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
  }
 }
 
+/* Match the desktop Routines panels and the weekly calendar to the reference. */
+@media (min-width:1600px) and (max-width:1780px){
+ body.site31.r20 .r17-training-wrap :is(.r17-train-summary,.r17-level-note,.r17-training-plan,.r17-train-right>.r17-panel,.r17-weekline){
+  border-radius:12px 4px!important;
+  border-color:#754353!important;
+  box-shadow:inset 0 0 16px #ff626d13,0 0 8px #fd567318!important;
+ }
+ body.site31.r20 .r17-training-wrap :is(.r17-train-summary,.r17-level-note,.r17-training-plan,.r17-train-right>.r17-panel:first-child,.r17-weekline){
+  background:linear-gradient(145deg,#15222b,#0c1720 88%)!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-side-challenge{
+  background:radial-gradient(ellipse at right top,#61303c45,transparent 64%),linear-gradient(135deg,#30212a,#131b24)!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-level-options .r17-level{
+  border-radius:10px 4px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-level-options .r17-level.is-active{
+  background:linear-gradient(125deg,#63313b,#261c28)!important;
+  border-color:#eb6e79!important;
+  box-shadow:inset 0 0 13px #fd667258,0 0 10px #fd62782e!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-exercise{
+  border-radius:8px 3px!important;
+  background:linear-gradient(125deg,#172730,#101b24)!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-weekline{
+  grid-template-columns:minmax(230px,1.1fr) minmax(530px,3fr) minmax(160px,1.07fr)!important;
+  transform:none!important;
+  margin-top:8px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-weekday{
+  border-radius:9px 4px!important;
+ }
+ body.site31.r20 .r17-training-wrap :is(.r17-train-summary,.r17-training-plan,.r17-train-right>.r17-panel:first-child) .r17-panel-title .r17-icon{
+  background:none!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+ }
+}
+
 /* Desktop Progress panels and complete personal-best tiles. */
 @media (min-width:1600px) and (max-width:1780px){
  body.site31.r20 .r17-progress-wrap :is(.r17-chart-grid,.r17-secondary-grid,.r17-progress-bottom)>.v14-panel{
