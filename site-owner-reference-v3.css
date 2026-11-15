@@ -2258,13 +2258,20 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
  body.site31.r20 .r17-training-wrap .r17-training-plan .r17-panel-title{
   padding-bottom:7px!important;
  }
+ body.site31.r20 .r17-training-wrap .r17-training-plan{
+  min-height:395px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-train-summary{
+  height:316px!important;min-height:316px!important;max-height:316px!important;
+ }
  body.site31.r20 .r17-training-wrap .r17-days{
   margin-top:7px!important;
  }
  body.site31.r20 .r17-training-wrap .r17-weekline{
   grid-template-columns:minmax(230px,1.1fr) minmax(530px,3fr) minmax(160px,1.07fr)!important;
   transform:none!important;
-  margin-top:8px!important;
+  margin-top:3px!important;
+  min-height:124px!important;
  }
  body.site31.r20 .r17-training-wrap .r17-weekday{
   border-radius:9px 4px!important;
@@ -2274,6 +2281,7 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
   border-color:transparent!important;
   box-shadow:none!important;
  }
+ body.site31.r20 .r17-training-wrap .ar20-tabbar{margin-top:0!important}
 }
 
 /* Desktop Progress panels and complete personal-best tiles. */
@@ -2293,7 +2301,7 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
   background:linear-gradient(145deg,#15212a,#0b161e 88%)!important;
  }
  body.site31.r20 .r17-progress-wrap .v14-progress-svgbox{
-  background-color:#0c1922!important;
+  background-color:#0d1a24!important;
   background-image:linear-gradient(to right,#4266772b 1px,transparent 1px),linear-gradient(to bottom,#4266772b 1px,transparent 1px)!important;
  }
  body.site31.r20 .r17-progress-wrap :is(.r17-chart-grid,.r17-secondary-grid,.r17-progress-bottom) .v14-panel-head .v14-glyph{
@@ -2468,7 +2476,7 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
  }
  body.site31.r20 .r17-home-wrap .r17-feature{
   border-radius:13px 4px!important;
-  background:linear-gradient(135deg,#172632,#111b25 90%)!important;
+  background:linear-gradient(142deg,#21313a,#111b25 90%)!important;
   border-color:#644653!important;
   grid-template-columns:69px minmax(0,1fr) minmax(105px,29%)!important;
   gap:18px!important;
@@ -2542,6 +2550,113 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
  body.site31.r20 .r17-home-wrap .r17-challenge>.r17-button{
   width:100%!important;
   margin-left:0!important;
+ }
+}
+
+/* Signed-in account workspace at desktop widths. */
+@media (min-width:1350px){
+ body.site31.r20.r17-authenticated .r18-actions .r18-account-link[aria-current="page"]{
+  color:#091620!important;
+ }
+ body.site31.r20.r17-authenticated .r18-actions .r18-account-link[aria-current="page"]::before{
+  background:linear-gradient(115deg,#ff6878,#ef485b);
+  border-color:#ff6875;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-auth #dashboard-panel{
+  padding:15px 18px!important;
+  border-radius:13px 4px!important;
+  border-color:#794654!important;
+  background:linear-gradient(142deg,#192632,#0b1822 87%)!important;
+ }
+ body.site31.r20 .r17-account-wrap #dashboard-panel .ar7-account-heading{
+  align-items:center;
+  flex-wrap:nowrap;
+  gap:10px;
+ }
+ body.site31.r20 .r17-account-wrap #dashboard-panel .ar7-account-heading h2{
+  font-size:clamp(18px,1.45vw,25px)!important;
+  margin:2px 0 0!important;
+ }
+ body.site31.r20 .r17-account-wrap #dashboard-panel .ar7-email{
+  margin:8px 0 9px;
+  font-size:11px;
+  line-height:1.35;
+ }
+ body.site31.r20 .r17-account-wrap #dashboard-panel .ar7-service-grid{
+  gap:8px;
+  margin-bottom:10px;
+ }
+ body.site31.r20 .r17-account-wrap #dashboard-panel .ar7-service-grid>div{
+  padding:9px;
+  gap:3px;
+  background:#14212b;
+  border-color:#465d69;
+  border-radius:8px 3px;
+ }
+ body.site31.r20 .r17-account-wrap #dashboard-panel .ar7-service-grid strong{
+  font-size:13px;
+ }
+ body.site31.r20 .r17-account-wrap #dashboard-panel .ar7-secondary,
+ body.site31.r20 .r17-account-wrap #dashboard-panel .ar7-delete-cloud summary{
+  min-height:36px;
+  padding:7px 10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid #4d6473;
+  border-radius:8px 3px;
+  background:#152532;
+  color:#e9f4f8;
+  font-size:11px;
+  text-align:center;
+  line-height:1.25;
+ }
+ body.site31.r20 .r17-account-wrap #dashboard-panel .ar7-secondary:hover,
+ body.site31.r20 .r17-account-wrap #dashboard-panel .ar7-delete-cloud summary:hover{
+  border-color:#ef6172;
+ }
+ body.site31.r20 .r17-account-wrap #dashboard-panel :is(.ar7-controls a,.ar7-import-guest button){
+  width:100%;
+ }
+ body.site31.r20 .r17-account-wrap #dashboard-panel .ar7-import-guest{
+  padding-top:10px;
+  margin-top:12px;
+ }
+ body.site31.r20 .r17-account-wrap #dashboard-panel .ar7-import-guest h3{
+  margin-bottom:4px!important;
+  font-size:16px!important;
+ }
+ body.site31.r20 .r17-account-wrap #dashboard-panel .ar7-import-guest p{
+  margin:0 0 8px;
+  font-size:11px;
+  line-height:1.35;
+ }
+ body.site31.r20 .r17-account-wrap #dashboard-panel .ar7-delete-cloud{
+  margin-top:8px;
+  padding:0;
+  border-top:0;
+ }
+ body.site31.r20 .r17-account-wrap #dashboard-panel .ar7-delete-cloud summary::after{
+  content:"";
+  width:6px;
+  height:6px;
+  margin-left:9px;
+  border-right:1px solid currentColor;
+  border-bottom:1px solid currentColor;
+  transform:rotate(45deg);
+ }
+ body.site31.r20 .r17-account-wrap #dashboard-panel .ar7-delete-cloud[open] summary::after{
+  transform:rotate(225deg);
+ }
+ body.site31.r20.r17-authenticated .r17-account-wrap .r17-cloud-status>.ar-v3-symbol,
+ body.site31.r20.r17-authenticated .r17-account-wrap .r17-cloud-status>span:has(.ar-v3-symbol){
+  width:82px;
+  height:70px;
+  flex:0 0 82px;
+  font-size:72px;
+ }
+ body.site31.r20.r17-authenticated .r17-account-wrap .r17-account-profile>.r17-profile-stat strong{
+  color:#e9f4f8;
  }
 }
 

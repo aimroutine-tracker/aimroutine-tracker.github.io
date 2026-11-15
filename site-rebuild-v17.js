@@ -149,7 +149,29 @@ function accountPage(){
  const guest=heroOld.querySelector('.ar7-guest-link');if(guest){const accountTools=$('.r17-account-right');if(accountTools)accountTools.append(guest)}
  [heroOld,main.querySelector('.v14-account-stage')].forEach(el=>el?.classList.add('r17-obsolete'));
  const slot=$('[data-r17-auth-slot]');for(const id of ['auth-panel','username-panel','dashboard-panel']){const node=$('#'+id);if(node)slot.append(node)}oldLayout.classList.add('r17-original-layout');
- const dashboard=$('#dashboard-panel');function state(){const logged=dashboard&&!dashboard.hidden;const props={username:logged?($('#user-username')?.textContent?.trim()||phrase('Mon profil','My profile')):phrase('Ton compte AIM','Your AIM account'),email:logged?($('#user-email')?.textContent?.trim()||'—'):phrase('Connecte-toi pour afficher tes données','Sign in to view your data'),'account-sessions':logged?($('#cloud-sessions-count')?.textContent?.trim()||'—'):'—','account-routines':logged?($('#cloud-routines-count')?.textContent?.trim()||'—'):'—','cloud-label':logged?($('#cloud-enabled-status')?.textContent?.trim()||phrase('Compte connecté','Signed in')):phrase('Cloud non connecté','Cloud not signed in'),'sync-head':logged?($('#cloud-enabled-status')?.textContent?.trim()||phrase('Connecté','Connected')):phrase('Connexion nécessaire','Sign-in required'),'sync-copy':logged?phrase('Gère la sauvegarde dans tes paramètres.','Manage backup in account settings.'):phrase('Connecte-toi pour activer la sauvegarde.','Sign in to enable backup.')};for(const [k,v]of Object.entries(props))if($('[data-r17-'+k+']'))$('[data-r17-'+k+']').textContent=v;document.body.classList.toggle('r17-authenticated',Boolean(logged))}if(dashboard){new MutationObserver(state).observe(dashboard,{attributes:true,childList:true,subtree:true,characterData:true});state()}
+ const dashboard=$('#dashboard-panel');
+ if(dashboard){
+  const dashboardText=(selector,fallback)=>$(selector)?.textContent.trim()||fallback;
+  function renderProfile(){
+   const logged=!dashboard.hidden;
+   const values={
+    username:logged?dashboardText('#user-username',phrase('Mon profil','My profile')):phrase('Connecte-toi à ton profil','Sign in to your profile'),
+    email:logged?dashboardText('#user-email','—'):phrase('Connecte-toi pour afficher tes données','Sign in to view your data'),
+    'account-sessions':logged?dashboardText('#cloud-sessions-count','—'):'—',
+    'account-routines':logged?dashboardText('#cloud-routines-count','—'):'—',
+    'cloud-label':logged?phrase('Compte connecté','Account connected'):phrase('Cloud non connecté','Cloud not signed in'),
+    'sync-head':logged?dashboardText('#cloud-enabled-status',phrase('Connecté','Connected')):phrase('Connexion nécessaire','Sign-in required')
+   };
+   for(const [key,value] of Object.entries(values)){
+    const field=$('[data-r17-'+key+']');
+    if(field&&field.textContent!==value)field.textContent=value;
+   }
+   document.body.classList.toggle('r17-authenticated',logged);
+  }
+  new MutationObserver(renderProfile).observe(dashboard,{attributes:true,childList:true,subtree:true,characterData:true});
+  renderProfile();
+  window.addEventListener('aim-v3-locale-changed',renderProfile);
+ }
  const select=$('[data-r17-language]');if(select){select.value=language();select.addEventListener('change',()=>{if(select.value!==language())$('[data-switch-lang]')?.click()});$('[data-switch-lang]')?.addEventListener('click',()=>queueMicrotask(()=>select.value=language()))}
 }
 function progressPage(){const main=$('main.v14-progress-main');

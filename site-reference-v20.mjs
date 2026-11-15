@@ -327,17 +327,6 @@ function account(screen){
     if(target)manage.setAttribute('href','#'+target.id);
    }
    if(registrationCard)registrationCard.hidden=active;
-   const username=$('[data-r17-username]',screen);
-   if(username){
-    if(active){
-     // This node may display the authenticated pseudonym: NEVER overwrite it
-     // on subsequent language changes.
-     delete username.dataset.r20Fr;
-     delete username.dataset.r20En;
-    }else{
-     bindV3Locale(username,'Connecte-toi à ton profil','Sign in to your profile');
-    }
-   }
    const sync=$('[data-r17-sync-copy]',screen);
    if(active){
     bindV3Locale(sync,
@@ -348,9 +337,6 @@ function account(screen){
      'Connecte-toi pour synchroniser automatiquement tes données.',
      'Sign in to synchronize your data automatically.');
    }
-   const label=$('[data-r17-cloud-label]',screen);
-   if(active)bindV3Locale(label,'Compte connecté','Account connected');
-   else bindV3Locale(label,'Cloud non connecté','Cloud not signed in');
   };
   const observer=new MutationObserver(show);
   for(const panel of [dashboard,profileSetup,loginPanel]){

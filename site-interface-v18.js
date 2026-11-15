@@ -34,14 +34,13 @@
       '<span class="r18-cloud-icon" aria-hidden="true">☁</span> Sync Cloud <span class="r18-cloud-indicator" aria-hidden="true"></span></a>'+
       '<a class="r18-signin" href="account.html#auth-panel">'+tr('Se connecter','Sign in')+'</a>'+
       '<a class="r18-register" href="account.html?mode=signup#auth-panel">'+tr('Créer un compte','Create account')+'</a>';
-    if (route === 'account.html') {
-      const current=document.createElement('a');
+    const current=route === 'account.html' ? document.createElement('a') : null;
+    if (current) {
       current.className='r18-account-link';
-      current.href='account.html#dashboard-panel';
+      current.href='account.html#auth-panel';
       current.setAttribute('aria-current','page');
       current.innerHTML=tr('Mon compte','My account');
-      const login=$('.r18-signin',actions);
-      if(login)login.before(current);else actions.append(current);
+      $('.r18-signin',actions).before(current);
     }
     controls.before(actions);
     const mobile = $('.site31-mobile-links');
@@ -56,15 +55,21 @@
     }
     const cloud = $('.r18-cloud',actions), signIn = $('.r18-signin',actions), register = $('.r18-register',actions);
     const dashboard = $('#dashboard-panel');
-    if (route === 'account.html' && dashboard) {
+    if (current && dashboard) {
+      const profileSetup = $('#username-panel');
       const syncState = () => {
         const signedIn = !dashboard.hidden;
+        const needsProfile = Boolean(profileSetup && !profileSetup.hidden);
+        const panel = signedIn ? dashboard.id : needsProfile ? profileSetup.id : 'auth-panel';
+        const href = 'account.html#'+panel;
         cloud.classList.toggle('r18-connected',signedIn);
-        signIn.innerHTML = signedIn ? tr('Mon compte','My account') : tr('Se connecter','Sign in');
-        signIn.href = signedIn ? 'account.html#dashboard-panel' : 'account.html#auth-panel';
-        register.hidden = signedIn;
+        cloud.href = current.href = href;
+        signIn.hidden = register.hidden = signedIn || needsProfile;
       };
-      new MutationObserver(syncState).observe(dashboard,{attributes:true,attributeFilter:['hidden']});
+      const observer = new MutationObserver(syncState);
+      const options = {attributes:true,attributeFilter:['hidden']};
+      observer.observe(dashboard,options);
+      if(profileSetup) observer.observe(profileSetup,options);
       syncState();
     }
   }

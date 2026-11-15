@@ -547,6 +547,35 @@ test('V3 profile label respects the selected locale without pretending there is 
  await expect(page.locator('.r17-account-profile [data-r17-username]')).toContainText('Sign in to your profile');
 });
 
+test('Account header retains a single current account link when the dashboard opens',async({page})=>{
+ await page.setViewportSize({width:1672,height:941});
+ // Exercise the header's panel observer without contacting any Auth service.
+ await page.route('**/account-v7.mjs*',route=>route.fulfill({contentType:'application/javascript',body:''}));
+ await page.goto('/account.html',{waitUntil:'load'});
+ const header=page.locator('.r18-actions');
+ const current=header.getByRole('link',{name:'Mon compte',exact:true});
+ const signIn=header.getByRole('link',{name:'Se connecter',exact:true});
+ const cloud=header.locator('.r18-cloud');
+ const dashboard=page.locator('#dashboard-panel');
+ await expect(signIn).toBeVisible();
+ await expect(current).toHaveAttribute('href','account.html#auth-panel');
+ await page.evaluate(()=>{
+  document.getElementById('auth-panel').hidden=true;
+  document.getElementById('dashboard-panel').hidden=false;
+ });
+ await expect(dashboard).toBeVisible();
+ await expect(current).toHaveCount(1);
+ await expect(current).toHaveAttribute('aria-current','page');
+ await expect(cloud).toHaveAttribute('href','account.html#dashboard-panel');
+ await expect(header.locator('.r18-register')).toBeHidden();
+ await page.evaluate(()=>{
+  document.getElementById('dashboard-panel').hidden=true;
+  document.getElementById('auth-panel').hidden=false;
+ });
+ await expect(signIn).toBeVisible();
+ await expect(cloud).toHaveAttribute('href','account.html#auth-panel');
+});
+
 test('Google Cloud sign-in description is accurate and accessible in French and English',async({page})=>{
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
  const google=page.locator('#google-signin');
