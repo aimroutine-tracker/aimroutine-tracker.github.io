@@ -285,8 +285,8 @@ function account(screen){
  }
  const devices=$('.r17-cloud-devices',screen);
  if(devices)bindV3Locale($('p',devices),
-  'La liste des appareils n’est pas disponible dans ton compte : aucun appareil fictif n’est affiché.',
-  'Device history is unavailable: no fictional devices are displayed.');
+  'L’historique des appareils connectés est indisponible.',
+  'Connected device history is unavailable.');
  // The guest CTA opens the REAL Supabase registration UI. It does not create
  // a duplicate account form, touch a password, or write to local storage.
  const loginPanel=$('#auth-panel');
@@ -318,8 +318,14 @@ function account(screen){
  }
  const dashboard=$('#dashboard-panel');
  if(dashboard){
+  const manage=$('.r17-profile-cloud a',screen);
+  const profileSetup=$('#username-panel');
   const show=()=>{
    const active=!dashboard.hidden;
+   if(manage){
+    const target=[dashboard,profileSetup,loginPanel].find(panel=>panel&&!panel.hidden);
+    if(target)manage.setAttribute('href','#'+target.id);
+   }
    if(registrationCard)registrationCard.hidden=active;
    const username=$('[data-r17-username]',screen);
    if(username){
@@ -346,7 +352,10 @@ function account(screen){
    if(active)bindV3Locale(label,'Compte connecté','Account connected');
    else bindV3Locale(label,'Cloud non connecté','Cloud not signed in');
   };
-  new MutationObserver(show).observe(dashboard,{attributes:true,attributeFilter:['hidden']});
+  const observer=new MutationObserver(show);
+  for(const panel of [dashboard,profileSetup,loginPanel]){
+   if(panel)observer.observe(panel,{attributes:true,attributeFilter:['hidden']});
+  }
   show();
  }
 }

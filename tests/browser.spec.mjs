@@ -11,6 +11,17 @@ async function useVerifiedTestAccount(page){
  await expect.poll(()=>page.evaluate(()=>Boolean(window.AIMWeb)),{timeout:15000}).toBe(true);
 }
 
+async function useGuestAccountClient(page){
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({
+  contentType:'application/javascript',
+  body:`export const SITE_URL='https://aimroutine-tracker.github.io/';
+export const supabase={auth:{
+ getUser:async()=>({data:{user:null},error:null}),
+ onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}})
+}};`
+ }));
+}
+
 test.beforeEach(async ({page})=>{
  await page.route('https://cmsassets.rgpub.io/**',route=>route.abort());
  // Keep browser smoke tests deterministic: real Turnstile is validated only
@@ -773,10 +784,12 @@ test('Google account must choose a nickname before cloud dashboard (mock Auth)',
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#username-panel')).toBeVisible();
  await expect(page.locator('#dashboard-panel')).toBeHidden();
+ await expect(page.locator('.r17-profile-cloud a')).toHaveAttribute('href','#username-panel');
  await page.locator('#username-input').fill('NewPlayer');
  await page.locator('#username-form button[type="submit"]').click();
  await expect(page.locator('#dashboard-panel')).toBeVisible();
  await expect(page.locator('#user-username')).toHaveText('NewPlayer');
+ await expect(page.locator('.r17-profile-cloud a')).toHaveAttribute('href','#dashboard-panel');
  expect(saved).toBe(1);
 });
 
@@ -1605,6 +1618,7 @@ test('V3 Progress unified KPI ribbon keeps all original real-data metric element
 
 
 test('V3 Cloud auth heading matches reference without losing active secure forms',async({page})=>{
+ await useGuestAccountClient(page);
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
  const title=page.locator('#ar7-auth-title');
  const subtitle=page.locator('#auth-panel .r17-auth-reference-copy .ar7-eyebrow');
@@ -2402,6 +2416,7 @@ export const synchronize=(_client,uid)=>{
  await expect(page.locator('#user-email')).toHaveText('private-b@example.invalid');
  await expect.poll(()=>page.evaluate(()=>window.__qaAccountSyncCalls?.includes('22222222-2222-4222-8222-222222222222'))).toBe(true);
  await expect(page.locator('#dashboard-panel')).toBeVisible();
+ await expect(page.locator('.r17-profile-cloud a')).toHaveAttribute('href','#dashboard-panel');
  await page.evaluate(()=>window.__qaFinishOldCloud());
  await expect(page.locator('#user-email')).toHaveText('private-b@example.invalid');
  expect(await page.evaluate(()=>localStorage.getItem('aimroutine_cloud_current_uid'))).toBe(b);
@@ -3685,6 +3700,7 @@ test('V3 Progress panel anchors preserve original desktop proportions without in
 
 
 test('V3 Cloud guest signup stays above the 1672px fold while keeping all real auth paths',async({page})=>{
+ await useGuestAccountClient(page);
  await page.setViewportSize({width:1672,height:941});
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>document.body?.classList.contains('r20'));
@@ -3709,6 +3725,11 @@ test('V3 Cloud guest signup stays above the 1672px fold while keeping all real a
  expect(signupTop).toBeGreaterThanOrEqual(loginBottom-2);
  expect(Math.abs(signupTop-702),`Cloud signup top=${signupTop}, source reference y≈702`).toBeLessThanOrEqual(30);
  expect(signupActionBottom,`Cloud signup CTA ends at ${signupActionBottom}`).toBeLessThanOrEqual(941);
+ const manage=page.locator('.r17-profile-cloud a');
+ await expect(manage).toHaveAttribute('href','#auth-panel');
+ await manage.click();
+ await expect(page).toHaveURL(/#auth-panel$/);
+ await expect(page.locator('#login-form')).toBeInViewport();
  await page.locator('.r17-guest-signup-button').click();
  await expect(page.locator('#signup-form')).toBeVisible();
  await expect(page.locator('#signup-username')).toBeVisible();

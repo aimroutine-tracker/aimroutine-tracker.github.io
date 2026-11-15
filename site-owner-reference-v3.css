@@ -2317,6 +2317,52 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
  body.site31.r20 .r17-account-wrap :is(.r17-account-profile,.r17-account-right>.r17-panel,.r17-guest-registration){
   border-radius:13px 4px!important;
  }
+ body.site31.r20 .r17-account-wrap .r17-account-profile{
+  background:linear-gradient(112deg,#30202c,#152431 46%,#0c1924)!important;
+  border-color:#bf485e!important;
+  box-shadow:inset 0 0 24px #ff52631c,0 0 18px #ff52631c!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-account-profile>.r17-profile-stat{
+  padding-left:15px;
+  border-left:1px solid #7a748045;
+ }
+ body.site31.r20 .r17-account-wrap .r17-profile-cloud a{
+  padding:7px 13px;
+  border-radius:7px 3px;
+  border-color:#8398a6;
+ }
+ body.site31.r20 .r17-account-wrap #auth-panel{
+  border-radius:13px 4px!important;
+  background:linear-gradient(142deg,#182633,#0b1924 80%)!important;
+  border-color:#794654!important;
+ }
+ body.site31.r20 .r17-account-wrap #auth-panel:has(#login-form:not([hidden])) .r17-auth-reference-heading{
+  align-items:center!important;
+  margin-bottom:4px!important;
+ }
+ body.site31.r20 .r17-account-wrap #auth-panel:has(#login-form:not([hidden])) .r17-auth-reference-icon{
+  height:40px!important;
+ }
+ body.site31.r20 .r17-account-wrap #auth-panel:has(#login-form:not([hidden])) #google-login-wrap:not([hidden]){
+  top:57px!important;
+ }
+ body.site31.r20 .r17-account-wrap #auth-panel #login-form input{
+  border-radius:8px 4px!important;
+  border-color:#677e8e!important;
+ }
+ body.site31.r20 .r17-account-wrap #auth-panel #login-form .ar7-primary{
+  border-radius:8px 4px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-guest-registration .r17-guest-registration-heading .r17-icon{
+  width:47px;
+  height:47px;
+  flex:0 0 47px;
+  border-radius:8px 4px!important;
+ }
+ body.site31.r20 .r17-account-wrap .r17-guest-signup-button{
+  border-radius:9px 4px!important;
+  box-shadow:inset 0 0 15px #ff64751b;
+ }
  body.site31.r20 .r17-account-wrap .r17-account-right>.r17-panel{
   background:linear-gradient(145deg,#17232e,#0b1822 86%)!important;
   border-color:#793e4e!important;
@@ -2326,7 +2372,8 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
   grid-template-columns:minmax(0,41fr) minmax(0,59fr)!important;
  }
  body.site31.r20 .r17-account-wrap .r17-cloud-status{
-  background:linear-gradient(135deg,#092230,#104154 72%,#103b46)!important;
+  background:radial-gradient(ellipse at 13% 68%,#1b5368,#0d2a38 48%,#0a1d2b 86%)!important;
+  box-shadow:inset 0 0 14px #39a6b626;
  }
  body.site31.r20 .r17-account-wrap .r17-cloud-devices{
   background:linear-gradient(125deg,#121e29,#101820)!important;
@@ -2342,6 +2389,7 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
   color:#57d8d2!important;
  }
  body.site31.r20 .r17-account-wrap .r17-cloud-status>span{
+  font-size:54px;
   color:#4aeae2!important;
   filter:drop-shadow(0 0 7px #41dfe08c);
  }
