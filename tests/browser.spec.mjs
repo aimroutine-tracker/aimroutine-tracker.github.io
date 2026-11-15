@@ -411,7 +411,7 @@ test('V3 reference hero bracket is decorative on all four pages',async({page})=>
 
 
 
-test('V3 home KPI strip matches reference vertical placement without moving features',async({page})=>{
+test('V3 home KPI strip matches reference spacing without moving features',async({page})=>{
  await page.setViewportSize({width:1672,height:941});
  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
  await expect.poll(()=>page.evaluate(()=>document.body.classList.contains('r20'))).toBe(true);
@@ -425,6 +425,20 @@ test('V3 home KPI strip matches reference vertical placement without moving feat
  expect(b.y).toBeGreaterThanOrEqual(490);
  expect(b.y).toBeLessThanOrEqual(503);
  expect(a.y+a.height).toBeLessThan(b.y);
+ const cells=await rail.locator(':scope > div').evaluateAll(nodes=>nodes.map(cell=>{
+  const icon=cell.querySelector('.r17-stat-icon').getBoundingClientRect();
+  const divider=getComputedStyle(cell,'::after');
+  return {iconX:icon.x,divider:divider.content,shape:divider.clipPath};
+ }));
+ expect(cells).toHaveLength(4);
+ for(const [index,sourceX] of [196,569,916,1286].entries()){
+  expect(Math.abs(cells[index].iconX-sourceX)).toBeLessThanOrEqual(18);
+ }
+ expect(cells.slice(0,3).every(cell=>cell.divider==='""'&&cell.shape.startsWith('polygon('))).toBe(true);
+ expect(cells[3].divider).toBe('none');
+ await page.emulateMedia({reducedMotion:'reduce'});
+ const staticDivider=await rail.locator(':scope > div').first().evaluate(cell=>getComputedStyle(cell,'::after').clipPath);
+ expect(staticDivider).toBe(cells[0].shape);
 });
 
 test('V3 routines hero CTAs keep source geometry and real navigation',async({page})=>{
