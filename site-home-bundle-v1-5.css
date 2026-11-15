@@ -2556,26 +2556,28 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
  body.site31.r20 .r17-training-wrap .r17-hero-art{
   --hero-city-start:56.783%;
   --hero-sign-start:79.549%;
-  --hero-city-size:354.354%;
-  --hero-city-position:79.693%;
-  --hero-city-height:108.466%;
-  --hero-city-top:-4px;
-  --hero-sign-size:686.047%;
-  --hero-sign-height:107.618%;
-  --hero-sign-top:-8px;
-  background-size:70.828% 105.076%!important;
-  background-position:55.762% 1px!important;
+  --hero-city-size:335.3%;
+  --hero-city-position:80.2%;
+  --hero-city-height:110.3%;
+  --hero-city-top:-7px;
+  --hero-sign-size:529.3%;
+  --hero-sign-height:123.4%;
+  --hero-sign-top:-51px;
+  background-size:70.64% 104.95%!important;
+  background-position:55.54% 1.75px!important;
  }
  body.site31.r20 .r17-progress-wrap .r17-hero-art{
   --hero-city-start:48.197%;
   --hero-sign-start:73.568%;
-  --hero-city-size:590%;
-  --hero-city-position:66.327%;
-  --hero-sign-size:357.576%;
-  --hero-image-height:105%;
-  --hero-image-top:-4px;
-  background-size:60.217% 104.162%!important;
-  background-position:38.221% -5px!important;
+  --hero-city-size:670%;
+  --hero-city-position:63.59%;
+  --hero-city-height:116.91%;
+  --hero-city-top:4px;
+  --hero-sign-size:335.3%;
+  --hero-sign-height:116%;
+  --hero-sign-top:-13px;
+  background-size:59.38% 104.91%!important;
+  background-position:38.35% -6px!important;
  }
  body.site31.r20 .r17-account-wrap .r17-hero-art{
   --hero-city-start:61.992%;
@@ -2589,7 +2591,7 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
   background-position:74.061% var(--hero-image-top)!important;
  }
  body.site31.r20 :is(.r17-training-wrap,.r17-progress-wrap) .r17-hero-art{
-  mask-image:linear-gradient(90deg,transparent 12%,#000 22%);
+  mask-image:linear-gradient(90deg,transparent 6%,#000 18%);
  }
  body.site31.r20 :is(.r17-training-wrap,.r17-progress-wrap,.r17-account-wrap) .r17-hero-art::before,
  body.site31.r20 :is(.r17-training-wrap,.r17-progress-wrap,.r17-account-wrap) .r17-hero-art::after{
