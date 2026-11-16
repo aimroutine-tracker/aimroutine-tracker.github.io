@@ -1061,6 +1061,11 @@ test('V17 training five days and skill choices prepare the actual routine builde
  expect(Math.abs(week.y-797)).toBeLessThanOrEqual(6);
  await page.locator('.r17-days [data-r17-day="1"]').click();
  await expect(page.locator('.r17-weekdays [data-r17-day="1"]')).toHaveAttribute('aria-pressed','true');
+ await page.locator('.r17-weekdays [data-r17-day="2"]').click();
+ await expect(page.locator('.r17-days [data-r17-day="2"]')).toHaveAttribute('aria-pressed','true');
+ await expect(page.locator('.r17-level-note [data-r17-level-name]')).toHaveText('DÉBUTANT');
+ await expect(page.locator('.r17-level-note .r17-meter')).toHaveCount(0);
+ await page.locator('.r17-weekdays [data-r17-day="1"]').click();
  await page.locator('.r17-plan-footer [data-r17-create]').click();
  await expect(page.locator('#rank')).toHaveValue('iron');
  await expect(page.locator('#focus')).toHaveValue('tracking');

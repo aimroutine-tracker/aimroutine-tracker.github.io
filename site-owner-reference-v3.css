@@ -585,9 +585,6 @@ body.site31.site31-training.r20 main#app>#ar-account-required{
  body.site31.r20 .r17-training-wrap .r17-level-note p{
   font-size:10.5px!important;line-height:1.27!important;
  }
- body.site31.r20 .r17-training-wrap .r17-level-note .r17-meter{
-  margin-top:5px!important;
- }
 }
 
 
@@ -2312,8 +2309,38 @@ body.site31.r20 .r17-training-wrap .r17-metric:has([data-r17-count],[data-r17-ac
   border-radius:8px 3px!important;
   background:linear-gradient(125deg,#172730,#101b24)!important;
  }
- body.site31.r20 .r17-training-wrap .r17-training-plan .r17-panel-title{
+ body.site31.r20 .r17-training-wrap .r17-training-plan>.r17-panel-title{
   padding-bottom:7px!important;
+  gap:15px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-training-plan>.r17-panel-title h2{
+  font-size:19px!important;
+  letter-spacing:-.028em!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-training-plan>.r17-panel-title small{
+  font-size:11.5px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-training-plan>.r17-panel-title>b{
+  min-width:155px!important;
+  font-size:11.5px!important;
+  background:#11232e!important;
+  border-radius:9px 4px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-level-note{
+  padding:10px 16px!important;
+  background:
+   radial-gradient(ellipse at 0 0,#471d2a88,transparent 46%),
+   linear-gradient(145deg,#152530,#0d1a21 88%)!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-level-note h3{
+  width:max-content;
+  max-width:100%;
+  padding:3px 14px;
+  font-size:13px!important;
+  border:1px solid #58727d;
+  border-radius:8px 3px;
+  background:#142835;
+  color:#edf5f9!important;
  }
  body.site31.r20 .r17-training-wrap .r17-training-plan{
   min-height:395px!important;
@@ -2362,17 +2389,60 @@ body.site31.r20 .r17-training-wrap .r17-metric:has([data-r17-count],[data-r17-ac
  body.site31.r20 .r17-training-wrap .r17-train-summary .r17-meter{
   margin:0 0 0 61px!important;
  }
- body.site31.r20 .r17-training-wrap .r17-days{
-  margin-top:7px!important;
+ body.site31.r20 .r17-training-wrap .r17-training-plan .r17-days{
+  margin:10px 10px 12px!important;
+  gap:9px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-training-plan .r17-day{
+  border-radius:10px 4px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-training-plan .r17-day strong{
+  font-size:12px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-training-plan .r17-day small{
+  font-size:10px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-training-plan .r17-day.is-active{
+  background:linear-gradient(135deg,#fb6377,#e84e65)!important;
+  box-shadow:0 0 14px #ff5b692f!important;
  }
  body.site31.r20 .r17-training-wrap .r17-weekline{
-  grid-template-columns:minmax(230px,1.1fr) minmax(530px,3fr) minmax(160px,1.07fr)!important;
+  grid-template-columns:minmax(225px,1fr) minmax(515px,3.07fr) minmax(150px,1.12fr)!important;
   transform:none!important;
-  margin-top:3px!important;
-  min-height:124px!important;
+  gap:19px!important;
+  margin-top:15px!important;
+  min-height:105px!important;
+  padding:12px 22px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-weekline h2{
+  font-size:18px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-weekdays{
+  gap:13px!important;
  }
  body.site31.r20 .r17-training-wrap .r17-weekday{
+  min-height:63px!important;
+  gap:3px!important;
+  padding:8px 13px!important;
   border-radius:9px 4px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-weekday:not(.is-active):not(.r20-complete){
+  border-color:#49616b!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-weekday strong{
+  font-size:13px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-weekday small{
+  font-size:11px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-weekprogress{
+  padding:4px 4px 0 26px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-weekprogress strong{
+  font-size:16px!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-weekprogress small{
+  font-size:12px!important;
  }
  body.site31.r20 .r17-training-wrap :is(.r17-train-summary,.r17-training-plan,.r17-train-right>.r17-panel:first-child) .r17-panel-title .r17-icon{
   background:none!important;
