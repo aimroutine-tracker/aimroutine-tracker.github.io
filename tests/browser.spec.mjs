@@ -1520,13 +1520,20 @@ test('V3 chart header period selectors filter recorded weeks without fabricated 
 });
 
 test('V3 empty Progress radar shows tracked focus axes but no fabricated score', async ({page}) => {
+ await page.setViewportSize({width:1672,height:941});
  await page.goto('/progress.html', {waitUntil:'domcontentloaded'});
  const root=page.locator('#v14-p-distribution');
  const drawing=root.locator('.v3-empty-radar svg');
  await expect(drawing).toBeVisible();
  await expect(drawing.locator('polygon')).toHaveCount(4); // grid ONLY, no measured profile
  await expect(drawing.locator('text')).toHaveCount(4); // four real focus categories
- await expect(root.locator('.v3-empty-radar-caption')).toContainText('Aucune séance');
+ const caption=root.locator('.v3-empty-radar-caption');
+ await expect(caption).toContainText('Aucune séance');
+ const contentFit=await caption.evaluate(element=>{
+  const panel=element.closest('#v14-p-skills-panel');
+  return element.getBoundingClientRect().bottom<=panel.getBoundingClientRect().bottom;
+ });
+ expect(contentFit).toBe(true);
  await expect(page.locator('#v14-p-average')).toContainText('—');
  await expect(page.locator('#v14-p-sessions')).toContainText('0');
 });
