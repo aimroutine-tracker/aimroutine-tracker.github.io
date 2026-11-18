@@ -29,11 +29,12 @@ test('accuracy charts position sessions by elapsed time and announce their recor
   {date:'2026-11-06T08:00:00Z',accuracy:72},
   {date:'2026-11-06T09:00:00Z',accuracy:75}
  ]);
- const [svg,description]=root.children;
+ const [svg,caption,description]=root.children;
  const points=svg.children.filter(node=>node.tag==='circle');
  const [start,middle,end]=points.map(point=>Number(point.attributes.cx));
  assert.equal(points.length,3);
  assert.ok(Math.abs((middle-start)/(end-start)-1/72)<1e-10);
+ assert.equal(caption.textContent,'3 résultats saisis');
  assert.match(description.textContent,/72 %.*75 %.*81 %/);
  assert.equal(svg.attributes['aria-hidden'],'true');
 });

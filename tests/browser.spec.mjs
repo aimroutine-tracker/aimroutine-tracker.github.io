@@ -1297,20 +1297,16 @@ test('V3 challenge reticle is decorative and leaves functional start link availa
  const challenge=page.locator('.r17-home-wrap .r17-challenge');
  const heading=challenge.locator('h3');
  const badge=await heading.evaluate(el=>{
-  const before=getComputedStyle(el,'::before'),after=getComputedStyle(el,'::after');
+  const art=getComputedStyle(el,'::before');
   const title=el.getBoundingClientRect(),panel=el.closest('.r17-challenge').getBoundingClientRect();
   return {titleLeft:title.left,panelLeft:panel.left,
-   beforeContent:before.content,afterContent:after.content,
-   beforeWidth:before.width,afterWidth:after.width,
-   beforePointerEvents:before.pointerEvents,afterPointerEvents:after.pointerEvents};
+   content:art.content,image:art.backgroundImage,width:art.width,pointerEvents:art.pointerEvents};
  });
  expect(badge.titleLeft-badge.panelLeft).toBeGreaterThan(90);
- expect(badge.beforeContent).toBe('""');
- expect(badge.afterContent).toBe('""');
- expect(badge.beforeWidth).toBe('64px');
- expect(badge.afterWidth).toBe('49px');
- expect(badge.beforePointerEvents).toBe('none');
- expect(badge.afterPointerEvents).toBe('none');
+ expect(badge.content).toBe('""');
+ expect(badge.image).toContain('site-v3-decor-challenge-badge.webp');
+ expect(badge.width).toBe('64px');
+ expect(badge.pointerEvents).toBe('none');
  await expect(challenge.locator('.r17-button')).toHaveAttribute('href','#aim-challenge');
  await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth)).toBeLessThanOrEqual(3);
 });
@@ -1732,7 +1728,7 @@ test('V3 Cloud auth heading matches reference without losing active secure forms
 });
 
 
-test('V3 Progress and Cloud desktop hero artwork spans the right edge without overlapping crops',async({page})=>{
+test('V3 Progress and Cloud artwork meets the right edge and keeps account benefits evenly spaced',async({page})=>{
  for(const [route,screen] of [['progress.html','progress'],['account.html','account']]){
   await page.setViewportSize({width:1672,height:941});
   await page.goto('/'+route,{waitUntil:'domcontentloaded'});
@@ -1751,27 +1747,18 @@ test('V3 Progress and Cloud desktop hero artwork spans the right edge without ov
    expect(Math.abs((second-first)-(third-second))).toBeLessThan(20);
   }
   const layout=await hero.evaluate(art=>{
-   const middle=getComputedStyle(art,'::before');
-   const edge=getComputedStyle(art,'::after');
-   return {
-    artWidth:art.getBoundingClientRect().width,
-    middle:parseFloat(middle.width),
-    middleEnd:parseFloat(middle.right),
-    edge:parseFloat(edge.width),
-    edgeEnd:parseFloat(edge.right),
-    fills:[middle.backgroundImage,edge.backgroundImage],
-    scroll:document.documentElement.scrollWidth
-   };
+   const bounds=art.getBoundingClientRect();
+   const css=getComputedStyle(art);
+   return {right:bounds.right,width:bounds.width,image:css.backgroundImage,mask:css.maskImage,
+    scroll:document.documentElement.scrollWidth};
   });
-  expect(layout.fills.every(image=>image.includes('r17-hero.webp'))).toBe(true);
-  expect(layout.middle).toBeGreaterThan(150);
-  expect(layout.edge).toBeGreaterThan(150);
-  expect(layout.edgeEnd).toBe(0);
-  expect(Math.abs(layout.middleEnd-layout.edge)).toBeLessThan(1);
-  expect(layout.middle+layout.edge).toBeLessThan(layout.artWidth);
+  expect(layout.image).toContain('site-v3-hero-'+screen+'.webp');
+  expect(layout.right).toBeCloseTo(1672,0);
+  expect(layout.width).toBeCloseTo(screen==='account'?856:1019,0);
+  expect(layout.mask).toContain('linear-gradient');
   expect(layout.scroll).toBeLessThanOrEqual(1672);
   await page.setViewportSize({width:390,height:844});
-  await expect.poll(()=>hero.evaluate(art=>getComputedStyle(art,'::before').content)).toBe('none');
+  await expect.poll(()=>hero.evaluate(art=>getComputedStyle(art).backgroundImage)).toContain('r17-hero.webp');
   expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
  }
 });

@@ -29,7 +29,8 @@ export function renderAccuracyPlot(root,sessions,{locale,emptyMessage,compact=fa
   if(compact)return;
  }
  const width=compact?370:600,height=compact?150:198;
- const left=40,right=width-15,top=11,bottom=height-25;
+ const left=40,right=width-15,bottom=height-25;
+ const top=!compact&&points.length?23:11;
  const first=points[0]?.time,last=points.at(-1)?.time;
  const span=last-first;
  // Duplicate timestamps intentionally share the same X coordinate.
@@ -65,11 +66,18 @@ export function renderAccuracyPlot(root,sessions,{locale,emptyMessage,compact=fa
  for(const time of ticks){
   svg.append(svgNode('text',{x:x(time),y:height-7,'text-anchor':!span?'middle':time===first?'start':'end','font-size':12,fill:'#b7cbd6'},timeLabel.format(time)));
  }
- const dateLabel=new Intl.DateTimeFormat(locale,{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+ const english=locale==='en-GB';
  const number=new Intl.NumberFormat(locale,{maximumFractionDigits:1});
+ if(!compact){
+  const caption=document.createElement('small');
+  caption.className='v14-chart-caption';
+  caption.textContent=number.format(points.length)+' '+(english?'reported scores':'résultats saisis');
+  root.append(caption);
+ }
+ const dateLabel=new Intl.DateTimeFormat(locale,{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
  const description=document.createElement('p');
  description.className='r17-visually-hidden';
- description.textContent=(locale==='en-GB'?'Recorded accuracy: ':'Précision enregistrée : ')+
+ description.textContent=(english?'Recorded accuracy: ':'Précision enregistrée : ')+
   points.map(({time,score})=>dateLabel.format(time)+' : '+number.format(score)+' %').join(' ; ');
  root.append(description);
 }

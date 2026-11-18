@@ -3372,3 +3372,9 @@ body.site31.r20 .r17-progress-wrap #v14-p-line>.v14-chart-empty{
  margin:0;
  padding:0 15px 10px 35px;
 }
+body.site31.r20 .r17-progress-wrap #v14-p-line>.v14-chart-caption{
+ position:absolute;
+ top:2px;
+ right:10px;
+ line-height:1.15;
+}
