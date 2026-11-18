@@ -4,15 +4,17 @@ import {readFileSync} from 'node:fs';
 
 const html=name=>readFileSync(new URL('../'+name+'.html',import.meta.url),'utf8');
 
-test('Every V3 reference page prioritizes its actual local hero artwork',()=>{
- for(const name of ['index','training','progress','account']){
-  const page=html(name);
-  const preloads=[...page.matchAll(/<link\b[^>]*rel="preload"[^>]*as="image"[^>]*>/g)]
+test('Every V3 reference page preloads the active local hero artwork',()=>{
+ const desktop='(min-width:1600px) and (max-width:1780px)';
+ for(const [name,art] of Object.entries({index:'home',training:'routines',progress:'progress',account:'account'})){
+  const preloads=[...html(name).matchAll(/<link\b[^>]*rel="preload"[^>]*as="image"[^>]*>/g)]
    .map(match=>match[0]);
-  assert.equal(preloads.length,1,name+' must have only one hero-image preload');
-  assert.match(preloads[0],/href="r17-hero\.webp"/,name);
-  assert.match(preloads[0],/fetchpriority="high"/,name);
-  assert.doesNotMatch(preloads[0],/cmsassets\.rgpub\.io/,name);
+  assert.equal(preloads.length,2,name);
+  assert.ok(preloads[0].includes(`href="site-v3-hero-${art}.webp"`),name);
+  assert.ok(preloads[0].includes(`media="${desktop}"`),name);
+  assert.ok(preloads[1].includes('href="r17-hero.webp"'),name);
+  assert.ok(preloads[1].includes(`media="not all and ${desktop}"`),name);
+  assert.ok(preloads.every(link=>link.includes('fetchpriority="high"')),name);
  }
 });
 

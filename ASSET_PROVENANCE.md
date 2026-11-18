@@ -14,3 +14,11 @@ The site retains authentic local application screenshots where identified. Exist
 Relevant Riot legal policy: https://www.riotgames.com/fr/mentions-legales
 
 These are linked to Riot's image CDN, not vendored locally. Availability, bandwidth and cache are controlled by Riot. Any future commercial usage should be reviewed for legal permission first.
+
+## V3 kit desktop banners
+
+`site-v3-hero-{home,routines,progress,account}.webp` come from the four
+`web/visuels/<page>/illustration-banniere.webp` files in the owner's
+`AimRoutine_V3_Decoupes_PNG` kit. They contain the decorative character and
+city artwork. The site renders headings, controls, profiles and statistics
+independently. The four full reference PNGs are used for local comparisons.

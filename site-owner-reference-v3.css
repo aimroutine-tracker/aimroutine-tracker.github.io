@@ -2047,17 +2047,6 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
 }
 
 
-/* Desktop artwork grading, measured against the unmodified owner PNGs. */
-@media (min-width:1600px) and (max-width:1780px){
- body.site31.r20 :is(.r17-home-wrap,.r17-training-wrap) .r17-hero-art{
-  filter:saturate(1.03) contrast(.99) brightness(1.035)!important;
- }
- body.site31.r20 .r17-progress-wrap .r17-hero-art{
-  filter:saturate(.93) contrast(1.01) brightness(.99)!important;
- }
-}
-
-
 /* V3 / pass 58 — source-anchored lower Progress row placement.
    At 1672x941 the owner's Goals/Next-step panels begin around y=734,
    while pass 55 began around y=725. Add 9px of vertical space only above
@@ -2103,72 +2092,47 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
  }
 }
 
-/* Join consecutive crops of the same artwork from the portrait to the city.
-   Each crop begins at the previous one's source boundary. */
+/* Decorative WebP illustrations from the V3 kit. The reference crop widths
+   are relative to 1672px. The title, description and controls are DOM content. */
 @media (min-width:1600px) and (max-width:1780px){
- body.site31.r20 .r17-training-wrap .r17-hero-art{
-  --hero-city-start:56.783%;
-  --hero-sign-start:79.549%;
-  --hero-city-size:335.3%;
-  --hero-city-position:80.2%;
-  --hero-city-height:110.3%;
-  --hero-city-top:-7px;
-  --hero-sign-size:529.3%;
-  --hero-sign-height:123.4%;
-  --hero-sign-top:-51px;
-  background-size:70.64% 104.95%!important;
-  background-position:55.54% 1.75px!important;
+ body.site31.r20 .r17-home-wrap{
+  --v3-hero-image:url('site-v3-hero-home.webp');
+  --v3-hero-width:57.596%;
+  --v3-hero-height:354px;
+  --v3-hero-top:2px;
  }
- body.site31.r20 .r17-progress-wrap .r17-hero-art{
-  --hero-city-start:48.197%;
-  --hero-sign-start:73.568%;
-  --hero-city-size:670%;
-  --hero-city-position:63.59%;
-  --hero-city-height:116.91%;
-  --hero-city-top:4px;
-  --hero-sign-size:335.3%;
-  --hero-sign-height:116%;
-  --hero-sign-top:-13px;
-  background-size:59.38% 104.91%!important;
-  background-position:38.35% -6px!important;
+ body.site31.r20 .r17-training-wrap{
+  --v3-hero-image:url('site-v3-hero-routines.webp');
+  --v3-hero-width:51.196%;
+  --v3-hero-height:247px;
+  --v3-hero-top:1px;
  }
- body.site31.r20 .r17-account-wrap .r17-hero-art{
-  --hero-city-start:61.992%;
-  --hero-sign-start:79.549%;
-  --hero-city-size:462%;
-  --hero-city-position:70.5%;
-  --hero-city-height:102%;
-  --hero-city-top:-13px;
-  --hero-sign-size:450%;
-  --hero-sign-height:109%;
-  --hero-sign-top:-20px;
-  --hero-image-height:101%;
-  --hero-image-top:-1px;
-  background-size:66.574% var(--hero-image-height)!important;
-  background-position:74.061% var(--hero-image-top)!important;
-  filter:saturate(1.11) contrast(1.025)!important;
+ body.site31.r20 .r17-progress-wrap{
+  --v3-hero-image:url('site-v3-hero-progress.webp');
+  --v3-hero-width:60.945%;
+  --v3-hero-height:207px;
+  --v3-hero-top:-3px;
  }
- body.site31.r20 :is(.r17-training-wrap,.r17-progress-wrap) .r17-hero-art{
-  mask-image:linear-gradient(90deg,transparent 6%,#000 18%);
+ body.site31.r20 .r17-account-wrap{
+  --v3-hero-image:url('site-v3-hero-account.webp');
+  --v3-hero-width:51.196%;
+  --v3-hero-height:245px;
+  --v3-hero-top:0px;
  }
- body.site31.r20 :is(.r17-training-wrap,.r17-progress-wrap,.r17-account-wrap) .r17-hero-art::before,
- body.site31.r20 :is(.r17-training-wrap,.r17-progress-wrap,.r17-account-wrap) .r17-hero-art::after{
-  content:"";
-  position:absolute;
-  pointer-events:none;
-  background-image:url('r17-hero.webp');
-  background-repeat:no-repeat;
-  mask-image:none;
+ body.site31.r20 .r17-screen:is(.r17-home-wrap,.r17-training-wrap,.r17-progress-wrap,.r17-account-wrap) .r17-hero-art{
+  width:var(--v3-hero-width)!important;
+  background-image:var(--v3-hero-image)!important;
+  background-size:100% var(--v3-hero-height)!important;
+  background-position:right var(--v3-hero-top)!important;
+  filter:none!important;
+  mask-image:linear-gradient(90deg,transparent,#000 36px);
  }
- body.site31.r20 :is(.r17-training-wrap,.r17-progress-wrap,.r17-account-wrap) .r17-hero-art::before{
-  inset:0 calc(100% - var(--hero-sign-start)) 0 var(--hero-city-start);
-  background-size:var(--hero-city-size) var(--hero-city-height,var(--hero-image-height));
-  background-position:var(--hero-city-position) var(--hero-city-top,var(--hero-image-top));
+ body.site31.r20 .r17-screen:is(.r17-home-wrap,.r17-training-wrap,.r17-progress-wrap,.r17-account-wrap) .r17-hero-art::after{
+  content:none;
  }
- body.site31.r20 :is(.r17-training-wrap,.r17-progress-wrap,.r17-account-wrap) .r17-hero-art::after{
-  inset:0 0 0 var(--hero-sign-start);
-  background-size:var(--hero-sign-size) var(--hero-sign-height,var(--hero-image-height));
-  background-position:right var(--hero-sign-top,var(--hero-image-top));
+ body.site31.r20 .r17-screen:is(.r17-home-wrap,.r17-training-wrap,.r17-progress-wrap,.r17-account-wrap) .r17-hero::before,
+ body.site31.r20 .r17-screen:is(.r17-home-wrap,.r17-training-wrap,.r17-progress-wrap,.r17-account-wrap) .r17-hero::after{
+  mask-image:linear-gradient(90deg,#000 calc(100% - var(--v3-hero-width)),transparent calc(100% - var(--v3-hero-width) + 36px));
  }
 }
 

@@ -101,38 +101,36 @@ test('V3 desktop wordmark sizing matches owner header without breaking mobile',a
  expect(mobile.viewport).toBeLessThanOrEqual(390);
 });
 
-test('V3 Routines hero fills its right skyline without affecting mobile or controls',async({page})=>{
- await page.setViewportSize({width:1672,height:941});
- await page.goto('/training.html',{waitUntil:'domcontentloaded'});
- const artwork=page.locator('.r17-training-wrap .r17-hero-art');
- await expect(artwork).toBeVisible();
- const desktop=await artwork.evaluate(node=>{
-  const city=getComputedStyle(node,'::before');
-  const sign=getComputedStyle(node,'::after');
-  return {cityImage:city.backgroundImage,signImage:sign.backgroundImage,
-   cityWidth:parseFloat(city.width),cityEnd:parseFloat(city.right),
-   signWidth:parseFloat(sign.width),signEnd:sign.right,signPosition:sign.backgroundPositionX,
-   mask:getComputedStyle(node).maskImage,overflow:document.documentElement.scrollWidth};
- });
- expect(desktop.cityImage).toContain('r17-hero.webp');
- expect(desktop.signImage).toContain('r17-hero.webp');
- expect(desktop.cityWidth).toBeGreaterThan(200);
- expect(desktop.signWidth).toBeGreaterThan(190);
- expect(Math.abs(desktop.cityEnd-desktop.signWidth)).toBeLessThan(1);
- expect(desktop.signEnd).toBe('0px');
- expect(desktop.signPosition).toBe('100%');
- expect(desktop.mask).toContain('linear-gradient');
- expect(desktop.overflow).toBeLessThanOrEqual(1672);
- await page.setViewportSize({width:390,height:844});
- const mobile=await artwork.evaluate(node=>({
-  city:getComputedStyle(node,'::before').content,
-  sign:getComputedStyle(node,'::after').content,
-  width:document.documentElement.scrollWidth
- }));
- expect(mobile.city).toBe('none');
- expect(mobile.sign).toBe('none');
- expect(mobile.width).toBeLessThanOrEqual(390);
- await expect(page.locator('[data-r17-day="0"]').first()).toBeVisible();
+test('V3 desktop banners use the kit artwork with a responsive fallback',async({page})=>{
+ const pages=[['index','home',963],['training','routines',856],['progress','progress',1019],['account','account',856]];
+ for(const [route,art,width] of pages){
+  await page.setViewportSize({width:1672,height:941});
+  const filename=`site-v3-hero-${art}.webp`;
+  const artworkResponse=page.waitForResponse(response=>new URL(response.url()).pathname.endsWith('/'+filename));
+  await page.goto('/'+route+'.html',{waitUntil:'domcontentloaded'});
+  expect((await artworkResponse).ok()).toBe(true);
+  const artwork=page.locator('.r17-hero-art');
+  await expect(artwork).toBeVisible();
+  const desktop=await artwork.evaluate(node=>{
+   const box=node.getBoundingClientRect();
+   return {image:getComputedStyle(node).backgroundImage,right:box.right,width:box.width,
+    preloads:[...document.querySelectorAll('link[rel="preload"][as="image"]')]
+     .filter(link=>matchMedia(link.media).matches).map(link=>link.getAttribute('href'))};
+  });
+  expect(desktop.image).toContain(filename);
+  expect(desktop.right).toBeCloseTo(1672,0);
+  expect(desktop.width).toBeCloseTo(width,0);
+  expect(desktop.preloads).toEqual([filename]);
+  await page.setViewportSize({width:390,height:844});
+  const mobile=await artwork.evaluate(node=>({image:getComputedStyle(node).backgroundImage,
+   width:document.documentElement.scrollWidth,
+   preloads:[...document.querySelectorAll('link[rel="preload"][as="image"]')]
+    .filter(link=>matchMedia(link.media).matches).map(link=>link.getAttribute('href'))}));
+  expect(mobile.image).toContain('r17-hero.webp');
+  expect(mobile.width).toBeLessThanOrEqual(390);
+  expect(mobile.preloads).toEqual(['r17-hero.webp']);
+  if(route==='training')await expect(page.locator('[data-r17-day="0"]').first()).toBeVisible();
+ }
 });
 
 test('V3 home lower panels align with owner reference at 1672px and remain mobile-safe',async({page})=>{
@@ -375,7 +373,8 @@ test.describe('PWA cache integration',()=>{
   test.skip(browserName!=='chromium','Offline precache verified on Chromium');
   await page.evaluate(()=>navigator.serviceWorker.ready);
   const cacheResults=await page.evaluate(async()=>{
-   const urls=['site-owner-reference-v3.css','aimroutine-avatar-reference.svg'];
+   const urls=['site-owner-reference-v3.css','aimroutine-avatar-reference.svg',
+    'site-v3-hero-home.webp','site-v3-hero-routines.webp','site-v3-hero-progress.webp','site-v3-hero-account.webp'];
    return await Promise.all(urls.map(async file=>{
     const request=new Request(new URL(file,navigator.serviceWorker.controller?.scriptURL||location.href));
     for(const key of await caches.keys()){
@@ -384,7 +383,7 @@ test.describe('PWA cache integration',()=>{
     return false;
    }));
   });
-  expect(cacheResults,'The V3 stylesheet and avatar must be precached together').toEqual([true,true]);
+  expect(cacheResults,'V3 styles and artwork must be available offline').toEqual([true,true,true,true,true,true]);
   await context.setOffline(true);
   try{
    const response=await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
