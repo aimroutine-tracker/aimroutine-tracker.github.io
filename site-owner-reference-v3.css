@@ -2083,9 +2083,15 @@ body.site31.r20 .r17-progress-wrap .r17-hero-actions .r17-cta-icon--target{
  body.site31.r20:has(.r17-training-wrap,.r17-progress-wrap) .site31-nav{
   padding-right:6px!important;
  }
+ body.site31.r20:has(.r17-training-wrap) .site31-brand>span{
+  margin-inline-start:-9px;
+ }
  body.site31.r20:has(.r17-training-wrap) .site31-links{
   margin-left:45px!important;
-  gap:9px!important;
+  gap:19px!important;
+ }
+ body.site31.r20:has(.r17-training-wrap) .site31-links>a.r18-navlink{
+  font-weight:650!important;
  }
  body.site31.r20:has(.r17-progress-wrap) .site31-links{
   margin-left:63px!important;
@@ -2312,7 +2318,7 @@ body.site31.r20 .r17-training-wrap .r17-metric:has([data-r17-count],[data-r17-ac
  }
  body.site31.r20 .r17-training-wrap .r17-exercise{
   border-radius:8px 3px!important;
-  background:linear-gradient(125deg,#172730,#101b24)!important;
+  background:#142631!important;
  }
  body.site31.r20 .r17-training-wrap .r17-training-plan>.r17-panel-title{
   padding-bottom:7px!important;
@@ -2431,8 +2437,14 @@ body.site31.r20 .r17-training-wrap .r17-metric:has([data-r17-count],[data-r17-ac
   padding:8px 13px!important;
   border-radius:9px 4px!important;
  }
+ body.site31.r20 .r17-training-wrap .r17-weekday:not(.r20-complete){
+  background:#10202c!important;
+ }
  body.site31.r20 .r17-training-wrap .r17-weekday:not(.is-active):not(.r20-complete){
   border-color:#49616b!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-weekday.is-active:not(.r20-complete){
+  box-shadow:inset 0 0 0 1px #597385;
  }
  body.site31.r20 .r17-training-wrap .r17-weekday strong{
   font-size:13px!important;
@@ -2586,6 +2598,9 @@ body.site31.r20 .r17-training-wrap .r17-metric:has([data-r17-count],[data-r17-ac
   border-color:#644856!important;
   background:linear-gradient(145deg,#19232d,#101c24)!important;
  }
+ body.site31.r20 .r17-progress-wrap .r17-progress-goal-tile{
+  background:#10202c!important;
+ }
  body.site31.r20 .r17-progress-wrap #v14-p-records .v14-panel-head .v14-glyph{
   color:#ff9a64!important;
  }
@@ -2596,7 +2611,7 @@ body.site31.r20 .r17-training-wrap .r17-metric:has([data-r17-count],[data-r17-ac
   min-height:57px!important;
   border-color:#374b55!important;
   border-radius:11px 4px!important;
-  background:linear-gradient(145deg,#142530,#0f1f2a)!important;
+  background:#10202c!important;
  }
  body.site31.r20 .r17-progress-wrap #v14-p-records .v14-personal-grid>div span{
   min-height:0!important;
@@ -2766,7 +2781,7 @@ body.site31.r20 .r17-training-wrap .r17-metric:has([data-r17-count],[data-r17-ac
 /* Desktop hero actions and home cards. */
 @media (min-width:1600px) and (max-width:1780px){
  body.site31.r20 .r17-home-wrap{
-  background:#0f171f;
+  background:#111720;
  }
  body.site31.r20 .r17-home-wrap .r17-hero-actions{
   margin-left:-13px!important;
@@ -2814,12 +2829,18 @@ body.site31.r20 .r17-training-wrap .r17-metric:has([data-r17-count],[data-r17-ac
  }
  body.site31.r20 .r17-home-wrap .r17-feature{
   border-radius:13px 4px!important;
-  background:linear-gradient(142deg,#21313a,#111b25 90%)!important;
+  background:linear-gradient(155deg,#232e37,#101a24 91%)!important;
   border-color:#644653!important;
   grid-template-columns:66px minmax(0,1fr) minmax(115px,27%)!important;
   gap:15px!important;
   height:122px;
   padding:10px 10px 10px 18px!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-feature:nth-child(1){
+  background:linear-gradient(155deg,#292d3a,#121b25 91%)!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-feature:nth-child(2){
+  background:linear-gradient(155deg,#26303a,#111c23 91%)!important;
  }
  body.site31.r20 .r17-home-wrap .r17-feature .r17-icon{
   border-radius:14px 6px!important;
@@ -2931,6 +2952,7 @@ body.site31.r20 .r17-training-wrap .r17-metric:has([data-r17-count],[data-r17-ac
   justify-content:flex-start;
   padding-inline:12px;
   border-radius:7px 3px;
+  background:#18242d!important;
  }
  body.site31.r20 .r17-home-wrap .r17-challenge>.r17-button{
   width:100%!important;
@@ -2948,8 +2970,12 @@ body.site31.r20 .r17-training-wrap .r17-metric:has([data-r17-count],[data-r17-ac
 
 /* Signed-in account workspace at desktop widths. */
 @media (min-width:1600px) and (max-width:1780px){
- body.site31.r20.r17-authenticated .r17-account-wrap .r17-account-right>.r17-panel{
-  background:linear-gradient(142deg,#121e29,#0b1721 90%)!important;
+ body.site31.r20.r17-authenticated .r17-account-wrap .r17-account-right>.r17-panel,
+ body.site31.r20.r17-authenticated .r17-account-wrap .r17-account-auth #dashboard-panel{
+  background:#0d1923!important;
+ }
+ body.site31.r20.r17-authenticated .r17-account-wrap #dashboard-panel :is(.ar7-service-grid>div,.ar7-controls a,.ar7-import-guest button,.ar7-delete-cloud summary){
+  background:#10202c!important;
  }
  body.site31.r20.r17-authenticated .r17-account-wrap .r17-account-right{
   gap:13px!important;
@@ -2964,7 +2990,7 @@ body.site31.r20 .r17-training-wrap .r17-metric:has([data-r17-count],[data-r17-ac
   grid-template-columns:minmax(0,31fr) minmax(0,30fr) minmax(0,39fr)!important;
  }
  body.site31.r20.r17-authenticated .r17-account-wrap .r17-settings-grid>div{
-  background:linear-gradient(140deg,#121e29,#0b1721)!important;
+  background:#0c1822!important;
   border-radius:11px 5px!important;
   padding:13px 15px!important;
  }
