@@ -22,3 +22,7 @@ These are linked to Riot's image CDN, not vendored locally. Availability, bandwi
 `AimRoutine_V3_Decoupes_PNG` kit. They contain the decorative character and
 city artwork. The site renders headings, controls, profiles and statistics
 independently. The four full reference PNGs are used for local comparisons.
+
+The `site-v3-decor-*.webp` artwork is from `web/visuels/` in the same kit.
+It includes card illustrations, target silhouettes, next-step artwork and the
+Cloud section heading icon. Account and training status remain live content.
