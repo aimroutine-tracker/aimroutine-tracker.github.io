@@ -1581,10 +1581,14 @@ body.site31.r20 .r17-account-wrap #auth-panel .r17-auth-reference-copy .ar7-eyeb
 /* Match the wide reference's inset icons and short, angled dividers. */
 @media(min-width:1600px){
  body.site31.r20 .r17-home-wrap .r17-stats{
-  background:radial-gradient(ellipse at 2% 96%,#b2414c75,transparent 17%),
-   radial-gradient(ellipse at 48% 0%,#bd5c6470,transparent 23%),
-   radial-gradient(ellipse at 84% 24%,#70525a80,transparent 21%),
-   linear-gradient(107deg,#34242a,#181c24 26%,#19222a 65%,#2b242d)!important;
+  background:radial-gradient(ellipse at 0 98%,#933d4980,transparent 19%),
+   radial-gradient(ellipse at 51% 0%,#aa4c5577,transparent 20%),
+   radial-gradient(ellipse at 81% 3%,#ab4e5780,transparent 17%),
+   linear-gradient(
+    #17222a 19%,#16212a 19% 22%,#162129 22% 34%,
+    #152029 34% 40%,#152028 40% 49%,#141f28 49% 58%,
+    #141f27 58% 64%,#131e27 64% 76%,#131e26 76% 79%,#121d26 79%
+   )!important;
  }
  body.site31.r20 .r17-home-wrap .r17-stats>div{
   position:relative;
@@ -2298,7 +2302,22 @@ body.site31.r20 .r17-training-wrap .r17-metric:has([data-r17-count],[data-r17-ac
   border-color:#754353!important;
   box-shadow:inset 0 0 16px #ff626d13,0 0 8px #fd567318!important;
  }
- body.site31.r20 .r17-training-wrap :is(.r17-train-summary,.r17-level-note,.r17-training-plan,.r17-train-right>.r17-panel:first-child,.r17-weekline){
+ body.site31.r20 .r17-training-wrap :is(.r17-train-summary,.r17-level-note,.r17-training-plan){
+  --routines-panel-shade:61%;
+  background:linear-gradient(#0d1923 var(--routines-panel-shade),#0c1822 var(--routines-panel-shade))!important;
+  box-shadow:0 0 8px #fd567318!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-level-note{
+  --routines-panel-shade:58%;
+ }
+ body.site31.r20 .r17-training-wrap .r17-training-plan{
+  --routines-panel-shade:64%;
+ }
+ body.site31.r20 .r17-training-wrap .r17-train-right>.r17-panel:first-child{
+  background:linear-gradient(#0d1923 47%,#0c1822 47%,#10212c)!important;
+  box-shadow:0 0 8px #fd567318!important;
+ }
+ body.site31.r20 .r17-training-wrap .r17-weekline{
   background:linear-gradient(145deg,#121e29,#0b1721 88%)!important;
  }
  body.site31.r20 .r17-training-wrap .r17-side-challenge{
@@ -2494,8 +2513,17 @@ body.site31.r20 .r17-training-wrap .r17-metric:has([data-r17-count],[data-r17-ac
   border-color:#7b4857!important;
   box-shadow:inset 0 0 18px #fc5f6c12,0 0 11px #ee536713!important;
  }
- body.site31.r20 .r17-progress-wrap :is(.r17-chart-grid,.r17-secondary-grid,.r17-progress-bottom)>.v14-panel:not(#v14-p-next){
+ body.site31.r20 .r17-progress-wrap .r17-chart-grid>.v14-panel:not(#v14-p-skills-panel){
   background:linear-gradient(145deg,#121e29,#0b1721 88%)!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-chart-grid #v14-p-skills-panel,
+ body.site31.r20 .r17-progress-wrap :is(.r17-secondary-grid,.r17-progress-bottom)>.v14-panel:not(#v14-p-next){
+  --progress-panel-shade:60%;
+  background:linear-gradient(#0d1923 var(--progress-panel-shade),#0c1822 var(--progress-panel-shade))!important;
+  box-shadow:0 0 11px #ee536713!important;
+ }
+ body.site31.r20 .r17-progress-wrap .r17-secondary-grid>.v14-panel{
+  --progress-panel-shade:65%;
  }
  body.site31.r20 .r17-progress-wrap .r17-progress-kpis{
   background:
@@ -2548,7 +2576,10 @@ body.site31.r20 .r17-training-wrap .r17-metric:has([data-r17-count],[data-r17-ac
  }
  body.site31.r20 .r17-progress-wrap .v14-progress-svgbox{
   background-color:#0d1a24!important;
-  background-image:linear-gradient(to right,#4266772b 1px,transparent 1px),linear-gradient(to bottom,#4266772b 1px,transparent 1px)!important;
+  background-image:linear-gradient(to right,#4266772b 1px,transparent 1px),
+   linear-gradient(to bottom,#4266772b 1px,transparent 1px),
+   linear-gradient(#0c1822,#10212c)!important;
+  background-size:42px 100%,100% 35px,100% 100%!important;
  }
  body.site31.r20 .r17-progress-wrap :is(.r17-chart-grid,.r17-secondary-grid,.r17-progress-bottom) .v14-panel-head .v14-glyph{
   background:none!important;
@@ -2598,8 +2629,10 @@ body.site31.r20 .r17-training-wrap .r17-metric:has([data-r17-count],[data-r17-ac
   border-color:#644856!important;
   background:linear-gradient(145deg,#19232d,#101c24)!important;
  }
- body.site31.r20 .r17-progress-wrap .r17-progress-goal-tile{
+ body.site31.r20 .r17-progress-wrap .r17-progress-goals-overview .r17-progress-goal-tile{
   background:#10202c!important;
+  box-shadow:none!important;
+  min-height:88px!important;
  }
  body.site31.r20 .r17-progress-wrap #v14-p-records .v14-panel-head .v14-glyph{
   color:#ff9a64!important;
@@ -2970,6 +3003,10 @@ body.site31.r20 .r17-training-wrap .r17-metric:has([data-r17-count],[data-r17-ac
 
 /* Signed-in account workspace at desktop widths. */
 @media (min-width:1600px) and (max-width:1780px){
+ body.site31.r20.r17-authenticated .r17-account-wrap .r17-account-profile{
+  background:linear-gradient(#1e2732,#101a24 86%)!important;
+  box-shadow:inset 0 0 15px #ff526314,0 0 14px #ff52631c!important;
+ }
  body.site31.r20.r17-authenticated .r17-account-wrap .r17-account-right>.r17-panel,
  body.site31.r20.r17-authenticated .r17-account-wrap .r17-account-auth #dashboard-panel{
   background:#0d1923!important;
