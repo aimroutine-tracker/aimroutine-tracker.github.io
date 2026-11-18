@@ -1457,6 +1457,43 @@ test('Progress chart descriptions expose real weekly counts and respect the lang
  await expect(page.locator('#v14-p-distribution .v3-empty-radar-caption')).toContainText('No recorded sessions');
 });
 
+test('Progress and Routines plot recorded accuracy at elapsed-time positions',async({page})=>{
+ await page.clock.install({time:new Date('2026-11-09T12:00:00Z')});
+ await useVerifiedTestAccount(page);
+ const uid='11111111-1111-4111-8111-111111111111';
+ await page.evaluate(uid=>{
+  const sessions=[
+   ['a','2026-11-06T08:00:00Z','tracking',72],
+   ['b','2026-11-06T09:00:00Z','flick',75],
+   ['c','2026-11-09T08:00:00Z','tracking',81]
+  ].map(([id,date,focus,accuracy])=>({id,date,focus,accuracy,
+   rank:'silver',tool:'VALORANT',scenario:'Stand de tir',minutes:10,feeling:'good',notes:''}));
+  localStorage.setItem('aimroutine_cloud_user_'+uid+'_aimroutine_web_training_v2',
+   JSON.stringify({sessions,presets:[],weeklyGoal:3}));
+  if(!window.AIMWeb?.reloadFromCache?.())throw Error('Test cache hydration failed');
+  window.dispatchEvent(new Event('aim-store-updated'));
+ },uid);
+ const positions=async chart=>{
+  const points=chart.locator('.v3-accuracy-point');
+  await expect(points).toHaveCount(3);
+  const [first,middle,last]=await points.evaluateAll(nodes=>nodes.map(node=>Number(node.getAttribute('cx'))));
+  expect(middle).toBeGreaterThan(first);
+  expect((middle-first)/(last-first)).toBeCloseTo(1/72,4);
+  await expect(chart.locator('.r17-visually-hidden')).toContainText('81 %');
+ };
+ const routines=page.locator('[data-r17-chart]');
+ await positions(routines);
+ await page.locator('[data-ar20-chart="tracking"]').click();
+ await expect(routines.locator('.v3-accuracy-point')).toHaveCount(2);
+ await page.evaluate(()=>window.dispatchEvent(new Event('aim-store-updated')));
+ await expect(routines.locator('.v3-accuracy-point')).toHaveCount(2);
+ await expect(routines.locator('.r17-visually-hidden')).not.toContainText('75 %');
+ await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
+ await positions(page.locator('#v14-p-line'));
+ await expect(page.locator('#v14-p-line')).toHaveAttribute('role','group');
+ await expect(page.locator('#v14-p-bars .v3-bar-value')).toContainText(['0','0','0','0','0','0','2','1']);
+});
+
 test('V3 progress composition preserves real live KPI values and all source panels',async({page})=>{
  await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
  const row=page.locator('.r17-progress-wrap .r17-secondary-grid');

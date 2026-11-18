@@ -139,3 +139,4 @@ site-home-bundle-v1-4.css
 site-home-bundle-v1-5.css
 aimroutine-avatar-reference.svg
 site-reference-v20.mjs
+site-chart-v3.mjs

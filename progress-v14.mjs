@@ -2,6 +2,7 @@
 import {normalizeStore,computeStats,weeklySessionCounts,FOCUS,STORAGE_KEY} from './training-core-v5.mjs';
 import {validUid,scopedKey} from './cloud-core-v7.mjs';
 import {synchronize} from './cloud-sync-v7.mjs';
+import {renderAccuracyPlot} from './site-chart-v3.mjs';
 const $=s=>document.querySelector(s);
 const en=()=>document.documentElement.lang==='en';
 const tr=(fr,english)=>en()?english:fr;
@@ -29,11 +30,6 @@ function svgEl(name,props){
  for(const [key,value] of Object.entries(props))e.setAttribute(key,String(value));
  return e;
 }
-function blank(el,fr,english){
- el.replaceChildren();
- const p=document.createElement('p');p.className='v14-chart-empty';
- p.textContent=tr(fr,english);el.append(p);
-}
 // All SVG charts are intentionally aria-hidden: expose real recorded values
 // as screen-reader text instead of inventing demonstration metrics.
 function readableChartSummary(root,text){
@@ -43,30 +39,11 @@ function readableChartSummary(root,text){
  root.append(summary);
 }
 function lineChart(items){
- const root=$('#v14-p-line');
- const a=items.filter(s=>s.accuracy!==null).sort((x,y)=>x.date.localeCompare(y.date)).slice(-25);
- if(!a.length)return blank(root,'Aucune précision enregistrée pour cette période.','No accuracy recorded in this period.');
- root.replaceChildren();
- const width=620,height=235;
- const x=i=>34+(a.length===1?0.5:i/(a.length-1))*560;
- const y=n=>18+(100-n)/100*181;
- const svg=svgEl('svg',{viewBox:'0 0 '+width+' '+height,'aria-hidden':'true'});
- for(const tick of [0,25,50,75,100]){
-  const ty=y(tick);
-  svg.append(svgEl('line',{x1:34,x2:602,y1:ty,y2:ty,stroke:'#385364','stroke-dasharray':'3 6'}));
-  const label=svgEl('text',{x:0,y:ty+4,fill:'#a7bdca','font-size':11});label.textContent=tick+'%';svg.append(label);
- }
- const d=a.map((p,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(p.accuracy).toFixed(1)).join(' ');
- svg.append(svgEl('path',{d,stroke:'#85e9dc','stroke-width':3,fill:'none','stroke-linejoin':'round','stroke-linecap':'round'}));
- a.forEach((p,i)=>svg.append(svgEl('circle',{cx:x(i),cy:y(p.accuracy),r:i===a.length-1?6:3,fill:'#ff748d',stroke:'#ffced8','stroke-width':1})));
- const first=svgEl('text',{x:34,y:224,'font-size':11,fill:'#b5ced8'});first.textContent=new Date(a[0].date).toLocaleDateString(en()?'en-GB':'fr-FR',{day:'numeric',month:'short'});svg.append(first);
- const last=svgEl('text',{x:603,y:224,'font-size':11,fill:'#b5ced8','text-anchor':'end'});last.textContent=new Date(a[a.length-1].date).toLocaleDateString(en()?'en-GB':'fr-FR',{day:'numeric',month:'short'});svg.append(last);
- root.append(svg);
- const caption=document.createElement('small');caption.className='v14-chart-caption';caption.textContent=a.length+' '+tr('résultats saisis','reported scores');root.append(caption);
- readableChartSummary(root,tr('Précision enregistrée : ','Recorded accuracy: ')+a.map(point=>{
-  const date=new Date(point.date).toLocaleDateString(en()?'en-GB':'fr-FR',{day:'numeric',month:'short',year:'numeric'});
-  return date+' : '+fmt(point.accuracy)+' %';
- }).join(' ; '));
+ const points=items.filter(s=>Number.isFinite(s.accuracy)).sort((a,b)=>Date.parse(a.date)-Date.parse(b.date)).slice(-25);
+ renderAccuracyPlot($('#v14-p-line'),points,{
+  locale:tr('fr-FR','en-GB'),
+  emptyMessage:tr('Aucune précision enregistrée pour cette période.','No accuracy recorded in this period.')
+ });
 }
 function barChart(items,now=new Date()){
  const root=$('#v14-p-bars');root.replaceChildren();
@@ -76,19 +53,29 @@ function barChart(items,now=new Date()){
  // weekly-goal KPI. Rolling 7-day buckets would mislabel previous Sunday's
  // sessions as "This week" on Monday and drift across DST boundaries.
  const counts=weeklySessionCounts(items,weeks,now);
- const max=Math.max(1,...counts);
- const svg=svgEl('svg',{viewBox:'0 0 600 235','aria-hidden':'true'});
- const slot=560/weeks,barWidth=weeks===8?42:Math.min(52,slot*.68);
+ const greatest=Math.max(...counts);
+ const step=Math.max(1,Math.ceil(greatest/5));
+ const ceiling=Math.max(1,Math.ceil(greatest/step))*step;
+ const svg=svgEl('svg',{viewBox:'0 0 510 198','aria-hidden':'true',focusable:'false'});
+ const left=30,right=497,top=12,bottom=173;
+ const y=count=>bottom-(count/ceiling)*(bottom-top);
+ for(let tick=0;tick<=ceiling;tick+=step){
+  const level=y(tick);
+  svg.append(svgEl('line',{x1:left,x2:right,y1:level,y2:level,stroke:'#38586a','stroke-opacity':'.56'}));
+  const label=svgEl('text',{x:left-6,y:level+4,'text-anchor':'end','font-size':12,fill:'#b7cbd6'});
+  label.textContent=fmt(tick);svg.append(label);
+ }
+ svg.append(svgEl('line',{x1:left,x2:left,y1:top,y2:bottom,stroke:'#607d8b'}));
+ const slot=(right-left)/weeks,barWidth=Math.min(52,slot*.75);
  counts.forEach((count,i)=>{
-  const x=weeks===8?24+i*70:24+i*slot+(slot-barWidth)/2;
-  const center=x+barWidth/2,h=count/max*153;
-  svg.append(svgEl('rect',{x,y:187-h,width:barWidth,height:h,rx:3,
-   fill:i===weeks-1?'#8df0e0':'#268494'}));
-  const value=svgEl('text',{x:center,y:Math.max(18,187-h-9),
+  const center=left+(i+.5)*slot,barTop=y(count);
+  svg.append(svgEl('rect',{x:center-barWidth/2,y:barTop,width:barWidth,height:bottom-barTop,rx:2,
+   fill:i===weeks-1?'#54e5d9':'#248792'}));
+  const value=svgEl('text',{x:center,y:Math.max(10,barTop-5),class:'v3-bar-value',
    'text-anchor':'middle','font-size':12,fill:'#f3fcff'});
-  value.textContent=count;svg.append(value);
-  const week=svgEl('text',{x:center,y:208,'text-anchor':'middle',
-   'font-size':11,fill:'#adc7d2'});
+  value.textContent=fmt(count);svg.append(value);
+  const week=svgEl('text',{x:center,y:191,'text-anchor':'middle',
+   'font-size':11,fill:'#b7cbd6'});
   week.textContent=i===weeks-1?tr('Cette sem.','This week'):'S-'+(weeks-1-i);
   svg.append(week);
  });
@@ -111,7 +98,7 @@ function distribution(items){
   // No data polygon, percentage, ranking or additional skill is invented.
   const preview=document.createElement('div');preview.className='v3-empty-radar';
   const svg=svgEl('svg',{viewBox:'0 0 320 215','aria-hidden':'true',focusable:'false'});
-  const cx=160,cy=102,r=62;
+  const cx=160,cy=102,r=72;
   const point=(i,factor)=>{
    const angle=-Math.PI/2+i*Math.PI/2;
    return [cx+Math.cos(angle)*r*factor,cy+Math.sin(angle)*r*factor];

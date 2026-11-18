@@ -1,5 +1,6 @@
 /* AimRoutine V20 — owner reference interaction polish. Visuals are backed by real data. */
 import {computeStats} from './training-core-v5.mjs';
+import {renderAccuracyPlot} from './site-chart-v3.mjs';
 const $=(q,root=document)=>root.querySelector(q);
 const $$=(q,root=document)=>[...root.querySelectorAll(q)];
 const isEn=()=>document.documentElement.lang==='en';
@@ -178,6 +179,7 @@ function routines(screen){
  };
  const chartHost=$('[data-r17-chart]',screen);
  if(chartHost){
+  chartHost.dataset.v3ChartManaged='true';
   const root=chartHost.parentElement;
   const tabs=document.createElement('div');
   tabs.className='ar20-tabbar';tabs.setAttribute('role','group');tabs.setAttribute('aria-label',words('Mesure affichée','Displayed metric'));
@@ -192,8 +194,12 @@ function routines(screen){
  function renderGraph(sessions,screen){
   if(!chartHost)return;
   const type=$('[data-ar20-chart][aria-pressed=true]',screen)?.dataset.ar20Chart||'accuracy';
-  const sevenDays=sessions.filter(x=>Date.now()-Date.parse(x.date)<7*86400000&&Date.now()-Date.parse(x.date)>=0);
-  const scores=sevenDays.filter(x=>Number.isFinite(x.accuracy)).sort((a,b)=>a.date.localeCompare(b.date));
+  const now=Date.now();
+  const sevenDays=sessions.filter(x=>{
+   const age=now-Date.parse(x.date);
+   return age>=0&&age<7*86400000;
+  });
+  const scores=sevenDays.filter(x=>Number.isFinite(x.accuracy)).sort((a,b)=>Date.parse(a.date)-Date.parse(b.date));
   if(type==='reaction'){
    chartHost.innerHTML='<div class="ar20-empty">'+words('Temps de réaction non mesuré par les séances actuelles.','Reaction time is not measured by current sessions.')+'</div>';
    return;
@@ -204,13 +210,10 @@ function routines(screen){
    return;
   }
   const relevant=type==='tracking'?scores.filter(x=>x.focus==='tracking'):scores;
-  if(!relevant.length){chartHost.innerHTML='<div class="ar20-empty">'+words('Enregistre des résultats pour afficher ta courbe.','Record sessions to display your trend.')+'</div>';return}
-  const pts=relevant.slice(-16);
-  const width=330,height=150,x=i=>22+(pts.length===1?145:(i/(pts.length-1))*284),y=v=>135-(v/100)*113;
-  const points=pts.map((v,i)=>x(i)+','+y(v.accuracy)).join(' ');
-  const fill=pts.map((v,i)=>(i?'L':'M')+x(i)+' '+y(v.accuracy)).join(' ')+'L'+x(pts.length-1)+' 135 L'+x(0)+' 135Z';
-  const gr=['25','50','75','100'].map(t=>'<line x1="20" y1="'+y(+t)+'" x2="313" y2="'+y(+t)+'" stroke="#4e7180" stroke-opacity=".35"/>').join('');
-  chartHost.innerHTML='<svg class="ar20-graph" viewBox="0 0 330 150" aria-label="'+words('Précision des séances enregistrées','Recorded session accuracy')+'" role="img"><defs><linearGradient id="ar20-fill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ff5b69" stop-opacity=".42"/><stop offset="1" stop-color="#ff5b69" stop-opacity="0"/></linearGradient></defs>'+gr+'<path d="'+fill+'" fill="url(#ar20-fill)"/><polyline points="'+points+'" fill="none" stroke="#ff6475" stroke-width="2.5"/>'+pts.map((v,i)=>'<circle cx="'+x(i)+'" cy="'+y(v.accuracy)+'" r="3.2" fill="#ff6778" stroke="#ffbdc7" stroke-width="1"/>').join('')+'</svg>';
+  renderAccuracyPlot(chartHost,relevant.slice(-16),{
+   locale:words('fr-FR','en-GB'),compact:true,
+   emptyMessage:words('Enregistre des résultats pour afficher ta courbe.','Record sessions to display your trend.')
+  });
  }
  function bars(counts){
   const max=Math.max(1,...counts);

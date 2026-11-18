@@ -3810,4 +3810,21 @@ body.site31.r20 .r18-cloud-icon .ar-v3-symbol{
  }
 }
 
+/* The SVG axes and their labels use a shared plot coordinate system. */
+body.site31.r20 .r17-progress-wrap :is(#v14-p-line,#v14-p-bars),
+body.site31.r20 .r17-training-wrap .r17-train-chart:has(.v3-accuracy-chart){
+ position:relative;
+ border-color:transparent;
+ background-image:linear-gradient(#0c1822,#10212c)!important;
+ background-size:100% 100%!important;
+}
+body.site31.r20 .r17-progress-wrap #v14-p-line>.v14-chart-empty{
+ position:absolute;
+ inset:0;
+ display:grid;
+ place-items:center;
+ margin:0;
+ padding:0 15px 10px 35px;
+}
+
 /* END site-owner-reference-v3.css */

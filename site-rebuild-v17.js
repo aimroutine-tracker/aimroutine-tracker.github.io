@@ -125,7 +125,7 @@ function routinePage(){
   for(const el of $$('[data-r17-meter]'))el.style.width=Math.min(100,week/goal*100)+'%';
   for(const el of $$('[data-r17-week-meter]'))el.style.width=(planDays/5*100)+'%';
   const chart=$('[data-r17-chart]');
-  if(!chart)return;
+  if(!chart||chart.dataset.v3ChartManaged)return;
   // Explicit reset is essential after A->B switch or global sign-out.
   if(!scores.length){
    chart.textContent=phrase('Enregistre une séance pour voir la courbe.','Log a session to see your chart.');
