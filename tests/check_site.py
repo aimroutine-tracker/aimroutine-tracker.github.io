@@ -67,8 +67,19 @@ for page in PAGES:
             issues.append(f"{page.name}: official social image missing")
         if 'favicon.svg' in html and 'favicon.svg?v=3' not in html:
             issues.append(f"{page.name}: outdated favicon reference")
-    # V9 design smoke checks: every public route uses the same updated stylesheet.
-    if 'visual-v8.css?v=2' not in page.read_text(encoding='utf-8'):
+    # V9 design smoke checks: the shared visual CSS must REALLY load.
+    # The V3 homepage uses five byte-verified lossless bundles instead of
+    # 26 individual links. Other routes retain their direct CSS links.
+    html_source = page.read_text(encoding='utf-8')
+    visual_css_loaded = 'visual-v8.css?v=2' in html_source
+    if page.name == 'index.html':
+        bundle = ROOT / 'site-home-bundle-v1-3.css'
+        visual_css_loaded = (
+            'site-home-bundle-v1-3.css?v=1' in html_source
+            and bundle.is_file()
+            and '/* BEGIN visual-v8.css */' in bundle.read_text(encoding='utf-8')
+        )
+    if not visual_css_loaded:
         issues.append(f"{page.name}: shared V9 visual stylesheet link missing")
     if page.name == "index.html":
         html = page.read_text(encoding="utf-8")
@@ -93,6 +104,34 @@ for page in PAGES:
         for marker in ['id="panel-dashboard"', 'id="panel-builder"', 'id="panel-insights"', 'id="panel-coach"', 'id="panel-data"', 'training-entry-v7.mjs', 'training-v5.css']:
             if marker not in page.read_text(encoding="utf-8"):
                 issues.append(f"training.html: missing {marker}")
+
+# Validate local section links, not just target file existence. A link to
+# training.html#panel-builder must point to an ID actually rendered by HTML.
+# Dynamic JavaScript navigation should use explicit route state rather than an
+# unresolved static fragment. Cache the parsed target IDs for cross-page links.
+page_ids = {}
+for document in PAGES:
+    parser = PageParser()
+    parser.feed(document.read_text(encoding="utf-8"))
+    page_ids[document.name] = parser.ids
+
+for document in PAGES:
+    parser = PageParser()
+    parser.feed(document.read_text(encoding="utf-8"))
+    for tag, raw in parser.refs:
+        if tag != "a":
+            continue
+        link = urlsplit(raw)
+        if not link.fragment or link.scheme or link.netloc or raw.startswith("//"):
+            continue
+        fragment = unquote(link.fragment)
+        target = unquote(link.path).lstrip("/") or document.name
+        if target not in page_ids:
+            continue  # External or non-HTML targets already checked above.
+        if fragment not in page_ids[target]:
+            issues.append(
+                f"{document.name}: missing section #{fragment} in {target}"
+            )
 
 print(f"Checked {len(PAGES)} HTML pages and their local references.")
 if issues:

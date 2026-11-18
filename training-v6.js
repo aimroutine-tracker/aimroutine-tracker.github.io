@@ -1,6 +1,6 @@
 import {FOCUS,TOOLS,createRoutine} from './training-core-v5.mjs';
 import {storageKey,activeUid} from './cloud-core-v7.mjs';
-import {EXT_KEY,cleanExtension,cleanProfile,startProgram,programCalendar,scenarioOptions,scenarioMetrics,calendarGrid,achievements,toInterchange,parseInterchange} from './training-v6-core.mjs';
+import {EXT_KEY,cleanExtension,cleanProfile,startProgram,programCalendar,scenarioOptions,scenarioMetrics,periodSessions,calendarGrid,achievements,toInterchange,parseInterchange} from './training-v6-core.mjs';
 (()=>{
 'use strict';
 const $=s=>document.querySelector(s);
@@ -129,8 +129,11 @@ function plot(scores){
 }
 function renderAnalytics(){
  const sessions=getStore().sessions;
+ // Share one observation clock across advanced analytics, calendar and
+ // personal bests, so future-dated records do not leak through another panel.
+ const now=new Date(),observed=periodSessions(sessions,0,now);
  const focus=$('#insight-focus').value,tool=$('#insight-tool').value,scenario=$('#analysis-scenario').value,range=Number($('#analysis-range').value);
- const metric=scenarioMetrics(sessions,{focus,tool,scenario,range});
+ const metric=scenarioMetrics(sessions,{focus,tool,scenario,range,now});
  const summary=$('#scenario-summary');summary.replaceChildren();
  const props=[['Séances',metric.count],['Moyenne',percentile(metric.average)],['Record',percentile(metric.best)],['Évolution',metric.comparisonValid?(metric.change>0?'+':'')+metric.change.toFixed(1)+' points':'Non comparable']];
  props.forEach(([title,value])=>{const div=element('div',undefined,'ar6-stat-box');div.append(element('span',title),element('strong',value));summary.append(div)});
@@ -140,7 +143,7 @@ function renderAnalytics(){
   'Évolution indicative pour un même logiciel et un même scénario. Conserve aussi une difficulté comparable.':
   'Choisis un logiciel et un scénario précis, avec au moins six résultats, pour obtenir une évolution comparable.';
  const calendar=$('#training-calendar');calendar.replaceChildren();
- calendarGrid(sessions).forEach(day=>{
+ calendarGrid(observed,now).forEach(day=>{
   const cell=element('span',undefined,'ar6-cal-cell'+(day.count?' has-sessions':''));
   cell.title=day.date+' · '+day.count+' séance(s)';
   cell.setAttribute('role','img');cell.setAttribute('aria-label',cell.title);
@@ -148,7 +151,7 @@ function renderAnalytics(){
  });
  calendar.append(element('p','Une case = un jour. Colorée = entraînement enregistré.','muted'));
  const top=$('#scenario-records');top.replaceChildren();const records=new Map();
- sessions.forEach(s=>{
+ observed.forEach(s=>{
   if(s.accuracy===null||!s.scenario||s.tool==='Non précisé')return;
   const key=s.tool+' · '+s.scenario,old=records.get(key);
   if(!old||old.accuracy<s.accuracy)records.set(key,s);
@@ -180,11 +183,16 @@ function setupInterop(){
  });
  $('#import-portable').addEventListener('change',async e=>{
   const file=e.target.files?.[0];if(!file)return;
+  const importUid=activeUid();
   try{
+   if(!importUid)throw Error('Connecte-toi pour importer une sauvegarde.');
    if(file.size>3e6)throw Error('Fichier limité à 3 Mo.');
    const data=parseInterchange(JSON.parse(await file.text()));
+   // Never allow a delayed file read started by A to write into B's namespace.
+   if(activeUid()!==importUid)throw Error('Compte modifié pendant l’import : recommence après connexion.');
    const added=window.AIMWeb.mergeData(data);
    if(confirm('Importer également le profil et le calendrier du fichier ?')){
+    if(activeUid()!==importUid)throw Error('Compte modifié pendant l’import : recommence après connexion.');
     if(save(data.extension))showProfile();
    }
    renderAll();status.textContent=added+' nouvelle(s) séance(s) importée(s).';

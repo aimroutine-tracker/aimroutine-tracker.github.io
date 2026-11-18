@@ -1,3 +1,4 @@
+import {stylesheetIndex} from './helpers/styles-v3.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -5,7 +6,7 @@ const get=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
 test('The four reference screens use the same V20 design system',()=>{
  for(const p of ['index.html','training.html','account.html','progress.html']){
   const html=get(p);
-  assert.ok(html.includes('site-reference-v20.css?v=1'),p);
+  assert.ok(stylesheetIndex(p,'site-reference-v20.css')>=0,p);
   assert.ok(html.includes('site-reference-v20.mjs?v=1'),p);
  }
 });

@@ -1,3 +1,4 @@
+import {stylesheetIndex} from './helpers/styles-v3.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -24,7 +25,7 @@ test('V12 styles respect reduced motion and all routes load them',()=>{
  assert.match(css,/prefers-reduced-motion:reduce/);
  assert.match(css,/max-width:730px/);
  for(const page of ['index.html','training.html','account.html','product.html','privacy.html']){
-  assert.match(read(page),/site-arcade-v12\.css\?v=1/);
+  assert.ok(stylesheetIndex(page,'site-arcade-v12.css')>=0,page);
  }
 });
 test('V12 assets are included in verified public build and offline pre-cache',()=>{
@@ -33,5 +34,5 @@ test('V12 assets are included in verified public build and offline pre-cache',()
   assert.ok(allow.split(/\r?\n/).includes(name));
   assert.ok(sw.includes("'./"+name+"'"));
  }
- assert.match(sw,/aimroutine-v9-account-cloud-auto-20261108/);
+ assert.match(sw,/aimroutine-v11-home-bundles-20261114/);
 });

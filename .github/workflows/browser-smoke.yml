@@ -3,12 +3,23 @@ on:
   pull_request:
     paths:
       - "site-rebuild-v17.*"
+      - "site-interface-v19.mjs"
+      - "site-reference-v20.css"
+      - "site-owner-reference-v3.css"
       - "r17-hero.webp"
       - "index.html"
       - "training.html"
       - "account.html"
       - "progress.html"
+      - "progress-v14.mjs"
+      - "site-v15-data.mjs"
+      - "training-entry-v7.mjs"
       - "tests/browser.spec.mjs"
+      - "tests/home-css-render-parity-v1.mjs"
+      - "tests/check-home-css-pixel-parity-v1.py"
+      - "site-home-bundle-v1-*.css"
+      - "sw-v6.js"
+      - "pwa-v6.js"
       - ".github/workflows/browser-smoke.yml"
   push:
     branches: [main]
@@ -20,13 +31,18 @@ on:
       - "pwa-v6.js"
       - "sw-v6.js"
       - "tests/browser.spec.mjs"
+      - "tests/home-css-render-parity-v1.mjs"
+      - "tests/check-home-css-pixel-parity-v1.py"
+      - "site-home-bundle-v1-*.css"
       - "tests/playwright.config.mjs"
       - ".github/workflows/browser-smoke.yml"
   workflow_dispatch:
 permissions:
   contents: read
+
+# Ignore superseded commits: only the current PR/head build matters.
 concurrency:
-  group: aimroutine-browser-\${{ github.ref }}
+  group: aimroutine-cross-browser-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   browsers:
@@ -47,5 +63,18 @@ jobs:
           for i in $(seq 1 25); do curl -fsS http://127.0.0.1:8765/training.html >/dev/null && exit 0; sleep 1; done
           cat /tmp/aimroutine-http.log
           exit 1
+      - name: Prove home CSS consolidation preserves desktop/mobile visuals
+        run: |
+          set -euo pipefail
+          node tests/home-css-render-parity-v1.mjs
+          python3 -m pip install --quiet Pillow==11.3.0
+          python3 tests/check-home-css-pixel-parity-v1.py
       - name: Run desktop and mobile browser scenarios
         run: npx playwright test --config=tests/playwright.config.mjs
+      - name: Export CSS comparison screenshots only if pixel proof fails
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-css-bundle-pixel-regression
+          path: visual-results/css-parity/
+          if-no-files-found: ignore

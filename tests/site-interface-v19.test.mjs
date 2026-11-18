@@ -1,3 +1,4 @@
+import {stylesheetIndex} from './helpers/styles-v3.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -5,7 +6,7 @@ const get=n=>readFileSync(new URL('../'+n,import.meta.url),'utf8');
 test('V19 reference screens load the native interaction layer',()=>{
  for(const page of ['index.html','training.html','account.html','progress.html']){
   const html=get(page);
-  assert.ok(html.includes('site-interface-v19.css?v=1'),page);
+  assert.ok(stylesheetIndex(page,'site-interface-v19.css')>=0,page);
   assert.ok(html.includes('site-interface-v19.mjs?v=1'),page);
  }
  for(const name of ['site-interface-v19.css','site-interface-v19.mjs']){
@@ -25,7 +26,10 @@ test('V19 responsive cards and dialog account for accessible motion',()=>{
 
 test('Home and progress proactively pull signed-in Cloud data',()=>{
  const home=get('site-v15-data.mjs'),analytics=get('progress-v14.mjs');
- assert.ok(home.includes('await synchronize(supabase,uid)'));
+ assert.ok(home.includes('await refreshCloud(supabase,uid)'), 'Home awaits its Cloud refresh');
+ assert.ok(home.includes('synchronize(client,uid)'), 'Home still uses the real Cloud sync API');
+ assert.ok(home.includes('activeCloudUid!==uid'), 'Switching accounts bypasses the old account cache');
+ assert.ok(home.includes('cloudReads.get(uid)?.error'), 'Cloud errors are scoped to the current account');
  assert.ok(analytics.includes('await synchronize(supabase,uid)'));
  assert.ok(analytics.includes('Cloud sync pending'));
 });

@@ -21,12 +21,36 @@ function save(next=store){
   }
   try{
     const removed=store.presets.filter(p=>!next.presets.some(n=>n.id===p.id)).map(p=>p.id);
-    const uid=activeUid();
-    if(uid&&removed.length)collectFavoriteDeletion(uid,removed);
-    localStorage.setItem(storageKey(STORAGE_KEY),JSON.stringify(next));store=next;
-      window.dispatchEvent(new CustomEvent('aim-store-updated'));
-      return true}
-  catch{alert('Le navigateur ne permet pas cet enregistrement. Vérifie son espace de stockage et ses paramètres.');return false}
+    const uid=activeUid(),key=storageKey(STORAGE_KEY);
+    const previous=localStorage.getItem(key),serialized=JSON.stringify(next);
+    // Save the new training snapshot before queuing Cloud tombstones.
+    // Otherwise a failed training write leaves a deletion pending for a
+    // favorite still present locally, causing an unintended Cloud deletion.
+    localStorage.setItem(key,serialized);
+    try{
+      if(uid&&removed.length)collectFavoriteDeletion(uid,removed);
+    }catch(error){
+      // An overflow/corrupt cursor must not leave locally removed favorites
+      // with no matching Cloud tombstone. Roll back only our own write:
+      // another tab may have replaced the key while this callback ran.
+      if(localStorage.getItem(key)===serialized){
+        if(previous===null)localStorage.removeItem(key);
+        else localStorage.setItem(key,previous);
+      }
+      throw error;
+    }
+    store=next;
+    window.dispatchEvent(new CustomEvent('aim-store-updated'));
+    return true}
+  catch(error){
+    const detail=String(error?.message||'');
+    const knownCloudIssue=/^(Trop de suppressions de favoris en attente|Métadonnées locales Cloud illisibles|Identifiant de favori supprimé invalide)/.test(detail);
+    const message=knownCloudIssue?detail:
+      'Le navigateur ne permet pas cet enregistrement. Vérifie son espace de stockage et ses paramètres.';
+    showMessage(message);
+    alert(message);
+    return false;
+  }
 }
 function chooseTab(name,focus=false){
   const tabs=$$('[data-tab]');
@@ -320,7 +344,9 @@ $('#finish-form').addEventListener('submit',event=>{
 });
 function renderInsights(){
  const focus=$('#insight-focus').value,tool=$('#insight-tool').value;
- const xs=comparable(store.sessions,focus,tool).slice(-20);
+ // One clock snapshot for the insight chart, breakdown and coaching message.
+ const now=new Date();
+ const xs=comparable(store.sessions,focus,tool,now).slice(-20);
  $('#chart-count').textContent=xs.length+' valeur'+(xs.length>1?'s':'');
  const chart=$('#chart');chart.replaceChildren();
  if(!xs.length){chart.append(make('p','Pas encore de précision renseignée pour cette sélection.','muted'))}
@@ -333,10 +359,10 @@ function renderInsights(){
   xs.forEach((s,i)=>{const dot=el('circle',{cx:points[i][0],cy:points[i][1],r:5,fill:'#8bded3'});const title=el('title');title.textContent=labelDate(s)+' · '+formatPercent(s.accuracy);dot.append(title);svg.append(dot)});
   chart.append(svg);
  }
- const counts=computeStats(store.sessions,store.weeklyGoal).byFocus;
+ const counts=computeStats(store.sessions,store.weeklyGoal,now).byFocus;
  const target=$('#focus-breakdown');target.replaceChildren();
  Object.entries(FOCUS).forEach(([k,v])=>{const row=make('div',undefined,'breakdown');row.append(make('span',v),make('strong',counts[k]+' séance(s)'));target.append(row)});
- $('#insight-advice').textContent=coach(store.sessions,focus,tool,store.weeklyGoal).message;
+ $('#insight-advice').textContent=coach(store.sessions,focus,tool,store.weeklyGoal,now).message;
 }
 ['insight-focus','insight-tool'].forEach(id=>$('#'+id).addEventListener('change',()=>{renderInsights();renderCoach();renderDashboard()}));
 function renderCoach(){
@@ -358,10 +384,16 @@ $('#export-data').addEventListener('click',()=>{
 });
 $('#import-data').addEventListener('change',async event=>{
  const file=event.target.files?.[0];if(!file)return;
+ const importUid=activeUid();
  try{
+  if(!importUid)throw Error('Connecte-toi pour importer une sauvegarde.');
   if(file.size>2e6)throw Error('La sauvegarde dépasse 2 Mo.');
   const payload=JSON.parse(await file.text());
+  // A cross-tab logout/switch can happen while the browser reads the file.
+  // Never merge A's backup into B's account-scoped cache after that await.
+  if(activeUid()!==importUid)throw Error('Compte modifié pendant l’import : recommence après connexion.');
   const result=importPayload(payload,store);
+  if(activeUid()!==importUid)throw Error('Compte modifié pendant l’import : recommence après connexion.');
   if(!save(result.store))return;
   renderDashboard();renderInsights();renderCoach();renderFavorites();
   showMessage(result.added+' nouvelle(s) séance(s) importée(s), favoris conservés.');
