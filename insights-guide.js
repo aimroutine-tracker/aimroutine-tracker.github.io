@@ -325,7 +325,7 @@
         el.className='ti-heatmap-day '+(['','active-low','active-mid','active-high'][level]);
         el.setAttribute('aria-label',tr('Semaine','Week')+' '+(Math.floor(i/7)+1)+', '+tr('jour','day')+' '+(i%7+1)+': '+[text('rest'),text('light'),text('moderate'),text('high')][level]+'. '+text('click'));
       });
-      p.querySelectorAll('.ti-chart-point').forEach((el,i)=>el.setAttribute('aria-label','S'+(i+1)+' · '+d.points[i]+'/100'));
+      p.querySelectorAll('.ti-chart-point').forEach(el=>{el.removeAttribute('aria-label');el.setAttribute('aria-hidden','true');});
       p.querySelectorAll('.ti-graph-point-btn').forEach((el,i)=>el.setAttribute('aria-label','S'+(i+1)+' · '+d.points[i]+'/100 · '+text('click')));
     }
     if(!dock.hidden)renderHelp(currentHelp);

@@ -6,9 +6,18 @@ on:
       - ".github/workflows/auth-ui-quick.yml"
       - "tests/browser.spec.mjs"
       - "account.html"
+      - "site-reference-v20.css"
+      - "site-owner-reference-v3.css"
+      - "site-reference-v20.mjs"
+      - "site-rebuild-v17.js"
+      - "site-interface-v18.js"
+      - "site-interface-v19.mjs"
       - "account-v7.mjs"
       - "username-v7.mjs"
       - "cloud-sync-v7.mjs"
+      - "site-v15-data.mjs"
+      - "progress-v14.mjs"
+      - "training-entry-v7.mjs"
       - "supabase/migrations/**"
   push:
     branches: [main]
@@ -21,6 +30,11 @@ on:
       - "supabase/migrations/**"
 permissions:
   contents: read
+
+# Ignore superseded commits: only the current PR/head build matters.
+concurrency:
+  group: aimroutine-auth-ui-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   auth-ui:
     runs-on: ubuntu-24.04

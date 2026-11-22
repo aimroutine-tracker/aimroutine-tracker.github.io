@@ -1,3 +1,4 @@
+import {stylesheetIndex} from './helpers/styles-v3.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
@@ -14,7 +15,7 @@ test('home has a playable, accessible, bilingual mini AIM challenge',()=>{
  assert.match(html,/data-ar11-mode="precision"/);
  assert.match(html,/data-ar11-mode="reflex"/);
  assert.match(html,/site-arcade-v12.js\?v=1/);
- assert.match(html,/site-arcade-v11.css\?v=1/);
+ assert.ok(stylesheetIndex('index.html','site-arcade-v11.css')>=0);
  assert.match(html,/Graphique illustratif/);
 });
 test('mini-game is local, timed, pausable and maintains honest stats',()=>{
@@ -44,5 +45,5 @@ test('public deployment allowlist includes new game assets',()=>{
   assert.ok(m.split(/\r?\n/).includes(name));
   assert.ok(sw.includes("'./"+name+"'"));
  }
- assert.match(sw,/aimroutine-v9-account-cloud-auto-20261108/);
+ assert.match(sw,/aimroutine-v11-home-bundles-20261114/);
 });

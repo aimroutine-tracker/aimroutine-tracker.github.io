@@ -3,12 +3,23 @@ on:
   pull_request:
     paths:
       - "site-rebuild-v17.*"
+      - "site-interface-v19.mjs"
+      - "site-reference-v20.css"
+      - "site-owner-reference-v3.css"
       - "r17-hero.webp"
       - "index.html"
       - "training.html"
       - "account.html"
       - "progress.html"
+      - "progress-v14.mjs"
+      - "site-v15-data.mjs"
+      - "training-entry-v7.mjs"
       - "tests/browser.spec.mjs"
+      - "tests/home-css-render-parity-v1.mjs"
+      - "tests/check-home-css-pixel-parity-v1.py"
+      - "site-home-bundle-v1-*.css"
+      - "sw-v6.js"
+      - "pwa-v6.js"
       - ".github/workflows/browser-smoke.yml"
   push:
     branches: [main]
@@ -20,32 +31,82 @@ on:
       - "pwa-v6.js"
       - "sw-v6.js"
       - "tests/browser.spec.mjs"
+      - "tests/home-css-render-parity-v1.mjs"
+      - "tests/check-home-css-pixel-parity-v1.py"
+      - "site-home-bundle-v1-*.css"
       - "tests/playwright.config.mjs"
       - ".github/workflows/browser-smoke.yml"
   workflow_dispatch:
 permissions:
   contents: read
+
+# Ignore superseded commits: only the current PR/head build matters.
 concurrency:
-  group: aimroutine-browser-\${{ github.ref }}
+  group: aimroutine-cross-browser-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   browsers:
+    name: Browser smoke tests (${{ matrix.project }})
     runs-on: ubuntu-24.04
     timeout-minutes: 22
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - project: chromium-desktop
+            engine: chromium
+            playwright: 1.56.1
+          - project: firefox-desktop
+            engine: firefox
+            playwright: 1.56.1
+          - project: webkit-mobile
+            engine: webkit
+            # This release includes the disk-backed CacheStorage fix.
+            playwright: 1.62.0
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - name: Install browser test runner
-        run: npm install --no-save @playwright/test@1.56.1
-      - name: Install browser engines
-        run: npx playwright install --with-deps chromium firefox webkit
+        run: npm install --no-save @playwright/test@${{ matrix.playwright }}
+      - name: Install browser engine
+        run: npx playwright install --with-deps ${{ matrix.engine }}
       - name: Start local static site
+        id: server
         run: |
           nohup python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/aimroutine-http.log 2>&1 &
           for i in $(seq 1 25); do curl -fsS http://127.0.0.1:8765/training.html >/dev/null && exit 0; sleep 1; done
           cat /tmp/aimroutine-http.log
           exit 1
-      - name: Run desktop and mobile browser scenarios
-        run: npx playwright test --config=tests/playwright.config.mjs
+      - name: Repeat offline training on WebKit with retries disabled
+        id: offline-repeat
+        if: matrix.engine == 'webkit'
+        run: |
+          set -o pipefail
+          npx playwright test --config=tests/playwright.config.mjs --project=webkit-mobile --grep 'Offline training works after initial install' --repeat-each=16 --retries=0 | tee "$RUNNER_TEMP/offline-repeat.log"
+      - name: Export offline diagnostics if a repeat fails
+        if: failure() && steps.offline-repeat.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: webkit-offline-repeat-diagnostics
+          path: ${{ runner.temp }}/offline-repeat.log
+          if-no-files-found: error
+          retention-days: 3
+      - name: Prove home CSS consolidation preserves desktop/mobile visuals
+        if: matrix.engine == 'chromium'
+        run: |
+          set -euo pipefail
+          node tests/home-css-render-parity-v1.mjs
+          python3 -m pip install --quiet Pillow==11.3.0
+          python3 tests/check-home-css-pixel-parity-v1.py
+      - name: Run browser scenarios
+        if: ${{ !cancelled() && steps.server.outcome == 'success' }}
+        run: npx playwright test --config=tests/playwright.config.mjs --project=${{ matrix.project }}
+      - name: Export CSS comparison screenshots only if pixel proof fails
+        if: failure() && matrix.engine == 'chromium'
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-css-bundle-pixel-regression
+          path: visual-results/css-parity/
+          if-no-files-found: ignore

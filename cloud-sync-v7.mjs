@@ -5,8 +5,44 @@ import {normalizeStore,validSession,validPreset} from './training-core-v5.mjs';
 import {cleanExtension} from './training-v6-core.mjs';
 
 const STORAGE_LIMIT=1000;
+// Serialize destructive resets against outstanding saves for the same account.
+const inflightSyncs=new Map();
+const inflightResets=new Map();
+// An exclusive same-origin Web Lock coordinates V3 clients across browser tabs.
+// In-memory maps above cover only a single JS realm. Without this lock, a
+// second tab could upload stale sessions while another tab resets its owner.
+// A different device or legacy V2 tab is NOT protected by this client lock;
+// the server reset cursor and RLS remain the authoritative safety layers.
+function withAccountCloudLock(uid,action){
+ const manager=typeof navigator!=='undefined'?navigator.locks:null;
+ if(manager&&typeof manager.request==='function'){
+  return manager.request('aimroutine-cloud-account-'+uid,{mode:'exclusive'},action);
+ }
+ // Web Locks are optional in old/insecure browsers. Keep the existing
+ // per-realm serialization; do not claim cross-tab protection in fallback.
+ return action();
+}
 const parseJSON=s=>{try{return JSON.parse(s)}catch{return null}};
 const equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+// Reset marker is server-authoritative and normalized for stable comparison.
+const resetCursor=settings=>{
+ const value=settings?.reset_at;
+ if(value==null)return null; // Legacy accounts may predate reset markers.
+ if(typeof value!=='string'||!Number.isFinite(Date.parse(value))){
+  // A corrupt or unexpected authoritative marker must never be treated as
+  // "not reset": that could re-upload stale offline data after deletion.
+  throw Error('Marqueur de réinitialisation Cloud invalide : sauvegarde annulée sans modifier les données locales.');
+ }
+ return new Date(value).toISOString();
+};
+// A client that has witnessed a reset must not trust a server snapshot with
+// an older or missing reset epoch. Otherwise a restored/rolled-back preferences
+// row could permit previously deleted offline sessions to be uploaded again.
+function assertResetEpochNotRegressed(knownResetAt,remoteResetAt){
+ if(knownResetAt&&(!remoteResetAt||Date.parse(remoteResetAt)<Date.parse(knownResetAt))){
+  throw Error('Marqueur de réinitialisation Cloud régressé ou absent : synchronisation annulée sans modifier les données locales.');
+ }
+}
 const metaKey=uid=>CLOUD_META_PREFIX+uid;
 const enabledKey=uid=>'aimroutine_cloud_enabled_'+uid;
 export const isEnabled=uid=>validUid(uid); // Automatic Cloud for every signed-in account.
@@ -17,7 +53,25 @@ export function readUserLocal(uid){
  const ext=parseJSON(localStorage.getItem(scopedKey(EXT_KEY,uid)));
  return {store:normalizeStore(s,old),ext:cleanExtension(ext)};
 }
-function readMeta(uid){return safeMeta(parseJSON(localStorage.getItem(metaKey(uid))))}
+function readMeta(uid){
+ const raw=localStorage.getItem(metaKey(uid));
+ if(raw===null)return freshCloudMeta(); // A new account has no prior cursor.
+ const parsed=parseJSON(raw);
+ // A corrupt local cursor is NOT equivalent to never having seen a reset.
+ // Failing closed preserves local training and prevents stale uploads until
+ // the owner repairs this device's metadata against the server.
+ if(!parsed||typeof parsed!=='object'||Array.isArray(parsed)||
+    ('resetAt' in parsed&&parsed.resetAt!==null&&
+     (typeof parsed.resetAt!=='string'||!Number.isFinite(Date.parse(parsed.resetAt))))||
+    ('presetDeletedIds' in parsed&&
+     (!Array.isArray(parsed.presetDeletedIds)||parsed.presetDeletedIds.length>100||
+      parsed.presetDeletedIds.some(id=>typeof id!=='string'||id.length===0||id.length>100)))){
+  // A corrupted deletion-tombstone list must not be normalized to []:
+  // doing so can restore favorites the owner already deleted offline.
+  throw Error('Métadonnées locales Cloud illisibles : synchronisation annulée sans supprimer les séances locales.');
+ }
+ return safeMeta(parsed);
+}
 function jsonSize(value){return new TextEncoder().encode(JSON.stringify(value)).length}
 function writeLocal(uid,store,ext,meta){
  // Persist the validated data, then the synchronization cursor.
@@ -25,35 +79,61 @@ function writeLocal(uid,store,ext,meta){
  localStorage.setItem(scopedKey(EXT_KEY,uid),JSON.stringify(cleanExtension(ext)));
  localStorage.setItem(metaKey(uid),JSON.stringify(meta));
 }
-async function fetchAll(client,table,order){
+async function fetchAll(client,table,order,uid){
  const items=[];
  for(let from=0;from<11000;from+=1000){
-  const {data,error}=await client.from(table).select('*').order(order,{ascending:true}).range(from,from+999);
+  // Explicit owner filter supplements RLS. A token that changes between
+  // pagination requests must not return rows belonging to another account.
+  const {data,error}=await client.from(table).select('*').eq('user_id',uid).order(order,{ascending:true}).range(from,from+999);
   if(error)throw error;
   items.push(...(data||[]));
   if(!data||data.length<1000)return items;
  }
  throw Error('Trop de données pour la synchronisation automatique : contactez le support.');
 }
-async function upsertChunks(client,table,records,idColumn){
- // Concurrent devices may discover the same ID as new before either writes.
- // First committed record wins: never overwrite an existing cloud entry.
- for(let i=0;i<records.length;i+=80){
-  const {error}=await client.from(table).upsert(records.slice(i,i+80),{
-   onConflict:'user_id,'+idColumn,ignoreDuplicates:true
+// The V3 server validates ownership, reset epoch and all writes under one
+// PostgreSQL transaction lock. Never fall back to unguarded table mutations.
+function cloudWriteError(error){
+ if(error?.code==='PGRST202'){
+  return Error('Synchronisation indisponible : le serveur Cloud doit être mis à jour avant cette version. Tes données locales sont conservées.');
+ }
+ if(error?.code==='40001'&&/stale_reset_cursor/i.test(String(error.message||''))){
+  const conflict=Error('La progression Cloud a été réinitialisée pendant la synchronisation. Relance la synchronisation pour récupérer le nouvel état.');
+  conflict.code='AIM_RESET_CURSOR_CHANGED';
+  return conflict;
+ }
+ if(error?.code==='42501'&&/account_mismatch/i.test(String(error.message||''))){
+  return Error('Synchronisation annulée : la session ne correspond plus au compte sélectionné.');
+ }
+ return error;
+}
+async function applyGuardedProgress(client,uid,resetAt,sessions,presets,removedIds,profile,goal){
+ // Cap every invocation to 80 payloads per table, preserving the old import
+ // limit. A reset between chunks invalidates the next RPC before its writes.
+ const pages=Math.max(1,Math.ceil(sessions.length/80),Math.ceil(presets.length/80));
+ for(let i=0;i<pages;i++){
+  const {error}=await client.rpc('aim_apply_progress_for_user',{
+   expected_uid:uid,
+   expected_reset_at:resetAt,
+   new_sessions:sessions.slice(i*80,(i+1)*80),
+   new_presets:presets.slice(i*80,(i+1)*80),
+   deleted_preset_ids:i===0?removedIds:[],
+   new_profile:i===0?profile:null,
+   new_weekly_goal:i===0?goal:null
   });
-  if(error)throw error;
+  if(error)throw cloudWriteError(error);
  }
 }
 async function synchronizeOnce(client,uid,{guestImport=false}={}){
  if(!validUid(uid))throw Error('Un compte connecté est nécessaire pour sauvegarder.');
- const {data:{user},error:authError}=await client.auth.getUser();
+ const {data:authData,error:authError}=await client.auth.getUser();
+ const user=authData?.user;
  if(authError||!user||user.id!==uid)throw Error('Session non validée : reconnecte-toi à ton compte.');
  let local=readUserLocal(uid);
  const meta=readMeta(uid);
  const [remoteSessions,remotePresets,profileResult,prefResult]=await Promise.all([
-  fetchAll(client,'aim_sessions','session_id'),
-  fetchAll(client,'aim_presets','preset_id'),
+  fetchAll(client,'aim_sessions','session_id',uid),
+  fetchAll(client,'aim_presets','preset_id',uid),
   client.from('aim_profiles').select('profile').eq('user_id',uid).maybeSingle(),
   client.from('aim_preferences').select('weekly_goal,settings').eq('user_id',uid).maybeSingle()
  ]);
@@ -62,9 +142,8 @@ async function synchronizeOnce(client,uid,{guestImport=false}={}){
  // Progress deletion must propagate even to offline devices that still have
  // their old records in localStorage. The cloud reset cursor is authoritative:
  // never upload stale local sessions/presets from an older device.
- const remoteResetAt=typeof prefResult.data?.settings?.reset_at==='string'&&
-   Number.isFinite(Date.parse(prefResult.data.settings.reset_at))
-    ?new Date(prefResult.data.settings.reset_at).toISOString():null;
+ const remoteResetAt=resetCursor(prefResult.data?.settings);
+ assertResetEpochNotRegressed(meta.resetAt,remoteResetAt);
  const unseenReset=Boolean(remoteResetAt&&remoteResetAt!==meta.resetAt);
  if(unseenReset){
    local={store:normalizeStore({},null),ext:cleanExtension({})};
@@ -88,39 +167,52 @@ async function synchronizeOnce(client,uid,{guestImport=false}={}){
  const presetById=new Map(remotePresets.map(r=>[r.preset_id,r]));
  const pending=new Set(meta.presetDeletedIds);
  const validDeleted=[...pending].filter(id=>presetById.has(id)&&!presetById.get(id).deleted_at);
+ // Another device can reset progress after our first cloud reads but before
+ // we write anything. Re-check the server reset epoch immediately before the
+ // first mutation; never upload a snapshot known to predate deletion.
+ // This narrows a cross-device race; strict atomic protection still needs
+ // server-side write gating in a future coordinated migration.
+ const {data:latestPreferences,error:latestPreferencesError}=await client.from('aim_preferences')
+   .select('settings').eq('user_id',uid).maybeSingle();
+ if(latestPreferencesError)throw latestPreferencesError;
+ const latestResetAt=resetCursor(latestPreferences?.settings);
+ if(latestResetAt!==remoteResetAt){
+  // A typed conflict allows one safe, automatic reload. Never retry for Auth,
+  // network, RLS or other unrelated failures.
+  const conflict=Error('La progression Cloud a été réinitialisée pendant la synchronisation. Relance la synchronisation pour récupérer le nouvel état.');
+  conflict.code='AIM_RESET_CURSOR_CHANGED';
+  throw conflict;
+ }
+ // Update the in-memory snapshot only. The actual tombstone is committed
+ // together with all other pending writes inside the guarded server RPC.
  for(const id of validDeleted){
-  const row=presetById.get(id);
-  const {error}=await client.from('aim_presets').update({deleted_at:new Date().toISOString()}).eq('user_id',uid).eq('preset_id',id);
-  if(error)throw error;
-  row.deleted_at=new Date().toISOString();
+  presetById.get(id).deleted_at=new Date().toISOString();
  }
  const cloudPresets=remotePresets.filter(r=>!r.deleted_at).map(r=>r.payload).filter(validPreset);
  const tombstones=[...pending,...remotePresets.filter(x=>x.deleted_at).map(x=>x.preset_id)];
  const mergedPresets=mergeRecords(local.store.presets,cloudPresets,tombstones).filter(validPreset).slice(-25);
  const newPresets=local.store.presets.filter(p=>!presetById.has(p.id)&&!pending.has(p.id));
- await upsertChunks(client,'aim_sessions',newSessions.map(x=>({user_id:uid,session_id:x.id,payload:x,deleted_at:null})),'session_id');
- await upsertChunks(client,'aim_presets',newPresets.map(x=>({user_id:uid,preset_id:x.id,payload:x,deleted_at:null})),'preset_id');
 
  const localProfile=cleanExtension(local.ext);
  const remoteProfile=profileResult.data?.profile?cleanExtension(profileResult.data.profile):null;
  const localProfileString=JSON.stringify(localProfile);
  const profileWasModified=meta.profileHash!==null&&meta.profileHash!==localProfileString;
- let finalProfile=remoteProfile||localProfile;
- if(!remoteProfile||profileWasModified||guestImport){
-   finalProfile=localProfile;
-   if(jsonSize(finalProfile)>16000)throw Error('Le profil dépasse la taille maximale du cloud.');
-   const {error}=await client.from('aim_profiles').upsert({user_id:uid,profile:finalProfile});
-   if(error)throw error;
+ const saveProfile=!remoteProfile||profileWasModified||guestImport;
+ const finalProfile=saveProfile?localProfile:(remoteProfile||localProfile);
+ if(saveProfile&&jsonSize(finalProfile)>16000){
+  throw Error('Le profil dépasse la taille maximale du cloud.');
  }
  const localGoal=local.store.weeklyGoal;
  const localPrefsString=JSON.stringify({weeklyGoal:localGoal});
  const prefsChanged=meta.prefsHash!==null&&meta.prefsHash!==localPrefsString;
- let finalGoal=prefResult.data?.weekly_goal??localGoal;
- if(!prefResult.data||prefsChanged||guestImport){
-   finalGoal=localGoal;
-   const {error}=await client.from('aim_preferences').upsert({user_id:uid,weekly_goal:finalGoal,settings:{format:'aimroutine-web-v2',...(remoteResetAt?{reset_at:remoteResetAt}:{})}});
-   if(error)throw error;
- }
+ const saveGoal=!prefResult.data||prefsChanged||guestImport;
+ const finalGoal=saveGoal?localGoal:(prefResult.data?.weekly_goal??localGoal);
+
+ // No direct REST upserts/updates: all four table categories share the
+ // account-bound reset lock and an authoritative reset-epoch comparison.
+ // A missing migration fails closed without deleting any local training data.
+ await applyGuardedProgress(client,uid,remoteResetAt,newSessions,newPresets,
+  validDeleted,saveProfile?finalProfile:null,saveGoal?finalGoal:null);
  // Preserve edits made while the network request was in flight.
  // This is essential for rapid consecutive sessions and multiple open tabs.
  const newest=unseenReset?local:readUserLocal(uid); // Do not resurrect stale data after remote reset.
@@ -136,6 +228,13 @@ async function synchronizeOnce(client,uid,{guestImport=false}={}){
  meta.presetDeletedIds=freshDeletes;
  meta.profileHash=JSON.stringify(finalProfile);
  meta.prefsHash=JSON.stringify({weeklyGoal:finalGoal});
+ // A different account may have signed in while reads/writes were pending.
+ // Never commit remote data to A's local cache if the current verified user
+ // is now B, even when old HTTP responses succeeded under an earlier token.
+ const {data:lastAuth,error:lastAuthError}=await client.auth.getUser();
+ if(lastAuthError||lastAuth?.user?.id!==uid){
+  throw Error('Session modifiée pendant la synchronisation : reconnecte-toi à ton compte.');
+ }
  if(unseenReset){
    // Prevent the V1 fallback from resurrecting data after V2 is replaced.
    localStorage.removeItem(scopedKey(LEGACY_KEY,uid));
@@ -148,12 +247,25 @@ async function synchronizeOnce(client,uid,{guestImport=false}={}){
  };
 }
 export function collectFavoriteDeletion(uid,removed){
- if(!uid||!removed?.length)return;
+ // Invalid account IDs and malformed event payloads must never write Cloud metadata.
+ if(!validUid(uid)||!Array.isArray(removed)||!removed.length)return;
  const meta=readMeta(uid);
- meta.presetDeletedIds=[...new Set([...meta.presetDeletedIds,...removed.map(x=>String(x))])].slice(-100);
+ // Never discard pending deletions to fit the RPC's 100-ID limit.
+ // Losing a tombstone can restore a favorite not yet deleted on the server.
+ if(removed.some(id=>typeof id!=='string'||id.length===0||id.length>100)){
+  throw Error('Identifiant de favori supprimé invalide : aucune suppression locale enregistrée.');
+ }
+ const pending=[...new Set([...meta.presetDeletedIds,...removed])];
+ if(pending.length>100){
+  throw Error('Trop de suppressions de favoris en attente : synchronise ce compte avant de continuer.');
+ }
+ meta.presetDeletedIds=pending;
  localStorage.setItem(metaKey(uid),JSON.stringify(meta));
 }
 export function importGuestIntoAccount(uid){
+ // scopedKey() intentionally falls back to guest storage for invalid UIDs.
+ // Import must reject them before touching either guest or account storage.
+ if(!validUid(uid))throw Error('Identifiant de compte Cloud invalide : import annulé.');
  const guest=normalizeStore(parseJSON(localStorage.getItem(TRAINING_KEY)),parseJSON(localStorage.getItem(LEGACY_KEY)));
  const guestExt=cleanExtension(parseJSON(localStorage.getItem(EXT_KEY)));
  const current=readUserLocal(uid),meta=readMeta(uid);
@@ -161,41 +273,108 @@ export function importGuestIntoAccount(uid){
  for(const x of guest.sessions)if(!map.has(x.id))map.set(x.id,x);
  const presets=new Map(current.store.presets.map(x=>[x.id,x]));
  for(const x of guest.presets)if(!presets.has(x.id))presets.set(x.id,x);
+ // Keep account-specific settings even when the account has no recorded
+ // sessions. A pre-existing weekly goal/profile must never be overwritten
+ // merely because the visitor imports their guest training history.
+ const hasAccountTraining=localStorage.getItem(scopedKey(TRAINING_KEY,uid))!==null||
+   localStorage.getItem(scopedKey(LEGACY_KEY,uid))!==null;
+ const hasAccountExtension=localStorage.getItem(scopedKey(EXT_KEY,uid))!==null;
  const store={...current.store,sessions:[...map.values()].slice(-STORAGE_LIMIT),presets:[...presets.values()].slice(-25),
-   weeklyGoal:current.store.sessions.length?current.store.weeklyGoal:guest.weeklyGoal};
- const ext=current.store.sessions.length?current.ext:guestExt;
+   weeklyGoal:hasAccountTraining?current.store.weeklyGoal:guest.weeklyGoal};
+ const ext=hasAccountExtension?current.ext:guestExt;
  // Preserve the guest copy untouched for recovery.
  writeLocal(uid,store,ext,meta);
  return {sessions:guest.sessions.length,favorites:guest.presets.length};
 }
-export async function deleteCloudProgress(client,uid){
- const {data:{user},error}=await client.auth.getUser();
- if(error||!user||user.id!==uid)throw Error('Session non validée.');
- // One RLS-protected database transaction: a failed request cannot partially
- // erase the cloud or leave the reset marker unpublished.
- const {data:resetValue,error:resetError}=await client.rpc('aim_reset_my_progress');
- if(resetError)throw resetError;
- if(typeof resetValue!=='string'||!Number.isFinite(Date.parse(resetValue))){
-  throw Error('La suppression cloud a répondu sans accusé de réinitialisation valide.');
- }
- const resetAt=new Date(resetValue).toISOString();
- const resetMeta={...freshCloudMeta(),resetAt};
- localStorage.setItem(metaKey(uid),JSON.stringify(resetMeta));
- localStorage.removeItem(scopedKey(TRAINING_KEY,uid));
- // The legacy V1 key is a fallback in readUserLocal(). Clearing only V2 could
- // silently repopulate deleted training data on the next visit.
- localStorage.removeItem(scopedKey(LEGACY_KEY,uid));
- localStorage.removeItem(scopedKey(EXT_KEY,uid));
- return true;
+export function deleteCloudProgress(client,uid){
+ if(!validUid(uid))return Promise.reject(Error('Session non validée.'));
+ const existing=inflightResets.get(uid);
+ if(existing)return existing;
+ // Lock before awaiting authentication: new sync requests wait for the reset,
+ // and previously started saves finish before the deletion transaction begins.
+ const task=(async()=>{
+  try{
+   return await withAccountCloudLock(uid,async()=>{
+   const {data:authData,error}=await client.auth.getUser();
+    const user=authData?.user;
+   if(error||!user||user.id!==uid)throw Error('Session non validée.');
+   const previous=inflightSyncs.get(uid);
+   if(previous){
+    // A failed save must not prevent the owner from deleting their data.
+    try{await previous}catch{}
+   }
+   // Always revalidate immediately before a destructive RPC, even if there
+   // was no pending save. A different tab can change the shared Auth session
+   // while the initial getUser() request is in flight.
+   const {data:latest,error:latestError}=await client.auth.getUser();
+   if(latestError||latest?.user?.id!==uid){
+    throw Error('Session modifiée pendant la suppression : reconnecte-toi à ton compte.');
+   }
+   // V3 requires the new account-bound RPC. Do not fall back to the legacy
+   // no-argument function: it cannot reject a late JWT switch from A to B.
+   // Until the matching SQL migration is deployed, deletion MUST fail closed.
+   const {data:resetValue,error:resetError}=await client.rpc('aim_reset_my_progress_for_user',{expected_uid:uid});
+   if(resetError){
+    // The V3 client may be previewed before its SQL migration has been applied.
+    // A missing safe RPC must fail closed without exposing a raw PostgREST error
+    // or falling back to the previous unbound destructive function.
+    if(resetError.code==='PGRST202'){
+     throw Error('Suppression indisponible : la mise à jour du serveur Cloud est nécessaire. Ta progression locale est conservée.');
+    }
+    if(resetError.code==='42501'&&/account_mismatch/i.test(String(resetError.message||''))){
+     throw Error('Suppression annulée : la session ne correspond plus au compte sélectionné.');
+    }
+    throw resetError;
+   }
+   // Never clear the initiating account's local cache if a different account
+   // replaced it while the server request was pending.
+   const {data:confirmed,error:confirmedError}=await client.auth.getUser();
+   if(confirmedError||confirmed?.user?.id!==uid){
+    throw Error('Session modifiée pendant la suppression : reconnecte-toi à ton compte.');
+   }
+   if(typeof resetValue!=='string'||!Number.isFinite(Date.parse(resetValue))){
+    throw Error('La suppression cloud a répondu sans accusé de réinitialisation valide.');
+   }
+   const resetAt=new Date(resetValue).toISOString();
+   const resetMeta={...freshCloudMeta(),resetAt};
+   // Commit the new reset cursor LAST. If storage cleanup throws or crashes
+   // midway, the old cursor remains and the next sync detects the newer
+   // server epoch. Writing the cursor first could re-upload stale sessions
+   // left behind by a failed removeItem().
+   localStorage.removeItem(scopedKey(TRAINING_KEY,uid));
+   // Clear the legacy fallback too, or old data could reappear on next visit.
+   localStorage.removeItem(scopedKey(LEGACY_KEY,uid));
+   localStorage.removeItem(scopedKey(EXT_KEY,uid));
+   localStorage.setItem(metaKey(uid),JSON.stringify(resetMeta));
+   return true;
+   });
+  }finally{
+   if(inflightResets.get(uid)===task)inflightResets.delete(uid);
+  }
+ })();
+ inflightResets.set(uid,task);
+ return task;
 }
 
 // Deduplicate simultaneous requests from account page, auto-refresh and training edits.
-const inflightSyncs=new Map();
 export function synchronize(client,uid,options={}){
  if(!validUid(uid))return Promise.reject(Error('Connexion obligatoire pour enregistrer.'));
+ const reset=inflightResets.get(uid);
+ if(reset)return reset.then(()=>synchronize(client,uid,options));
  const pending=inflightSyncs.get(uid);
  if(pending)return options.guestImport?pending.then(()=>synchronize(client,uid,options)):pending;
- const task=synchronizeOnce(client,uid,options);
+ const task=withAccountCloudLock(uid,async()=>{
+  try{
+   return await synchronizeOnce(client,uid,options);
+  }catch(error){
+   if(error?.code!=='AIM_RESET_CURSOR_CHANGED')throw error;
+   // Re-read the server-authoritative reset marker under the same per-account
+   // lock. This deliberately retries at most ONCE: repeated resets must
+   // surface as an error instead of looping or restoring stale records.
+   // synchronizeOnce revalidates the authenticated user on every attempt.
+   return synchronizeOnce(client,uid,options);
+  }
+ });
  inflightSyncs.set(uid,task);
  void task.finally(()=>{if(inflightSyncs.get(uid)===task)inflightSyncs.delete(uid)}).catch(()=>{});
  return task;

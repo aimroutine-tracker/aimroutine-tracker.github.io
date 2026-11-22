@@ -1,3 +1,4 @@
+import {stylesheetIndex} from './helpers/styles-v3.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {inflateSync} from 'node:zlib';
@@ -27,11 +28,11 @@ test('Design tokens are canonical and preserve official palette meanings',()=>{
 test('Official vector and responsive layout ship on every page without replacing app logic',()=>{
  for(const file of pages){
   const html=read(file);
-  assert.match(html,/site-official-v16\.css\?v=1/);
+  assert.ok(stylesheetIndex(file,'site-official-v16.css')>=0);
   assert.match(html,/aimroutine-brand-a-v2\.svg\?v=1/);
   assert.match(html,/favicon\.svg\?v=3/);
-  assert.match(html,/aimroutine-official-tokens-v2\.css\?v=1/);
-  assert.ok(html.indexOf('site-official-v16.css?v=1')>html.indexOf('site-v15-fidelity.css?v=1'),file);
+  assert.ok(stylesheetIndex(file,'aimroutine-official-tokens-v2.css')>=0);
+  assert.ok(stylesheetIndex(file,'site-official-v16.css')>stylesheetIndex(file,'site-v15-fidelity.css'),file);
  }
  const tr=read('training.html'),ac=read('account.html');
  for(const id of ['builder-form','panel-builder','routine-output','finish-form'])assert.ok(tr.includes('id="'+id+'"'));
@@ -45,7 +46,7 @@ test('Official PNG, style and logo are publicly packaged and cached',()=>{
  for(const f of ['aimroutine-brand-a-v2.svg','aimroutine-official-tokens-v2.css','site-official-v16.css']){
   assert.ok(worker.includes("'./"+f+"'"),f+' not offline');
  }
- assert.match(worker,/aimroutine-v9-account-cloud-auto-20261108/);
+ assert.match(worker,/aimroutine-v11-home-bundles-20261114/);
  assert.match(read('manifest.webmanifest'),/"sizes": "256x256"/);
 });
 

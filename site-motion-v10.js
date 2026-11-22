@@ -36,7 +36,7 @@
   /* Reveal only static sections that begin below the viewport. */
   if(!reduceMotion.matches&&'IntersectionObserver' in window){
     const targets=[...document.querySelectorAll([
-      '.site31-home .v5-main>section',
+      '.site31-home .v5-main>section:not([data-ar11-game],#insights)',
       '.site31-product main>section',
       '.site31-overview main>section',
       '.site31-riot main>section',

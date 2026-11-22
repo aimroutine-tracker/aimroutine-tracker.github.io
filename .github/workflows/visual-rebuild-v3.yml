@@ -1,0 +1,131 @@
+name: V3 visual evidence - four reference screens
+on:
+  pull_request:
+    paths:
+      - "site-reference-v20.css"
+      - "site-owner-reference-v3.css"
+      - "tests/visual-rebuild-v3.mjs"
+      - "tests/compare-visual-v3.py"
+      - "tests/check-source-fidelity-v3.py"
+      - "tests/stage-public-visual-evidence-v3.py"
+      - "tests/visual-references/**"
+      - ".github/workflows/visual-rebuild-v3.yml"
+      - "index.html"
+      - "training.html"
+      - "progress.html"
+      - "progress-v14.mjs"
+      - "account.html"
+  workflow_dispatch:
+permissions:
+  contents: read
+
+# Ignore superseded commits: only the current PR/head build matters.
+concurrency:
+  group: aimroutine-visual-evidence-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  visual-evidence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - name: Checkout baseline (production main)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: baseline
+      - name: Checkout candidate (unpublished PR branch)
+        uses: actions/checkout@v4
+        with:
+          path: candidate
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install pinned screenshot runner
+        working-directory: candidate
+        run: |
+          npm install --no-save @playwright/test@1.56.1
+          npx playwright install chromium
+          python3 -m pip install --quiet Pillow==11.3.0
+      - name: Start isolated baseline and candidate HTTP servers
+        run: |
+          nohup python3 -m http.server 8765 --bind 127.0.0.1 --directory baseline >/tmp/aim-v3-before.log 2>&1 &
+          nohup python3 -m http.server 8766 --bind 127.0.0.1 --directory candidate >/tmp/aim-v3-after.log 2>&1 &
+          for port in 8765 8766; do
+            for i in $(seq 1 25); do
+              if curl -fsS "http://127.0.0.1:$port/index.html" >/dev/null; then break; fi
+              sleep 1
+            done
+            curl -fsS "http://127.0.0.1:$port/training.html" >/dev/null
+          done
+      - name: Capture exact 1672x941 browser viewports
+        working-directory: candidate
+        run: node tests/visual-rebuild-v3.mjs
+      - name: Produce four before-after diffs and source comparisons when available
+        working-directory: candidate
+        run: python3 tests/compare-visual-v3.py
+      - name: Export reduced-size visual contact sheet to log for review
+        working-directory: candidate
+        run: |
+          python3 - <<'PY'
+          import base64, io
+          from PIL import Image, ImageOps, ImageDraw
+          from pathlib import Path
+          pages=('home','routines','progress','account')
+          sheet=Image.new('RGB',(1280,760),'#080f18')
+          for i,name in enumerate(pages):
+              with Image.open(Path('visual-results')/(name+'-after.png')) as raw:
+                  thumb=raw.convert('RGB').resize((640,360),Image.Resampling.LANCZOS)
+                  x=(i%2)*640;y=(i//2)*380
+                  sheet.paste(thumb,(x,y))
+                  ImageDraw.Draw(sheet).text((x+12,y+5),name,fill='white',stroke_width=1,stroke_fill='black')
+          buf=io.BytesIO();sheet.save(buf,'WEBP',quality=54,method=5)
+          encoded=base64.b64encode(buf.getvalue()).decode('ascii')
+          print('AIMV3_CONTACT_START')
+          for x in range(0,len(encoded),1500): print('AIMV3_CHUNK '+encoded[x:x+1500])
+          print('AIMV3_CONTACT_END')
+          PY
+      - name: Stage public-safe evidence (exclude owner-reference pixels)
+        working-directory: candidate
+        run: python3 tests/stage-public-visual-evidence-v3.py
+      - name: Upload public-safe before-and-after evidence (no site deployment)
+        uses: actions/upload-artifact@v4
+        with:
+          name: aimroutine-v3-visual-evidence
+          path: candidate/public-visual-evidence/
+          if-no-files-found: error
+          retention-days: 14
+
+
+      - name: Prepare reviewed static site for isolated local QA (no deployment)
+        working-directory: candidate
+        run: |
+          python3 tests/check_secrets.py
+          python3 scripts/build_public.py
+      - name: Upload temporary vetted local QA snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: aimroutine-v3-local-qa-preview
+          path: candidate/.public-site/
+          include-hidden-files: true
+          retention-days: 1
+          if-no-files-found: error
+
+  reference-fidelity-gate:
+    name: Release gate - four verified original PNG comparisons
+    needs: visual-evidence
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: aimroutine-v3-visual-evidence
+          path: visual-results
+      # Artifacts from a public repository contain ONLY public-safe screenshots.
+      # Rebuild source-derived overlays on this ephemeral runner, never upload them.
+      - name: Install pinned private comparison tool
+        run: python3 -m pip install --quiet Pillow==11.3.0
+      - name: Regenerate private source comparisons inside release-gate runner
+        run: python3 tests/compare-visual-v3.py
+      - name: Block release until original screenshots and source diffs verified
+        run: python3 tests/check-source-fidelity-v3.py

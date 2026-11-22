@@ -70,7 +70,15 @@ export function normalizeStore(raw,old){
     const s=normalizeSession(item);
     if(s&&!seen.has(s.id)){seen.add(s.id);sessions.push(s);}
   }
-  const presets=Array.isArray(current.presets)?current.presets.filter(validPreset).slice(-25):[];
+  // Older caches could hold duplicate favorite IDs. Normalize these like
+  // sessions so a fresh reload does not restore duplicated routine cards.
+  const presetSeen=new Set(),presets=[];
+  const candidatePresets=Array.isArray(current.presets)?current.presets.filter(validPreset).slice(-25):[];
+  for(const preset of candidatePresets){
+    if(presetSeen.has(preset.id))continue;
+    presetSeen.add(preset.id);
+    presets.push(preset);
+  }
   return {format:'aimroutine-web-v2',sessions:sessions.slice(-1000),presets,weeklyGoal:int(current.weeklyGoal,1,14)?Number(current.weeklyGoal):3};
 }
 export function createRoutine(rank,focus,tool,minutes=25,breakSeconds=30){
@@ -86,33 +94,72 @@ export function createRoutine(rank,focus,tool,minutes=25,breakSeconds=30){
 }
 export function sessionMinutes(p){return p.exercises.reduce((n,x)=>n+Number(x.minutes),0);}
 export function localDay(date){const d=new Date(date);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+// A timestamp in the future is not an observed training session. Keep it in
+// stored history for diagnostics, but never award a streak, KPI or coaching
+// trend before it actually happens (for example after device clock drift).
+export function occurredSessions(sessions,now=new Date()){
+  const cutoff=now.getTime();
+  if(!Number.isFinite(cutoff))return [];
+  return sessions.filter(s=>{
+    const timestamp=typeof s?.date==='string'?Date.parse(s.date):NaN;
+    return Number.isFinite(timestamp)&&timestamp<=cutoff;
+  });
+}
 export function streak(sessions,now=new Date()){
-  const days=new Set(sessions.map(s=>localDay(s.date)));
+  const days=new Set(occurredSessions(sessions,now).map(s=>localDay(s.date)));
   let d=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   if(!days.has(localDay(d)))d.setDate(d.getDate()-1);
   let n=0;
   while(days.has(localDay(d))&&n<=3650){n++;d.setDate(d.getDate()-1);}
   return n;
 }
+// Align "Cette semaine" and the week chart to Monday–Sunday calendar weeks,
+// not a rolling 168-hour period. Date.UTC applied to LOCAL calendar components
+// is intentional: it compares dates across DST transitions without an hourly
+// offset error. Past/future dates are never silently shifted into another week.
+const mondayDateKey=date=>Date.UTC(
+  date.getFullYear(),date.getMonth(),date.getDate()-(date.getDay()+6)%7
+);
+export function calendarWeeksAgo(rawDate,now=new Date()){
+  const date=rawDate instanceof Date?rawDate:new Date(rawDate);
+  if(!Number.isFinite(date.getTime())||!Number.isFinite(now.getTime())||
+     date.getTime()>now.getTime())return null;
+  const weeks=(mondayDateKey(now)-mondayDateKey(date))/(7*86400000);
+  return Number.isInteger(weeks)&&weeks>=0?weeks:null;
+}
+export function weeklySessionCounts(sessions,weeks=8,now=new Date()){
+  if(![4,8,12].includes(weeks))throw Error('Période hebdomadaire invalide.');
+  const counts=Array(weeks).fill(0);
+  for(const item of sessions){
+    const offset=calendarWeeksAgo(item?.date,now);
+    if(offset!==null&&offset<weeks)counts[weeks-1-offset]++;
+  }
+  return counts;
+}
 export function computeStats(sessions,weeklyGoal=3,now=new Date()){
-  const list=sessions.slice().sort((a,b)=>b.date.localeCompare(a.date));
+  const list=occurredSessions(sessions,now).sort((a,b)=>b.date.localeCompare(a.date));
   const scores=list.filter(s=>s.accuracy!==null).map(s=>s.accuracy);
-  const ms=now.getTime();
-  const week=list.filter(s=>{const t=Date.parse(s.date);return t<=ms&&t>ms-7*86400000;});
+  const week=list.filter(s=>calendarWeeksAgo(s.date,now)===0);
   return {count:list.length,minutes:list.reduce((n,s)=>n+s.minutes,0),
     avg:scores.length?scores.reduce((a,b)=>a+b,0)/scores.length:null,
     best:scores.length?Math.max(...scores):null,
     week:week.length,goal:weeklyGoal,streak:streak(list,now),
     byFocus:Object.fromEntries(Object.keys(FOCUS).map(k=>[k,list.filter(s=>s.focus===k).length]))};
 }
-export function comparable(sessions,focus,tool){
-  return sessions.filter(s=>s.focus===focus&&s.accuracy!==null&&(!tool||s.tool===tool)).sort((a,b)=>a.date.localeCompare(b.date));
+// The training insight chart must use the same observed-session cutoff as
+// the dashboard and coach. A device-clock error cannot fabricate a new point.
+export function comparable(sessions,focus,tool,now=new Date()){
+  return occurredSessions(sessions,now).filter(s=>
+    s.focus===focus&&typeof s.accuracy==='number'&&
+    Number.isFinite(s.accuracy)&&(!tool||s.tool===tool)
+  ).sort((a,b)=>a.date.localeCompare(b.date));
 }
 export function coach(sessions,focus,tool,weeklyGoal=3,now=new Date()){
-  if(!sessions.length)return {title:'Premiers pas',message:'Prépare une séance courte, note ton ressenti, puis répète plusieurs fois les mêmes exercices.',confidence:'Démarrage',focus};
+  const observed=occurredSessions(sessions,now);
+  if(!observed.length)return {title:'Premiers pas',message:'Prépare une séance courte, note ton ressenti, puis répète plusieurs fois les mêmes exercices.',confidence:'Démarrage',focus};
   // Only compare identical tools and named scenarios; rank alone is not evidence.
   const groups=new Map();
-  sessions.filter(s=>validSession(s)&&s.accuracy!==null&&s.focus===focus&&
+  observed.filter(s=>validSession(s)&&s.accuracy!==null&&s.focus===focus&&
     (!tool||s.tool===tool)&&typeof s.scenario==='string'&&s.scenario.trim()&&
     TOOLS.includes(s.tool)).forEach(s=>{
     const key=s.tool+'::'+s.scenario.trim();
@@ -137,8 +184,23 @@ export function exportPayload(store){
 export function importPayload(payload,store){
   if(!payload||typeof payload!=='object'||!['aimroutine-web-v1','aimroutine-web-v2'].includes(payload.format)||!Array.isArray(payload.sessions)||payload.sessions.length>1000||!payload.sessions.every(validSession))throw Error('Format ou séances invalides');
   if(payload.format==='aimroutine-web-v2'&&(!Array.isArray(payload.presets)||payload.presets.length>25||!payload.presets.every(validPreset)))throw Error('Favoris invalides');
+  // Deduplicate both against existing records and within one import. A backup
+  // can contain repeated IDs: never count one player session or favorite twice.
   const known=new Set(store.sessions.map(x=>x.id));
-  const added=payload.sessions.map(normalizeSession).filter(x=>!known.has(x.id));
-  const presets=payload.format==='aimroutine-web-v2'?[...store.presets,...payload.presets.filter(p=>!store.presets.some(y=>y.id===p.id))].slice(-25):store.presets;
-  return {store:{...store,sessions:[...store.sessions,...added].slice(-1000),presets,weeklyGoal:int(payload.weeklyGoal,1,14)?Number(payload.weeklyGoal):store.weeklyGoal},added:added.length};
+  const added=[];
+  for(const row of payload.sessions){
+    if(known.has(row.id))continue;
+    const normalized=normalizeSession(row);
+    if(!normalized)continue;
+    known.add(normalized.id);
+    added.push(normalized);
+  }
+  const presets=[...store.presets];
+  const presetIds=new Set(presets.map(p=>p.id));
+  if(payload.format==='aimroutine-web-v2')for(const preset of payload.presets){
+    if(presetIds.has(preset.id))continue;
+    presetIds.add(preset.id);
+    presets.push(preset);
+  }
+  return {store:{...store,sessions:[...store.sessions,...added].slice(-1000),presets:presets.slice(-25),weeklyGoal:int(payload.weeklyGoal,1,14)?Number(payload.weeklyGoal):store.weeklyGoal},added:added.length};
 }
