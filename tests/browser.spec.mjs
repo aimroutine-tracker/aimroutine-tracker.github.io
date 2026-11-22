@@ -103,24 +103,13 @@ test.describe('PWA cache integration',()=>{
 });
 });
 
-test('Cloud account landing has single-border tags and a compact accessible guest button',async({page})=>{
+test('The account page keeps login, Cloud information and guest navigation accessible',async({page})=>{
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
- const chips=page.locator('.ar7-account-highlights > .ar7-account-chip');
- await expect(chips).toHaveCount(3);
- await expect(page.locator('.ar7-guest-link')).toBeVisible();
- const check=await page.evaluate(()=>{
-   const badges=[...document.querySelectorAll('.ar7-account-highlights > .ar7-account-chip')];
-   const borders=badges.map(chip=>({
-     outer:getComputedStyle(chip).borderTopWidth,
-     inner:getComputedStyle(chip.querySelector('span')).borderTopWidth,
-     innerPadding:getComputedStyle(chip.querySelector('span')).paddingLeft
-   }));
-   const button=document.querySelector('.ar7-guest-link').getBoundingClientRect();
-   return {borders,buttonWidth:button.width,overflow:document.documentElement.scrollWidth-window.innerWidth};
- });
- expect(check.borders.every(x=>x.outer==='1px'&&x.inner==='0px'&&x.innerPadding==='0px')).toBe(true);
- expect(check.buttonWidth).toBeLessThanOrEqual(page.viewportSize().width);
- expect(check.overflow).toBeLessThanOrEqual(2);
+ await expect(page.locator('[data-r17-auth-slot] #login-form')).toBeVisible();
+ await expect(page.locator('.ar7-guest-link')).toHaveAttribute('href','training.html');
+ await expect(page.locator('.r17-cloud-split')).toBeVisible();
+ const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+ expect(overflow).toBeLessThanOrEqual(2);
 });
 
 test('Account deletion UI exists but remains inaccessible to guests',async({page})=>{
@@ -159,6 +148,7 @@ test('All public pages render without overflow or script errors',async({page,isM
   const response=await page.goto('/'+path,{waitUntil:'domcontentloaded'});
   expect(response?.status(),path).toBe(200);
   await expect(page.locator('main'),path).toHaveCount(1);
+  await expect(page.locator('footer.ar22-footer'),path).toBeVisible();
   await expect(page.locator('nav.site31-nav[data-site-navigation="valorant"]'),path).toHaveCount(1);
   await expect(page.locator('link[href="site-valorant-theme.css?v=1"]'),path).toHaveCount(1);
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
@@ -499,7 +489,7 @@ test('V13 tactical design loads across routes without hiding interactive element
  await expect(page.locator('link[href="site-future-v13.css?v=1"]')).toHaveCount(1);
  await expect(page.locator('#aim-challenge [data-ar11-start]')).toBeAttached();
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.ar7-account-hero .ar13-frame-corners')).toHaveCount(1);
+ await expect(page.locator('.ar22-intro #page-title')).toBeVisible();
  await expect(page.locator('#login-form')).toBeVisible();
  await expect(page.locator('#signup-mode')).toBeVisible();
 });

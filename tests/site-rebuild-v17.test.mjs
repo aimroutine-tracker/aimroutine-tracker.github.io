@@ -5,7 +5,7 @@ const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
 const pages=['index.html','training.html','account.html','progress.html'];
 test('V17 is a newly authored coherent screen instead of an image of a site',()=>{
  const js=read('site-rebuild-v17.js'),css=read('site-rebuild-v17.css');
- for(const name of ['homepage','routinePage','accountPage','progressPage','navigation']) assert.ok(js.includes('function '+name+'('),name);
+ for(const name of ['routinePage','accountPage']) assert.ok(js.includes('function '+name+'('),name);
  for(const marker of ['r17-home-wrap','r17-training-grid','r17-account-cols','r17-progress-wrap'])assert.ok(css.includes(marker));
  assert.doesNotMatch(js,/supabase\.auth|localStorage\.(?:setItem|removeItem)|fetch\s*\(/i);
  assert.match(css,/prefers-reduced-motion:reduce/);
@@ -31,7 +31,7 @@ test('V17 high quality concept-art crop and code ship in PWA and manifest',()=>{
  for(const page of pages){
   const html=read(page);
   assert.ok(html.includes('site-rebuild-v17.css?v=1'));
-  assert.ok(html.includes('site-rebuild-v17.js?v='+(page==='index.html'?'3':'2')));
+  if(['training.html','account.html'].includes(page))assert.ok(html.includes('site-rebuild-v17.js?v=4'));
  }
  assert.match(sw,/aimroutine-v10-valorant/);
 });
@@ -40,5 +40,5 @@ test('V17 layout never invents XP, ranked badges, connected devices, or Riot sco
  assert.doesNotMatch(js,/\b(?:NeoAim94|72 480|12 846|88,4|Niveau 27)\b/);
  assert.match(js,/getStore/);
  assert.match(js,/cloud-enabled-status/);
- assert.match(js,/data-v15-stat/);
+ assert.match(read('index.html'),/data-v15-stat/);
 });

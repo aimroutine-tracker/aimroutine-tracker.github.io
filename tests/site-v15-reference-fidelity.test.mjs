@@ -2,15 +2,15 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
-test('Approved home illustration coexists with the reference training assets and real stats',()=>{
+test('The approved home illustration and real training statistics remain available',()=>{
  const home=read('index.html'),training=read('training.html'),css=read('site-v15-fidelity.css');
  assert.match(home,/href="valorant-hero\.webp"/);
  assert.match(read('site-valorant-theme.css'),/url\("valorant-hero\.webp"\)/);
- assert.ok(training.includes('img src="mockup-hero-v15.webp"'));
+ assert.match(training,/class="r17-training-wrap r17-screen"/);
  assert.match(css,/mockup-hero-v15\.webp/);
  assert.match(home,/data-v15-stat="sessions"/);
- assert.match(training,/v15-training-week/);
- assert.match(read('account.html'),/v15-cloud-portal/);
+ assert.match(training,/r17-weekline/);
+ assert.match(read('account.html'),/r17-cloud-split/);
 });
 test('V15 preserves working form, signup and core training IDs',()=>{
  const account=read('account.html'),train=read('training.html');
