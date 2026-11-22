@@ -1,6 +1,6 @@
 /* AimRoutine V19 — reference screens backed by the real AIM engines.
    UI only: no shadow persistence, fake player metrics or auth modifications. */
-import {createRoutine, TOOLS, computeStats} from './training-core-v5.mjs';
+import {createRoutine, CATALOG, TOOLS, computeStats} from './training-core-v5.mjs';
 
 const $=(selector,root=document)=>root.querySelector(selector);
 const $$=(selector,root=document)=>[...root.querySelectorAll(selector)];
@@ -8,67 +8,58 @@ const en=()=>document.documentElement.lang==='en';
 const tr=(fr,english)=>en()?english:fr;
 const tag=(fr,english)=>'<span class="fr">'+fr+'</span><span class="en">'+english+'</span>';
 const route=location.pathname.split('/').pop()||'index.html';
-const focusDays=['flick','tracking','micro','control','flick'];
 
 function installWorkspace(){
  const screen=$('.r17-training-wrap');
  if(!screen||!$('#panel-program')||!$('#panel-builder'))return;
  screen.classList.add('r19-reference-workspace');
 
- // The mockup preview uses exactly the same catalog and algorithm as
- // the actual routine builder, rather than made-up exercise names.
- const grid=$('.r17-training-plan',screen);
  const picker=document.createElement('label');
  picker.className='r19-tool-picker';
  picker.innerHTML='<span>'+tag('Outil d’entraînement','Training tool')+'</span>';
  const select=document.createElement('select');
  select.className='r19-tool-select';
- select.setAttribute('aria-label',tr('Logiciel d’entraînement','Training application'));
- for(const name of TOOLS){const option=new Option(name,name);select.add(option);}
- const engineTool=$('#tool');
- select.value=engineTool?.value||TOOLS[0];
+ for(const name of TOOLS)select.add(new Option(name,name));
  picker.append(select);
- const title=$('.r17-training-plan .r17-panel-title',screen);
- if(title)title.append(picker);
+ $('.r17-training-plan .r17-panel-title',screen).append(picker);
 
- const extra=document.createElement('div');
- extra.className='r19-plan-summary';
- extra.setAttribute('role','status');
- extra.setAttribute('aria-live','polite');
- extra.innerHTML='<span class="r19-plan-label">'+tag('Exercices calculés à partir du générateur de routines','Exercises built by the real routine generator')+'</span><strong data-r19-plan-total>—</strong>';
- const content=$('.r17-plan-content',screen);
- if(content)content.after(extra);
-
- let currentPlan=null;
+ const prepare=$('[data-r17-create]',screen);
+ const pause=$('#break-length');
  const rows=$$('.r17-exercise',screen);
- const selected=(name,defaultValue)=>$('.r17-'+name+'.is-active',screen)?.dataset['r17'+name[0].toUpperCase()+name.slice(1)]||defaultValue;
+ let currentPlan;
  function renderPlan(){
   const level=$('.r17-level.is-active',screen)?.dataset.r17Level||'silver';
-  const day=Number($('.r17-day.is-active',screen)?.dataset.r17Day||0);
-  const minutes=({iron:15,silver:25,immortal:35})[level]||25;
-  const focus=focusDays[day]||'flick';
-  const breaks=Number($('#break-length')?.value)||0;
+  const day=$('.r17-day.is-active',screen)?.dataset.r17Day||'0';
+  const minutes=Number($('[data-r17-min]',screen).textContent);
+  const focus=$('[data-r17-focus]',screen).dataset.r17FocusKey||'flick';
   const tool=select.value;
-  try{currentPlan=createRoutine(level,focus,tool,minutes,breaks);}catch{currentPlan=null;return;}
-  if(engineTool)engineTool.value=tool;
+  currentPlan=createRoutine(level,focus,tool,minutes,Number(pause.value));
+  if(day==='4'){
+   for(const [offset,skill] of ['tracking','micro'].entries()){
+    const exercise=currentPlan.exercises[offset+1];
+    const specialist=CATALOG.find(item=>item.tool===tool&&item.focus===skill);
+    if(specialist)Object.assign(exercise,{name:specialist.name,tip:specialist.tip});
+   }
+  }
   for(const [index,row] of rows.entries()){
    const exercise=currentPlan.exercises[index];
-   if(!exercise)continue;
-   const heading=$('strong',row);
-   const note=$('div small',row);
-   const duration=row.children[2];
-   const action=$('button',row);
-   if(heading)heading.textContent=exercise.name;
-   if(note)note.textContent=exercise.tip;
-   if(duration)duration.textContent=exercise.minutes+' min';
-   if(action)action.title=tr('Ouvrir cette routine dans l’éditeur','Open this routine in the editor');
+   $('strong',row).textContent=exercise.name;
+   $('div small',row).textContent=exercise.tip;
+   $('.r17-exercise-duration',row).textContent=exercise.minutes+' min';
   }
-  const total=$('[data-r19-plan-total]',screen);
-  if(total)total.textContent=currentPlan.exercises.reduce((n,x)=>n+x.minutes,0)+' min / '+tr('jour','day');
  }
  select.addEventListener('change',renderPlan);
- engineTool?.addEventListener('change',()=>{select.value=engineTool.value;renderPlan()});
+ pause.addEventListener('change',renderPlan);
  $$('[data-r17-level],[data-r17-day]',screen).forEach(button=>button.addEventListener('click',renderPlan));
+ prepare.addEventListener('click',()=>{
+  renderPlan();
+  if(window.AIMWeb?.setPlan(currentPlan,{scroll:false})){
+   window.dispatchEvent(new Event('aim-open-session-editor'));
+  }
+ });
+ const enablePrepare=()=>{prepare.disabled=false;};
+ if(window.AIMWeb)enablePrepare();
+ else window.addEventListener('aim-v5-ready',enablePrepare,{once:true});
  renderPlan();
 
  // Native training tabs remain the only controllers. The reference UI
@@ -108,9 +99,8 @@ function installWorkspace(){
  dialog.addEventListener('click',event=>{if(event.target===dialog)closePanel()});
  function openPanel(key){
   if(key==='builder'){
-   const openBuilder=$('.r17-hero-actions a[href="#panel-builder"]',screen);
-   if(openBuilder){openBuilder.click();return;}
-   $('#tab-builder')?.click();$('#panel-builder')?.scrollIntoView({block:'start'});return;
+   window.dispatchEvent(new Event('aim-open-session-editor'));
+   return;
   }
   const panel=$('#panel-'+key);
   if(!panel||!names[key])return;
@@ -126,10 +116,10 @@ function installWorkspace(){
  }
  $$('[data-r19-panel]',toolbar).forEach(button=>button.addEventListener('click',()=>openPanel(button.dataset.r19Panel)));
 
- // A single actionable plan: the card opens native program creation.
+ // Keep the multi-day program available beside the guided session.
  const planButton=document.createElement('button');
  planButton.type='button';planButton.className='r19-plan-program';
- planButton.innerHTML='▱ '+tag('Planifier un programme réel (7, 14 ou 30 jours)','Create a real 7, 14 or 30-day program')+' <span aria-hidden="true">↗</span>';
+ planButton.innerHTML='▱ '+tag('Planifier un programme','Plan a program')+' <span aria-hidden="true">↗</span>';
  const planFooter=$('.r17-plan-footer',screen);
  if(planFooter)planFooter.append(planButton);
  planButton.addEventListener('click',()=>openPanel('program'));

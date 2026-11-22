@@ -93,8 +93,7 @@
     dialog.innerHTML =
       '<div class="r18-dialog-frame">'+
         '<div class="r18-dialog-head">'+
-          '<div><small>/// AIMROUTINE TRACKER · LIVE WORKSPACE</small><h2>'+tr('Ta séance, dans ton interface','Your session, in your workspace')+'</h2>'+
-          '<p>'+tr('Ces commandes utilisent tes vraies routines et enregistrent uniquement les résultats que tu saisis.','These controls use your real routines and only save results you enter.')+'</p></div>'+
+          '<h2>'+tr('Ta séance','Your session')+'</h2>'+
           '<button type="button" class="r18-dialog-close" aria-label="'+tx('Fermer la séance','Close session')+'">✕</button>'+
         '</div><div class="r18-dialog-content"></div></div>';
     parent.insertBefore(dialog,panel);
@@ -119,11 +118,7 @@
       else dialog.setAttribute('open','');
       dialog.scrollTop = 0;
     }
-    // The v17 card first prepares the plan with the live builder. Then the same
-    // actual builder, timer and session-entry form appear inside the designed UI.
-    $$('[data-r17-create]').forEach(button => {
-      button.addEventListener('click',() => queueMicrotask(open));
-    });
+    window.addEventListener('aim-open-session-editor',open);
     $$('a[href="#panel-builder"]',$('.r17-training-wrap')).forEach(link => {
       link.addEventListener('click',event => {event.preventDefault();open();});
     });

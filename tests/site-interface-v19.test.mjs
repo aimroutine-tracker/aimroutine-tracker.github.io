@@ -6,7 +6,7 @@ test('V19 reference screens load the native interaction layer',()=>{
  for(const page of ['index.html','training.html','account.html','progress.html']){
   const html=get(page);
   assert.ok(html.includes('site-interface-v19.css?v=1'),page);
-  assert.ok(html.includes('site-interface-v19.mjs?v=1'),page);
+  assert.ok(html.includes('site-interface-v19.mjs?v='+(page==='training.html'?2:1)),page);
  }
  for(const name of ['site-interface-v19.css','site-interface-v19.mjs']){
   assert.ok(get('scripts/public-assets.txt').includes(name));

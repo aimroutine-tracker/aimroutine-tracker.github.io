@@ -7,7 +7,7 @@ test('V18 is present on every page and deployable',()=>{
   for(const page of pages){
     const html=read(page);
     assert.ok(html.includes('site-interface-v18.css?v=1'),page);
-    assert.ok(html.includes('site-interface-v18.js?v=2'),page);
+    assert.ok(html.includes('site-interface-v18.js?v='+(page==='training.html'?3:2)),page);
   }
   const allow=read('scripts/public-assets.txt'),sw=read('sw-v6.js');
   for(const name of ['site-interface-v18.css','site-interface-v18.js']){
@@ -16,7 +16,7 @@ test('V18 is present on every page and deployable',()=>{
 });
 test('V18 wires actual training controls rather than a fake preview',()=>{
  const js=read('site-interface-v18.js');
- for(const marker of ['#panel-builder','tab-builder','showModal','[data-r17-create]','aim-v5-ready','hashchange'])assert.ok(js.includes(marker),marker);
+ for(const marker of ['#panel-builder','tab-builder','showModal','aim-open-session-editor','aim-v5-ready','hashchange'])assert.ok(js.includes(marker),marker);
  assert.doesNotMatch(js,/supabase\.auth|Math\.random|localStorage\.(?:setItem|removeItem)|fetch\s*\(/i);
 });
 test('V18 preserves account, timers, analytics and reduced-motion accessibility',()=>{
