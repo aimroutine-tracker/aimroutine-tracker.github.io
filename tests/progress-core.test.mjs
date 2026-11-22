@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {progressPeriod} from '../progress-core.mjs';
+import {progressPeriod,progressScenarioOptions,filterProgressSessions} from '../progress-core.mjs';
 
 const now = new Date(2026, 10, 22, 9, 0);
 const session = (daysAgo, hour = 8) => ({
@@ -29,4 +29,21 @@ test('all history covers old sessions and empty histories need no buckets', () =
   assert.deepEqual(buckets.map(b => b.count), [1, 1]);
   assert.equal(buckets[0].start.getUTCFullYear(), new Date(session(2000).date).getFullYear());
   assert.deepEqual(progressPeriod([], 90, now), {sessions: [], buckets: []});
+});
+
+test('scenario filters keep matching names from different tools separate', () => {
+  const aimLab={tool:'Aim Lab',scenario:' Gridshot '};
+  const valorant={tool:'VALORANT',scenario:'Gridshot'};
+  const unnamed={tool:'Aim Lab',scenario:''};
+  const legacy={tool:'Non précisé'};
+  const history=[aimLab,valorant,unnamed,legacy];
+  const [aimLabOption,valorantOption]=progressScenarioOptions(history);
+
+  assert.equal(aimLabOption.name,'Gridshot');
+  assert.notEqual(aimLabOption.value,valorantOption.value);
+  assert.deepEqual(progressScenarioOptions(history,'Aim Lab'),[aimLabOption]);
+  assert.deepEqual(filterProgressSessions(history,'',aimLabOption.value),[aimLab]);
+  assert.deepEqual(filterProgressSessions(history,'VALORANT',aimLabOption.value),[]);
+  assert.deepEqual(filterProgressSessions(history,'Aim Lab',''),[aimLab,unnamed]);
+  assert.deepEqual(filterProgressSessions(history,'',''),history);
 });

@@ -34,3 +34,25 @@ export function progressPeriod(history, days, now = new Date()) {
   for (const {day} of dated) buckets[Math.floor((day - startDay) / bucketSize)].count++;
   return {sessions: dated.map(entry => entry.session), buckets};
 }
+
+function scenarioValue(tool, name) {
+  return JSON.stringify([tool, name]);
+}
+
+export function progressScenarioOptions(history, tool = '') {
+  const options = new Map();
+  for (const session of history) {
+    const name = session.scenario?.trim();
+    if (!name || (tool && session.tool !== tool)) continue;
+    const value = scenarioValue(session.tool, name);
+    options.set(value, {value, name, tool: session.tool});
+  }
+  return [...options.values()];
+}
+
+export function filterProgressSessions(history, tool, scenario) {
+  return history.filter(session =>
+    (!tool || session.tool === tool) &&
+    (!scenario || scenarioValue(session.tool, session.scenario?.trim()) === scenario)
+  );
+}
