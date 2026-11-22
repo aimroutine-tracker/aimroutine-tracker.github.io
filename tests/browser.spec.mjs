@@ -439,8 +439,15 @@ offlineTest.describe('PWA cache integration',()=>{
   try{
    expect(missingBefore,'Training modules must be precached after installation').toEqual([]);
    offlineSite.disconnected=true;
-   const response=await page.reload({waitUntil:'domcontentloaded'});
-   expect(response?.status()).toBe(200);
+   const trainingURL=page.url();
+   // Reload inside the page to exercise the browser's normal service-worker path.
+   // The WebKit automation reload can disrupt worker requests (Playwright #42273).
+   const [response]=await Promise.all([
+    page.waitForResponse(res=>res.url()===trainingURL&&res.request().isNavigationRequest()),
+    page.waitForEvent('domcontentloaded'),
+    page.evaluate(()=>{setTimeout(()=>location.reload(),0)})
+   ]);
+   expect(response.status()).toBe(200);
    expect(offlineSite.blockedRequests).toContain('/training.html');
    await expect(page.locator('#tab-dashboard')).toBeVisible();
    await expect.poll(()=>page.evaluate(()=>Boolean(window.AIMWeb))).toBe(true);
