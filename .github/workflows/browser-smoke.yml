@@ -46,8 +46,19 @@ concurrency:
   cancel-in-progress: true
 jobs:
   browsers:
+    name: Browser smoke tests (${{ matrix.project }})
     runs-on: ubuntu-24.04
     timeout-minutes: 22
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - project: chromium-desktop
+            engine: chromium
+          - project: firefox-desktop
+            engine: firefox
+          - project: webkit-mobile
+            engine: webkit
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -55,8 +66,8 @@ jobs:
           node-version: 22
       - name: Install browser test runner
         run: npm install --no-save @playwright/test@1.56.1
-      - name: Install browser engines
-        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Install browser engine
+        run: npx playwright install --with-deps ${{ matrix.engine }}
       - name: Start local static site
         run: |
           nohup python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/aimroutine-http.log 2>&1 &
@@ -64,15 +75,16 @@ jobs:
           cat /tmp/aimroutine-http.log
           exit 1
       - name: Prove home CSS consolidation preserves desktop/mobile visuals
+        if: matrix.engine == 'chromium'
         run: |
           set -euo pipefail
           node tests/home-css-render-parity-v1.mjs
           python3 -m pip install --quiet Pillow==11.3.0
           python3 tests/check-home-css-pixel-parity-v1.py
-      - name: Run desktop and mobile browser scenarios
-        run: npx playwright test --config=tests/playwright.config.mjs
+      - name: Run browser scenarios
+        run: npx playwright test --config=tests/playwright.config.mjs --project=${{ matrix.project }}
       - name: Export CSS comparison screenshots only if pixel proof fails
-        if: failure()
+        if: failure() && matrix.engine == 'chromium'
         uses: actions/upload-artifact@v4
         with:
           name: home-css-bundle-pixel-regression

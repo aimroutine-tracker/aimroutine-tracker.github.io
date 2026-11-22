@@ -212,8 +212,7 @@ test('Duplicate sessions in an imported JSON backup count once in the real train
  await expect(page.locator('#avg-accuracy')).toContainText('72');
 });
 
-test('V6 portable backup can restore real sessions and profile without changing account',async({page,browserName})=>{
- test.skip(browserName!=='chromium','Portable import and mocked Cloud are validated on Chromium');
+test('V6 portable backup can restore real sessions and profile without changing account',async({page})=>{
  await useVerifiedTestAccount(page);
  await page.locator('#tab-data').click();
  const backup={format:'aimroutine-interchange-v1',
@@ -242,8 +241,7 @@ test('V6 portable backup can restore real sessions and profile without changing 
  await expect(page.locator('#player-sens')).toHaveValue('0.2');
 });
 
-test('V5 backup upload aborts when another account takes over during file reading',async({page,browserName})=>{
- test.skip(browserName!=='chromium','Deterministic delayed File.text regression runs on Chromium');
+test('V5 backup upload aborts when another account takes over during file reading',async({page})=>{
  await useVerifiedTestAccount(page);
  await page.locator('#tab-data').click();
  const before=await page.evaluate(()=>({
@@ -274,8 +272,7 @@ test('V5 backup upload aborts when another account takes over during file readin
  expect(after).toEqual(before);
 });
 
-test('V6 portable upload aborts on a cross-account switch before any merge',async({page,browserName})=>{
- test.skip(browserName!=='chromium','Deterministic delayed File.text regression runs on Chromium');
+test('V6 portable upload aborts on a cross-account switch before any merge',async({page})=>{
  await useVerifiedTestAccount(page);
  await page.locator('#tab-data').click();
  const before=await page.evaluate(()=>({
@@ -359,8 +356,7 @@ test('Language switch and responsive navigation',async ({page,isMobile})=>{
 });
 test.describe('PWA cache integration',()=>{
  test.use({serviceWorkers:'allow'});
- test('Offline training works after initial install',async ({page,context,browserName})=>{
- test.skip(browserName!=='chromium','Offline service worker tested on Chromium; other engines checked for rendering');
+ test('Offline training works after initial install',async ({page,context})=>{
  await page.evaluate(async()=>{if(!('serviceWorker'in navigator))throw Error('No service workers');await navigator.serviceWorker.ready});
  await context.setOffline(true);
  await page.reload({waitUntil:'domcontentloaded'});
@@ -369,8 +365,7 @@ test.describe('PWA cache integration',()=>{
  await context.setOffline(false);
 });
 
- test('V3 owner-reference assets remain cached and usable offline',async({page,context,browserName})=>{
-  test.skip(browserName!=='chromium','Offline precache verified on Chromium');
+ test('V3 owner-reference assets remain cached and usable offline',async({page,context})=>{
   await page.evaluate(()=>navigator.serviceWorker.ready);
   const cacheResults=await page.evaluate(async()=>{
    const urls=['site-owner-reference-v3.css','aimroutine-avatar-reference.svg',
@@ -1341,8 +1336,7 @@ test('V3 Cloud guest registration CTA opens the real mandatory-nickname signup f
 });
 
 
-test('Routines never marks a future imported training day as completed',async({page,browserName})=>{
- test.skip(browserName!=='chromium','Deterministic clock validation runs in Chromium');
+test('Routines never marks a future imported training day as completed',async({page})=>{
  await page.clock.install({time:new Date('2026-11-09T09:00:00.000Z')});
  await useVerifiedTestAccount(page);
  await expect(page.locator('.r17-weekprogress [data-r17-week]')).toHaveText('0 / 5');
@@ -1987,8 +1981,7 @@ for(const [route,selector] of [
  ['index.html','[data-v15-stat="sessions"]'],
  ['progress.html','#v14-p-sessions']
 ]){
- test('Visible '+route+' automatically receives a newer remote session without navigation',async({page,browserName})=>{
-  test.skip(browserName!=='chromium','Deterministic browser clock is verified in Chromium');
+ test('Visible '+route+' automatically receives a newer remote session without navigation',async({page})=>{
   const uid='11111111-1111-4111-8111-111111111111';
   await page.clock.install({time:new Date('2026-11-10T12:00:00.000Z')});
   await page.addInitScript(({uid})=>{
@@ -3856,8 +3849,7 @@ test('Training insight chart never treats future-dated cache records as observed
 });
 
 
-test('Routines previews never count future rows or carry an old accuracy chart into an empty cache',async({page,browserName})=>{
- test.skip(browserName!=='chromium','Deterministic observation-time validation runs on Chromium');
+test('Routines previews never count future rows or carry an old accuracy chart into an empty cache',async({page})=>{
  await page.clock.install({time:new Date('2026-11-09T12:00:00.000Z')});
  await useVerifiedTestAccount(page);
  const uid='11111111-1111-4111-8111-111111111111';
