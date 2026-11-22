@@ -357,19 +357,13 @@ test('Language switch and responsive navigation',async ({page,isMobile})=>{
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
  expect(overflow).toBeLessThanOrEqual(2);
 });
-// Fail the origin connection at the server so the browser still dispatches
-// service-worker fetch events on each engine.
+// Give each offline test a local origin it can stop without affecting other tests.
 const offlineTest=test.extend({
  offlineSite:async({},use)=>{
-  await use({disconnected:false,blockedRequests:[],upstreamErrors:[]});
+  await use({upstreamErrors:[]});
  },
  baseURL:async({baseURL,offlineSite},use)=>{
   const server=createServer((incoming,outgoing)=>{
-   if(offlineSite.disconnected){
-    offlineSite.blockedRequests.push(incoming.url);
-    incoming.socket.destroy();
-    return;
-   }
    const upstream=request(baseURL,{method:incoming.method,path:incoming.url},response=>{
     outgoing.writeHead(response.statusCode,{...response.headers,'cache-control':'no-store'});
     response.pipe(outgoing);
@@ -382,13 +376,17 @@ const offlineTest=test.extend({
   });
   server.listen(0,'127.0.0.1');
   await once(server,'listening');
-  try{
-   await use('http://127.0.0.1:'+server.address().port);
-  }finally{
+  offlineSite.stop=async()=>{
+   if(!server.listening)return;
    const closed=once(server,'close');
    server.close();
    server.closeAllConnections();
    await closed;
+  };
+  try{
+   await use('http://127.0.0.1:'+server.address().port);
+  }finally{
+   await offlineSite.stop();
   }
  },
  // WebKit can discard in-memory CacheStorage on reload. An installed PWA
@@ -438,17 +436,10 @@ offlineTest.describe('PWA cache integration',()=>{
   const missingBefore=await missingCacheEntries(page,trainingOfflineAssets);
   try{
    expect(missingBefore,'Training modules must be precached after installation').toEqual([]);
-   offlineSite.disconnected=true;
-   const trainingURL=page.url();
-   // Reload inside the page to exercise the browser's normal service-worker path.
-   // The WebKit automation reload can disrupt worker requests (Playwright #42273).
-   const [response]=await Promise.all([
-    page.waitForResponse(res=>res.url()===trainingURL&&res.request().isNavigationRequest()),
-    page.waitForEvent('domcontentloaded'),
-    page.evaluate(()=>{setTimeout(()=>location.reload(),0)})
-   ]);
-   expect(response.status()).toBe(200);
-   expect(offlineSite.blockedRequests).toContain('/training.html');
+   await offlineSite.stop();
+   await expect(fetch(baseURL+'/training.html')).rejects.toThrow();
+   const response=await page.reload({waitUntil:'domcontentloaded'});
+   expect(response?.status()).toBe(200);
    await expect(page.locator('#tab-dashboard')).toBeVisible();
    await expect.poll(()=>page.evaluate(()=>Boolean(window.AIMWeb))).toBe(true);
    expect(await missingCacheEntries(page,trainingOfflineAssets),
@@ -456,12 +447,12 @@ offlineTest.describe('PWA cache integration',()=>{
   }catch(error){
    const missingAfter=await missingCacheEntries(page,trainingOfflineAssets).catch(()=>null);
    console.log('Offline diagnostics '+JSON.stringify({missingBefore,missingAfter,errors,
-    upstreamErrors:offlineSite.upstreamErrors,blockedRequests:offlineSite.blockedRequests}));
+    upstreamErrors:offlineSite.upstreamErrors}));
    throw error;
   }
  });
 
- offlineTest('V3 owner-reference assets remain cached and usable offline',async({page,offlineSite})=>{
+ offlineTest('V3 owner-reference assets remain cached and usable offline',async({page,baseURL,offlineSite})=>{
   const cacheResults=await page.evaluate(async()=>{
    const urls=['site-owner-reference-v3.css','aimroutine-avatar-reference.svg',
     'site-v3-hero-home.webp','site-v3-hero-routines.webp','site-v3-hero-progress.webp','site-v3-hero-account.webp'];
@@ -474,10 +465,10 @@ offlineTest.describe('PWA cache integration',()=>{
    }));
   });
   expect(cacheResults,'V3 styles and artwork must be available offline').toEqual([true,true,true,true,true,true]);
-  offlineSite.disconnected=true;
+  await offlineSite.stop();
+  await expect(fetch(baseURL+'/progress.html')).rejects.toThrow();
   const response=await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
   expect(response?.status()).toBe(200);
-  expect(offlineSite.blockedRequests).toContain('/progress.html');
   await expect(page.locator('.r17-progress-wrap')).toBeVisible();
   await expect.poll(()=>page.evaluate(()=>
    getComputedStyle(document.documentElement).getPropertyValue('--ar-v3-night').trim()
