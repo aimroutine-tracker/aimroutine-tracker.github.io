@@ -98,6 +98,7 @@ updates.html
 v5.css
 progress.html
 progress-v14.mjs
+progress-core.mjs
 site-v14-gallery.css
 site-v14-gallery.js
 mockup-hero-v15.webp
