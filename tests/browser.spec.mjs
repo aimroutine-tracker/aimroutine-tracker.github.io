@@ -552,6 +552,30 @@ test('V17 training five days and skill choices prepare the actual routine builde
  await expect(page.locator('#tool')).toHaveValue('Aim Lab');
  expect(await page.evaluate(()=>window.AIMWeb.getPlan().focus)).toBe('tracking');
 });
+test('Progress range keeps the frequency chart and recorded sessions in sync',async ({page})=>{
+ await useVerifiedTestAccount(page);
+ const imported=await page.evaluate(()=>{
+  const sessions=[0,10,75,120].map((days,index)=>({
+   id:'progress-'+index,date:new Date(Date.now()-days*86400000).toISOString(),
+   rank:'silver',focus:'micro',tool:'Aim Lab',scenario:'Microshot '+index,
+   minutes:15,accuracy:60+index,feeling:'good',notes:''
+  }));
+  return window.AIMWeb.mergeData({sessions,presets:[],weeklyGoal:3});
+ });
+ expect(imported).toBe(4);
+ await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
+ const rows=page.locator('#v14-p-recent li');
+ for(const [range,count] of [['7',1],['30',2],['90',3],['0',4]]){
+  await page.locator('[data-r19-range="'+range+'"]').click();
+  await expect(page.locator('#v14-p-sessions')).toHaveText(String(count));
+  await expect(rows).toHaveCount(count);
+  const buckets=await page.locator('#v14-p-bars [data-session-count]').allTextContents();
+  expect(buckets.reduce((sum,n)=>sum+Number(n),0)).toBe(count);
+ }
+ await expect(rows.last()).toContainText('Microshot 3');
+ await expect(page.locator('#v14-source-signin')).toBeHidden();
+});
+
 test('V17 honest progress and unchanged authentication forms',async ({page})=>{
  await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.r17-progress-wrap .r17-hero')).toBeVisible();
