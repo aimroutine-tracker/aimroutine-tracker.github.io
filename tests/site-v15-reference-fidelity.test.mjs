@@ -2,9 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
-test('V15 retains user provided mockup illustration as site hero, not flattened screenshots',()=>{
+test('Approved home illustration coexists with the reference training assets and real stats',()=>{
  const home=read('index.html'),training=read('training.html'),css=read('site-v15-fidelity.css');
- assert.ok(home.includes('img src="mockup-hero-v15.webp"'));
+ assert.match(home,/href="valorant-hero\.webp"/);
+ assert.match(read('site-valorant-theme.css'),/url\("valorant-hero\.webp"\)/);
  assert.ok(training.includes('img src="mockup-hero-v15.webp"'));
  assert.match(css,/mockup-hero-v15\.webp/);
  assert.match(home,/data-v15-stat="sessions"/);
@@ -35,7 +36,7 @@ test('V15 all pages load new stylesheet and script and deploy all assets',()=>{
  for(const page of pages){
   const html=read(page);
   assert.ok(html.includes('site-v15-fidelity.css?v=1'),page);
-  assert.ok(html.includes('site-v15-fidelity.js?v=1'),page);
+  assert.ok(html.includes('site-v15-fidelity.js?v=2'),page);
   assert.ok(html.indexOf('site-v15-fidelity.css?v=1')>html.indexOf('site-v14-gallery.css?v=1'),page);
  }
  const a=read('scripts/public-assets.txt').split(/\r?\n/),sw=read('sw-v6.js');
@@ -43,5 +44,5 @@ test('V15 all pages load new stylesheet and script and deploy all assets',()=>{
   assert.ok(a.includes(name),name);
   assert.ok(sw.includes("'./"+name+"'"),name);
  }
- assert.match(sw,/aimroutine-v9-account-cloud-auto-20261108/);
+ assert.match(sw,/aimroutine-v10-valorant/);
 });

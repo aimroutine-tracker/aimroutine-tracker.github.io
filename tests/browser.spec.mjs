@@ -152,14 +152,15 @@ test('Google OAuth and email signup buttons are enabled with required password p
 
 test('All public pages render without overflow or script errors',async({page,isMobile})=>{
  const paths=['index.html','product.html','presentation.html','riot-integration.html',
-  'updates.html','releases.html','changelog.html','privacy.html','terms.html','account.html','training.html','404.html'];
+  'updates.html','releases.html','changelog.html','privacy.html','terms.html','account.html','training.html','progress.html','404.html'];
  const jsErrors=[];
  page.on('pageerror',error=>jsErrors.push(error.message));
  for(const path of paths){
   const response=await page.goto('/'+path,{waitUntil:'domcontentloaded'});
   expect(response?.status(),path).toBe(200);
   await expect(page.locator('main'),path).toHaveCount(1);
-  await expect(page.locator('nav.site31-nav'),path).toHaveCount(1);
+  await expect(page.locator('nav.site31-nav[data-site-navigation="valorant"]'),path).toHaveCount(1);
+  await expect(page.locator('link[href="site-valorant-theme.css?v=1"]'),path).toHaveCount(1);
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
   expect(overflow,path+' causes horizontal scrolling').toBeLessThanOrEqual(2);
   if(isMobile)await expect(page.locator('details.site31-mobile-nav > summary'),path).toBeVisible();
@@ -492,8 +493,7 @@ test('V12 AIM duration, combos and keyboard pause',async ({page})=>{
 
 test('V13 tactical design loads across routes without hiding interactive elements',async ({page})=>{
  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.v5-hero .ar13-frame-corners')).toHaveCount(1);
- await expect(page.locator('.v5-hero .ar13-frame-corners')).toHaveAttribute('aria-hidden','true');
+ await expect(page.locator('.valorant-hero h1')).toBeVisible();
  await expect(page.locator('.ar9-path-grid .ar9-path-card')).toHaveCount(3);
  await expect(page.locator('link[href="site-future-v13.css?v=1"]')).toHaveCount(1);
  await expect(page.locator('#aim-challenge [data-ar11-start]')).toBeAttached();
@@ -503,18 +503,30 @@ test('V13 tactical design loads across routes without hiding interactive element
  await expect(page.locator('#signup-mode')).toBeVisible();
 });
 
-test('V17 recreates the landing with real metrics and user-provided concept hero',async ({page})=>{
+test('Valorant landing keeps real metrics and the approved artwork',async ({page})=>{
  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.r17-home-wrap .r17-hero')).toBeVisible();
+ await expect(page.locator('.valorant-hero h1')).toBeVisible();
+ await expect(page.locator('.valorant-routine-grid .ar-drill')).toHaveCount(3);
  await expect(page.locator('.r17-features .r17-feature')).toHaveCount(3);
  await expect(page.locator('.r17-path-grid .r17-path')).toHaveCount(3);
  await expect(page.locator('.r17-challenge .r17-button')).toHaveAttribute('href','#aim-challenge');
  await expect(page.locator('.r17-stats [data-v15-stat]')).toHaveCount(4);
  await expect.poll(()=>page.locator('.r17-stats [data-v15-stat="sessions"]').textContent(),{timeout:15000}).toBe('—');
  await expect(page.locator('.r17-stats [data-v15-stat="accuracy"]')).toHaveText('—');
- await expect(page.locator('.r17-nav-actions a')).toHaveCount(3);
- await expect(page.locator('.r17-hero-art')).toHaveCSS('background-image',/r17-hero\.webp/);
+ await expect(page.locator('.site31-nav a.valorant-account')).toHaveAttribute('href','account.html');
+ expect(await page.locator('.valorant-hero').evaluate(el=>getComputedStyle(el,'::before').backgroundImage)).toContain('valorant-hero.webp');
 });
+test('Home routine opens a real plan with the advertised duration',async ({page})=>{
+ await page.goto('/index.html',{waitUntil:'domcontentloaded'});
+ await page.locator('.valorant-hero .ar-feature').click();
+ await expect(page).toHaveURL(/training\.html\?routine=precision#panel-builder$/);
+ await expect(page.locator('#panel-builder')).toBeVisible();
+ await expect(page.locator('#duration')).toHaveValue('10');
+ await expect(page.locator('#focus')).toHaveValue('control');
+ await expect(page.locator('#tool')).toHaveValue('VALORANT');
+ await expect.poll(()=>page.evaluate(()=>window.AIMWeb?.getPlan().exercises.reduce((sum,item)=>sum+item.minutes,0))).toBe(10);
+});
+
 test('V17 training five days and skill choices prepare the actual routine builder',async ({page})=>{
  await page.goto('/training.html?level=iron',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.r17-training-grid')).toBeVisible();

@@ -7,7 +7,7 @@
  const tr=(fr,en)=>french()?fr:en;
  function initNav(){
   const nav=$('.site31-header .site31-links');
-  if(!nav)return;
+  if(!nav||nav.closest('[data-site-navigation="valorant"]'))return;
   const current=(location.pathname.split('/').pop()||'index.html').toLowerCase();
   const trainLink=nav.querySelector('a[href="training.html"]');
   if(trainLink){

@@ -2,8 +2,8 @@
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="preconnect" href="https://cmsassets.rgpub.io" crossorigin>
 <link rel="preload" as="image" href="https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/8f0df8efd5b986039cd37a4d5f3bf31b815d0c54-3840x2160.jpg?w=1200&amp;q=72&amp;auto=format" imagesrcset="https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/8f0df8efd5b986039cd37a4d5f3bf31b815d0c54-3840x2160.jpg?w=640&amp;q=72&amp;auto=format 640w, https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/8f0df8efd5b986039cd37a4d5f3bf31b815d0c54-3840x2160.jpg?w=960&amp;q=72&amp;auto=format 960w, https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/8f0df8efd5b986039cd37a4d5f3bf31b815d0c54-3840x2160.jpg?w=1440&amp;q=72&amp;auto=format 1440w, https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/8f0df8efd5b986039cd37a4d5f3bf31b815d0c54-3840x2160.jpg?w=1920&amp;q=72&amp;auto=format 1920w" imagesizes="(max-width:680px) 94vw, (max-width:1000px) 90vw, 48vw" fetchpriority="high">
-<meta name="theme-color" content="#0b141f"><meta name="description" content="Espace entraînement AIM : crée des routines VALORANT, chronomètre tes exercices et suis tes progrès localement.">
-<title>Mon espace AIM — AimRoutine Tracker</title><link rel="canonical" href="https://aimroutine-tracker.github.io/training.html"><link rel="stylesheet" href="site-global-v31.css?v=3"><link rel="stylesheet" href="training.css?v=2"><script type="module" src="training-entry-v7.mjs?v=1"></script><script src="site-quality-v34.js?v=1" defer></script><link rel="stylesheet" href="training-v5.css?v=1">
+<meta name="theme-color" content="#111115"><meta name="description" content="Espace entraînement AIM : crée des routines VALORANT, chronomètre tes exercices et suis tes progrès localement.">
+<title>Mon espace AIM — AimRoutine Tracker</title><link rel="canonical" href="https://aimroutine-tracker.github.io/training.html"><link rel="stylesheet" href="site-global-v31.css?v=3"><link rel="stylesheet" href="training.css?v=2"><script type="module" src="training-entry-v7.mjs?v=2"></script><script src="site-quality-v34.js?v=1" defer></script><link rel="stylesheet" href="training-v5.css?v=1">
 
 <link rel="stylesheet" href="site-shared-v5.css?v=3">
 <link rel="stylesheet" href="training-v6.css?v=1"><link rel="manifest" href="manifest.webmanifest?v=2"><script src="pwa-v6.js?v=1" defer></script><script src="site.js?v=8" defer></script><script src="training-i18n-v6.js?v=1" defer></script><link rel="icon" type="image/png" sizes="128x128" href="aimroutine-logo.png?v=3">
@@ -30,24 +30,51 @@
 <link rel="stylesheet" href="site-interface-v18.css?v=1">
 <link rel="stylesheet" href="site-interface-v19.css?v=1">
 <link rel="stylesheet" href="site-reference-v20.css?v=1">
+<link rel="stylesheet" href="site-valorant-ui.css?v=1">
+<link rel="stylesheet" href="site-valorant-theme.css?v=1">
 </head>
-<body class="site31 site31-training"><a class="skip" href="#app">Aller au contenu</a>
-<header class="site31-header"><nav class="site31-nav" aria-label="Navigation principale"><a class="site31-brand" href="index.html" aria-label="AimRoutine Tracker, accueil"><img src="aimroutine-brand-a-v2.svg?v=1" width="32" height="32" alt="">AimRoutine <span>Tracker</span></a><div class="site31-links"><a href="index.html">Accueil</a>
-<a href="product.html">Logiciel</a>
-<a href="training.html" aria-current="page">Mon espace AIM</a>
-<a href="releases.html">Versions</a><a href="account.html">Mon compte</a><details class="ar5-nav-explore"><summary>Explorer</summary><div class="ar5-nav-dropdown"><a href="changelog.html">Patch notes</a><a href="index.html#routine">Démo</a>
-<a href="presentation.html">Le projet</a>
-<a href="riot-integration.html">Riot API</a>
-<a href="updates.html">Avancement</a></div></details></div><div class="site31-controls"><button type="button" class="lang site31-lang" data-switch-lang aria-label="Changer de langue">EN</button><details class="site31-mobile-nav"><summary>Menu</summary><div class="site31-mobile-links"><a href="account.html">Mon compte</a><a href="changelog.html">Patch notes</a><a href="index.html">Accueil</a>
-<a href="product.html">Logiciel</a>
-<a href="training.html" aria-current="page">Mon espace AIM</a>
-<a href="releases.html">Versions</a>
-<a href="index.html#routine">Démo</a>
-<a href="presentation.html">Le projet</a>
-<a href="riot-integration.html">Riot API</a>
-<a href="updates.html">Avancement</a>
-<a href="privacy.html">Confidentialité</a>
-<a href="terms.html">Conditions</a></div></details></div></nav></header>
+<body class="site31 site31-training site-valorant"><a class="skip" href="#app">Aller au contenu</a>
+<header class="site31-header">
+<nav class="site31-nav" data-site-navigation="valorant" aria-label="Navigation principale / Main navigation">
+  <a class="site31-brand" href="index.html" aria-label="AimRoutine Tracker">
+    <img src="aimroutine-brand-a-v2.svg?v=1" width="35" height="35" alt="">
+    <span class="valorant-brand-name">AIMROUTINE<small>TRACKER</small></span>
+  </a>
+  <div class="site31-links">
+    <a href="index.html"><span class="fr">Accueil</span><span class="en">Home</span></a>
+<a href="training.html" aria-current="page"><span class="fr">Entraînement</span><span class="en">Training</span></a>
+<a href="progress.html"><span class="fr">Progression</span><span class="en">Progress</span></a>
+<a href="product.html"><span class="fr">Logiciel</span><span class="en">Software</span></a>
+    <details class="ar5-nav-explore"><summary><span class="fr">Explorer</span><span class="en">Explore</span></summary><div class="ar5-nav-dropdown"><a href="index.html#aim-challenge"><span class="fr">Défi AIM</span><span class="en">AIM challenge</span></a>
+<a href="index.html#community"><span class="fr">Communauté</span><span class="en">Community</span></a>
+<a href="releases.html"><span class="fr">Versions</span><span class="en">Releases</span></a>
+<a href="changelog.html"><span class="fr">Notes de mise à jour</span><span class="en">Release notes</span></a>
+<a href="presentation.html"><span class="fr">Le projet</span><span class="en">Project</span></a>
+<a href="riot-integration.html"><span class="fr">Riot API</span><span class="en">Riot API</span></a>
+<a href="updates.html"><span class="fr">Avancement</span><span class="en">Updates</span></a>
+<a href="privacy.html"><span class="fr">Confidentialité</span><span class="en">Privacy</span></a>
+<a href="terms.html"><span class="fr">Conditions</span><span class="en">Terms</span></a></div></details>
+  </div>
+  <div class="site31-controls">
+    <button type="button" class="lang site31-lang" data-switch-lang aria-label="Changer de langue / Switch language">EN</button>
+    <a href="account.html" class="valorant-account"><span class="fr">Mon compte</span><span class="en">My account</span></a>
+    <details class="site31-mobile-nav"><summary aria-label="Menu"><span class="ar-icon i-menu" aria-hidden="true"></span><span class="valorant-menu-text">Menu</span></summary><div class="site31-mobile-links"><a href="index.html"><span class="fr">Accueil</span><span class="en">Home</span></a>
+<a href="training.html" aria-current="page"><span class="fr">Entraînement</span><span class="en">Training</span></a>
+<a href="progress.html"><span class="fr">Progression</span><span class="en">Progress</span></a>
+<a href="product.html"><span class="fr">Logiciel</span><span class="en">Software</span></a>
+<a href="account.html"><span class="fr">Mon compte</span><span class="en">My account</span></a>
+<a href="index.html#aim-challenge"><span class="fr">Défi AIM</span><span class="en">AIM challenge</span></a>
+<a href="index.html#community"><span class="fr">Communauté</span><span class="en">Community</span></a>
+<a href="releases.html"><span class="fr">Versions</span><span class="en">Releases</span></a>
+<a href="changelog.html"><span class="fr">Notes de mise à jour</span><span class="en">Release notes</span></a>
+<a href="presentation.html"><span class="fr">Le projet</span><span class="en">Project</span></a>
+<a href="riot-integration.html"><span class="fr">Riot API</span><span class="en">Riot API</span></a>
+<a href="updates.html"><span class="fr">Avancement</span><span class="en">Updates</span></a>
+<a href="privacy.html"><span class="fr">Confidentialité</span><span class="en">Privacy</span></a>
+<a href="terms.html"><span class="fr">Conditions</span><span class="en">Terms</span></a></div></details>
+  </div>
+</nav>
+</header>
 <main id="app" class="shell ar5-workspace">
 <section id="ar-account-required" class="ar-account-required" role="status" hidden>
  <div><strong><span class="fr">Mode aperçu — aucun enregistrement sans compte</span><span class="en">Preview mode — no saving without an account</span></strong>
@@ -149,7 +176,7 @@
   <label>Ton rang<select id="rank"><option value="iron">Fer / Bronze</option><option value="silver">Argent / Or</option><option value="diamond">Platine / Diamant / Ascendant</option><option value="immortal">Immortel / Radiant</option></select></label>
   <label>Compétence à travailler<select id="focus"><option value="flick">Flick et premier tir</option><option value="micro">Micro-corrections</option><option value="tracking">Tracking</option><option value="control">Contrôle et précision</option></select></label>
   <label>Logiciel<select id="tool"><option>VALORANT</option><option>Aim Lab</option><option>KovaaK’s</option><option>Oblivity</option></select></label>
-  <label>Durée indicative<select id="duration"><option value="15">15 minutes</option><option value="25" selected>25 minutes</option><option value="35">35 minutes</option><option value="45">45 minutes</option></select></label>
+  <label>Durée indicative<select id="duration"><option value="10">10 minutes</option><option value="15">15 minutes</option><option value="20">20 minutes</option><option value="25" selected>25 minutes</option><option value="35">35 minutes</option><option value="45">45 minutes</option></select></label>
   <label>Pause entre exercices<select id="break-length"><option value="0">Sans pause</option><option value="15">15 secondes</option><option value="30" selected>30 secondes</option><option value="60">1 minute</option><option value="90">1 min 30</option></select></label>
   <button type="submit" class="primary">Générer une base →</button>
  </form>
@@ -217,10 +244,10 @@
 </main><footer><a class="ar-brand-footer-link" href="index.html"><img src="aimroutine-logo.png?v=3" width="38" height="38" alt=""> <strong>AimRoutine Tracker</strong></a><a href="releases.html">Versions et téléchargements</a><a href="account.html">Mon compte / Cloud</a><span>© AimRoutine Tracker · Espace web expérimental</span><a href="privacy.html">Confidentialité</a><a href="terms.html">Conditions</a><a href="riot-integration.html">Riot API : projet</a></footer>
 <script src="site-motion-v10.js?v=1" defer></script>
 <script src="site-future-v13.js?v=1" defer></script>
-<script src="site-v14-gallery.js?v=1" defer></script>
-<script src="site-v15-fidelity.js?v=1" defer></script>
-<script defer src="site-rebuild-v17.js?v=1"></script>
-<script defer src="site-interface-v18.js?v=1"></script>
+<script src="site-v14-gallery.js?v=2" defer></script>
+<script src="site-v15-fidelity.js?v=2" defer></script>
+<script defer src="site-rebuild-v17.js?v=2"></script>
+<script defer src="site-interface-v18.js?v=2"></script>
 <script type="module" src="site-interface-v19.mjs?v=1"></script>
 <script type="module" src="site-reference-v20.mjs?v=1"></script>
 </body></html>

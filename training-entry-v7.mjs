@@ -34,7 +34,7 @@ if(!uid){
  report('Mode aperçu sans sauvegarde · Connecte-toi pour enregistrer tes résultats.');
 }
 
-await import('./training-v5.js?v=3');
+await import('./training-v5.js?v=4');
 await import('./training-v6.js?v=2');
 
 async function syncChanges(){

@@ -7,7 +7,7 @@ test('V18 is present on every page and deployable',()=>{
   for(const page of pages){
     const html=read(page);
     assert.ok(html.includes('site-interface-v18.css?v=1'),page);
-    assert.ok(html.includes('site-interface-v18.js?v=1'),page);
+    assert.ok(html.includes('site-interface-v18.js?v=2'),page);
   }
   const allow=read('scripts/public-assets.txt'),sw=read('sw-v6.js');
   for(const name of ['site-interface-v18.css','site-interface-v18.js']){
@@ -22,7 +22,8 @@ test('V18 wires actual training controls rather than a fake preview',()=>{
 test('V18 preserves account, timers, analytics and reduced-motion accessibility',()=>{
  const html=read('account.html'),train=read('training.html'),progress=read('progress.html'),css=read('site-interface-v18.css');
  for(const marker of ['id="google-signin"','id="signup-form"','id="delete-account-form"','account-v7.mjs'])assert.ok(html.includes(marker));
- for(const marker of ['id="start-plan"','id="timer-toggle"','id="finish-form"'])assert.ok(train.includes(marker));
+ for(const marker of ['id="timer-toggle"','id="finish-form"'])assert.ok(train.includes(marker));
+ assert.match(read('training-v5.js'),/start\.id='start-plan'/);
  assert.ok(progress.includes('progress-v14.mjs'));
  assert.ok(css.includes('prefers-reduced-motion:reduce'));
  assert.ok(css.includes('::backdrop'));

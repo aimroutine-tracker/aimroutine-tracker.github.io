@@ -6,7 +6,7 @@
  const tr=(a,b)=>fr()?a:b;
  function nav(){
   const root=$('.site31-nav'),links=root?.querySelector('.site31-links'),ctrl=root?.querySelector('.site31-controls');
-  if(!root||!links)return;
+  if(!root||!links||root.dataset.siteNavigation==='valorant')return;
   const isCommunity=links.querySelector('a[href="index.html#community"]');
   if(!isCommunity){
    const link=document.createElement('a');
