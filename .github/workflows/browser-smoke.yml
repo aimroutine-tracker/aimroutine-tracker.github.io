@@ -75,6 +75,20 @@ jobs:
           for i in $(seq 1 25); do curl -fsS http://127.0.0.1:8765/training.html >/dev/null && exit 0; sleep 1; done
           cat /tmp/aimroutine-http.log
           exit 1
+      - name: Repeat offline training on WebKit with retries disabled
+        id: offline-repeat
+        if: matrix.engine == 'webkit'
+        run: |
+          set -o pipefail
+          npx playwright test --config=tests/playwright.config.mjs --project=webkit-mobile --grep 'Offline training works after initial install' --repeat-each=16 --retries=0 | tee "$RUNNER_TEMP/offline-repeat.log"
+      - name: Export offline diagnostics if a repeat fails
+        if: failure() && steps.offline-repeat.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: webkit-offline-repeat-diagnostics
+          path: ${{ runner.temp }}/offline-repeat.log
+          if-no-files-found: error
+          retention-days: 3
       - name: Prove home CSS consolidation preserves desktop/mobile visuals
         if: matrix.engine == 'chromium'
         run: |

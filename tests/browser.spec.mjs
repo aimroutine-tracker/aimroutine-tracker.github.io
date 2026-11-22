@@ -362,6 +362,7 @@ const offlineTest=test.extend({
  offlineSite:async({page,baseURL},use)=>{
   let disconnected=false;
   const blockedRequests=[];
+  const upstreamErrors=[];
   const server=createServer((incoming,outgoing)=>{
    if(disconnected){
     blockedRequests.push(incoming.url);
@@ -372,7 +373,10 @@ const offlineTest=test.extend({
     outgoing.writeHead(response.statusCode,{...response.headers,'cache-control':'no-store'});
     response.pipe(outgoing);
    });
-   upstream.on('error',error=>outgoing.destroy(error));
+   upstream.on('error',error=>{
+    upstreamErrors.push({path:incoming.url,code:error.code});
+    outgoing.destroy(error);
+   });
    upstream.end();
   });
   server.listen(0,'127.0.0.1');
@@ -381,7 +385,7 @@ const offlineTest=test.extend({
    const origin='http://127.0.0.1:'+server.address().port;
    await page.goto(origin+'/training.html',{waitUntil:'domcontentloaded'});
    await expect.poll(()=>page.evaluate(()=>Boolean(navigator.serviceWorker?.controller))).toBe(true);
-   await use({origin,blockedRequests,disconnect(){disconnected=true}});
+   await use({origin,blockedRequests,upstreamErrors,disconnect(){disconnected=true}});
   }finally{
    const closed=once(server,'close');
    server.close();
@@ -394,12 +398,30 @@ const offlineTest=test.extend({
 offlineTest.describe('PWA cache integration',()=>{
  offlineTest.use({serviceWorkers:'allow'});
  offlineTest('Offline training works after initial install',async({page,offlineSite})=>{
+  const errors=[];
+  page.on('pageerror',error=>errors.push(error.message));
+  page.on('requestfailed',request=>{
+   const url=new URL(request.url());
+   if(url.origin===offlineSite.origin)errors.push(url.pathname+url.search+' '+request.failure()?.errorText);
+  });
   offlineSite.disconnect();
-  const response=await page.reload({waitUntil:'domcontentloaded'});
-  expect(response?.status()).toBe(200);
-  expect(offlineSite.blockedRequests).toContain('/training.html');
-  await expect(page.locator('#tab-dashboard')).toBeVisible();
-  await expect.poll(()=>page.evaluate(()=>Boolean(window.AIMWeb))).toBe(true);
+  try{
+   const response=await page.reload({waitUntil:'domcontentloaded'});
+   expect(response?.status()).toBe(200);
+   expect(offlineSite.blockedRequests).toContain('/training.html');
+   await expect(page.locator('#tab-dashboard')).toBeVisible();
+   await expect.poll(()=>page.evaluate(()=>Boolean(window.AIMWeb))).toBe(true);
+  }catch(error){
+   const missingFromCache=await page.evaluate(async()=>{
+    const paths=['training.html','training-entry-v7.mjs','cloud-core-v7.mjs','cloud-sync-v7.mjs',
+     'training-core-v5.mjs','training-v6-core.mjs','training-v5.js','training-v6.js'];
+    const contents=await Promise.all(paths.map(path=>caches.match(path,{ignoreSearch:true})));
+    return paths.filter((_path,index)=>!contents[index]);
+   }).catch(()=>null);
+   console.log('Offline diagnostics '+JSON.stringify({missingFromCache,errors,
+    upstreamErrors:offlineSite.upstreamErrors,blockedRequests:offlineSite.blockedRequests}));
+   throw error;
+  }
  });
 
  offlineTest('V3 owner-reference assets remain cached and usable offline',async({page,offlineSite})=>{
