@@ -116,3 +116,11 @@ site-interface-v19.css
 site-interface-v19.mjs
 site-reference-v20.css
 site-reference-v20.mjs
+site-valorant-ui.css
+site-valorant-theme.css
+valorant-hero.webp
+valorant-barlow-700.woff2
+valorant-barlow-800.woff2
+valorant-inter.woff2
+OFL-Barlow-Condensed.txt
+OFL-Inter.txt

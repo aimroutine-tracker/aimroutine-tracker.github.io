@@ -1,0 +1,352 @@
+/* Shared theme for the approved AimRoutine Tracker design.
+   Legacy class selectors here only style markup owned by existing real features. */
+body.site31.site-valorant {
+  --valorant-bg: #111115;
+  --valorant-panel: #19181e;
+  --valorant-raised: #232129;
+  --valorant-line: #3d3943;
+  --valorant-text: #f4f0e9;
+  --valorant-muted: #c2b9c0;
+  --valorant-accent: #ff4e60;
+  --valorant-accent-soft: #ff8995;
+  --ar40-bg: var(--valorant-bg);
+  --ar40-surface: var(--valorant-panel);
+  --ar40-surface-alt: var(--valorant-raised);
+  --ar20-bg: var(--valorant-bg);
+  --ar20-panel: var(--valorant-panel);
+  --ar20-raised: var(--valorant-raised);
+  --ar20-line: var(--valorant-line);
+  --ar20-hot: var(--valorant-accent);
+  --ar20-hot2: var(--valorant-accent-soft);
+  --ar-surface: var(--valorant-panel);
+  background: var(--valorant-bg) !important;
+  color: var(--valorant-text) !important;
+  font-family: var(--ar-body) !important;
+  color-scheme: dark;
+}
+.valorant-shell {
+  width: min(1240px, calc(100% - 84px));
+  margin-inline: auto;
+}
+body.site31.site-valorant .site31-header {
+  min-height: 74px !important;
+  height: auto !important;
+  border-bottom: 1px solid #302d35 !important;
+  background: #131216 !important;
+  box-shadow: none !important;
+}
+body.site31.site-valorant .site31-header::before,
+body.site31.site-valorant .site31-header::after { content: none !important; }
+body.site31.site-valorant .site31-nav[data-site-navigation] {
+  min-height: 74px !important;
+  width: min(1240px, calc(100% - 84px)) !important;
+  max-width: 1240px !important;
+  display: flex !important;
+  justify-content: space-between;
+  gap: clamp(10px,2.3vw,26px) !important;
+  padding: 0 !important;
+}
+body.site31.site-valorant .site31-brand {
+  display: inline-flex !important;
+  gap: 10px !important;
+  align-items: center;
+  line-height: 1;
+}
+body.site31.site-valorant .site31-brand img {
+  width: 35px !important; height: 35px !important;
+  margin: 0 !important;
+  filter: none !important;
+}
+body.site31.site-valorant .site31-brand .valorant-brand-name {
+  color: var(--valorant-text) !important;
+  font: 800 24px/.84 var(--ar-display) !important;
+  letter-spacing: .02em !important;
+}
+.valorant-brand-name small {
+  display: block;
+  margin-top: 5px;
+  color: var(--valorant-muted);
+  font: 700 10px/1 var(--ar-body);
+  letter-spacing: .3em;
+}
+body.site31.site-valorant .site31-nav .site31-links {
+  display: flex !important;
+  margin: 0 !important;
+  align-self: stretch;
+  gap: clamp(6px,1.6vw,21px) !important;
+}
+body.site31.site-valorant .site31-nav[data-site-navigation] .site31-links > a {
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  position: relative;
+  padding: 0 7px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  font: 600 13px/1.3 var(--ar-body) !important;
+  letter-spacing: 0 !important;
+  color: #c2bbc3 !important;
+  text-decoration: none !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+body.site31.site-valorant .site31-links > a[aria-current="page"]::after {
+  position: absolute;
+  content: "";
+  inset: auto 5px -1px;
+  height: 2px;
+  background: var(--valorant-accent);
+}
+body.site31.site-valorant .site31-nav[data-site-navigation] .site31-links > a:hover,
+body.site31.site-valorant .site31-nav[data-site-navigation] .site31-links > a[aria-current="page"] { color: var(--valorant-text) !important; }
+body.site31.site-valorant .site31-nav .site31-controls {
+  display: flex !important;
+  gap: 8px !important;
+  margin: 0 !important;
+}
+body.site31.site-valorant .site31-controls :is(.site31-lang,.valorant-account,.site31-mobile-nav > summary),
+body.site31.site-valorant .ar5-nav-explore > summary {
+  min-height: 44px;
+  padding: 9px 12px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid #403b46 !important;
+  border-radius: 0 !important;
+  background: #1b1920 !important;
+  color: var(--valorant-text) !important;
+  font: 650 12px/1.2 var(--ar-body) !important;
+  white-space: nowrap;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  cursor: pointer;
+}
+body.site31.site-valorant .site31-links > .ar5-nav-explore { display: block !important; }
+body.site31.site-valorant .ar5-nav-explore > summary { border-color: transparent !important; background: transparent !important; }
+body.site31.site-valorant .site31-controls :is(.site31-lang,.valorant-account,.site31-mobile-nav > summary):hover,
+body.site31.site-valorant .ar5-nav-explore > summary:hover { border-color: var(--valorant-accent-soft) !important; background: #2c242d !important; }
+body.site31.site-valorant .site31-controls .valorant-account[aria-current="page"] { border-color: var(--valorant-accent) !important; }
+body.site31.site-valorant :is(.ar5-nav-dropdown,.site31-mobile-links) {
+  background: #1c1a21 !important;
+  border: 1px solid var(--valorant-line) !important;
+  border-top: 2px solid var(--valorant-accent) !important;
+  border-radius: 0 !important;
+}
+body.site31.site-valorant :is(.ar5-nav-dropdown,.site31-mobile-links) a:hover,
+body.site31.site-valorant :is(.ar5-nav-dropdown,.site31-mobile-links) a[aria-current="page"] { background: #39262f !important; color: #ffd0d7 !important; }
+body.site31.site-valorant .site31-mobile-nav { display: none !important; }
+body.site31.site-valorant :is(a,button,input,select,textarea,summary):focus-visible {
+  outline: 2px solid #ffe3df !important;
+  outline-offset: 4px !important;
+}
+body.site31.site-valorant .ar-light :is(a,button):focus-visible { outline-color: #852235 !important; }
+body.site31.site-valorant .site31-footer {
+  border-top: 1px solid var(--valorant-line) !important;
+  background: #141318 !important;
+}
+
+body.site31.site-valorant.site31-home main.v5-main { max-width: none !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
+.valorant-home { width: 100%; }
+.valorant-hero { margin: 0; padding: 0; position: relative; isolation: isolate; background: #17161b; border-bottom: 1px solid #38343d; }
+.valorant-hero::before,
+.valorant-hero::after { content: ""; position: absolute; inset: 0; pointer-events: none; }
+.valorant-hero::before {
+  z-index: -2;
+  background: url("valorant-hero.webp") right 36% / auto 183% no-repeat;
+}
+.valorant-hero::after {
+  z-index: -1;
+  background: linear-gradient(90deg,#17161b 0%,#17161b 14%,#17161bf0 28%,#17161b80 44%,transparent 62%),
+    linear-gradient(0deg,#17161be8,transparent 39%),
+    linear-gradient(120deg,transparent 11%,#ffffff0a 11.15%,transparent 11.35% 19%,#ffffff10 19.15%,transparent 19.4%);
+}
+.valorant-hero-layout { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: end; gap: 28px; min-height: 520px; padding-block: 62px 53px; }
+.valorant-hero-copy { align-self: center; }
+body.site31.site-valorant .valorant-hero h1 {
+  margin: 18px 0 0 !important;
+  color: var(--valorant-text) !important;
+  font: 800 clamp(78px,9.2vw,142px)/.79 var(--ar-display) !important;
+  letter-spacing: -.024em !important;
+  text-align: start;
+  text-transform: none;
+  text-wrap: initial;
+}
+body.site31.site-valorant .valorant-hero h1 em { color: var(--valorant-accent); font-style: normal; }
+body.site31.site-valorant .valorant-hero h1 + p { max-width: 370px; color: #e0dadd; margin: 25px 0 20px; }
+.valorant-hero-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.valorant-hero-actions .ar-btn { min-height: 49px; }
+.valorant-hero-actions .ar-btn--secondary { background: #19171fbb; border-color: #69636c; }
+.valorant-hero-actions .ar-btn--secondary:hover { background: #343038; }
+body.site31.site-valorant .valorant-hero .ar-feature { width: min(350px,29vw); color: var(--valorant-text); text-decoration: none; }
+.valorant-tools { background: #212025; border-bottom: 4px solid var(--valorant-accent); }
+.valorant-tools-layout { display: flex; align-items: center; gap: 28px; min-height: 59px; padding-block: 11px; }
+.valorant-tools-layout > strong { font: 700 10px/1.4 var(--ar-body); letter-spacing: .13em; color: #c9c0c4; }
+.valorant-tools-layout ul { display: flex; flex-wrap: wrap; gap: 8px 23px; padding: 0; margin: 0; list-style: none; }
+.valorant-tools-layout li { color: #f4eef0; font-size: 13px; font-weight: 600; }
+.valorant-tools-layout li + li::before { content: ""; display: inline-block; width: 4px; height: 4px; margin: 0 14px 3px 0; background: var(--valorant-accent); transform: rotate(45deg); }
+.valorant-routines { padding: 34px 0 46px; background-image: repeating-linear-gradient(136deg,transparent 0 88px,#4626260c 88px 89px,transparent 89px 112px); }
+.valorant-section-head { display: flex; gap: 18px; align-items: center; justify-content: space-between; margin-bottom: 17px; }
+body.site31.site-valorant .valorant-section-head h2 { font: 800 clamp(29px,4.2vw,43px)/.98 var(--ar-display) !important; color: var(--ar-paper-ink); margin: 0; }
+body.site31.site-valorant .ar-drill h3 { font: 800 clamp(28px,3vw,36px)/1 var(--ar-display) !important; color: var(--ar-paper-ink); }
+.valorant-routine-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 15px; }
+
+/* Interior section headers and real player features share the same visual vocabulary. */
+body.site31.site-valorant main :is(h2,h3) { font-family: var(--ar-display) !important; letter-spacing: .005em; }
+body.site31.site-valorant main :is(.r17-hero,.show-hero,.detail-hero,.riot32-hero,.updates33-hero,.ar5-release-hero,.ar-note-hero,.wrap.legal) {
+  background: linear-gradient(116deg,#281e26,#16151a 72%) !important;
+  border: 1px solid var(--valorant-line) !important;
+  border-left: 3px solid var(--valorant-accent) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+body.site31.site-valorant main :is(.r17-hero,.show-hero,.detail-hero,.riot32-hero,.updates33-hero,.ar5-release-hero,.ar-note-hero,.wrap.legal) h1,
+body.site31.site-valorant.site31-error main h1 {
+  font-family: var(--ar-display) !important;
+  font-style: normal !important;
+  font-weight: 800 !important;
+  letter-spacing: -.012em !important;
+  text-shadow: none !important;
+  color: var(--valorant-text) !important;
+}
+body.site31.site-valorant main :is(.r17-hero,.show-hero,.detail-hero,.riot32-hero,.updates33-hero,.ar5-release-hero,.ar-note-hero) h1 :is(em,strong,.accent) {
+  color: var(--valorant-accent) !important;
+  -webkit-text-fill-color: var(--valorant-accent) !important;
+  background: transparent !important;
+  font-style: normal !important;
+}
+body.site31.site-valorant.r20 main .r17-hero-art {
+  background-image: linear-gradient(90deg,#211c24,transparent 45%),url("valorant-hero.webp") !important;
+  background-size: cover !important;
+  background-position: center 40% !important;
+}
+body.site31.site-valorant.r20 main .r17-hero::after {
+  background: linear-gradient(90deg,#201a22 0%,#201a22f5 37%,#201a2290 56%,transparent 87%) !important;
+}
+body.site31.site-valorant :is(main,.r19-workspace-dialog) :is(
+  .r17-panel,.r17-path,.r17-card,.v14-panel,.v14-card,.v14-kpi,.r17-exercise,.r17-day-card,.r17-account-benefits,
+  .r17-level-note,.r17-cloud-status,.r17-cloud-devices,.r17-settings-grid > div,.ar7-account-panel,
+  .ar20-progress-advanced,.v14-progress-notice,.r19-tool-btn,.ar5-workspace .panel,.ar5-workspace .metric,
+  .show-showcase,.show-section,.show-features article,.updates33-card,.ar5-release-card,.ar-note-release,.v5-card
+) {
+  background: linear-gradient(135deg,var(--valorant-raised),var(--valorant-panel)) !important;
+  border-color: var(--valorant-line) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+body.site31.site-valorant :is(main,.r19-workspace-dialog) :is(
+  .r17-button--hot,.v14-hot-button,.ar7-primary,.r17-exercise button,.ar20-progress-advanced a,
+  .ar5-workspace button.primary,.r19-workspace-dialog button.primary,.show-btn.primary,.v5-btn.primary
+) {
+  background: var(--valorant-accent) !important;
+  border-color: var(--valorant-accent) !important;
+  color: #18090e !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+body.site31.site-valorant :is(main,.r19-workspace-dialog) :is(
+  .r17-button--hot,.v14-hot-button,.ar7-primary,.r17-exercise button,.ar20-progress-advanced a,
+  .ar5-workspace button.primary,.r19-workspace-dialog button.primary,.show-btn.primary,.v5-btn.primary
+):hover { background: var(--valorant-accent-soft) !important; border-color: var(--valorant-accent-soft) !important; }
+body.site31.site-valorant :is(main,.r19-workspace-dialog) :is(.r17-button--outline,.v14-outline-button,.r19-plan-program,.ar5-workspace .outline) {
+  background: var(--valorant-panel) !important;
+  border: 1px solid #655c67 !important;
+  color: var(--valorant-text) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+body.site31.site-valorant :is(main,.r19-workspace-dialog) :is(.r17-button--outline,.v14-outline-button,.r19-plan-program,.ar5-workspace .outline):hover {
+  background: #342a35 !important;
+  border-color: var(--valorant-accent-soft) !important;
+}
+body.site31.site-valorant :is(main,.r19-workspace-dialog) :is(.r17-level,.r17-day,.r17-weekday,.ar20-tabbar button,.r19-range-buttons button) {
+  background: var(--valorant-panel) !important;
+  border-color: var(--valorant-line) !important;
+  border-radius: 0 !important;
+}
+body.site31.site-valorant :is(main,.r19-workspace-dialog) :is(.r17-level,.r17-day,.r17-weekday,.ar20-tabbar button,.r19-range-buttons button)[aria-pressed="true"] {
+  background: #422630 !important;
+  color: var(--valorant-text) !important;
+  border-color: var(--valorant-accent) !important;
+  box-shadow: inset 0 -2px var(--valorant-accent) !important;
+}
+body.site31.site-valorant :is(main,.r19-workspace-dialog) :is(input:not([type="checkbox"],[type="radio"],[type="range"]),select,textarea) {
+  background: #151318 !important;
+  color: var(--valorant-text) !important;
+  border-color: #625964 !important;
+  border-radius: 0 !important;
+}
+body.site31.site-valorant.r20 .r17-account-wrap .r17-account-auth :is(#auth-panel,#dashboard-panel,#username-panel) {
+  background: var(--valorant-panel) !important;
+  border-color: var(--valorant-line) !important;
+  border-radius: 0 !important;
+}
+body.site31.site-valorant .r19-workspace-dialog {
+  background: var(--valorant-panel) !important;
+  border-color: var(--valorant-accent) !important;
+  border-radius: 0 !important;
+}
+body.site31.site-valorant .r19-dialog-header { background: var(--valorant-bg) !important; border-color: var(--valorant-line) !important; }
+body.site31.site-valorant .v14-meter > span { background: var(--valorant-accent) !important; }
+body.site31.site-valorant .r17-home-wrap { padding: 24px 0 12px; }
+
+@media (max-width: 1040px) {
+  body.site31.site-valorant .site31-nav[data-site-navigation], .valorant-shell { width: calc(100% - 40px) !important; }
+  body.site31.site-valorant .site31-nav .site31-links { gap: 5px !important; }
+}
+@media (max-width: 860px) {
+  body.site31.site-valorant .site31-nav .site31-links, body.site31.site-valorant .site31-controls .valorant-account { display: none !important; }
+  body.site31.site-valorant .site31-mobile-nav { display: block !important; }
+  body.site31.site-valorant .site31-mobile-links { max-height: calc(100dvh - 88px); overflow: auto; }
+  .valorant-hero-layout { min-height: 460px; }
+}
+@media (max-width: 720px) {
+  body.site31.site-valorant .site31-header,
+  body.site31.site-valorant .site31-nav[data-site-navigation] { min-height: 62px !important; }
+  .valorant-hero::before { background-size: auto 94%; background-position: 69% -72px; }
+  .valorant-hero::after { background: linear-gradient(0deg,#17161b 6%,#17161bf5 33%,#17161b63 67%,#17161b45),linear-gradient(90deg,#17161bb0 1%,#17161b36 57%,transparent 85%); }
+  .valorant-hero-layout { grid-template-columns: 1fr; gap: 18px; padding: 115px 0 25px; min-height: 0; }
+  body.site31.site-valorant .valorant-hero h1 { font-size: clamp(64px,13vw,96px) !important; }
+  body.site31.site-valorant .valorant-hero h1 + p { margin-block: 17px 15px; }
+  body.site31.site-valorant .valorant-hero .ar-feature { width: min(365px,100%); }
+  .valorant-tools-layout { padding-block: 12px; gap: 8px; flex-direction: column; align-items: flex-start; }
+  .valorant-tools-layout ul { gap: 7px 12px; }
+  .valorant-tools-layout li + li::before { margin-right: 8px; }
+  .valorant-routines { padding-block: 26px 36px; }
+  .valorant-routine-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+@media (max-width: 490px) {
+  body.site31.site-valorant .site31-nav[data-site-navigation], .valorant-shell { width: calc(100% - 28px) !important; }
+  body.site31.site-valorant .valorant-hero h1 { font-size: clamp(54px,15vw,73px) !important; }
+  .valorant-hero-actions .ar-btn { flex: 1 1 145px; padding-inline: 9px !important; font-size: 12px; }
+  .valorant-section-head { flex-wrap: wrap; gap: 3px; }
+  .valorant-section-head .ar-btn { padding-inline: 0; }
+  .valorant-routine-grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.site31.site-valorant :is(.site31-header,main,.r19-workspace-dialog) :is(a,button) { transition: none !important; }
+}
+
+@media (max-width: 720px) {
+  body.site31.site-valorant.site31-progress .v14-progress-toolbar {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+  body.site31.site-valorant.site31-progress .v14-progress-toolbar .r19-range-buttons {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+  }
+  body.site31.site-valorant.site31-progress .r17-progress-wrap :is(.r17-chart-grid,.r17-secondary-grid,.r17-progress-kpis) {
+    grid-template-columns: minmax(0,1fr) !important;
+  }
+  body.site31.site-valorant .r17-progress-wrap :is(.v14-progress-toolbar,.v14-personal-grid,.ar20-progress-advanced) > * { min-width: 0; }
+  body.site31.site-valorant .ar20-progress-advanced { flex-wrap: wrap; }
+  body.site31.site-valorant.r20 .r17-training-wrap .r17-training-grid,
+  body.site31.site-valorant.r20 .r17-training-wrap .r17-plan-content {
+    grid-template-columns: minmax(0,1fr) !important;
+  }
+  body.site31.site-valorant.r20 .r17-training-wrap :is(.r17-level-options,.r17-days,.r17-weekdays) > * { min-width: 0; }
+  body.site31.site-valorant .r19-tool-select { min-width: 0; max-width: 100%; }
+}

@@ -13,7 +13,7 @@ test('V14 stylesheet and script load last on all existing pages',()=>{
  for(const p of pages){
   const s=load(p);
   assert.match(s,/site-v14-gallery\.css\?v=1/);
-  assert.match(s,/site-v14-gallery\.js\?v=1/);
+  assert.match(s,/site-v14-gallery\.js\?v=2/);
   assert.ok(s.indexOf('site-v14-gallery.css?v=1')>s.indexOf('site-future-v13.css?v=1'));
  }
 });
@@ -35,5 +35,5 @@ test('V14 public manifest and PWA shell updated',()=>{
  for(const name of ['site-v14-gallery.css','site-v14-gallery.js','progress-v14.mjs','progress.html']){
   assert.ok(allow.includes(name));assert.ok(sw.includes("'./"+name+"'"));
  }
- assert.match(sw,/aimroutine-v9-account-cloud-auto-20261108/);
+ assert.match(sw,/aimroutine-v10-valorant/);
 });

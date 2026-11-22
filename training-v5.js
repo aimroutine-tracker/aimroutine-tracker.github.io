@@ -406,6 +406,20 @@ window.AIMWeb=Object.freeze({
   },
   refresh:()=>{renderDashboard();renderInsights();renderCoach();renderFavorites()}
 });
+// Home cards open the existing builder with a real, editable plan.
+const starterRoutines = {
+  precision: {rank:'iron', focus:'control', tool:'VALORANT', duration:10},
+  tracking: {rank:'silver', focus:'tracking', tool:'Aim Lab', duration:15},
+  flicks: {rank:'silver', focus:'flick', tool:'KovaaK’s', duration:20}
+};
+const starterId = new URLSearchParams(location.search).get('routine');
+if(Object.hasOwn(starterRoutines,starterId)){
+  const starter = starterRoutines[starterId];
+  for(const [id,value] of Object.entries(starter)) $('#'+id).value=String(value);
+  $('#break-length').value='0';
+  chooseTab('builder');
+  $('#builder-form').requestSubmit();
+}
 window.dispatchEvent(new CustomEvent('aim-v5-ready'));
 window.addEventListener('storage',event=>{
  if([storageKey(STORAGE_KEY),storageKey(LEGACY_KEY)].includes(event.key)){

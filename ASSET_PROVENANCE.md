@@ -14,3 +14,8 @@ The site retains authentic local application screenshots where identified. Exist
 Relevant Riot legal policy: https://www.riotgames.com/fr/mentions-legales
 
 These are linked to Riot's image CDN, not vendored locally. Availability, bandwidth and cache are controlled by Riot. Any future commercial usage should be reviewed for legal permission first.
+
+## Valorant-inspired design
+
+- `valorant-hero.webp` is the AI-generated concept illustration from the approved AimRoutine mockup. The artwork is supplied locally and is independent of the Riot Games media kit.
+- Barlow Condensed and Inter are supplied as WOFF2 files under their included SIL Open Font Licenses.

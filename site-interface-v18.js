@@ -15,6 +15,7 @@
     const controls = $('.site31-controls',nav || document);
     if (!nav || !links || !controls) return;
     document.body.classList.add('r18');
+    if(nav.dataset.siteNavigation==='valorant')return;
     const menu = [
       ['index.html',tr('Accueil','Home')],
       ['training.html',tr('Routines','Routines')],
