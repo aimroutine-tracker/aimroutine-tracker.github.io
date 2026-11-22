@@ -125,7 +125,10 @@ function editor(){
  container.replaceChildren();
  if(!plan){sectionTitle(container,'Atelier d’entraînement','Choisis ton rang, ta compétence et ton outil pour générer une routine.');return}
  sectionTitle(container,'Personnalise ta séance','Modifie librement l’outil, le nom et la durée de chaque exercice. Les temps de pause ne sont pas inclus dans la durée totale.');
- const status=make('p',undefined,'ar5-plan-summary');status.id='plan-summary';container.append(status);
+ const launch=make('div',undefined,'ar5-plan-launch');
+ const status=make('p',undefined,'ar5-plan-summary');status.id='plan-summary';
+ const start=make('button','Lancer la séance →','primary');start.type='button';start.id='start-plan';start.addEventListener('click',startSession);
+ launch.append(status,start);container.append(launch);
  const list=make('div',undefined,'ar5-edit-list');
  plan.exercises.forEach((ex,index)=>{
    const card=make('div',undefined,'ar5-edit-row');
@@ -153,8 +156,7 @@ function editor(){
  const add=make('button','+ Ajouter un exercice','outline');add.type='button';add.disabled=plan.exercises.length>=10;
  add.addEventListener('click',()=>{if(plan.exercises.length>=10)return;const x=CATALOG.find(x=>x.tool===plan.exercises[0].tool&&x.focus===plan.focus)||CATALOG[0];plan.exercises.push({name:x.name,tool:x.tool,minutes:5,tip:x.tip});editor()});
  const favorite=make('button','☆ Enregistrer comme favori','outline');favorite.type='button';favorite.addEventListener('click',savePreset);
- const start=make('button','Lancer la séance →','primary');start.type='button';start.id='start-plan';start.addEventListener('click',startSession);
- actions.append(add,favorite,start);container.append(actions);
+ actions.append(add,favorite);container.append(actions);
  updateTotal();
 }
 function updateTotal(){
@@ -385,7 +387,7 @@ window.AIMWeb=Object.freeze({
     return true;
   },
   getPlan:()=>plan?JSON.parse(JSON.stringify(plan)):null,
-  setPlan:next=>{
+  setPlan:(next,{scroll=true}={})=>{
     if(!next||!Object.hasOwn(RANK,next.rank)||!Object.hasOwn(FOCUS,next.focus)||
        !Array.isArray(next.exercises)||!next.exercises.length||
        !next.exercises.every(validExercise)||sessionMinutes(next)>120)return false;
@@ -393,8 +395,12 @@ window.AIMWeb=Object.freeze({
     stopTimer();active=null;$('#session-area').hidden=true;$('#finish-form').hidden=true;
     plan=JSON.parse(JSON.stringify(next));
     $('#rank').value=next.rank;$('#focus').value=next.focus;$('#tool').value=next.exercises[0].tool;
+    for(const [id,value] of [['duration',sessionMinutes(next)],['break-length',next.breakSeconds]]){
+      const field=$('#'+id);
+      if([...field.options].some(option=>option.value===String(value)))field.value=String(value);
+    }
     editor();chooseTab('builder');
-    $('#routine-output').scrollIntoView({block:'start',behavior:'smooth'});
+    if(scroll)$('#routine-output').scrollIntoView({block:'start',behavior:'smooth'});
     return true;
   },
   openTab:name=>chooseTab(name),

@@ -31,7 +31,7 @@ test('V17 high quality concept-art crop and code ship in PWA and manifest',()=>{
  for(const page of pages){
   const html=read(page);
   assert.ok(html.includes('site-rebuild-v17.css?v=1'));
-  if(['training.html','account.html'].includes(page))assert.ok(html.includes('site-rebuild-v17.js?v=4'));
+  if(['training.html','account.html'].includes(page))assert.ok(html.includes('site-rebuild-v17.js?v='+(page==='training.html'?5:4)));
  }
  assert.match(sw,/aimroutine-v10-valorant/);
 });

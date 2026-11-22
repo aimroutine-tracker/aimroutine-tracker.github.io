@@ -6,7 +6,8 @@ const $=s=>document.querySelector(s);
 const en=()=>document.documentElement.lang==='en';
 const tr=(fr,english)=>en()?english:fr;
 const fmt=n=>Number(n).toLocaleString(en()?'en-GB':'fr-FR',{maximumFractionDigits:1});
-const source=document.getElementById('v14-source-status');
+const source=document.getElementById('v14-source-message');
+const signIn=document.getElementById('v14-source-signin');
 let sessions=[],goal=3,scope='guest';
 const recent=(items,days)=>!days?items.slice():items.filter(x=>{const age=Date.now()-Date.parse(x.date);return age>=0&&age<=days*86400000;});
 function svgEl(name,props){
@@ -131,7 +132,8 @@ async function load(){
  }
  source.textContent=readable?
   (syncPending?tr('Compte connecté · Synchronisation cloud en attente ; affichage du cache de ton compte','Signed in · Cloud sync pending; showing account cache'):tr('Compte connecté · Statistiques automatiquement synchronisées','Signed in · Statistics automatically synchronized')):
-  tr('Connecte-toi pour consulter tes statistiques. Rien n’est sauvegardé sans compte.','Sign in to see your statistics. Nothing is saved without an account.');
+  tr('Connecte-toi pour consulter tes statistiques.','Sign in to see your statistics.');
+ signIn.hidden=readable;
  render();
 }
 $('#v14-progress-range').addEventListener('change',render);

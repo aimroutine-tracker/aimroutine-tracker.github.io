@@ -11,14 +11,14 @@
 <link rel="stylesheet" href="site-official-v16.css?v=1">
 <script src="site.js?v=8" defer></script><script src="site-quality-v34.js?v=1" defer></script>
 <script src="site-future-v13.js?v=1" defer></script><script src="site-v14-gallery.js?v=2" defer></script>
-<script src="pwa-v6.js?v=1" defer></script><script type="module" src="progress-v14.mjs?v=1"></script><link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
+<script src="pwa-v6.js?v=1" defer></script><script type="module" src="progress-v14.mjs?v=2"></script><link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
 <link rel="stylesheet" href="site-rebuild-v17.css?v=1">
 <link rel="stylesheet" href="site-interface-v18.css?v=1">
 <link rel="stylesheet" href="site-interface-v19.css?v=1">
 <link rel="stylesheet" href="site-reference-v20.css?v=1">
 <link rel="stylesheet" href="site-valorant-ui.css?v=1">
 <link rel="stylesheet" href="site-valorant-theme.css?v=1">
-<link rel="stylesheet" href="site-v22.css?v=1">
+<link rel="stylesheet" href="site-v22.css?v=2">
 </head>
 <body class="site31 site31-progress site-valorant r17">
 <a class="site31-skip" href="#main"><span class="fr">Aller au contenu</span><span class="en">Skip to content</span></a>
@@ -69,10 +69,13 @@
     <p class="r17-overline"><span class="fr">STATISTIQUES</span><span class="en">STATISTICS</span></p>
     <h1 id="v14-progress-title"><span class="fr">Ma progression</span><span class="en">My progress</span></h1>
     <p class="r17-hero-desc"><span class="fr">Consulte les séances enregistrées, compare tes résultats et suis ton objectif hebdomadaire.</span><span class="en">Review recorded sessions, compare results and track your weekly goal.</span></p>
-    <div class="r17-hero-actions"><a href="training.html#panel-builder" class="r17-button r17-button--hot"><span class="fr">Nouvelle routine</span><span class="en">New routine</span><span class="ar-icon i-arrow" aria-hidden="true"></span></a><a href="training.html#panel-dashboard" class="r17-button r17-button--outline"><span class="fr">Mes objectifs</span><span class="en">My goals</span><span class="ar-icon i-arrow" aria-hidden="true"></span></a></div>
+    <div class="r17-hero-actions"><a href="training.html#training-guide" class="r17-button r17-button--hot"><span class="fr">Choisir une séance</span><span class="en">Choose a session</span><span class="ar-icon i-arrow" aria-hidden="true"></span></a><a href="training.html#panel-dashboard" class="r17-button r17-button--outline"><span class="fr">Mes objectifs</span><span class="en">My goals</span><span class="ar-icon i-arrow" aria-hidden="true"></span></a></div>
   </div>
 </section>
-<div class="v14-progress-notice r17-source-notice" id="v14-source-status" role="status" aria-live="polite"><span class="fr">Lecture de tes données locales…</span><span class="en">Loading local data…</span></div>
+<div class="v14-progress-notice r17-source-notice" id="v14-source-status">
+  <span id="v14-source-message" role="status"><span class="fr">Lecture de tes données…</span><span class="en">Loading your data…</span></span>
+  <a href="account.html#auth-panel" id="v14-source-signin" hidden><span class="fr">Ouvrir mon compte</span><span class="en">Open my account</span> <span aria-hidden="true">→</span></a>
+</div>
 <div class="v14-progress-kpis r17-progress-kpis"><article class="v14-kpi"><span class="v14-glyph">⌖</span><div><strong id="v14-p-average">—</strong><small><span class="fr">PRÉCISION MOYENNE</span><span class="en">AVG. REPORTED ACCURACY</span></small></div></article><article class="v14-kpi"><span class="v14-glyph">◷</span><div><strong id="v14-p-minutes">—</strong><small><span class="fr">MINUTES ENREGISTRÉES</span><span class="en">RECORDED MINUTES</span></small></div></article><article class="v14-kpi"><span class="v14-glyph">▥</span><div><strong id="v14-p-sessions">—</strong><small><span class="fr">SÉANCES TERMINÉES</span><span class="en">COMPLETED SESSIONS</span></small></div></article><article class="v14-kpi"><span class="v14-glyph">↗</span><div><strong id="v14-p-streak">—</strong><small><span class="fr">JOURS CONSÉCUTIFS</span><span class="en">CONSECUTIVE DAYS</span></small></div></article></div>
 <div class="v14-progress-toolbar r17-toolbar"><span class="v14-kicker">/// <span class="fr">MES SÉANCES AIM</span><span class="en">MY AIM SESSIONS</span></span>
 <label><span class="fr">Période</span><span class="en">Period</span> <select id="v14-progress-range"><option value="7">7 jours / 7 days</option><option value="30" selected>30 jours / 30 days</option><option value="90">90 jours / 90 days</option><option value="0">Tout / All</option></select></label></div>
