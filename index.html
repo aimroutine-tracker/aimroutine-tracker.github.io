@@ -61,6 +61,7 @@
 <link rel="stylesheet" href="site-reference-v20.css?v=1">
 <link rel="stylesheet" href="site-valorant-ui.css?v=1">
 <link rel="stylesheet" href="site-valorant-theme.css?v=1">
+<link rel="stylesheet" href="site-home-v21.css?v=1">
 </head>
 <body class="v5-landing site31 site31-home site-valorant">
 <a class="site31-skip" href="#main"><span class="fr">Aller au contenu</span><span class="en">Skip to content</span></a>
@@ -114,32 +115,17 @@
         <h1 id="valorant-home-title"><span class="fr">VISE JUSTE.<br><em>JOUE MIEUX.</em></span><span class="en">AIM TRUE.<br><em>PLAY BETTER.</em></span></h1>
         <p><span class="fr">Travaille tes tirs, ton tracking et tes flicks avec des routines de 10 à 20 minutes.</span><span class="en">Train your shots, tracking and flicks with 10- to 20-minute routines.</span></p>
         <div class="valorant-hero-actions">
-          <a class="ar-btn ar-btn--primary" href="training.html"><span class="ar-icon i-play" aria-hidden="true"></span> <span class="fr">Choisir ma routine</span><span class="en">Choose my routine</span></a>
-          <a class="ar-btn ar-btn--secondary" href="progress.html"><span class="fr">Voir la progression</span><span class="en">View my progress</span> <span class="ar-icon i-arrow" aria-hidden="true"></span></a>
+          <a class="ar-btn ar-btn--primary" href="#routines-rapides"><span class="fr">Choisir ma routine</span><span class="en">Choose a routine</span><span class="ar-icon i-arrow" aria-hidden="true"></span></a>
+          <a class="ar-btn ar-btn--ghost home-starter" href="training.html?routine=precision#panel-builder"><span class="ar-icon i-play" aria-hidden="true"></span><span class="fr">Impact précis · 10 min</span><span class="en">Precise impact · 10 min</span></a>
         </div>
       </div>
-      <a class="ar-feature" href="training.html?routine=precision#panel-builder">
-        <span class="ar-feature-icon"><span class="ar-icon i-target" aria-hidden="true"></span></span>
-        <span class="ar-feature-text">
-          <span class="ar-feature-label"><span class="fr">Pour commencer</span><span class="en">Start here</span></span>
-          <strong><span class="fr">IMPACT PRÉCIS</span><span class="en">PRECISE IMPACT</span></strong>
-          <span>10 min · Range Valorant</span>
-        </span>
-        <span class="ar-feature-arrow ar-icon i-arrow" aria-hidden="true"></span>
-      </a>
     </div>
   </section>
-  <div class="valorant-tools">
-    <div class="valorant-shell valorant-tools-layout">
-      <strong><span class="fr">OUTILS D’ENTRAÎNEMENT</span><span class="en">TRAINING TOOLS</span></strong>
-      <ul><li>Aim Lab</li><li>KovaaK’s</li><li>Oblivity</li><li>Range Valorant</li></ul>
-    </div>
-  </div>
-  <section class="valorant-routines ar-light" aria-labelledby="valorant-routines-title">
+  <section class="valorant-routines ar-light" id="routines-rapides" aria-labelledby="valorant-routines-title">
     <div class="valorant-shell">
       <div class="valorant-section-head">
-        <h2 id="valorant-routines-title"><span class="fr">CHOISIS TON ENTRAÎNEMENT</span><span class="en">CHOOSE YOUR TRAINING</span></h2>
-        <a class="ar-btn ar-btn--ghost" href="training.html"><span class="fr">Espace entraînement</span><span class="en">Training workspace</span> <span class="ar-icon i-arrow" aria-hidden="true"></span></a>
+        <h2 id="valorant-routines-title"><span class="fr">ROUTINES RAPIDES</span><span class="en">QUICK ROUTINES</span></h2>
+        <a class="ar-btn ar-btn--ghost" href="training.html"><span class="fr">Toutes les routines</span><span class="en">All routines</span> <span class="ar-icon i-arrow" aria-hidden="true"></span></a>
       </div>
       <div class="valorant-routine-grid">
         <article class="ar-drill ar-drill--precision">
@@ -192,18 +178,23 @@
   </section>
  </div>
 
+<div class="valorant-shell home-discovery">
+  <nav class="home-destinations" aria-label="Autres activités / More to explore">
+    <a href="progress.html"><span><strong><span class="fr">Ma progression</span><span class="en">My progress</span></strong><small><span class="fr">Historique et statistiques</span><span class="en">History and statistics</span></small></span><span class="ar-icon i-arrow" aria-hidden="true"></span></a>
+    <a href="#aim-challenge"><span><strong><span class="fr">Défi AIM</span><span class="en">Aim challenge</span></strong><small><span class="fr">Teste ta précision en 20 s</span><span class="en">Test your accuracy in 20 s</span></small></span><span class="ar-icon i-arrow" aria-hidden="true"></span></a>
+    <a href="product.html"><span><strong><span class="fr">Logiciel Windows</span><span class="en">Windows app</span></strong><small><span class="fr">Captures et fonctionnalités</span><span class="en">Screenshots and features</span></small></span><span class="ar-icon i-arrow" aria-hidden="true"></span></a>
+  </nav>
+</div>
+
+<details id="home-details">
+  <summary class="valorant-shell home-details-summary"><span class="fr">Démos et détails du projet</span><span class="en">Demos and project details</span><span class="ar-icon i-arrow" aria-hidden="true"></span></summary>
+  <div class="home-details-content">
 <section class="v14-signal-strip v5-container" aria-label="Statistiques AIM réelles / Actual AIM metrics">
 <div><span class="v14-strip-icon">▦</span><strong data-v15-stat="sessions">—</strong><small><span class="fr">SÉANCES</span><span class="en">SESSIONS</span> · <span class="fr">historique personnel</span><span class="en">your history</span></small></div>
 <div><span class="v14-strip-icon">⌖</span><strong data-v15-stat="accuracy">—</strong><small><span class="fr">PRÉCISION</span><span class="en">ACCURACY</span> · <span class="fr">résultats saisis</span><span class="en">reported scores</span></small></div>
 <div><span class="v14-strip-icon">↗</span><strong data-v15-stat="week">—</strong><small><span class="fr">OBJECTIF 7 J</span><span class="en">WEEKLY GOAL</span> · <span class="fr">séances enregistrées</span><span class="en">recorded sessions</span></small></div>
 <div><span class="v14-strip-icon v14-cyan">☁</span><strong data-v15-stat="cloud">—</strong><small><span class="fr">SYNC CLOUD</span><span class="en">CLOUD SYNC</span> · <span class="fr">état du compte</span><span class="en">account status</span></small></div>
 </section>
-<section class="v14-home-features v5-container" aria-label="Pourquoi AimRoutine / Why AimRoutine">
- <a href="training.html#panel-builder" class="v14-feature v14-card"><span class="v14-feature-icon">⌖</span><div><strong><span class="fr">Améliore ton AIM</span><span class="en">Improve your aim</span></strong><p><span class="fr">Des exercices ciblés pour travailler précision, réactivité et régularité.</span><span class="en">Focused exercises for accuracy, reaction and consistency.</span></p></div><span class="v14-feature-art v14-reticle" aria-hidden="true"></span></a>
- <a href="training.html#panel-program" class="v14-feature v14-card"><span class="v14-feature-icon">▱</span><div><strong><span class="fr">Structure ta routine</span><span class="en">Plan your routine</span></strong><p><span class="fr">Des routines adaptables à tes objectifs, ton temps de jeu et ton niveau.</span><span class="en">Adaptable routines for your goals, schedule and level.</span></p></div><span class="v14-feature-art v14-stack" aria-hidden="true">◇<br>◇</span></a>
- <a href="progress.html" class="v14-feature v14-card"><span class="v14-feature-icon">▥</span><div><strong><span class="fr">Suis ta progression</span><span class="en">Track your progress</span></strong><p><span class="fr">Des graphiques calculés à partir de tes séances enregistrées.</span><span class="en">Charts calculated from your recorded practice sessions.</span></p></div><span class="v14-feature-art v14-bars" aria-hidden="true">▂▄▆█</span></a>
-</section>
-
 <section class="ar9-wayfinder v5-container v14-path-section" id="choose-path" aria-labelledby="ar9-wayfinder-title">
  <div class="v14-paths-main">
   <div class="ar9-wayfinder-head">
@@ -637,7 +628,10 @@
 <span class="v14-kicker">/// COMMUNITY / AIMROUTINE</span>
 <h2><span class="fr">Une communauté pour progresser ensemble.</span><span class="en">A community to improve together.</span></h2>
 <p><span class="fr">Partage de routines et discussions autour de l’entraînement AIM : cet espace communautaire est en préparation.</span><span class="en">Routine sharing and aim-training discussions: the community area is in preparation.</span> <a href="presentation.html"><span class="fr">Découvrir le projet</span><span class="en">Explore the project</span> ↗</a></p>
-</section></main>
+</section>
+  </div>
+</details>
+</main>
 <footer class="site31-footer">
  <div class="site31-footer-inner">
   <div><div class="site31-footer-logo"><img src="aimroutine-logo.png?v=3" width="34" height="34" alt="" loading="lazy"> AimRoutine Tracker · Windows 2.9</div><p><span class="fr">Projet indépendant de coaching AIM pour VALORANT, non approuvé ni sponsorisé par Riot Games. Les démos web sont fictives.</span><span class="en">Independent VALORANT aim-coaching project, not endorsed or sponsored by Riot Games. Website demos use fictional data.</span></p></div>
@@ -658,9 +652,10 @@
 <script src="site-v14-gallery.js?v=2" defer></script>
 <script src="site-v15-fidelity.js?v=2" defer></script>
 <script type="module" src="site-v15-data.mjs?v=1"></script>
-<script defer src="site-rebuild-v17.js?v=2"></script>
+<script defer src="site-rebuild-v17.js?v=3"></script>
 <script defer src="site-interface-v18.js?v=2"></script>
 <script type="module" src="site-interface-v19.mjs?v=1"></script>
 <script type="module" src="site-reference-v20.mjs?v=1"></script>
+<script src="site-home-v21.js?v=1" defer></script>
 </body>
 </html>

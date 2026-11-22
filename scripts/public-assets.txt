@@ -124,3 +124,5 @@ valorant-barlow-800.woff2
 valorant-inter.woff2
 OFL-Barlow-Condensed.txt
 OFL-Inter.txt
+site-home-v21.css
+site-home-v21.js
