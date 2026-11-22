@@ -557,7 +557,8 @@ test('Progress range keeps the frequency chart and recorded sessions in sync',as
  const imported=await page.evaluate(()=>{
   const sessions=[0,10,75,120].map((days,index)=>({
    id:'progress-'+index,date:new Date(Date.now()-days*86400000).toISOString(),
-   rank:'silver',focus:'micro',tool:'Aim Lab',scenario:'Microshot '+index,
+   rank:'silver',focus:'micro',tool:index===1?'VALORANT':'Aim Lab',
+   scenario:index<2?'Microshot':'Microshot '+index,
    minutes:15,accuracy:60+index,feeling:'good',notes:''
   }));
   return window.AIMWeb.mergeData({sessions,presets:[],weeklyGoal:3});
@@ -573,6 +574,19 @@ test('Progress range keeps the frequency chart and recorded sessions in sync',as
   expect(buckets.reduce((sum,n)=>sum+Number(n),0)).toBe(count);
  }
  await expect(rows.last()).toContainText('Microshot 3');
+ const tool=page.locator('#v14-progress-tool');
+ const scenario=page.locator('#v14-progress-scenario');
+ await scenario.selectOption({label:'Microshot · Aim Lab'});
+ await expect(page.locator('#v14-p-sessions')).toHaveText('1');
+ await expect(page.locator('#v14-p-average')).toHaveText('60 %');
+ await expect(rows.first()).toContainText('Aim Lab');
+ await tool.selectOption('VALORANT');
+ await expect(scenario).toHaveValue('');
+ await expect(page.locator('#v14-p-average')).toHaveText('61 %');
+ await page.locator('[data-r19-range="7"]').click();
+ await expect(tool).toHaveValue('VALORANT');
+ await expect(page.locator('#v14-p-sessions')).toHaveText('0');
+ await expect(page.locator('#v14-p-goal')).toHaveText('1 / 3');
  await expect(page.locator('#v14-source-signin')).toBeHidden();
 });
 
@@ -582,6 +596,7 @@ test('V17 honest progress and unchanged authentication forms',async ({page})=>{
  await expect(page.locator('.r17-chart-grid .v14-panel')).toHaveCount(3);
  await expect(page.locator('#v14-p-sessions')).toHaveText('0');
  await expect(page.locator('#v14-source-status a')).toHaveAttribute('href','account.html#auth-panel');
+ await expect(page.locator('#v14-progress-filters')).toBeHidden();
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.r17-account-cols')).toBeVisible();
  await expect(page.locator('[data-r17-cloud-label]')).toContainText(/Cloud non connecté|Cloud not signed in/);

@@ -2,19 +2,47 @@
 import {normalizeStore,computeStats,STORAGE_KEY} from './training-core-v5.mjs';
 import {validUid,scopedKey} from './cloud-core-v7.mjs';
 import {synchronize} from './cloud-sync-v7.mjs';
-import {progressPeriod} from './progress-core.mjs';
+import {progressPeriod,progressScenarioOptions,filterProgressSessions} from './progress-core.mjs?v=2';
 const $=s=>document.querySelector(s);
 const en=()=>document.documentElement.lang==='en';
 const tr=(fr,english)=>en()?english:fr;
 const fmt=n=>Number(n).toLocaleString(en()?'en-GB':'fr-FR',{maximumFractionDigits:1});
 const source=document.getElementById('v14-source-message');
 const signIn=document.getElementById('v14-source-signin');
+const filterPanel=$('#v14-progress-filters');
+const toolFilter=$('#v14-progress-tool');
+const scenarioFilter=$('#v14-progress-scenario');
 let sessions=[],goal=3,readable=false,syncPending=false,loadVersion=0;
 const locale=()=>en()?'en-GB':'fr-FR';
+const toolLabel=tool=>tool==='Non précisé'?tr('Non renseigné','Not specified'):tool;
 const focusLabels={
  flick:['Premier tir','First shot'],tracking:['Tracking','Tracking'],
  micro:['Micro-corrections','Micro-adjustments'],control:['Contrôle','Control']
 };
+function updateFilter(select,allLabel,options){
+ const previous=select.value;
+ select.replaceChildren(new Option(allLabel,''),
+  ...options.map(({label,value})=>new Option(label,value)));
+ select.value=options.some(option=>option.value===previous)?previous:'';
+ select.disabled=options.length===0;
+}
+
+function refreshFilters(){
+ const {sessions:history}=progressPeriod(sessions,0);
+ filterPanel.hidden=history.length===0;
+ const compare=new Intl.Collator(locale()).compare;
+ const tools=[...new Set(history.map(session=>session.tool))]
+  .map(value=>({label:toolLabel(value),value}))
+  .sort((a,b)=>compare(a.label,b.label));
+ updateFilter(toolFilter,tr('Tous les logiciels','All tools'),tools);
+
+ const tool=toolFilter.value;
+ const scenarios=progressScenarioOptions(history,tool)
+  .map(({name,value,tool:scenarioTool})=>({value,label:tool?name:name+' · '+toolLabel(scenarioTool)}))
+  .sort((a,b)=>compare(a.label,b.label));
+ updateFilter(scenarioFilter,tr('Tous les scénarios','All scenarios'),scenarios);
+}
+
 function svgEl(name,props){
  const e=document.createElementNS('http://www.w3.org/2000/svg',name);
  for(const [key,value] of Object.entries(props))e.setAttribute(key,String(value));
@@ -29,7 +57,7 @@ function lineChart(items){
  const root=$('#v14-p-line');
  const scored=items.filter(s=>s.accuracy!==null).sort((x,y)=>x.date.localeCompare(y.date));
  const a=scored.slice(-25);
- if(!a.length)return blank(root,'Aucune précision enregistrée pour cette période.','No accuracy recorded in this period.');
+ if(!a.length)return blank(root,'Aucune précision enregistrée pour cette sélection.','No accuracy scores for this selection.');
  root.replaceChildren();
  const width=620,height=235;
  const x=i=>34+(a.length===1?0.5:i/(a.length-1))*560;
@@ -53,7 +81,7 @@ function lineChart(items){
 }
 function barChart(buckets,now){
  const root=$('#v14-p-bars');
- if(!buckets.length)return blank(root,'Aucune séance sur cette période.','No sessions in this period.');
+ if(!buckets.length)return blank(root,'Aucune séance pour cette sélection.','No sessions for this selection.');
  const showYear=buckets[0].start.getUTCFullYear()!==now.getFullYear();
  const dates=new Intl.DateTimeFormat(locale(),{
   day:'numeric',month:'short',timeZone:'UTC',...(showYear?{year:'numeric'}:{})
@@ -153,7 +181,8 @@ function distribution(items){
 function render(){
  const period=Number($('#v14-progress-range').value)||0;
  const now=new Date();
- const {sessions:subset,buckets}=progressPeriod(sessions,period,now);
+ const selected=filterProgressSessions(sessions,toolFilter.value,scenarioFilter.value);
+ const {sessions:subset,buckets}=progressPeriod(selected,period,now);
  const stats=computeStats(subset,goal,now),all=computeStats(sessions,goal,now);
  const percent=x=>x===null?'—':fmt(x)+' %';
  $('#v14-p-average').textContent=percent(stats.avg);
@@ -189,6 +218,7 @@ async function load(){
  if(readable){
   try{const raw=JSON.parse(localStorage.getItem(key)||'null');const clean=normalizeStore(raw,null);sessions=clean.sessions;goal=clean.weeklyGoal;}catch{}
  }
+ refreshFilters();
  renderSource();
  render();
 }
@@ -199,7 +229,9 @@ function renderSource(){
  signIn.hidden=readable;
 }
 $('#v14-progress-range').addEventListener('change',render);
-document.querySelectorAll('[data-switch-lang]').forEach(b=>b.addEventListener('click',()=>queueMicrotask(()=>{if(loadVersion)renderSource();render()})));
+toolFilter.addEventListener('change',()=>{refreshFilters();render()});
+scenarioFilter.addEventListener('change',render);
+document.querySelectorAll('[data-switch-lang]').forEach(b=>b.addEventListener('click',()=>queueMicrotask(()=>{if(loadVersion)renderSource();refreshFilters();render()})));
 window.addEventListener('storage',event=>{if(event.key?.includes(STORAGE_KEY))void load();});
 window.addEventListener('focus',()=>void load());
 window.addEventListener('online',()=>void load());
