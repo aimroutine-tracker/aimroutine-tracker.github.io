@@ -436,6 +436,8 @@ test('V3 home KPI strip matches reference spacing without moving features',async
  await expect(rail).toBeVisible();
  await expect(features).toBeVisible();
  const a=await rail.boundingBox(),b=await features.boundingBox();
+ expect(a.x).toBeCloseTo(99.5,0);
+ expect(a.width).toBeCloseTo(1473,0);
  expect(a.y).toBeGreaterThanOrEqual(402);
  expect(a.y).toBeLessThanOrEqual(414); // account for browser font metrics and antialiasing
  expect(b.y).toBeGreaterThanOrEqual(490);
@@ -973,6 +975,7 @@ test('Turnstile-enabled browser form forwards a token on login and password rese
 test('AIM mini-challenge is playable with mouse and keyboard, and can pause',async ({page})=>{
  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
  const game=page.locator('#aim-challenge');
+ await expect(game).toHaveCSS('transform','none');
  await game.scrollIntoViewIfNeeded();
  await expect(game).toBeVisible();
  // DOMContentLoaded may run before deferred scripts bind the game handlers.
@@ -3905,6 +3908,7 @@ test('Optional home insights guide stays lazy and remains interactive when scrol
  });
  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#insights')).toBeAttached();
+ await expect(page.locator('#insights')).toHaveCSS('transform','none');
  const initial=await page.locator('#insights').boundingBox();
  const viewport=page.viewportSize();
  // Guide content is below the first paint; do not download or execute it

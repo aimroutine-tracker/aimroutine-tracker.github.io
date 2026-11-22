@@ -2035,19 +2035,33 @@ body.site31.r20 .r17-account-wrap #auth-panel .r17-auth-reference-copy .ar7-eyeb
 /* Match the wide reference's inset icons and short, angled dividers. */
 @media(min-width:1600px){
  body.site31.r20 .r17-home-wrap .r17-stats{
-  background:radial-gradient(ellipse at 0 98%,#933d4980,transparent 19%),
-   radial-gradient(ellipse at 51% 0%,#aa4c5577,transparent 20%),
-   radial-gradient(ellipse at 81% 3%,#ab4e5780,transparent 17%),
-   linear-gradient(
-    #17222a 19%,#16212a 19% 22%,#162129 22% 34%,
-    #152029 34% 40%,#152028 40% 49%,#141f28 49% 58%,
-    #141f27 58% 64%,#131e27 64% 76%,#131e26 76% 79%,#121d26 79%
-   )!important;
+  --rail-outline:polygon(28px 0,calc(100% - 8px) 0,100% 8px,
+   calc(100% - 7px) calc(100% - 20px),calc(100% - 28px) 100%,
+   8px 100%,0 calc(100% - 8px),7px 20px);
+  position:relative;
+  isolation:isolate;
+  max-width:1473px!important;
+  border-color:transparent!important;
+  clip-path:var(--rail-outline);
+  background:linear-gradient(90deg,#ff7a79,#6c464d 10%,#8d5158 44%,
+   #ff817f 52%,#6c454c 58%,#996169 92%,#ff7779)!important;
+ }
+ body.site31.r20 .r17-home-wrap .r17-stats::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:0;
+  clip-path:var(--rail-outline);
+  pointer-events:none;
+  background:radial-gradient(ellipse at 0 100%,#a84a56a8,transparent 12%),
+   radial-gradient(ellipse at 52% 0,#a64b5373,transparent 14%),
+   radial-gradient(ellipse at 82% 0,#8c4a523e,transparent 15%),
+   linear-gradient(110deg,#222027,#141c24 48%,#19252f 65%,#1d2029);
  }
  body.site31.r20 .r17-home-wrap .r17-stats>div{
   position:relative;
   border-right:0!important;
-  padding-inline-start:clamp(64px,5vw,84px)!important;
+  padding-inline-start:clamp(86px,5.5vw,93px)!important;
   gap:20px!important;
  }
  body.site31.r20 .r17-home-wrap .r17-stats>div:not(:last-child)::after{
