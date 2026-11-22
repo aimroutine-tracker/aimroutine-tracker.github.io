@@ -69,6 +69,7 @@ jobs:
       - name: Install browser engine
         run: npx playwright install --with-deps ${{ matrix.engine }}
       - name: Start local static site
+        id: server
         run: |
           nohup python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/aimroutine-http.log 2>&1 &
           for i in $(seq 1 25); do curl -fsS http://127.0.0.1:8765/training.html >/dev/null && exit 0; sleep 1; done
@@ -82,6 +83,7 @@ jobs:
           python3 -m pip install --quiet Pillow==11.3.0
           python3 tests/check-home-css-pixel-parity-v1.py
       - name: Run browser scenarios
+        if: ${{ !cancelled() && steps.server.outcome == 'success' }}
         run: npx playwright test --config=tests/playwright.config.mjs --project=${{ matrix.project }}
       - name: Export CSS comparison screenshots only if pixel proof fails
         if: failure() && matrix.engine == 'chromium'

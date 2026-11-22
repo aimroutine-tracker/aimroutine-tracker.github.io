@@ -1,5 +1,7 @@
 import {stylesheetIndex} from './helpers/styles-v3.mjs';
 import {test,expect} from '@playwright/test';
+import {once} from 'node:events';
+import {createServer,request} from 'node:http';
 
 /* Verified mocked account: no real Supabase requests or data mutations. */
 async function useVerifiedTestAccount(page){
@@ -354,19 +356,53 @@ test('Language switch and responsive navigation',async ({page,isMobile})=>{
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
  expect(overflow).toBeLessThanOrEqual(2);
 });
-test.describe('PWA cache integration',()=>{
- test.use({serviceWorkers:'allow'});
- test('Offline training works after initial install',async ({page,context})=>{
- await page.evaluate(async()=>{if(!('serviceWorker'in navigator))throw Error('No service workers');await navigator.serviceWorker.ready});
- await context.setOffline(true);
- await page.reload({waitUntil:'domcontentloaded'});
- await expect(page.locator('#tab-dashboard')).toBeVisible();
- await expect.poll(()=>page.evaluate(()=>Boolean(window.AIMWeb))).toBe(true);
- await context.setOffline(false);
+// Fail the origin connection at the server so the browser still dispatches
+// service-worker fetch events on each engine.
+const offlineTest=test.extend({
+ offlineSite:async({page,baseURL},use)=>{
+  let disconnected=false;
+  const blockedRequests=[];
+  const server=createServer((incoming,outgoing)=>{
+   if(disconnected){
+    blockedRequests.push(incoming.url);
+    incoming.socket.destroy();
+    return;
+   }
+   const upstream=request(baseURL,{method:incoming.method,path:incoming.url},response=>{
+    outgoing.writeHead(response.statusCode,{...response.headers,'cache-control':'no-store'});
+    response.pipe(outgoing);
+   });
+   upstream.on('error',error=>outgoing.destroy(error));
+   upstream.end();
+  });
+  server.listen(0,'127.0.0.1');
+  await once(server,'listening');
+  try{
+   const origin='http://127.0.0.1:'+server.address().port;
+   await page.goto(origin+'/training.html',{waitUntil:'domcontentloaded'});
+   await expect.poll(()=>page.evaluate(()=>Boolean(navigator.serviceWorker?.controller))).toBe(true);
+   await use({origin,blockedRequests,disconnect(){disconnected=true}});
+  }finally{
+   const closed=once(server,'close');
+   server.close();
+   server.closeAllConnections();
+   await closed;
+  }
+ }
 });
 
- test('V3 owner-reference assets remain cached and usable offline',async({page,context})=>{
-  await page.evaluate(()=>navigator.serviceWorker.ready);
+offlineTest.describe('PWA cache integration',()=>{
+ offlineTest.use({serviceWorkers:'allow'});
+ offlineTest('Offline training works after initial install',async({page,offlineSite})=>{
+  offlineSite.disconnect();
+  const response=await page.reload({waitUntil:'domcontentloaded'});
+  expect(response?.status()).toBe(200);
+  expect(offlineSite.blockedRequests).toContain('/training.html');
+  await expect(page.locator('#tab-dashboard')).toBeVisible();
+  await expect.poll(()=>page.evaluate(()=>Boolean(window.AIMWeb))).toBe(true);
+ });
+
+ offlineTest('V3 owner-reference assets remain cached and usable offline',async({page,offlineSite})=>{
   const cacheResults=await page.evaluate(async()=>{
    const urls=['site-owner-reference-v3.css','aimroutine-avatar-reference.svg',
     'site-v3-hero-home.webp','site-v3-hero-routines.webp','site-v3-hero-progress.webp','site-v3-hero-account.webp'];
@@ -379,17 +415,14 @@ test.describe('PWA cache integration',()=>{
    }));
   });
   expect(cacheResults,'V3 styles and artwork must be available offline').toEqual([true,true,true,true,true,true]);
-  await context.setOffline(true);
-  try{
-   const response=await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
-   expect(response?.status()).toBe(200);
-   await expect(page.locator('.r17-progress-wrap')).toBeVisible();
-   await expect.poll(()=>page.evaluate(()=>
-    getComputedStyle(document.documentElement).getPropertyValue('--ar-v3-night').trim()
-   ),{timeout:8000}).toBe('#07121b');
-  }finally{
-   await context.setOffline(false);
-  }
+  offlineSite.disconnect();
+  const response=await page.goto(offlineSite.origin+'/progress.html',{waitUntil:'domcontentloaded'});
+  expect(response?.status()).toBe(200);
+  expect(offlineSite.blockedRequests).toContain('/progress.html');
+  await expect(page.locator('.r17-progress-wrap')).toBeVisible();
+  await expect.poll(()=>page.evaluate(()=>
+   getComputedStyle(document.documentElement).getPropertyValue('--ar-v3-night').trim()
+  ),{timeout:8000}).toBe('#07121b');
  });
 
 });
