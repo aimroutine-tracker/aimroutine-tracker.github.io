@@ -1,6 +1,7 @@
 import {stylesheetIndex} from './helpers/styles-v3.mjs';
-import {test,expect} from '@playwright/test';
+import {test,expect,webkit} from '@playwright/test';
 import {once} from 'node:events';
+import {rm} from 'node:fs/promises';
 import {createServer,request} from 'node:http';
 
 /* Verified mocked account: no real Supabase requests or data mutations. */
@@ -389,6 +390,25 @@ const offlineTest=test.extend({
    server.closeAllConnections();
    await closed;
   }
+ },
+ // WebKit can discard in-memory CacheStorage on reload. An installed PWA
+ // uses a disk-backed profile (Playwright issue #41618).
+ context:async({context,browserName,baseURL},use,testInfo)=>{
+  if(browserName!=='webkit'){
+   await use(context);
+   return;
+  }
+  const {viewport,deviceScaleFactor,isMobile,hasTouch,userAgent,locale}=testInfo.project.use;
+  const profile=testInfo.outputPath('offline-profile');
+  const installed=await webkit.launchPersistentContext(profile,{
+   baseURL,viewport,deviceScaleFactor,isMobile,hasTouch,userAgent,locale,serviceWorkers:'allow'
+  });
+  try{
+   await use(installed);
+  }finally{
+   await installed.close();
+   await rm(profile,{recursive:true,force:true});
+  }
  }
 });
 
@@ -424,6 +444,8 @@ offlineTest.describe('PWA cache integration',()=>{
    expect(offlineSite.blockedRequests).toContain('/training.html');
    await expect(page.locator('#tab-dashboard')).toBeVisible();
    await expect.poll(()=>page.evaluate(()=>Boolean(window.AIMWeb))).toBe(true);
+   expect(await missingCacheEntries(page,trainingOfflineAssets),
+    'Training modules must stay cached across the offline reload').toEqual([]);
   }catch(error){
    const missingAfter=await missingCacheEntries(page,trainingOfflineAssets).catch(()=>null);
    console.log('Offline diagnostics '+JSON.stringify({missingBefore,missingAfter,errors,

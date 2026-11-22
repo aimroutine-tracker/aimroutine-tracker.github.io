@@ -55,17 +55,21 @@ jobs:
         include:
           - project: chromium-desktop
             engine: chromium
+            playwright: 1.56.1
           - project: firefox-desktop
             engine: firefox
+            playwright: 1.56.1
           - project: webkit-mobile
             engine: webkit
+            # This release includes the disk-backed CacheStorage fix.
+            playwright: 1.62.0
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - name: Install browser test runner
-        run: npm install --no-save @playwright/test@1.56.1
+        run: npm install --no-save @playwright/test@${{ matrix.playwright }}
       - name: Install browser engine
         run: npx playwright install --with-deps ${{ matrix.engine }}
       - name: Start local static site
