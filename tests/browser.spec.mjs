@@ -359,13 +359,13 @@ test('Language switch and responsive navigation',async ({page,isMobile})=>{
 // Fail the origin connection at the server so the browser still dispatches
 // service-worker fetch events on each engine.
 const offlineTest=test.extend({
- offlineSite:async({page,baseURL},use)=>{
-  let disconnected=false;
-  const blockedRequests=[];
-  const upstreamErrors=[];
+ offlineSite:async({},use)=>{
+  await use({disconnected:false,blockedRequests:[],upstreamErrors:[]});
+ },
+ baseURL:async({baseURL,offlineSite},use)=>{
   const server=createServer((incoming,outgoing)=>{
-   if(disconnected){
-    blockedRequests.push(incoming.url);
+   if(offlineSite.disconnected){
+    offlineSite.blockedRequests.push(incoming.url);
     incoming.socket.destroy();
     return;
    }
@@ -374,7 +374,7 @@ const offlineTest=test.extend({
     response.pipe(outgoing);
    });
    upstream.on('error',error=>{
-    upstreamErrors.push({path:incoming.url,code:error.code});
+    offlineSite.upstreamErrors.push({path:incoming.url,code:error.code});
     outgoing.destroy(error);
    });
    upstream.end();
@@ -382,10 +382,7 @@ const offlineTest=test.extend({
   server.listen(0,'127.0.0.1');
   await once(server,'listening');
   try{
-   const origin='http://127.0.0.1:'+server.address().port;
-   await page.goto(origin+'/training.html',{waitUntil:'domcontentloaded'});
-   await expect.poll(()=>page.evaluate(()=>Boolean(navigator.serviceWorker?.controller))).toBe(true);
-   await use({origin,blockedRequests,upstreamErrors,disconnect(){disconnected=true}});
+   await use('http://127.0.0.1:'+server.address().port);
   }finally{
    const closed=once(server,'close');
    server.close();
@@ -395,30 +392,41 @@ const offlineTest=test.extend({
  }
 });
 
+const trainingOfflineAssets=['training.html','training-entry-v7.mjs','cloud-core-v7.mjs',
+ 'cloud-sync-v7.mjs','training-core-v5.mjs','training-v6-core.mjs','training-v5.js','training-v6.js'];
+
+function missingCacheEntries(page,paths){
+ return page.evaluate(async files=>{
+  const responses=await Promise.all(files.map(file=>caches.match(file,{ignoreSearch:true})));
+  return files.filter((_file,index)=>!responses[index]);
+ },paths);
+}
+
 offlineTest.describe('PWA cache integration',()=>{
  offlineTest.use({serviceWorkers:'allow'});
- offlineTest('Offline training works after initial install',async({page,offlineSite})=>{
+ offlineTest.beforeEach(async({page})=>{
+  await expect.poll(()=>page.evaluate(()=>Boolean(navigator.serviceWorker?.controller))).toBe(true);
+ });
+
+ offlineTest('Offline training works after initial install',async({page,baseURL,offlineSite})=>{
   const errors=[];
   page.on('pageerror',error=>errors.push(error.message));
   page.on('requestfailed',request=>{
    const url=new URL(request.url());
-   if(url.origin===offlineSite.origin)errors.push(url.pathname+url.search+' '+request.failure()?.errorText);
+   if(url.origin===baseURL)errors.push(url.pathname+url.search+' '+request.failure()?.errorText);
   });
-  offlineSite.disconnect();
+  const missingBefore=await missingCacheEntries(page,trainingOfflineAssets);
   try{
+   expect(missingBefore,'Training modules must be precached after installation').toEqual([]);
+   offlineSite.disconnected=true;
    const response=await page.reload({waitUntil:'domcontentloaded'});
    expect(response?.status()).toBe(200);
    expect(offlineSite.blockedRequests).toContain('/training.html');
    await expect(page.locator('#tab-dashboard')).toBeVisible();
    await expect.poll(()=>page.evaluate(()=>Boolean(window.AIMWeb))).toBe(true);
   }catch(error){
-   const missingFromCache=await page.evaluate(async()=>{
-    const paths=['training.html','training-entry-v7.mjs','cloud-core-v7.mjs','cloud-sync-v7.mjs',
-     'training-core-v5.mjs','training-v6-core.mjs','training-v5.js','training-v6.js'];
-    const contents=await Promise.all(paths.map(path=>caches.match(path,{ignoreSearch:true})));
-    return paths.filter((_path,index)=>!contents[index]);
-   }).catch(()=>null);
-   console.log('Offline diagnostics '+JSON.stringify({missingFromCache,errors,
+   const missingAfter=await missingCacheEntries(page,trainingOfflineAssets).catch(()=>null);
+   console.log('Offline diagnostics '+JSON.stringify({missingBefore,missingAfter,errors,
     upstreamErrors:offlineSite.upstreamErrors,blockedRequests:offlineSite.blockedRequests}));
    throw error;
   }
@@ -437,8 +445,8 @@ offlineTest.describe('PWA cache integration',()=>{
    }));
   });
   expect(cacheResults,'V3 styles and artwork must be available offline').toEqual([true,true,true,true,true,true]);
-  offlineSite.disconnect();
-  const response=await page.goto(offlineSite.origin+'/progress.html',{waitUntil:'domcontentloaded'});
+  offlineSite.disconnected=true;
+  const response=await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
   expect(response?.status()).toBe(200);
   expect(offlineSite.blockedRequests).toContain('/progress.html');
   await expect(page.locator('.r17-progress-wrap')).toBeVisible();
