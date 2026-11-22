@@ -1,0 +1,90 @@
+/* The front page presents a short training path. Existing demos remain available below. */
+.valorant-home .valorant-hero-layout {
+  grid-template-columns: minmax(0, 1fr);
+  min-height: 490px;
+  padding-block: 52px;
+}
+.valorant-home .valorant-hero-copy { max-width: 650px; }
+.valorant-home .valorant-hero-actions { column-gap: 16px; }
+body.site31.site-valorant .valorant-home .home-starter {
+  color: var(--valorant-text);
+  padding-inline: 4px;
+}
+body.site31.site-valorant .valorant-home .home-starter:hover { color: var(--valorant-accent-soft); }
+
+.valorant-home .valorant-routines {
+  border-top: 3px solid var(--valorant-accent);
+  background-image: none;
+  padding-block: 32px 40px;
+}
+.valorant-home .valorant-section-head { margin-bottom: 16px; }
+.valorant-home .ar-drill-visual { min-height: 65px; padding-block: 8px; }
+.valorant-home .ar-drill-visual::after { opacity: .065; }
+.valorant-home .ar-drill-symbol { width: 43px; height: 43px; font-size: 23px; }
+.valorant-home .ar-drill-time { align-self: center; }
+.valorant-home .ar-drill-body { padding: 15px 16px 5px; }
+.valorant-home .ar-drill-description { min-height: 3em; }
+.valorant-home .ar-drill h3 { margin-block: 4px 0; }
+
+.home-discovery { padding-block: 30px 20px; }
+.home-destinations { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+body.site31.site-valorant .home-destinations a {
+  min-height: 76px;
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--valorant-panel);
+  border: 1px solid var(--valorant-line);
+  color: var(--valorant-text);
+  text-decoration: none;
+  transition: border-color 160ms, background-color 160ms;
+}
+body.site31.site-valorant .home-destinations a:hover { border-color: var(--valorant-accent-soft); background: var(--valorant-raised); }
+.home-destinations a strong { display: block; font: 700 23px/1 var(--ar-display); }
+.home-destinations a small { display: block; margin-top: 5px; color: var(--valorant-muted); font-size: 12px; }
+.home-destinations a > .ar-icon { color: var(--valorant-accent-soft); }
+
+#home-details { padding-block: 0 30px; }
+#home-details .home-details-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  padding: 10px 2px;
+  border: 0;
+  border-bottom: 1px solid var(--valorant-line);
+  color: var(--valorant-muted);
+  font: 600 13px/1.4 var(--ar-body);
+  cursor: pointer;
+  list-style: none;
+}
+#home-details .home-details-summary::-webkit-details-marker { display: none; }
+#home-details .home-details-summary:hover { color: var(--valorant-text); border-color: var(--valorant-accent-soft); }
+#home-details .home-details-summary .ar-icon { transform: rotate(90deg); transition: transform 160ms; }
+#home-details[open] .home-details-summary .ar-icon { transform: rotate(-90deg); }
+.home-details-content { padding-top: 24px; }
+.home-details-content [id] { scroll-margin-top: 95px; }
+
+@media (max-width: 720px) {
+  .valorant-home .valorant-hero-layout { min-height: 0; padding-block: 106px 40px; }
+  .valorant-home .valorant-routines { padding-block: 26px 30px; }
+  .valorant-home .ar-drill-description { min-height: 0; }
+  .home-discovery { padding-block: 20px 14px; }
+  .home-destinations { gap: 8px; }
+  .home-destinations a small { font-size: 11px; }
+}
+@media (max-width: 540px) {
+  .home-destinations { grid-template-columns: 1fr; }
+  body.site31.site-valorant .home-destinations a { min-height: 57px; padding-block: 9px; }
+  .home-destinations a strong { font-size: 22px; }
+}
+@media (max-width: 490px) {
+  .valorant-home .valorant-hero-actions { gap: 8px 14px; }
+  .valorant-home .valorant-hero-actions .ar-btn { flex: 0 1 auto; }
+  .valorant-home .valorant-hero-actions .ar-btn--primary { padding-inline: 12px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #home-details .home-details-summary .ar-icon { transition: none; }
+}

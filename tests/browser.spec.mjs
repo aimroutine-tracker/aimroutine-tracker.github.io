@@ -165,6 +165,7 @@ test('All public pages render without overflow or script errors',async({page,isM
   expect(overflow,path+' causes horizontal scrolling').toBeLessThanOrEqual(2);
   if(isMobile)await expect(page.locator('details.site31-mobile-nav > summary'),path).toBeVisible();
   if(isMobile&&path==='index.html'){
+   await page.locator('#home-details > summary').click();
    const carousel=page.locator('.v15-focus-grid');
    await expect(carousel).toBeVisible();
    const scroll=await carousel.evaluate(el=>{
@@ -354,7 +355,7 @@ test('Password reset UI submits recovery request and reports generic success (mo
 });
 
 test('Optimized Windows gallery previews preserve full-quality lightbox',async({page})=>{
- await page.goto('/index.html',{waitUntil:'domcontentloaded'});
+ await page.goto('/index.html#app-gallery',{waitUntil:'domcontentloaded'});
  const shot=page.locator('#v16-gallery-dashboard img.v16-real-shot');
  await expect(shot).toHaveAttribute('src','aimroutine-29-dashboard-preview.webp');
  await expect(shot).toHaveAttribute('data-v16-full-src','aimroutine-29-dashboard.webp');
@@ -443,7 +444,7 @@ test('Turnstile-enabled browser form forwards a token on login and password rese
 });
 
 test('AIM mini-challenge is playable with mouse and keyboard, and can pause',async ({page})=>{
- await page.goto('/index.html',{waitUntil:'domcontentloaded'});
+ await page.goto('/index.html#aim-challenge',{waitUntil:'domcontentloaded'});
  const game=page.locator('#aim-challenge');
  await game.scrollIntoViewIfNeeded();
  await expect(game).toBeVisible();
@@ -471,7 +472,7 @@ test('AIM mini-challenge is playable with mouse and keyboard, and can pause',asy
 });
 
 test('V12 AIM duration, combos and keyboard pause',async ({page})=>{
- await page.goto('/index.html',{waitUntil:'domcontentloaded'});
+ await page.goto('/index.html#aim-challenge',{waitUntil:'domcontentloaded'});
  await page.locator('#aim-challenge').scrollIntoViewIfNeeded();
  await page.locator('[data-ar12-duration="15000"]').click();
  await expect(page.locator('[data-ar11-time]')).toHaveText('15');
@@ -503,22 +504,21 @@ test('V13 tactical design loads across routes without hiding interactive element
  await expect(page.locator('#signup-mode')).toBeVisible();
 });
 
-test('Valorant landing keeps real metrics and the approved artwork',async ({page})=>{
+test('Valorant landing prioritizes routines and opens secondary content on demand',async ({page})=>{
  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.valorant-hero h1')).toBeVisible();
  await expect(page.locator('.valorant-routine-grid .ar-drill')).toHaveCount(3);
- await expect(page.locator('.r17-features .r17-feature')).toHaveCount(3);
- await expect(page.locator('.r17-path-grid .r17-path')).toHaveCount(3);
- await expect(page.locator('.r17-challenge .r17-button')).toHaveAttribute('href','#aim-challenge');
- await expect(page.locator('.r17-stats [data-v15-stat]')).toHaveCount(4);
- await expect.poll(()=>page.locator('.r17-stats [data-v15-stat="sessions"]').textContent(),{timeout:15000}).toBe('—');
- await expect(page.locator('.r17-stats [data-v15-stat="accuracy"]')).toHaveText('—');
- await expect(page.locator('.site31-nav a.valorant-account')).toHaveAttribute('href','account.html');
+ await expect(page.locator('#aim-challenge')).not.toBeVisible();
  expect(await page.locator('.valorant-hero').evaluate(el=>getComputedStyle(el,'::before').backgroundImage)).toContain('valorant-hero.webp');
+ await page.locator('.home-destinations a[href="#aim-challenge"]').click();
+ await expect(page.locator('#aim-challenge')).toBeVisible();
+ await expect(page.locator('#home-details')).toHaveAttribute('open','');
+ await expect(page.locator('.v14-signal-strip [data-v15-stat="sessions"]')).toHaveText('—');
+ await expect(page.locator('.site31-nav a.valorant-account')).toHaveAttribute('href','account.html');
 });
 test('Home routine opens a real plan with the advertised duration',async ({page})=>{
  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
- await page.locator('.valorant-hero .ar-feature').click();
+ await page.locator('.valorant-hero .home-starter').click();
  await expect(page).toHaveURL(/training\.html\?routine=precision#panel-builder$/);
  await expect(page.locator('#panel-builder')).toBeVisible();
  await expect(page.locator('#duration')).toHaveValue('10');
