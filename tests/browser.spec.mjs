@@ -82,6 +82,22 @@ test('Scenario-specific analytics and portable export',async ({page})=>{
  const file=await downloaded;
  expect(file.suggestedFilename()).toMatch(/^aimroutine-portable-\d{4}-\d{2}-\d{2}\.json$/);
 });
+test('Built-in exercises and tips translate on tool and language changes',async ({page})=>{
+ await page.evaluate(()=>localStorage.setItem('aimroutine_site_lang','fr'));
+ await page.reload({waitUntil:'domcontentloaded'});
+ await expect(page.locator('html')).toHaveAttribute('lang','fr');
+ await page.locator('[data-switch-lang]').click();
+ await expect(page.locator('html')).toHaveAttribute('lang','en');
+ await expect(page.locator('.r17-exercise strong').first()).toContainText('VALORANT range');
+ await expect(page.locator('.r17-exercise div small').first()).toContainText('Come to a full stop');
+ await page.locator('.r19-tool-select').selectOption('Aim Lab');
+ await expect(page.locator('.r17-exercise strong').first()).toContainText('Gridshot / Controlled flicks');
+ await expect(page.locator('.r17-exercise div small').first()).toContainText('Slow down if accuracy drops');
+ await page.locator('[data-switch-lang]').click();
+ await expect(page.locator('html')).toHaveAttribute('lang','fr');
+ await expect(page.locator('.r17-exercise strong').first()).toContainText('Gridshot / flicks contrôlés');
+});
+
 test('Language switch and responsive navigation',async ({page,isMobile})=>{
  await page.locator('[data-switch-lang]').click();
  await expect(page.locator('#workspace-title')).toContainText('Your training');
