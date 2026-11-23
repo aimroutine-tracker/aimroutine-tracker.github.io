@@ -330,3 +330,34 @@ body.site31.site-valorant.site31-legal main .wrap.legal :is(p,li) { max-width: 7
 @media (max-width: 520px) {
   .ar-progress-filters:not([hidden]) { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* V23: long-page mobile navigation. One swipeable line replaces stacked links. */
+@media (max-width: 720px) {
+  body.site31.site-valorant .ar22-page-nav {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 15px;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+    scrollbar-color: #85646f transparent;
+  }
+  body.site31.site-valorant .ar22-page-nav > a {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    scroll-snap-align: start;
+  }
+}
+/* Consistent keyboard feedback for secondary navigation and footer links. */
+body.site31.site-valorant .ar22-page-nav a:focus-visible,
+body.site31.site-valorant .ar22-footer-nav a:focus-visible {
+  outline: 2px solid var(--valorant-accent-soft);
+  outline-offset: 3px;
+}
+body.site31.site-valorant .ar22-page-nav a:active {color:var(--valorant-accent-soft)!important}
+@media (prefers-reduced-motion: reduce) {
+  body.site31.site-valorant .ar22-page-nav {scroll-behavior:auto}
+}
