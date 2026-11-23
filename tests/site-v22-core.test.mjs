@@ -6,7 +6,7 @@ const page = name => readFileSync(new URL(name,root),'utf8');
 
 test('all public pages use the shared layout and footer', () => {
   for (const filename of readdirSync(root).filter(name=>name.endsWith('.html'))) {
-    const version=({'progress.html':4,'training.html':2})[filename]??1;
+    const version=5;
     assert.ok(page(filename).includes('site-v22.css?v='+version),filename);
     assert.match(page(filename),/<footer class="site31-footer ar22-footer">/,filename);
   }
