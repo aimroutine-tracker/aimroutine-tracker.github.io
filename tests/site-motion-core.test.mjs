@@ -47,5 +47,5 @@ test('motion assets are reviewed and precached',()=>{
     assert.ok(sw.includes("'./"+name+"'"));
   }
   // Auth-facing cache version is intentionally unchanged.
-  assert.match(sw,/aimroutine-v10-valorant/);
+  assert.match(sw,/aimroutine-v11-windows/);
 });

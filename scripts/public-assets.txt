@@ -5,6 +5,8 @@
 account-v7.css
 account-v7.mjs
 account.html
+windows-sync-v1.css
+windows-sync-v1.mjs
 aimroutine-29-coach-preview.webp
 aimroutine-29-coach.webp
 aimroutine-29-dashboard-preview.webp

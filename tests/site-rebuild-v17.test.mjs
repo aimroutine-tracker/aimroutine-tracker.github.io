@@ -33,7 +33,7 @@ test('V17 high quality concept-art crop and code ship in PWA and manifest',()=>{
   assert.ok(html.includes('site-rebuild-v17.css?v=1'));
   if(['training.html','account.html'].includes(page))assert.ok(html.includes('site-rebuild-v17.js?v='+(page==='training.html'?5:4)));
  }
- assert.match(sw,/aimroutine-v10-valorant/);
+ assert.match(sw,/aimroutine-v11-windows/);
 });
 test('V17 layout never invents XP, ranked badges, connected devices, or Riot scores',()=>{
  const js=read('site-rebuild-v17.js');

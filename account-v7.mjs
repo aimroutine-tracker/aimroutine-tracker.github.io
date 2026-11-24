@@ -7,10 +7,12 @@ import {validateUsername,usernameFromUser,saveUsername} from './username-v7.mjs'
 import {hasGoogleIdentity} from './google-delete-v7.mjs';
 import {signOutEverywhere} from './session-security-v7.mjs';
 import {TURNSTILE_SITE_KEY,createAuthCaptcha} from './turnstile-v7.mjs';
+import {attachWindowsSync} from './windows-sync-v1.mjs';
 const SIGNUPS_READY=true; // Email signups: Turnstile enforced by Supabase Auth, confirmation required, provider allowlisted by server hook.
 const GOOGLE_READY=true; // Provider enabled by project owner; live OAuth is in beta until end-to-end testing.
 const RESET_LINKS_CONFIGURED=true; // Redirect allowlist was configured; real email delivery and recovery completion still require confirmation.
 const $=s=>document.querySelector(s);
+const setWindowsAccount=attachWindowsSync(supabase);
 let user=null,working=false,recovery=false;
 const captcha=createAuthCaptcha(TURNSTILE_SITE_KEY);
 function showCaptcha(mode){
@@ -36,6 +38,7 @@ function showUser(next){
  $('#auth-panel').hidden=!!user&&!recovery;
  $('#username-panel').hidden=!needsUsername||recovery;
  $('#dashboard-panel').hidden=!user||needsUsername||recovery;
+ setWindowsAccount(user,Boolean(user&&!needsUsername&&!recovery));
  if(user){
    $('#user-email').textContent=user.email||'Compte AimRoutine';
    $('#user-username').textContent=username||'—';
@@ -282,22 +285,38 @@ window.addEventListener('online',()=>void autoSync());
 window.addEventListener('focus',()=>void autoSync());
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)void autoSync()});
 setInterval(()=>{if(!document.hidden)void autoSync()},45000);
+let authRevision=0;
 supabase.auth.onAuthStateChange((event,session)=>{
  if(event==='PASSWORD_RECOVERY'){
+   authRevision+=1;
    recovery=true;authMode('new-password');
    $('#auth-panel').hidden=false;
    $('#dashboard-panel').hidden=true;
+   setWindowsAccount(user,false);
  }
- if(event==='SIGNED_OUT'){showUser(null)}
+ if(event==='SIGNED_OUT'){authRevision+=1;showUser(null)}
+ if(event==='SIGNED_IN'&&!recovery&&session?.user?.id&&user?.id!==session.user.id){
+   const expected=session.user.id,revision=++authRevision;
+   if(user)showUser(null);
+   // The Auth event itself must return before making additional Auth requests.
+   setTimeout(async()=>{
+    try{
+     const {data,error}=await supabase.auth.getUser();
+     if(!error&&data?.user?.id===expected&&revision===authRevision&&!recovery)showUser(data.user);
+    }catch{}
+   },0);
+ }
 });
 (async()=>{
+ const revision=authRevision;
  try{
   const {data:{user:validated},error}=await supabase.auth.getUser();
+  if(revision!==authRevision)return;
   if(error||!validated){showUser(null);if(new URLSearchParams(location.search).has('reset'))msg('Ouvre le lien reçu par e-mail pour terminer la réinitialisation.');return;}
   showUser(validated);
   if(usernameFromUser(validated)&&isEnabled(validated.id)){
-   try{await synchronize(supabase,validated.id);renderCounts();msg('Compte connecté · Sauvegarde cloud synchronisée.')}
-   catch(e){msg('Compte connecté · Cloud indisponible : '+e.message)}
+   try{await synchronize(supabase,validated.id);if(revision===authRevision&&user?.id===validated.id){renderCounts();msg('Compte connecté · Sauvegarde cloud synchronisée.')}}
+   catch(e){if(revision===authRevision&&user?.id===validated.id)msg('Compte connecté · Cloud indisponible : '+e.message)}
   }
- }catch(e){showUser(null);msg('Service indisponible : '+e.message)}
+ }catch(e){if(revision===authRevision){showUser(null);msg('Service indisponible : '+e.message)}}
 })();
