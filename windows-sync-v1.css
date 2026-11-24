@@ -1,0 +1,57 @@
+.ar7-windows {
+  max-width: 1240px;
+  min-width: 0;
+  margin: 24px auto 0;
+  padding: clamp(18px, 3vw, 28px);
+  scroll-margin: 120px;
+  background: #19181e;
+  border: 1px solid #353544;
+  border-top: 2px solid #ff4e60;
+  color: #f4f0e9;
+}
+
+.ar7-windows [hidden] { display: none !important; }
+
+.ar7-windows-heading, .ar7-windows-actions, .ar7-windows-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 18px;
+}
+
+.ar7-windows-heading { justify-content: space-between; }
+.ar7-windows-heading h2 { margin: 2px 0 0; }
+.ar7-windows-label { color: #ff7e89; font-size: .78rem; font-weight: 700; letter-spacing: .1em; }
+.ar7-windows > p, .ar7-windows-pairing > p, #windows-device-summary { color: #b0afbb; line-height: 1.6; }
+.ar7-windows-status { min-height: 1.6em; margin: 14px 0; }
+.ar7-windows-pairing {
+  margin-top: 16px;
+  padding: 16px;
+  background: #20212c;
+  border: 1px solid #353544;
+  border-inline-start: 3px solid #ff4e60;
+  border-radius: 6px;
+}
+.ar7-windows-pairing h3 { margin: 0; }
+.ar7-windows-pairing #windows-pairing-account { color: #f4f0e9; font-weight: 700; overflow-wrap: anywhere; }
+.ar7-windows-toolbar { align-items: end; }
+.ar7-windows-toolbar label { display: grid; flex: 1 1 240px; min-width: 0; gap: 6px; font-size: .88rem; }
+.ar7-windows-toolbar select {
+  width: 100%;
+  min-height: 42px;
+  padding: 7px 11px;
+  border: 1px solid #625964;
+  border-radius: 5px;
+  background: #151318;
+  color: #f4f0e9;
+}
+.ar7-windows-table { overflow-x: auto; margin: 12px 0; border: 1px solid #353544; border-radius: 6px; }
+.ar7-windows-table table { width: 100%; min-width: 800px; border-collapse: collapse; font-size: .86rem; }
+.ar7-windows-table th, .ar7-windows-table td { padding: 10px 12px; text-align: left; vertical-align: top; }
+.ar7-windows-table thead { background: #20212c; }
+.ar7-windows-table td { border-top: 1px solid #353544; font-variant-numeric: tabular-nums; }
+.ar7-windows-table td:nth-child(2) { min-width: 130px; overflow-wrap: anywhere; }
+.ar7-windows-table td:nth-child(2) small { display: block; margin-top: 3px; color: #b0afbb; }
+.ar7-windows-table td:last-child { max-width: 260px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.ar7-windows-table :is(th, td):nth-child(n+3):nth-child(-n+7) { white-space: nowrap; }
+.ar7-windows :is(button, select, [tabindex]):focus-visible { outline: 2px solid #ff7e89; outline-offset: 3px; }

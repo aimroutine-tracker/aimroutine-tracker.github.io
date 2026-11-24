@@ -1,2 +1,5 @@
 [functions.delete-aim-account]
 verify_jwt = true
+
+[functions.aimroutine-windows]
+verify_jwt = false

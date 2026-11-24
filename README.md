@@ -75,7 +75,8 @@ The official AimRoutine Tracker logo supplied by the project owner has been adde
 - Five local achievement badges based strictly on saved sessions, streaks and frequency, not fake global leaderboards.
 - PWA install support and offline caching of the training UI's static assets after a first online visit. External Riot imagery does not work offline. Installation prompts vary by browser.
 - A reversible FR/EN translation layer covers static player pages and the key dynamic controls.
-- Portable JSON interface format `aimroutine-interchange-v1` to transfer data between web browsers and serve as an **integration contract** for a future Windows importer. **No Windows importer or synchronization is provided yet.** See [WINDOWS_INTERCHANGE_V1.md](WINDOWS_INTERCHANGE_V1.md).
+- Portable JSON interface format `aimroutine-interchange-v1` to transfer data between web browsers. See [WINDOWS_INTERCHANGE_V1.md](WINDOWS_INTERCHANGE_V1.md).
+- Windows 3.10+ can connect a local profile to an AimRoutine account. The website shows individual Windows training results under **Account → Windows history**. Windows shows the website's completed sessions under **History → Website sessions**. The two histories keep their original formats. The account page can remove the linked device and its Windows cloud copy.
 - GitHub CI adds portable-format tests and browser smoke scenarios using Chromium, Firefox and WebKit, with a mobile viewport. The test results are separate from the published GitHub Pages deployment.
 
 

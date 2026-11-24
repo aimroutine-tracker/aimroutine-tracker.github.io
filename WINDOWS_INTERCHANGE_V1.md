@@ -1,6 +1,6 @@
 # AimRoutine Tracker — Interchange format v1
 
-**Status:** Web export and web import implemented. **Windows desktop importer NOT implemented**. The file is NOT a verified Windows application backup and cannot currently be assumed to import into Windows 2.9. There is no cloud sync or live Riot connection.
+**Status:** Web export and web import implemented. This v1 file is a web format and is not a Windows application backup. Windows 3.10 and later can use the separate online account connection to synchronize training history with the site.
 
 ## Purpose / Objectif
 
