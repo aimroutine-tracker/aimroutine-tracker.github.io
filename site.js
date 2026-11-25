@@ -58,12 +58,16 @@
     document.querySelectorAll("[data-switch-lang]").forEach(b=>b.addEventListener("click",render));
     render();
   }
-  const menu=document.querySelector(".site31-mobile-nav, .v5-mobile-nav");
-  if(menu){
+  document.querySelectorAll(".site31-mobile-nav, .v5-mobile-nav, .ar5-nav-explore").forEach(menu=>{
     menu.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{menu.open=false}));
-    document.addEventListener("keydown",e=>{if(e.key==="Escape")menu.open=false});
+    document.addEventListener("keydown",e=>{
+      if(e.key!=="Escape"||!menu.open)return;
+      const restoreFocus=menu.contains(document.activeElement);
+      menu.open=false;
+      if(restoreFocus)menu.querySelector("summary")?.focus();
+    });
     document.addEventListener("click",e=>{if(menu.open&&!menu.contains(e.target))menu.open=false});
-  }
+  });
 })();
 
 

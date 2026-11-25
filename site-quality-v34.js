@@ -11,12 +11,6 @@
     const target=raw.split('?')[0].toLowerCase();
     if(target===current&&!a.classList.contains('site31-brand'))a.setAttribute('aria-current','page');
   });
-  // Close dropdowns on navigation, Escape, or outside click.
-  document.querySelectorAll('.ar5-nav-explore').forEach(drop=>{
-    drop.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{drop.open=false}));
-    document.addEventListener('keydown',e=>{if(e.key==='Escape')drop.open=false});
-    document.addEventListener('click',e=>{if(drop.open&&!drop.contains(e.target))drop.open=false});
-  });
   // Support direct fragment links on long pages without hiding the section beneath the sticky header.
   const top=document.createElement('button');
   top.type='button'; top.className='site34-top'; top.hidden=true;
