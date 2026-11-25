@@ -166,7 +166,7 @@ test('All public pages render without overflow or script errors',async({page,isM
   await expect(page.locator('main'),path).toHaveCount(1);
   await expect(page.locator('footer.ar22-footer'),path).toBeVisible();
   await expect(page.locator('nav.site31-nav[data-site-navigation="valorant"]'),path).toHaveCount(1);
-  await expect(page.locator('link[href="site-valorant-theme.css?v=1"]'),path).toHaveCount(1);
+  await expect(page.locator('link[href="site-valorant-theme.css?v=2"]'),path).toHaveCount(1);
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
   expect(overflow,path+' causes horizontal scrolling').toBeLessThanOrEqual(2);
   if(isMobile)await expect(page.locator('details.site31-mobile-nav > summary'),path).toBeVisible();
@@ -689,4 +689,33 @@ test('Verified account saves and syncs new sessions automatically without cloud 
  await expect.poll(()=>page.evaluate(()=>window.__testCloudWrites.some(v=>v.table==='aim_sessions'&&v.items.some(x=>x.session_id==='auto-case'))),{timeout:15000}).toBe(true);
  expect(await page.evaluate(()=>localStorage.getItem('aimroutine_web_training_v2'))).toBeNull();
  await expect(page.locator('#cloud-training-status')).toContainText('Cloud automatique');
+});
+
+test('navigation dropdown stays compact, unclipped and keyboard accessible', async ({page,isMobile})=>{
+ await page.goto('/index.html',{waitUntil:'domcontentloaded'});
+ const details=page.locator(isMobile?'.site31-mobile-nav':'.ar5-nav-explore');
+ const trigger=details.locator('summary');
+ const panel=details.locator(isMobile?'.site31-mobile-links':'.ar5-nav-dropdown');
+ const row=panel.locator(isMobile?'a[href="progress.html"]':'a[href="index.html#aim-challenge"]');
+ await expect(panel).toBeHidden();
+ if(isMobile)await trigger.click();
+ else await trigger.press('Enter');
+ await expect(panel).toBeVisible();
+ await expect(panel.getByRole('link')).toHaveCount(isMobile?14:9);
+ await expect(row).toHaveCSS('background-color','rgba(0, 0, 0, 0)');
+ const bounds=await panel.boundingBox();
+ const viewport=page.viewportSize();
+ expect(bounds.x).toBeGreaterThanOrEqual(0);
+ expect(bounds.x+bounds.width).toBeLessThanOrEqual(viewport.width+1);
+ expect(bounds.y+bounds.height).toBeLessThanOrEqual(viewport.height+1);
+ if(isMobile){
+  await expect(row).toHaveCSS('min-height','44px');
+ }else{
+  expect(bounds.height).toBeLessThanOrEqual(350);
+  await page.keyboard.press('Tab');
+  await expect(row).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(panel).toBeHidden();
+  await expect(trigger).toBeFocused();
+ }
 });
