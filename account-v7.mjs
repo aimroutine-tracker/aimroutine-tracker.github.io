@@ -7,13 +7,14 @@ import {validateUsername,usernameFromUser,saveUsername} from './username-v7.mjs'
 import {hasGoogleIdentity} from './google-delete-v7.mjs';
 import {signOutEverywhere} from './session-security-v7.mjs';
 import {TURNSTILE_SITE_KEY,createAuthCaptcha} from './turnstile-v7.mjs';
-import {attachWindowsSync} from './windows-sync-v1.mjs';
+import {attachWindowsSync,discardWindowsSignup,rememberWindowsSignup,takeWindowsSignup} from './windows-sync-v1.mjs?v=2';
 const SIGNUPS_READY=true; // Email signups: Turnstile enforced by Supabase Auth, confirmation required, provider allowlisted by server hook.
 const GOOGLE_READY=true; // Provider enabled by project owner; live OAuth is in beta until end-to-end testing.
 const RESET_LINKS_CONFIGURED=true; // Redirect allowlist was configured; real email delivery and recovery completion still require confirmation.
 const $=s=>document.querySelector(s);
-const setWindowsAccount=attachWindowsSync(supabase);
 let user=null,working=false,recovery=false;
+let switchingWindowsAccount=false,passwordApproval=null;
+const windows=attachWindowsSync(supabase,{onPairingChange:showWindowsMode,onSwitchAccount:switchWindowsAccount});
 const captcha=createAuthCaptcha(TURNSTILE_SITE_KEY);
 function showCaptcha(mode){
  if(!captcha.enabled||!['login','signup','reset','delete'].includes(mode))return;
@@ -31,14 +32,45 @@ function authMode(mode='login'){
  $('#login-mode').setAttribute('aria-pressed',String(mode==='login'));
  $('#signup-mode').setAttribute('aria-pressed',String(mode==='signup'));
 }
-function showUser(next){
+function showWindowsMode(request,previous){
+ const desktop=Boolean(request?.mode);
+ $('#login-default-action').hidden=desktop;
+ $('#login-windows-action').hidden=!desktop;
+ if(previous?.mode){discardWindowsSignup(localStorage,previous);passwordApproval=null;}
+ if(desktop&&!recovery)authMode(request.mode==='signup'?'signup':'login');
+}
+async function switchWindowsAccount(){
+ if(switchingWindowsAccount||!windows.canPair())return;
+ switchingWindowsAccount=true;
+ passwordApproval=null;
+ try{
+  const {error}=await supabase.auth.signOut({scope:'local'});
+  if(error)throw error;
+  showUser(null);
+  showWindowsMode(windows.pairing());
+  $(windows.pairing()?.mode==='signup'?'#signup-email':'#login-email').focus();
+ }catch{msg('Impossible de changer de compte. Réessaie.')}
+ finally{switchingWindowsAccount=false;}
+}
+function offerWindowsSignup(validated){
+ if(!validated||recovery||window.self!==window.top||windows.pairing()
+   ||document.documentElement.dataset.windowsSignupReturn!=='true')return;
+ const request=takeWindowsSignup(localStorage,validated);
+ if(request){
+  delete document.documentElement.dataset.windowsSignupReturn;
+  windows.adoptSignup(request);
+ }
+}
+function showUser(next,approval=null){
  user=next&&validUid(next.id)?next:null;
+ if(!user||passwordApproval?.uid!==user.id)passwordApproval=null;
+ offerWindowsSignup(user);
  const username=usernameFromUser(user);
  const needsUsername=Boolean(user&&!username);
  $('#auth-panel').hidden=!!user&&!recovery;
  $('#username-panel').hidden=!needsUsername||recovery;
  $('#dashboard-panel').hidden=!user||needsUsername||recovery;
- setWindowsAccount(user,Boolean(user&&!needsUsername&&!recovery));
+ windows.setAccount(user,Boolean(user&&!needsUsername&&!recovery),{approval,preservePairing:switchingWindowsAccount});
  if(user){
    $('#user-email').textContent=user.email||'Compte AimRoutine';
    $('#user-username').textContent=username||'—';
@@ -93,21 +125,27 @@ async function run(task){
   renderDeleteOptions();
  }
 }
-showCaptcha('login');
+if(windows.pairing()?.mode)showWindowsMode(windows.pairing());
+else showCaptcha('login');
 $('#signup-submit').disabled=!SIGNUPS_READY;
 $('#google-signin').disabled=!GOOGLE_READY;
-$('#google-signin').addEventListener('click',()=>{
+function startGoogle(){
  if(!GOOGLE_READY){msg('La connexion Google n’est pas encore configurée.');return;}
  run(async()=>{
-   const {error}=await supabase.auth.signInWithOAuth({provider:'google',options:{redirectTo:SITE_URL+'account.html'}});
+   const options={redirectTo:SITE_URL+'account.html'};
+   if(windows.canPair())options.queryParams={prompt:'select_account'};
+   const {error}=await supabase.auth.signInWithOAuth({provider:'google',options});
    if(error)throw error;
  });
-});
+}
+$('#google-signin').addEventListener('click',startGoogle);
+$('#windows-google').addEventListener('click',startGoogle);
 $('#login-mode').addEventListener('click',()=>authMode('login'));
 $('#signup-mode').addEventListener('click',()=>authMode('signup'));
 $('#reset-link').addEventListener('click',()=>authMode('reset'));
 $('#back-to-login').addEventListener('click',()=>authMode('login'));
 $('#login-form').addEventListener('submit',e=>{e.preventDefault();run(async()=>{
+ const pairing=windows.canPair()&&!$('#login-windows-action').hidden?windows.pairing():null;
  const captchaOptions=captcha.options('login');
  let loginResult;
  try{loginResult=await supabase.auth.signInWithPassword({
@@ -116,9 +154,16 @@ $('#login-form').addEventListener('submit',e=>{e.preventDefault();run(async()=>{
  });}finally{captcha.reset('login')}
  const {error}=loginResult;
  if(error)throw error;
- const {data:{user:validated},error:validationError}=await supabase.auth.getUser();
- if(validationError||!validated)throw validationError||Error('Connexion non validée.');
- showUser(validated);$('#login-password').value='';
+ const session=loginResult.data?.session;
+ const token=session?.access_token;
+ if(typeof token!=='string'||!token||!validUid(session?.user?.id))throw Error('Connexion non validée.');
+ const {data:{user:validated},error:validationError}=await supabase.auth.getUser(token);
+ if(validationError||validated?.id!==session.user.id)throw validationError||Error('Connexion non validée.');
+ const {data:latest,error:sessionError}=await supabase.auth.getSession();
+ if(sessionError||latest?.session?.user?.id!==validated.id)throw Error('Le compte actif a changé. Réessaie.');
+ const approval=pairing&&windows.pairing()===pairing?{request:pairing,uid:validated.id,token}:null;
+ passwordApproval=approval&&!usernameFromUser(validated)?approval:null;
+ showUser(validated,approval);$('#login-password').value='';
  if(usernameFromUser(validated)&&isEnabled(validated.id)){
   try{const result=await synchronize(supabase,validated.id);msg('Compte connecté · Synchronisation réussie ('+result.downloadedSessions+' séances).')}
   catch(err){msg('Compte connecté · Sauvegarde en attente : '+err.message)}
@@ -133,12 +178,14 @@ $('#signup-form').addEventListener('submit',e=>{e.preventDefault();
  const assessment=await checkLeakedPassword(password);
  if(!assessment.safe)throw Error('Ce mot de passe figure dans des fuites connues. Choisis-en un autre.');
  const captchaOptions=captcha.options('signup');
+ const pairing=windows.canPair()?windows.pairing():null;
  let signupResult;
  try{signupResult=await supabase.auth.signUp({email:$('#signup-email').value.trim(),password,
   options:{emailRedirectTo:SITE_URL+'account.html',data:{aim_username:username},...captchaOptions}});}
  finally{captcha.reset('signup')}
  const {error}=signupResult;
  if(error)throw error;
+ if(pairing&&windows.pairing()===pairing)rememberWindowsSignup(localStorage,pairing,signupResult.data?.user?.id);
  $('#signup-password').value='';
  $('#signup-username').value='';
  msg('Si cette adresse est éligible, un e-mail de confirmation sera envoyé. Vérifie aussi tes indésirables.');
@@ -169,7 +216,9 @@ $('#new-password-form').addEventListener('submit',e=>{e.preventDefault();run(asy
 $('#username-form').addEventListener('submit',e=>{e.preventDefault();run(async()=>{
  if(!user)throw Error('Connecte-toi pour enregistrer ton pseudo.');
  const saved=await saveUsername(supabase.auth,user.id,$('#username-input').value);
- showUser(saved);
+ const approval=passwordApproval?.uid===saved.id?passwordApproval:null;
+ passwordApproval=null;
+ showUser(saved,approval);
  $('#username-input').value='';
  msg('Pseudo enregistré : '+usernameFromUser(saved)+'. Ton compte est prêt.');
  if(isEnabled(saved.id)){
@@ -292,7 +341,8 @@ supabase.auth.onAuthStateChange((event,session)=>{
    recovery=true;authMode('new-password');
    $('#auth-panel').hidden=false;
    $('#dashboard-panel').hidden=true;
-   setWindowsAccount(user,false);
+   passwordApproval=null;
+   windows.setAccount(user,false);
  }
  if(event==='SIGNED_OUT'){authRevision+=1;showUser(null)}
  if(event==='SIGNED_IN'&&!recovery&&session?.user?.id&&user?.id!==session.user.id){

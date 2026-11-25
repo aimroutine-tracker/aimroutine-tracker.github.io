@@ -1,11 +1,18 @@
 import {validUid} from './cloud-core-v7.mjs';
 
 const pendingKey='aimroutine_windows_pending_v1';
+const signupKey='aimroutine_windows_signup_v1';
 const challengePattern=/^[a-f0-9]{64}$/;
+const desktopModes=['login','signup','google'];
+const pairingLifetime=10*60*1000;
 const translations={
   guest:['Connecte-toi pour consulter ou lier un profil Windows.','Sign in to view or connect a Windows profile.'],
   pending:['Connecte-toi et termine la configuration de ton compte pour autoriser cette liaison.','Sign in and finish setting up your account to approve this connection.'],
   approval:['Confirme la liaison Windows pour le compte indiqué.','Approve the Windows connection for the account shown.'],
+  desktopApproval:['Vérifie le compte qui recevra les résultats de ce profil Windows.','Check which account will receive this Windows profile’s results.'],
+  connecting:['Association du profil Windows…','Connecting the Windows profile…'],
+  desktopApproved:['Ton compte est associé. Retourne dans AimRoutine Tracker pour retrouver ta progression.','Your account is connected. Return to AimRoutine Tracker to see your progress.'],
+  embedded:['Ouvre cette page directement dans ton navigateur pour associer ton profil.','Open this page directly in your browser to connect your profile.'],
   expired:['Cette demande a expiré ou a déjà été utilisée. Relance la liaison depuis le logiciel Windows.','This request expired or was already used. Start a new connection in the Windows app.'],
   deviceLimit:['Nombre maximal de profils liés atteint. Délie un ancien profil puis réessaie.','The maximum number of connected profiles was reached. Disconnect an old profile and try again.'],
   approved:['Liaison autorisée. Retourne dans AimRoutine Tracker pour envoyer les résultats.','Connection approved. Return to AimRoutine Tracker to upload your results.'],
@@ -19,31 +26,76 @@ const translations={
   revokeConfirm:['Délier ce profil et supprimer sa copie cloud Windows ? Les résultats locaux resteront sur le PC.','Disconnect this profile and delete its Windows cloud copy? Local results will remain on the PC.']
 };
 
-export function readWindowsPairingFragment(hash) {
-  const value=typeof hash==='string'&&hash.match(/^#aimroutine-windows=([a-f0-9]{64})$/)?.[1];
-  return value||null;
+export function readWindowsPairingFragment(hash,now=Date.now()) {
+  const match=typeof hash==='string'&&hash.match(/^#aimroutine-windows=([a-f0-9]{64})(?:&flow=desktop&mode=(login|signup|google))?$/);
+  if(!match)return null;
+  const [,challenge,mode=null]=match;
+  return {challenge,mode,expiresAt:mode?now+pairingLifetime:null};
 }
 
-export function captureWindowsPairing(location,history,storage) {
-  const challenge=readWindowsPairingFragment(location.hash);
-  if(challenge){
-    try{storage.setItem(pendingKey,challenge)}catch{}
-    history.replaceState(history.state,'',location.pathname+location.search+'#windows-sync');
-    return challenge;
+function liveDesktopRequest(request,now) {
+  return challengePattern.test(request?.challenge??'')&&desktopModes.includes(request.mode)
+    &&Number.isSafeInteger(request.expiresAt)&&request.expiresAt>now&&request.expiresAt<=now+pairingLifetime;
+}
+
+export function captureWindowsPairing(location,history,storage,now=Date.now()) {
+  const request=readWindowsPairingFragment(location.hash,now);
+  if(request){
+    savePairing(storage,request);
+    const target=request.mode?'#windows-auth-context':'#windows-sync';
+    history.replaceState(history.state,'',location.pathname+location.search+target);
+    return request;
   }
   try{
     const previous=storage.getItem(pendingKey);
-    return challengePattern.test(previous??'')?previous:null;
+    if(challengePattern.test(previous??''))return {challenge:previous,mode:null,expiresAt:null};
+    const restored=JSON.parse(previous);
+    if(liveDesktopRequest(restored,now))return restored;
+    storage.removeItem(pendingKey);
+  }catch{return null}
+  return null;
+}
+
+function savePairing(storage,request) {
+  try{storage.setItem(pendingKey,request.mode?JSON.stringify(request):request.challenge)}catch{}
+}
+
+export function rememberWindowsSignup(storage,request,uid,now=Date.now()) {
+  if(!liveDesktopRequest(request,now)||!validUid(uid))return;
+  try{storage.setItem(signupKey,JSON.stringify({request,uid}))}catch{}
+}
+
+export function takeWindowsSignup(storage,user,now=Date.now()) {
+  if(!validUid(user?.id)||!user.email_confirmed_at)return null;
+  try{
+    const stored=JSON.parse(storage.getItem(signupKey));
+    if(!stored)return null;
+    if(!liveDesktopRequest(stored.request,now)){storage.removeItem(signupKey);return null;}
+    if(stored.uid!==user.id)return null;
+    storage.removeItem(signupKey);
+    return stored.request;
   }catch{return null}
 }
 
-export async function requestWindowsSync(client,uid,body) {
+export function discardWindowsSignup(storage,request) {
+  try{
+    const stored=JSON.parse(storage.getItem(signupKey));
+    if(stored?.request?.challenge===request.challenge)storage.removeItem(signupKey);
+  }catch{}
+}
+
+export async function requestWindowsSync(client,uid,body,pin=null) {
   if(!validUid(uid))throw Error('account_required');
   const {data,error}=await client.auth.getSession();
   const session=data?.session;
   if(error||session?.user?.id!==uid||typeof session.access_token!=='string'||!session.access_token)throw Error('account_changed');
+  if(pin?.token&&session.access_token!==pin.token)throw Error('account_changed');
   const {data:identity,error:identityError}=await client.auth.getUser(session.access_token);
   if(identityError||identity?.user?.id!==uid)throw Error('account_changed');
+  if(pin){
+    const {data:latest,error:latestError}=await client.auth.getSession();
+    if(latestError||latest?.session?.user?.id!==uid||latest?.session?.access_token!==session.access_token||!pin.active())throw Error('account_changed');
+  }
   const {data:reply,error:requestError}=await client.functions.invoke('aimroutine-windows',{
     method:'POST',headers:{Authorization:'Bearer '+session.access_token},body
   });
@@ -70,31 +122,64 @@ function formatWindowsDate(value,locale,time=false) {
 }
 const displayString=value=>typeof value==='string'&&value?value:'—';
 
-export function attachWindowsSync(client) {
+export function attachWindowsSync(client,{onPairingChange,onSwitchAccount}={}) {
   const node=id=>document.getElementById('windows-'+id);
   const panel=node('sync'),status=node('status'),pairing=node('pairing'),device=node('device');
   const approve=node('approve'),cancel=node('cancel'),refresh=node('refresh'),revoke=node('revoke'),more=node('more');
   const accountLabel=node('pairing-account'),linked=node('linked'),summary=node('device-summary');
   const table=node('table'),body=node('results');
-  const sessionStore={getItem:key=>window.sessionStorage.getItem(key),setItem:(key,value)=>window.sessionStorage.setItem(key,value)};
-  let challenge=captureWindowsPairing(location,history,sessionStore);
-  let account=null,ready=false,revision=0,busy=false,statusKey=challenge?'pending':'guest';
+  const desktop=node('auth-context'),desktopStatus=node('auth-status'),continueButton=node('continue'),switchButton=node('switch-account');
+  const dismissButton=node('dismiss'),googleButton=node('google');
+  const topLevel=window.self===window.top;
+  const sessionStore={
+    getItem:key=>window.sessionStorage.getItem(key),
+    setItem:(key,value)=>window.sessionStorage.setItem(key,value),
+    removeItem:key=>window.sessionStorage.removeItem(key)
+  };
+  let request=captureWindowsPairing(location,history,sessionStore);
+  let account=null,ready=false,revision=0,busy=false,statusKey=request?'pending':'guest';
+  let expiryTimer=null,desktopOutcome=null;
   let devices=[],selectedId=null,results=[],nextOffset=null;
 
   function language(){return document.documentElement.lang.startsWith('en')?1:0}
   function copy(key){return translations[key][language()]}
   function locale(){return language()?'en-GB':'fr-FR'}
   function clearChallenge(){
-    challenge=null;
-    try{sessionStorage.removeItem(pendingKey)}catch{}
+    const previous=request;
+    request=null;
+    clearTimeout(expiryTimer);
+    try{sessionStore.removeItem(pendingKey)}catch{}
+    if(previous)onPairingChange?.(null,previous);
+  }
+  function armExpiry(){
+    clearTimeout(expiryTimer);
+    if(!request?.mode)return;
+    expiryTimer=setTimeout(()=>{
+      clearChallenge();
+      desktopOutcome='expired';
+      statusKey='expired';
+      render();
+    },Math.max(0,request.expiresAt-Date.now()));
   }
   function render(){
     const english=language(),format=locale(),selection=devices.find(item=>item.id===selectedId);
     status.textContent=copy(statusKey);
-    pairing.hidden=!challenge;
+    const desktopPending=Boolean(request?.mode);
+    desktop.hidden=!desktopPending&&!desktopOutcome;
+    desktopStatus.textContent=copy(desktopOutcome||(!topLevel?'embedded':statusKey));
+    continueButton.hidden=!desktopPending||!ready;
+    continueButton.disabled=busy||!topLevel;
+    continueButton.textContent=(english?'Continue with ':'Continuer avec ')+(account?.email||(english?'this account':'ce compte'));
+    switchButton.hidden=!desktopPending||!account;
+    switchButton.disabled=busy||!topLevel;
+    googleButton.hidden=request?.mode!=='google'||!account;
+    googleButton.disabled=busy||!topLevel;
+    dismissButton.hidden=!desktopPending;
+    dismissButton.disabled=busy;
+    pairing.hidden=!request||desktopPending;
     accountLabel.textContent=account?.email
       ?(english?'Signed-in account: ':'Compte connecté : ')+account.email:'';
-    approve.disabled=!ready||busy||!challenge;
+    approve.disabled=!ready||busy||!request||!topLevel;
     cancel.disabled=busy;
     refresh.hidden=!ready;
     refresh.disabled=busy;
@@ -138,14 +223,14 @@ export function attachWindowsSync(client) {
 
   function active(id,generation){return ready&&account?.id===id&&revision===generation}
 
-  async function run(task,onFailure){
+  async function run(task,onFailure,approval=null){
     if(busy||!ready)return;
     const id=account.id,generation=revision;
     const current=()=>active(id,generation);
-    const request=details=>requestWindowsSync(client,id,details);
+    const call=details=>requestWindowsSync(client,id,details,approval);
     busy=true;
     render();
-    try{await task(request,current)}
+    try{await task(call,current)}
     catch(error){if(current())statusKey=onFailure?.(error)??'error'}
     finally{if(current()){busy=false;render()}}
   }
@@ -159,38 +244,63 @@ export function attachWindowsSync(client) {
     nextOffset=data.nextOffset;
   }
 
-  async function refreshHistory(request,current){
-    const data=await request({action:'devices'});
+  async function refreshHistory(call,current){
+    const data=await call({action:'devices'});
     if(!Array.isArray(data?.devices))throw Error('invalid_windows_devices');
     if(!current())return;
     devices=data.devices.filter(item=>typeof item?.id==='string'&&item.id&&Number.isSafeInteger(item.resultCount)&&item.resultCount>=0);
     if(!devices.some(item=>item.id===selectedId))selectedId=devices[0]?.id??null;
     results=[];nextOffset=null;
-    if(selectedId)await readResults(request,current,selectedId);
-    if(current())statusKey=challenge?'approval':!selectedId?'unlinked':results.length?'loaded':'empty';
+    if(selectedId)await readResults(call,current,selectedId);
+    if(current())statusKey=request?request.mode?'desktopApproval':'approval':!selectedId?'unlinked':results.length?'loaded':'empty';
   }
 
   function load(){
     if(!ready||busy)return;
-    if(!challenge)statusKey='loading';
+    if(!request)statusKey='loading';
     void run(refreshHistory);
   }
 
-  approve.addEventListener('click',()=>{
-    if(!challenge)return;
-    const captured=challenge;
-    void run(async(request,current)=>{
-      const data=await request({action:'approve',challenge:captured});
+  function approvePairing(pin=null){
+    if(!request||!topLevel||!ready||busy)return;
+    const captured=request;
+    if(pin&&(pin.request!==captured||pin.uid!==account.id))return;
+    if(captured.mode&&captured.expiresAt<=Date.now())return;
+    statusKey='connecting';
+    const uid=account.id;
+    const activePairing=()=>ready&&account?.id===uid&&request===captured&&(!captured.mode||captured.expiresAt>Date.now());
+    const approval={token:pin?.token,active:activePairing};
+    void run(async(call,current)=>{
+      const data=await call({action:'approve',challenge:captured.challenge});
       if(data?.ok!==true)throw Error('invalid_windows_approval');
-      if(current()&&challenge===captured){clearChallenge();statusKey='approved'}
+      if(current()&&request===captured){
+        clearChallenge();
+        if(captured.mode)desktopOutcome='desktopApproved';
+        statusKey='approved';
+      }
     },error=>{
-      if(challenge!==captured)return 'approval';
-      if(error.code==='device_limit')return 'deviceLimit';
-      if([404,409,410].includes(error.status)){clearChallenge();return 'expired'}
+      if(!activePairing())return statusKey;
+      if(error?.code==='device_limit')return 'deviceLimit';
+      if(error?.message==='account_changed')return captured.mode?'desktopApproval':'approval';
+      if([404,409,410].includes(error?.status)){
+        clearChallenge();
+        if(captured.mode)desktopOutcome='expired';
+        return 'expired';
+      }
       return 'error';
-    });
-  });
-  cancel.addEventListener('click',()=>{clearChallenge();statusKey=ready?'canceled':'guest';render()});
+    },approval);
+  }
+  approve.addEventListener('click',()=>approvePairing());
+  continueButton.addEventListener('click',()=>approvePairing());
+  switchButton.addEventListener('click',()=>onSwitchAccount?.());
+  function dismissPairing(){
+    clearChallenge();
+    statusKey=ready?'canceled':'guest';
+    if(ready)load();
+    else render();
+  }
+  cancel.addEventListener('click',dismissPairing);
+  dismissButton.addEventListener('click',dismissPairing);
   refresh.addEventListener('click',load);
   device.addEventListener('change',()=>{
     if(!devices.some(item=>item.id===device.value))return;
@@ -221,27 +331,50 @@ export function attachWindowsSync(client) {
       if(selectedId)await readResults(request,current,selectedId).catch(()=>{});
     });
   });
+  function startPairing(next,scroll=true){
+    request=next;
+    desktopOutcome=null;
+    statusKey=ready?(request.mode?'desktopApproval':'approval'):'pending';
+    armExpiry();
+    onPairingChange?.(request);
+    render();
+    if(scroll)(request.mode?desktop:panel).scrollIntoView({block:'start'});
+  }
   window.addEventListener('hashchange',()=>{
     if(!readWindowsPairingFragment(location.hash))return;
-    challenge=captureWindowsPairing(location,history,sessionStore);
-    statusKey=ready?'approval':'pending';
-    panel.scrollIntoView({block:'start'});
-    render();
+    startPairing(captureWindowsPairing(location,history,sessionStore));
   });
-  window.addEventListener('focus',()=>{if(!challenge&&['approved','unlinked','empty'].includes(statusKey))load()});
+  window.addEventListener('focus',()=>{if(!request&&['approved','unlinked','empty'].includes(statusKey))load()});
   new MutationObserver(render).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
-  if(challenge&&!panel.contains(document.activeElement))requestAnimationFrame(()=>panel.scrollIntoView({block:'start'}));
+  if(request){
+    armExpiry();
+    const target=request.mode?desktop:panel;
+    if(!target.contains(document.activeElement))requestAnimationFrame(()=>target.scrollIntoView({block:'start'}));
+  }
   render();
 
-  return function setWindowsAccount(next,enabled){
+  function setAccount(next,enabled,{preservePairing=false,approval=null}={}){
     const unchanged=account?.id===next?.id&&ready===Boolean(enabled);
-    if(account&&account.id!==next?.id)clearChallenge();
+    if(account&&account.id!==next?.id&&!preservePairing){
+      clearChallenge();
+      desktopOutcome=null;
+    }
     account=next;
     ready=Boolean(account&&enabled);
-    if(unchanged){render();return}
+    if(unchanged){
+      if(approval&&request===approval.request)approvePairing(approval);
+      else render();
+      return;
+    }
     revision+=1;busy=false;devices=[];selectedId=null;results=[];nextOffset=null;
-    statusKey=ready?(challenge?'approval':'loading'):(challenge?'pending':'guest');
-    if(ready)load();
+    statusKey=ready?(request?request.mode?'desktopApproval':'approval':'loading'):(request?'pending':'guest');
+    if(ready&&approval&&request===approval.request&&topLevel)approvePairing(approval);
+    else if(ready&&!request?.mode)load();
     else render();
-  };
+  }
+  function adoptSignup(next){
+    savePairing(sessionStore,next);
+    startPairing(next);
+  }
+  return {setAccount,adoptSignup,pairing:()=>request,canPair:()=>topLevel&&Boolean(request?.mode)&&request.expiresAt>Date.now()};
 }
