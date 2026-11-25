@@ -27,8 +27,13 @@ if('serviceWorker' in navigator&&window.isSecureContext){
   },{once:true});
 }
 </script><script src="site.js?v=8" defer></script><script src="site-quality-v34.js?v=1" defer></script>
-<link rel="stylesheet" href="windows-sync-v1.css">
-<script type="module" src="account-v7.mjs?v=17"></script>
+<link rel="stylesheet" href="windows-sync-v1.css?v=2">
+<script>
+ { const authReturn=new URLSearchParams(location.hash.slice(1));
+   if(authReturn.has('access_token')&&['signup','email'].includes(authReturn.get('type')))
+     document.documentElement.dataset.windowsSignupReturn='true'; }
+</script>
+<script type="module" src="account-v7.mjs?v=18"></script>
 <style id="account-critical-style">
 /* Critical visible layout: independent of older PWA-cached CSS versions. */
 body.site31.site31-account .ar7-account-highlights{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:20px 0}
@@ -107,6 +112,18 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
   </div>
 </section>
  <section class="r17-account-profile r17-panel" aria-label="Profil utilisateur"><div class="r17-avatar"><img src="aimroutine-brand-a-v2.svg?v=1" alt=""></div><div><span class="r17-section-label">PLAYER PROFILE</span><h2 data-r17-username><span class="fr">Ton compte AIM</span><span class="en">Your AIM account</span></h2><p data-r17-email><span class="fr">Connexion facultative</span><span class="en">Optional sign-in</span></p></div><div class="r17-profile-stat"><small><span class="fr">SÉANCES</span><span class="en">SESSIONS</span></small><strong data-r17-account-sessions>—</strong></div><div class="r17-profile-stat"><small><span class="fr">ROUTINES</span><span class="en">ROUTINES</span></small><strong data-r17-account-routines>—</strong></div><div class="r17-profile-cloud"><span>☁</span><div><strong data-r17-cloud-label><span class="fr">Cloud non connecté</span><span class="en">Cloud not signed in</span></strong><small><span class="fr">État réel du compte</span><span class="en">Actual account state</span></small></div><a href="#dashboard-panel"><span class="fr">Gérer</span><span class="en">Manage</span> ↗</a></div></section>
+ <section class="ar7-windows-auth r17-panel" id="windows-auth-context" aria-labelledby="windows-auth-title" hidden>
+  <p class="ar7-windows-label">AIMROUTINE TRACKER · WINDOWS</p>
+  <h2 id="windows-auth-title"><span class="fr">Associer ton compte à AimRoutine Tracker</span><span class="en">Connect your account to AimRoutine Tracker</span></h2>
+  <p><span class="fr">Associer ce profil permet d’envoyer ses résultats Windows vers le compte choisi.</span><span class="en">Connecting this profile lets it upload Windows results to the account you choose.</span></p>
+  <p id="windows-auth-status" role="status" aria-live="polite"></p>
+  <div class="ar7-windows-actions">
+   <button type="button" class="ar7-primary" id="windows-continue" hidden></button>
+   <button type="button" class="ar7-secondary" id="windows-google" hidden><span class="fr">Choisir un compte Google</span><span class="en">Choose a Google account</span></button>
+   <button type="button" class="ar7-secondary" id="windows-switch-account" hidden><span class="fr">Utiliser un autre compte</span><span class="en">Use another account</span></button>
+   <button type="button" class="ar7-secondary" id="windows-dismiss" hidden><span class="fr">Annuler la liaison</span><span class="en">Cancel connection</span></button>
+  </div>
+ </section>
  <div class="r17-account-cols"><div class="r17-account-auth" data-r17-auth-slot>
 <section class="ar7-account-panel" id="auth-panel" aria-labelledby="ar7-auth-title">
  <span class="ar7-eyebrow">01 / AUTHENTICATION</span>
@@ -127,7 +144,7 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
   <label><span class="fr">Adresse e-mail</span><span class="en">Email address</span><input id="login-email" type="email" autocomplete="username" required maxlength="254" placeholder="joueur@exemple.fr"></label>
   <label><span class="fr">Mot de passe</span><span class="en">Password</span><input id="login-password" type="password" autocomplete="current-password" minlength="6" required></label>
   <div class="ar7-captcha" id="captcha-login" aria-label="Vérification anti-robots de connexion"></div>
-  <button type="submit" class="ar7-primary"><span class="fr">Se connecter</span><span class="en">Sign in</span> ↗</button>
+  <button type="submit" class="ar7-primary"><span id="login-default-action"><span class="fr">Se connecter</span><span class="en">Sign in</span></span><span id="login-windows-action" hidden><span class="fr">Se connecter et associer ce profil Windows</span><span class="en">Sign in and connect this Windows profile</span></span> ↗</button>
   <button class="ar7-link" type="button" id="reset-link"><span class="fr">Mot de passe oublié ?</span><span class="en">Forgot password?</span></button>
  </form>
  <form id="signup-form" class="ar7-auth-form" hidden>
