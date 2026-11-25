@@ -19,3 +19,7 @@ These are linked to Riot's image CDN, not vendored locally. Availability, bandwi
 
 - `valorant-hero.webp` is the AI-generated concept illustration from the approved AimRoutine mockup. The artwork is supplied locally and is independent of the Riot Games media kit.
 - Barlow Condensed and Inter are supplied as WOFF2 files under their included SIL Open Font Licenses.
+
+## Windows 3.11.0 screenshots
+
+The dashboard, startup, training and matches images in `aimroutine-311-*.webp` are captures of the Windows 3.11.0 portable executable at 1440 × 960. The desktop app ran with an isolated SQLite profile containing fictional training results and the bundled Valorant match demo. Network access, external sign-in and Vision were disabled during capture. The WebP files contain no personal account data or embedded metadata.

@@ -71,3 +71,38 @@ body.site31.site31-changelog{background:#091621;color:#e8f1f7}
 @media(max-width:700px){.site31-changelog .ar-note-hero{grid-template-columns:1fr}.site31-changelog .ar-note-hero-art{min-height:175px;flex-direction:row;gap:15px;flex-wrap:wrap}.site31-changelog .ar-note-hero-art img{width:76px;height:76px}.site31-changelog .ar-note-summary{grid-template-columns:1fr}.site31-changelog .ar-note-links{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:480px){.site31-changelog .ar-note-main{width:calc(100% - 24px);padding-top:17px}.site31-changelog .ar-note-hero{padding:27px 18px}.site31-changelog .ar-note-toolbar{align-items:flex-start;flex-direction:column}.site31-changelog .ar-note-chapter>summary{gap:10px;padding:16px 12px}.site31-changelog .ar-note-index{width:32px;height:32px}.site31-changelog .ar-note-content{padding:19px 16px}.site31-changelog .ar-note-links{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.site31-changelog .ar-note-chevron{transition:none}}
+
+/* Release notes and archive use the same graphite surfaces as the Windows app. */
+.site31-changelog .ar-note-main { --note-panel:#211f27; --note-raised:#29252f; --note-line:#4a404b; --note-text:#e6dce2; --note-accent:#ff9aa7; }
+body.site31.site31-changelog .ar-note-hero { margin:0 0 30px; background:radial-gradient(ellipse at 100% 0%,#492938 0%,#251e27 45%,#1b1920 80%); border-color:var(--note-line); border-top-color:#ff667b; }
+.site31-changelog .ar-note-hero h1 { font-size:clamp(34px,5vw,62px); margin:14px 0 18px; }
+body.site31.site31-changelog main .ar-note-eyebrow, .site31-changelog .ar-note-tag { color:var(--note-accent); }
+.site31-changelog .ar-note-hero-copy>p:not(.ar-note-eyebrow) { color:var(--note-text); }
+.site31-changelog .ar-note-hero-art { display:block; min-height:0; min-width:0; margin:0; padding:8px; background:#151419; border-color:#584752; }
+.site31-changelog .ar-note-hero-art img { width:100%; height:auto; border-radius:7px; filter:none; }
+.site31-changelog .ar-note-hero-art figcaption { display:flex; flex-wrap:wrap; justify-content:space-between; gap:5px 12px; padding:10px 4px 4px; color:var(--note-text); font-size:12px; }
+.site31-changelog .ar-note-button-ghost { border-color:#786773; color:#f2e8ee; }
+.site31-changelog .ar-note-toc, .site31-changelog .ar-note-intro, .site31-changelog .ar-note-bottom { background:var(--note-panel); border-color:var(--note-line); }
+.site31-changelog .ar-note-toc a, .site31-changelog .ar-note-intro p { color:var(--note-text); }
+.site31-changelog .ar-note-toc a:hover, .site31-changelog .ar-note-toc a:focus-visible { background:var(--note-raised); }
+.site31-changelog .ar-note-toc .ar-note-archive-links { margin:8px 0 0; border-top:1px solid var(--note-line); }
+.site31-changelog .ar-note-archive-links summary { cursor:pointer; min-height:44px; display:flex; align-items:center; gap:8px; color:var(--note-text); font-size:12px; font-weight:700; }
+.site31-changelog .ar-note-archive-links summary::before { content:'›'; color:var(--note-accent); font-size:18px; }
+.site31-changelog .ar-note-archive-links[open] summary::before { rotate:90deg; }
+.site31-changelog .ar-note-recent { padding:0; margin:0 0 35px; }
+.site31-changelog .ar-note-recent h2 { color:#fff; font-size:clamp(25px,4vw,36px); margin:0 0 16px; }
+body.site31.site31-changelog .ar-note-chapter { background:linear-gradient(150deg,var(--note-raised),#201e25); border-color:var(--note-line); }
+body.site31.site31-changelog .ar-note-chapter[open] { border-color:#69525e; }
+.site31-changelog .ar-note-chapter>summary:hover { background:#332832; }
+.site31-changelog .ar-note-chapter>summary:focus-visible { outline-offset:-5px!important; }
+.site31-changelog .ar-note-modern .ar-note-content ul { margin:0; }
+.site31-changelog .ar-note-modern .ar-note-content li { margin:0 0 9px; }
+.site31-changelog .ar-note-modern .ar-note-content li:last-child { margin-bottom:0; }
+.site31-changelog .ar-note-content { border-color:var(--note-line); }
+.site31-changelog .ar-note-content p, .site31-changelog .ar-note-content li { color:var(--note-text); }
+.site31-changelog .ar-note-index, .site31-changelog .ar-note-tools button { background:var(--note-panel); border-color:#635260; color:#e7dbe0; }
+.site31-changelog .ar-note-tools button:hover { background:var(--note-raised); }
+.site31-changelog .ar-note-toolbar { scroll-margin-top:92px; }
+.site31-changelog .ar-note-content th { background:#352b35; }
+.site31-changelog .ar-note-content tr:nth-child(even) { background:#29242d; }
+.site31-changelog .ar-note-content :is(th,td,.ar-note-table-scroll), .site31-changelog .ar-note-content h3 { border-color:var(--note-line); }

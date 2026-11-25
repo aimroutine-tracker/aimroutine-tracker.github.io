@@ -4,16 +4,16 @@ Bilingual FR/EN presentation on [GitHub Pages](https://aimroutine-tracker.github
 
 ## Current product presentation
 
-[product.html](https://aimroutine-tracker.github.io/product.html) presents the locally verified Windows portable version 2.9: separate local profiles, rank-adapted routines, timers, result entry, charts, reviews and JSON match imports. Official Riot history synchronization and Riot Sign On remain disabled without production approval. The website offers no public desktop download.
+[product.html](https://aimroutine-tracker.github.io/product.html) presents the Windows 3.11.0 portable app. It covers the first-launch account options, training routines, weekly reviews, automatic training-history sync, and imported VALORANT matches. Official Riot history synchronization and Riot Sign On require production approval. The website offers no public desktop download.
 
-Two genuine captures show the React production bundle running with an isolated SQLite profile named Alex. The profile is fictional; the files contain no real player history or credential. The images are lossless WebP conversions, with no visual modifications. The desktop interface is French; the presentation is available in both languages.
+The four current WebP captures show the real 3.11.0 app with a fictional profile and demo data. The desktop interface is French and the presentation is available in French and English.
 
 ## Website behavior
 
 - The streamlined landing page centers authentic screenshots, a fictional routine builder and Training Insights, with nine focused sections.
-- Dashboard and My Coach gallery tabs show current app captures. Routines and Statistics gallery views remain explicitly conceptual.
+- The gallery shows the dashboard, first-launch screen, training and VALORANT matches from 3.11.0. See [the release notes](https://aimroutine-tracker.github.io/changelog.html) for current and archived versions.
 - The new product page provides keyboard-operated image tabs, enlargement, Escape to close, language switching and reduced-motion support.
-- No account connection, training persistence, analytics collection or match-data request was added. The shared language switch stores the existing language preference only.
+- The web training workspace supports AimRoutine accounts. A linked Windows profile shares its training results after account validation. Website demo examples remain separate from account data.
 - Runtime data is not inferred from the marketing images. Public web examples remain illustrative.
 
 ## Verification

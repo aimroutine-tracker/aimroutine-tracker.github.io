@@ -181,7 +181,7 @@
    const updateGalleryLocale=()=>{
      const fr=document.documentElement.lang==="fr";
      const tablist=gallery.querySelector('[role="tablist"]');
-     if(tablist)tablist.setAttribute("aria-label",fr?"Vues du logiciel Windows 2.9":"Windows 2.9 application views");
+     if(tablist)tablist.setAttribute("aria-label",fr?"Vues du logiciel Windows 3.11.0":"Windows 3.11.0 application views");
      if(expand)expand.setAttribute("aria-label",fr?"Agrandir la capture sélectionnée":"Enlarge selected screenshot");
      if(dialog)dialog.setAttribute("aria-label",fr?"Capture agrandie du logiciel":"Enlarged application screenshot");
      const close=dialog?.querySelector("[data-v16-close]");
