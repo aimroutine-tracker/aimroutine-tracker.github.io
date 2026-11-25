@@ -360,23 +360,22 @@ test('Password reset UI submits recovery request and reports generic success (mo
  expect(sentEmail).toBe('test-recovery@example.invalid');
 });
 
-test('Optimized Windows gallery previews preserve full-quality lightbox',async({page})=>{
+test('Windows 3.11 gallery tabs open the matching real screenshot',async({page})=>{
  await page.goto('/index.html#app-gallery',{waitUntil:'domcontentloaded'});
- const shot=page.locator('#v16-gallery-dashboard img.v16-real-shot');
- await expect(shot).toHaveAttribute('src','aimroutine-29-dashboard-preview.webp');
- await expect(shot).toHaveAttribute('data-v16-full-src','aimroutine-29-dashboard.webp');
- await page.locator('.v16-expand[data-v16-expand]').click();
  const lightbox=page.locator('#v16-real-shot-dialog');
- await expect(lightbox).toBeVisible();
- await expect(lightbox.locator('img')).toHaveAttribute('src','aimroutine-29-dashboard.webp');
- await lightbox.locator('[data-v16-close]').click();
- await expect(lightbox).toBeHidden();
- await page.locator('[data-v16-gallery="coach"]').click();
- const coach=page.locator('#v16-gallery-coach img.v16-real-shot');
- await expect(coach).toHaveAttribute('src','aimroutine-29-coach-preview.webp');
- await expect(coach).toHaveAttribute('data-v16-full-src','aimroutine-29-coach.webp');
- await page.locator('.v16-expand[data-v16-expand]').click();
- await expect(lightbox.locator('img')).toHaveAttribute('src','aimroutine-29-coach.webp');
+ for(const view of ['dashboard','startup','training','matches']){
+  await page.locator(`[data-v16-gallery="${view}"]`).click();
+  const shot=page.locator(`#v16-gallery-${view} img.v16-real-shot`);
+  const source=`aimroutine-311-${view}.webp`;
+  await expect(shot).toBeVisible();
+  await expect(shot).toHaveAttribute('src',source);
+  await expect.poll(()=>shot.evaluate(img=>img.naturalWidth)).toBe(1440);
+  await page.locator('.v16-expand[data-v16-expand]').click();
+  await expect(lightbox).toBeVisible();
+  await expect(lightbox.locator('img')).toHaveAttribute('src',source);
+  await lightbox.locator('[data-v16-close]').click();
+  await expect(lightbox).toBeHidden();
+ }
 });
 test('Password recovery deep link updates credentials through the auth SDK (mock)',async({page})=>{
  const uid='44444444-4444-4444-8444-444444444444';

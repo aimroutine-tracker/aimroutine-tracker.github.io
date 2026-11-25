@@ -11,6 +11,10 @@ aimroutine-29-coach-preview.webp
 aimroutine-29-coach.webp
 aimroutine-29-dashboard-preview.webp
 aimroutine-29-dashboard.webp
+aimroutine-311-dashboard.webp
+aimroutine-311-matches.webp
+aimroutine-311-startup.webp
+aimroutine-311-training.webp
 aimroutine-arena.svg
 aimroutine-logo.png
 aimroutine-theme-v12.css
@@ -101,6 +105,7 @@ v5.css
 progress.html
 progress-v14.mjs
 progress-core.mjs
+project-presentation-v311.css
 site-v14-gallery.css
 site-v14-gallery.js
 mockup-hero-v15.webp
