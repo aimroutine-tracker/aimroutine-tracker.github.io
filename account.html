@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" sizes="128x128" href="aimroutine-logo.png?v=3">
 <link rel="manifest" href="manifest.webmanifest?v=2">
 <link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="site-global-v31.css?v=4"><link rel="stylesheet" href="site-shared-v5.css?v=3">
-<link rel="stylesheet" href="account-v7.css?v=7">
+<link rel="stylesheet" href="account-v7.css?v=9">
 <script>
 /* Force-check the PWA cache repair even if a former service worker is serving old JS. */
 if('serviceWorker' in navigator&&window.isSecureContext){
@@ -33,7 +33,7 @@ if('serviceWorker' in navigator&&window.isSecureContext){
    if(authReturn.has('access_token')&&['signup','email'].includes(authReturn.get('type')))
      document.documentElement.dataset.windowsSignupReturn='true'; }
 </script>
-<script type="module" src="account-v7.mjs?v=19"></script>
+<script type="module" src="account-v7.mjs?v=20"></script>
 <style id="account-critical-style">
 /* Critical visible layout: independent of older PWA-cached CSS versions. */
 body.site31.site31-account .ar7-account-highlights{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:20px 0}
@@ -187,20 +187,72 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
  <div class="ar7-account-heading"><div><span class="ar7-eyebrow">02 / PLAYER CLOUD</span><h2 id="ar7-dash-title"><span class="fr">Mon espace cloud</span><span class="en">My cloud workspace</span></h2></div><button type="button" class="ar7-secondary" id="logout" title="Déconnecte ton compte de tous les appareils"><span class="fr">Déconnexion</span><span class="en">Sign out</span></button></div>
  <div class="ar7-email"><span class="fr">Pseudo :</span><span class="en">Username:</span> <strong id="user-username">—</strong> · <span class="fr">Compte connecté :</span><span class="en">Signed-in account:</span> <strong id="user-email">—</strong></div>
  <section class="ar7-player" id="account-player" aria-labelledby="account-player-title" hidden>
-  <h3 id="account-player-title"><span class="fr">Mon profil AimRoutine</span><span class="en">My AimRoutine profile</span></h3>
+  <div class="ar7-player-heading">
+   <div><h3 id="account-player-title"><span class="fr">Mon profil AimRoutine</span><span class="en">My AimRoutine profile</span></h3>
+    <p class="ar7-player-hint"><span class="fr">Synchronisé avec le logiciel Windows.</span><span class="en">Synced with the Windows app.</span></p>
+   </div>
+   <button id="account-player-edit" type="button" class="ar7-secondary" hidden><span class="fr">Modifier mon profil</span><span class="en">Edit my profile</span></button>
+  </div>
   <p class="ar7-player-status" id="account-player-status" role="status">
    <span class="ar7-player-loading"><span class="fr">Récupération du profil…</span><span class="en">Loading your profile…</span></span>
-   <span class="ar7-player-empty" hidden><span class="fr">Configure ton profil dans AimRoutine Tracker sur Windows pour le retrouver ici.</span><span class="en">Set up your profile in AimRoutine Tracker on Windows to see it here.</span></span>
+   <span class="ar7-player-empty" hidden><span class="fr">Configure ton profil pour l’utiliser sur le site et dans le logiciel.</span><span class="en">Set up your profile to use it across the site and the Windows app.</span></span>
    <span class="ar7-player-error" hidden><span class="fr">Ton profil est temporairement indisponible.</span><span class="en">Your profile is temporarily unavailable.</span></span>
   </p>
   <div class="ar7-player-summary" id="account-player-summary" hidden>
    <div class="ar7-player-avatar" aria-hidden="true"><span id="account-player-initials"></span><img id="account-player-avatar" alt="" width="52" height="52" hidden></div>
-   <div class="ar7-player-name"><small><span class="fr">Nom dans le logiciel</span><span class="en">In-app name</span></small><strong id="account-player-name"></strong></div>
+   <div class="ar7-player-name"><small><span class="fr">Pseudo du profil</span><span class="en">Profile nickname</span></small><strong id="account-player-name"></strong></div>
    <dl class="ar7-player-details">
     <div><dt><span class="fr">Rang VALORANT</span><span class="en">VALORANT rank</span></dt><dd><span id="account-player-rank-fr" class="fr"></span><span id="account-player-rank-en" class="en"></span></dd></div>
     <div><dt>eDPI</dt><dd><span id="account-player-edpi-fr" class="fr"></span><span id="account-player-edpi-en" class="en"></span></dd></div>
    </dl>
   </div>
+  <button id="account-player-retry" type="button" class="ar7-secondary" hidden><span class="fr">Réessayer</span><span class="en">Try again</span></button>
+  <form id="account-player-form" class="ar7-player-form" aria-labelledby="account-player-title" hidden>
+   <fieldset data-player-fields>
+    <legend class="ar7-player-form-title"><span class="fr">Ton profil partagé</span><span class="en">Your shared profile</span></legend>
+    <div class="ar7-player-edit-grid">
+     <label><span class="fr">Pseudo du profil</span><span class="en">Profile nickname</span><input name="name" type="text" required maxlength="80" autocomplete="nickname"></label>
+     <label><span class="fr">Rang VALORANT</span><span class="en">VALORANT rank</span><select name="rank" required></select></label>
+     <label data-player-division>Division<select name="division"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></label>
+    </div>
+    <div class="ar7-player-edit-avatar">
+     <div class="ar7-player-avatar" aria-hidden="true"><span id="account-player-draft-initials"></span><img id="account-player-draft-avatar" alt="" width="52" height="52" hidden></div>
+     <label><span class="fr">Image de profil</span><span class="en">Profile picture</span><input name="avatar" type="file" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" aria-describedby="account-player-image-help"></label>
+     <button id="account-player-remove-avatar" type="button" class="ar7-secondary" hidden><span class="fr">Retirer</span><span class="en">Remove</span></button>
+    </div>
+    <p id="account-player-image-help" class="ar7-player-hint"><span class="fr">PNG, JPG ou WebP, 5 Mo maximum. L’image est recadrée au centre.</span><span class="en">PNG, JPG or WebP, up to 5 MB. Images are cropped to the centre.</span></p>
+    <fieldset class="ar7-player-group">
+     <legend><span class="fr">Réglages de la souris</span><span class="en">Mouse settings</span></legend>
+     <div class="ar7-player-edit-grid">
+      <label>DPI<input name="dpi" type="number" min="50" max="50000" step="1" required></label>
+      <label><span class="fr">Sensibilité VALORANT</span><span class="en">VALORANT sensitivity</span><input name="sensitivity" type="number" min="0.001" max="20" step="any" required></label>
+      <label><span class="fr">Fréquence (Hz)</span><span class="en">Polling rate (Hz)</span><input name="pollingRate" type="number" min="125" max="8000" step="1" required></label>
+     </div>
+     <p class="ar7-player-hint">eDPI <output id="account-player-draft-edpi">—</output></p>
+    </fieldset>
+    <fieldset class="ar7-player-group">
+     <legend><span class="fr">Entraînement</span><span class="en">Training</span></legend>
+     <div class="ar7-player-edit-grid">
+      <label><span class="fr">Durée (min)</span><span class="en">Duration (min)</span><input name="minutes" type="number" min="1" max="60" step="any" required></label>
+      <label><span class="fr">Fatigue sur 5</span><span class="en">Fatigue out of 5</span><input name="fatigue" type="number" min="1" max="5" required></label>
+      <label><span class="fr">Niveau mécanique sur 6</span><span class="en">Mechanical skill out of 6</span><input name="mechanicalLevel" type="number" min="1" max="6" required></label>
+     </div>
+     <fieldset class="ar7-player-choices"><legend><span class="fr">Jours d’entraînement</span><span class="en">Training days</span></legend><div data-choices="trainingDays"></div></fieldset>
+     <fieldset class="ar7-player-choices"><legend><span class="fr">Logiciels disponibles</span><span class="en">Available tools</span></legend><div data-choices="owned"></div></fieldset>
+     <p class="ar7-player-hint"><span class="fr">VALORANT est utilisé par défaut.</span><span class="en">VALORANT is used by default.</span></p>
+    </fieldset>
+    <fieldset class="ar7-player-group">
+     <legend><span class="fr">Priorités du coach</span><span class="en">Coaching priorities</span></legend>
+     <fieldset class="ar7-player-choices"><legend><span class="fr">Compétences à travailler</span><span class="en">Skills to practise</span></legend><div data-choices="goals"></div></fieldset>
+     <fieldset class="ar7-player-choices"><legend><span class="fr">Difficultés observées</span><span class="en">Challenges you notice</span></legend><div data-choices="weaknesses"></div></fieldset>
+    </fieldset>
+    <div class="ar7-player-controls">
+     <button id="account-player-save" type="submit" class="ar7-primary"><span class="fr">Enregistrer mon profil</span><span class="en">Save my profile</span></button>
+     <button id="account-player-cancel" type="button" class="ar7-secondary"><span class="fr">Annuler</span><span class="en">Cancel</span></button>
+    </div>
+   </fieldset>
+  </form>
+  <p id="account-player-feedback" class="ar7-player-feedback" role="status" aria-live="polite"></p>
  </section>
  <div class="ar7-service-grid">
   <div><small><span class="fr">ÉTAT DE LA SAUVEGARDE</span><span class="en">BACKUP STATUS</span></small><strong id="cloud-enabled-status">Désactivée</strong></div>
@@ -237,7 +289,7 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
 </details>
 </section>
 </div><div class="r17-account-right"><section class="r17-panel"><div class="r17-panel-title"><span class="r17-icon r17-cyan">☁</span><div><h2><span class="fr">Synchronisation cloud</span><span class="en">Cloud synchronization</span></h2><small><span class="fr">Garde tes routines et séances à jour</span><span class="en">Keep your training backed up</span></small></div></div><div class="r17-cloud-split"><div class="r17-cloud-status"><span>☁</span><div><h3 data-r17-sync-head><span class="fr">Connexion nécessaire</span><span class="en">Sign-in required</span></h3><p data-r17-sync-copy><span class="fr">Connecte-toi pour utiliser le Cloud.</span><span class="en">Sign in to use cloud backup.</span></p></div></div><div class="r17-cloud-devices"><h3><span class="fr">Compte & appareils</span><span class="en">Account & devices</span></h3><a href="#windows-sync"><span class="fr">Gérer les liaisons Windows</span><span class="en">Manage Windows connections</span> ↗</a><a href="privacy.html"><span class="fr">Confidentialité</span><span class="en">Privacy</span> ↗</a></div></div></section>
- <section class="r17-panel"><div class="r17-panel-title"><span class="r17-icon">⚙</span><div><h2><span class="fr">Préférences du compte</span><span class="en">Account preferences</span></h2><small><span class="fr">Personnalise ton entraînement</span><span class="en">Personalize training</span></small></div></div><div class="r17-settings-grid"><div><h3>◉ <span class="fr">Langue</span><span class="en">Language</span></h3><label><span class="fr">Interface</span><span class="en">Interface</span><select data-r17-language><option value="fr">Français (FR)</option><option value="en">English (EN)</option></select></label></div><div><h3>⬡ <span class="fr">Confidentialité</span><span class="en">Privacy</span></h3><p><span class="fr">Sécurité et protection des données de ton compte.</span><span class="en">Account security and data protection.</span></p><a href="privacy.html"><span class="fr">Consulter</span><span class="en">View</span> ↗</a></div><div><h3>⌖ <span class="fr">Préférences d’entraînement</span><span class="en">Training preferences</span></h3><p><span class="fr">Réglages disponibles dans ton espace AIM.</span><span class="en">Settings are available in your AIM workspace.</span></p><a href="training.html#panel-profile"><span class="fr">Mes réglages</span><span class="en">My settings</span> ↗</a></div></div></section></div></div></div>
+ <section class="r17-panel"><div class="r17-panel-title"><span class="r17-icon">⚙</span><div><h2><span class="fr">Préférences du compte</span><span class="en">Account preferences</span></h2><small><span class="fr">Personnalise ton entraînement</span><span class="en">Personalize training</span></small></div></div><div class="r17-settings-grid"><div><h3>◉ <span class="fr">Langue</span><span class="en">Language</span></h3><label><span class="fr">Interface</span><span class="en">Interface</span><select data-r17-language><option value="fr">Français (FR)</option><option value="en">English (EN)</option></select></label></div><div><h3>⬡ <span class="fr">Confidentialité</span><span class="en">Privacy</span></h3><p><span class="fr">Sécurité et protection des données de ton compte.</span><span class="en">Account security and data protection.</span></p><a href="privacy.html"><span class="fr">Consulter</span><span class="en">View</span> ↗</a></div><div><h3>⌖ <span class="fr">Préférences d’entraînement</span><span class="en">Training preferences</span></h3><p><span class="fr">Réglages partagés avec le logiciel Windows.</span><span class="en">Settings shared with the Windows app.</span></p><a href="#account-player-edit"><span class="fr">Mes réglages</span><span class="en">My settings</span> ↗</a></div></div></section></div></div></div>
 <p class="ar7-legal-line"><strong><span class="fr">Protection des données :</span><span class="en">Data privacy:</span></strong>
 <span class="fr">Avec un compte, Supabase traite ton e-mail, les données d'authentification et tes routines et ta progression synchronisées automatiquement. Les données restent privées à ton compte ; aucun résultat invité n'est enregistré. Ne partage jamais ton mot de passe.</span><span class="en">With an account, Supabase processes your email, authentication information and your automatically synced progress. Training data remains private to your account; guest results are not saved. Never share passwords.</span>
 <a href="privacy.html"><span class="fr">Politique de confidentialité</span><span class="en">Privacy policy</span></a></p>

@@ -35,7 +35,20 @@ if(!uid){
 }
 
 await import('./training-v5.js?v=5');
-await import('./training-v6.js?v=2');
+await import('./training-v6.js?v=3');
+
+async function refreshSharedPlayer() {
+ const requestedUser=uid;
+ if(!requestedUser||!api)return;
+ try{
+  const {data,error}=await api.supabase.from('aim_account_player_profiles').select('profile').eq('user_id',requestedUser).maybeSingle();
+  if(!error&&uid===requestedUser&&window.__aimCloudUserId===requestedUser){
+   window.dispatchEvent(new CustomEvent('aim-player-profile-updated',{detail:data?.profile??null}));
+  }
+ }catch{ /* A temporary profile read failure leaves the current preferences visible. */ }
+}
+
+void refreshSharedPlayer();
 
 async function syncChanges(){
  if(!uid||!api||!isEnabled(uid))return;
@@ -44,7 +57,7 @@ async function syncChanges(){
  report('Synchronisation automatique de la progression…');
  try{
   const before=JSON.stringify(window.AIMWeb?.getStore?.()||{});
-  await synchronize(api.supabase,uid);
+  await Promise.all([synchronize(api.supabase,uid),refreshSharedPlayer()]);
   const afterRaw=localStorage.getItem('aimroutine_cloud_user_'+uid+'_aimroutine_web_training_v2');
   const after=JSON.stringify(JSON.parse(afterRaw||'{}'));
   if(before!==after){
@@ -67,6 +80,7 @@ window.addEventListener('focus',schedule);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)schedule()});
 window.addEventListener('storage',e=>{
  if(e.key===UID_STORAGE_KEY&&e.newValue!==uid)location.reload();
+ else if(uid&&e.key===authStorage)schedule();
  else if(uid&&e.key?.startsWith('aimroutine_cloud_user_'+uid+'_'))schedule();
 });
 setInterval(()=>{if(!document.hidden&&navigator.onLine)schedule()},45000);

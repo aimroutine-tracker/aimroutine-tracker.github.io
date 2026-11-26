@@ -4,6 +4,7 @@
 404.html
 account-v7.css
 account-v7.mjs
+account-player-editor.mjs
 account.html
 windows-sync-v1.css
 windows-sync-v1.mjs

@@ -2,7 +2,7 @@
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="preload" as="image" href="https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/8f0df8efd5b986039cd37a4d5f3bf31b815d0c54-3840x2160.jpg?w=1200&amp;q=72&amp;auto=format" imagesrcset="https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/8f0df8efd5b986039cd37a4d5f3bf31b815d0c54-3840x2160.jpg?w=640&amp;q=72&amp;auto=format 640w, https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/8f0df8efd5b986039cd37a4d5f3bf31b815d0c54-3840x2160.jpg?w=960&amp;q=72&amp;auto=format 960w, https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/8f0df8efd5b986039cd37a4d5f3bf31b815d0c54-3840x2160.jpg?w=1440&amp;q=72&amp;auto=format 1440w, https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/8f0df8efd5b986039cd37a4d5f3bf31b815d0c54-3840x2160.jpg?w=1920&amp;q=72&amp;auto=format 1920w" imagesizes="(max-width:680px) 94vw, (max-width:1000px) 90vw, 48vw" fetchpriority="high">
 <meta name="theme-color" content="#111115"><meta name="description" content="Espace entraînement AIM : crée des routines VALORANT, chronomètre tes exercices et suis tes progrès localement.">
-<title>Mon espace AIM — AimRoutine Tracker</title><link rel="canonical" href="https://aimroutine-tracker.github.io/training.html"><link rel="stylesheet" href="site-global-v31.css?v=4"><link rel="stylesheet" href="training.css?v=2"><script type="module" src="training-entry-v7.mjs?v=3"></script><script src="site-quality-v34.js?v=2" defer></script><link rel="stylesheet" href="training-v5.css?v=1">
+<title>Mon espace AIM — AimRoutine Tracker</title><link rel="canonical" href="https://aimroutine-tracker.github.io/training.html"><link rel="stylesheet" href="site-global-v31.css?v=4"><link rel="stylesheet" href="training.css?v=2"><script type="module" src="training-entry-v7.mjs?v=4"></script><script src="site-quality-v34.js?v=2" defer></script><link rel="stylesheet" href="training-v5.css?v=1">
 
 <link rel="stylesheet" href="site-shared-v5.css?v=3">
 <link rel="manifest" href="manifest.webmanifest?v=2"><script src="pwa-v6.js?v=1" defer></script><script src="site.js?v=9" defer></script><script src="training-i18n-v6.js?v=2&amp;ui=26" defer></script><link rel="icon" type="image/png" sizes="128x128" href="aimroutine-logo.png?v=3">
@@ -32,7 +32,7 @@
 <link rel="stylesheet" href="site-valorant-ui.css?v=2">
 <link rel="stylesheet" href="site-valorant-theme.css?v=3">
 <link rel="stylesheet" href="site-v22.css?v=5">
-<link rel="stylesheet" href="training-v6.css?v=28">
+<link rel="stylesheet" href="training-v6.css?v=29">
 </head>
 <body class="site31 site31-training site-valorant r17 training26"><a class="skip" href="#app"><span class="fr">Aller au contenu</span><span class="en">Skip to content</span></a>
 <header class="site31-header">
@@ -197,18 +197,23 @@
  <div class="two"><article class="surface ar5-coach-card"><span id="coach-confidence" class="ar5-pill">Démarrage</span><h3 id="coach-title">Premiers pas</h3><p id="coach-message" class="muted"></p><button type="button" class="primary" id="coach-build">Préparer une routine adaptée →</button></article><article class="surface"><h3>Comment sont calculés les conseils ?</h3><p class="muted">Le coach compare uniquement tes résultats d'une même compétence et, si choisi, d'un même logiciel. Il attend au moins quatre séances renseignées pour signaler une tendance. Les niveaux de difficulté et scénarios doivent rester comparables.</p><p class="muted">Aucune promesse de gain de rang, aucune donnée Riot et aucun calcul caché.</p></article></div>
 </section>
 <section id="panel-profile" class="panel" role="tabpanel" aria-labelledby="tab-profile" hidden>
- <div class="section-heading"><div><p class="eyebrow">07 / PLAYER IDENTITY</p><h2>Ton profil joueur.</h2><p class="muted"><span class="fr">Tes réglages facultatifs sont enregistrés dans ton compte AimRoutine et restent indépendants de ton compte Riot.</span><span class="en">Your optional settings are saved with your AimRoutine account and stay separate from your Riot account.</span></p></div></div>
+ <div class="section-heading"><div>
+  <h2><span class="fr">Mon profil AimRoutine</span><span class="en">My AimRoutine profile</span></h2>
+  <p class="muted"><span class="fr">Un même profil pour le site et le logiciel Windows.</span><span class="en">One profile for the website and Windows app.</span></p>
+ </div></div>
+ <div class="surface ar6-shared-player">
+  <div class="ar6-profile-summary">
+   <span class="ar6-avatar" id="player-avatar-preview" aria-hidden="true">⌖</span>
+   <div><strong id="player-display-name">—</strong><small id="player-edpi"></small></div>
+  </div>
+  <a class="primary" href="account.html#account-player-edit"><span class="fr">Modifier mon profil</span><span class="en">Edit my profile</span></a>
+ </div>
  <form id="player-form" class="surface ar6-profile-form">
-  <label>Pseudo<input id="player-name" maxlength="24" placeholder="Ton pseudo" autocomplete="nickname"></label>
-  <label>Avatar<select id="player-avatar"><option value="crosshair">Viseur</option><option value="bolt">Éclair</option><option value="shield">Bouclier</option><option value="star">Étoile</option></select></label>
-  <label>Rang déclaré<select id="player-rank"><option value="iron">Fer / Bronze</option><option value="silver">Argent / Or</option><option value="diamond">Platine / Diamant / Ascendant</option><option value="immortal">Immortel / Radiant</option></select></label>
-  <label>Logiciel favori<select id="player-tool"><option>VALORANT</option><option>Aim Lab</option><option>KovaaK’s</option><option>Oblivity</option></select></label>
-  <label>DPI souris<input id="player-dpi" type="number" min="100" max="32000" step="1" inputmode="numeric" placeholder="Ex. 1600"></label>
-  <label>Sensibilité VALORANT<input id="player-sens" type="number" min="0.001" max="10" step="0.001" inputmode="decimal" placeholder="Ex. 0.215"></label>
-  <label>Modèle de souris<input id="player-mouse" maxlength="70" placeholder="Souris utilisée"></label>
-  <label>Objectif personnel<input id="player-goal" maxlength="140" placeholder="Améliorer ma régularité…"></label>
-  <div class="ar6-profile-summary"><span class="ar6-avatar" id="player-avatar-preview" aria-hidden="true">⌖</span><div><strong id="player-display-name">Joueur</strong><small id="player-edpi">eDPI : à renseigner</small></div></div>
-  <button class="primary" type="submit">Enregistrer mon profil</button>
+  <h3><span class="fr">Préférences du site</span><span class="en">Website preferences</span></h3>
+  <label><span class="fr">Logiciel favori</span><span class="en">Preferred training app</span><select id="player-tool"><option>VALORANT</option><option>Aim Lab</option><option>KovaaK’s</option><option>Oblivity</option></select></label>
+  <label><span class="fr">Modèle de souris</span><span class="en">Mouse model</span><input id="player-mouse" maxlength="70"></label>
+  <label><span class="fr">Note personnelle</span><span class="en">Personal note</span><input id="player-goal" maxlength="140"></label>
+  <button class="outline" type="submit"><span class="fr">Enregistrer les préférences</span><span class="en">Save preferences</span></button>
  </form>
  <p class="muted" id="profile-status" role="status"></p>
 </section>

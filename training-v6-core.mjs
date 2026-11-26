@@ -21,6 +21,27 @@ export function cleanProfile(p){
    tool:TOOLS.includes(o.tool)?o.tool:'VALORANT'
  };
 }
+const windowsRanks={Fer:'iron',Bronze:'iron',Argent:'silver',Or:'silver',Platine:'diamond',Diamant:'diamond',Ascendant:'diamond',Immortel:'immortal',Radiant:'immortal'};
+const windowsTools={Valorant:'VALORANT','Aim Lab':'Aim Lab',"Kovaak's":'KovaaK’s',Oblivity:'Oblivity'};
+const windowsGoals={
+  'Micro Flicks':'micro','Wide Flicks':'flick','Dynamic Clicking':'flick','Click Timing':'flick',
+  'Smooth Tracking':'tracking','Reactive Tracking':'tracking','Target Switching':'tracking',
+  'Static Clicking':'control',Precision:'control','Crosshair Placement':'control','Movement + Shooting':'control','Peek Training':'control'
+};
+
+export function sharedTrainingPlayer(profile){
+ if(profile?.onboarded!==true||typeof profile.name!=='string'||!profile.name.trim()||!Object.hasOwn(windowsRanks,profile.rank))return null;
+ return {
+  name:profile.name.trim().slice(0,80),
+  rank:windowsRanks[profile.rank],
+  rankLabel:[profile.rank,profile.division].filter(Boolean).join(' '),
+  tools:Array.isArray(profile.owned)?profile.owned.filter(tool=>Object.hasOwn(windowsTools,tool)).map(tool=>windowsTools[tool]):[],
+  focus:Array.isArray(profile.goals)?profile.goals.filter(goal=>Object.hasOwn(windowsGoals,goal)).map(goal=>windowsGoals[goal])[0]:undefined,
+  minutes:Number.isFinite(profile.minutes)&&profile.minutes>=1&&profile.minutes<=60?profile.minutes:null,
+  edpi:Number.isFinite(profile.dpi)&&Number.isFinite(profile.sensitivity)?profile.dpi*profile.sensitivity:null,
+  avatar:typeof profile.avatarDataUrl==='string'&&profile.avatarDataUrl.length<=100000&&/^data:image\/png;base64,[A-Za-z0-9+/]+={0,2}$/.test(profile.avatarDataUrl)?profile.avatarDataUrl:null
+ };
+}
 export function validProgram(program){
  return plain(program)&&[7,14,30].includes(program.days)&&
    typeof program.startedAt==='string'&&Number.isFinite(Date.parse(program.startedAt))&&
