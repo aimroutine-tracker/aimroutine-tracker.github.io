@@ -123,11 +123,19 @@ body.site31.site-valorant .ar5-nav-explore > summary {
   cursor: pointer;
 }
 body.site31.site-valorant .site31-links > .ar5-nav-explore { display: block !important; }
-body.site31.site-valorant .ar5-nav-explore > summary { border-color: transparent !important; background: transparent !important; }
-body.site31.site-valorant .site31-header .ar5-nav-explore[open] > summary {
+body.site31.site-valorant .site31-header .site31-links > .ar5-nav-explore > summary {
+  border-color: transparent !important;
+  border-radius: 6px !important;
+  background: transparent !important;
+  color: var(--valorant-text) !important;
+}
+body.site31.site-valorant .site31-header .site31-links > .ar5-nav-explore[open] > summary {
   border-color: var(--valorant-line) !important;
   background: var(--valorant-raised) !important;
-  border-radius: 6px !important;
+}
+body.site31.site-valorant .site31-header .site31-links > .ar5-nav-explore > summary:is(:hover, :focus-visible) {
+  border-color: var(--valorant-accent-soft) !important;
+  background: var(--valorant-raised) !important;
 }
 body.site31.site-valorant .site31-header .ar5-nav-explore > summary::after {
   content: "";
@@ -142,8 +150,7 @@ body.site31.site-valorant .site31-header .ar5-nav-explore[open] > summary::after
   margin-top: 3px;
   transform: rotate(225deg);
 }
-body.site31.site-valorant .site31-controls :is(.site31-lang,.valorant-account,.site31-mobile-nav > summary):hover,
-body.site31.site-valorant .ar5-nav-explore > summary:hover { border-color: var(--valorant-accent-soft) !important; background: #2c242d !important; }
+body.site31.site-valorant .site31-controls :is(.site31-lang,.valorant-account,.site31-mobile-nav > summary):hover { border-color: var(--valorant-accent-soft) !important; background: #2c242d !important; }
 body.site31.site-valorant .site31-controls .valorant-account[aria-current="page"] { border-color: var(--valorant-accent) !important; }
 body.site31.site-valorant .site31-header :is(.ar5-nav-dropdown,.site31-mobile-links) {
   gap: 2px;
