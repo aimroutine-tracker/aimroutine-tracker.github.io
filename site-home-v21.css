@@ -323,6 +323,8 @@ body.site31.site-valorant .home-destinations a:hover { border-color: var(--valor
   background: var(--valorant-raised);
 }
 #home-details #app-gallery .v16-expand:hover { border-color: var(--valorant-accent-soft); }
+#home-details #app-gallery .v16-gallery-foot { color: var(--valorant-muted); }
+#home-details #app-gallery .v16-lightbox .v16-close { color: var(--valorant-bg); }
 #home-details #app-gallery .v16-lightbox::backdrop { background: #111115e6; }
 #home-details #app-gallery .v5-kicker { color: var(--valorant-accent-soft); }
 #home-details #app-gallery :is(.v16-section-heading p, .v33-gallery-caption) { color: var(--valorant-muted); }
