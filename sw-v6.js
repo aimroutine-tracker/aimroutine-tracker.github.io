@@ -5,7 +5,7 @@ const CACHE='aimroutine-v12-windows-auth';
 const BASE=new URL(self.registration.scope);
 const OFFLINE=[
  './','./index.html','./training.html','./account.html','./product.html','./releases.html',
- './training.css','./training-v5.css','./training-v6.css','./account-v7.css','./windows-sync-v1.css',
+ './training.css','./training-v5.css','./training-v6.css','./progress-v15.css','./account-v7.css','./windows-sync-v1.css',
  './training-v5.js','./training-v6.js','./training-core-v5.mjs','./training-v6-core.mjs',
  './training-entry-v7.mjs','./cloud-core-v7.mjs','./cloud-sync-v7.mjs',
  './training-i18n-v6.js','./pwa-v6.js','./cloud-client-v7.mjs',

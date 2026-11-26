@@ -103,6 +103,7 @@ training.js
 updates.html
 v5.css
 progress.html
+progress-v15.css
 progress-v14.mjs
 progress-core.mjs
 project-presentation-v311.css
