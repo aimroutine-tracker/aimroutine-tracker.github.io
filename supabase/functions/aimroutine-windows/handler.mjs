@@ -5,7 +5,7 @@ const resultKeys = [
   'score', 'accuracy', 'headshot', 'notes', 'mood'
 ];
 const software = new Set(["Kovaak's", 'Aim Lab', 'Valorant', 'Oblivity']);
-const siteActions = new Set(['approve', 'devices', 'results', 'revoke']);
+const siteActions = new Set(['approve', 'devices', 'results', 'revoke', 'save-profile']);
 const deviceActions = new Set(['status', 'sync', 'disconnect', 'profile']);
 const playerRanks = ['Fer','Bronze','Argent','Or','Platine','Diamant','Ascendant','Immortel','Radiant'];
 const playerSkills = ['Static Clicking','Dynamic Clicking','Micro Flicks','Wide Flicks','Precision','Smooth Tracking','Reactive Tracking','Target Switching','Click Timing','Crosshair Placement','Movement + Shooting','Peek Training'];
@@ -227,13 +227,13 @@ export async function handleWindows(request, backend) {
         }
         Object.assign(args,{offset,results:body.results ?? null});
       }
-      if (action === 'profile') {
-        const writing = Object.hasOwn(body,'profile');
-        if (writing && (!isInteger(body.revision,0,2147483646) || !validPlayerProfile(body.profile))) {
-          return json({error:'invalid_profile'},400);
-        }
-        Object.assign(args,{revision:writing?body.revision:null,profile:writing?body.profile:null});
+    }
+    if (action === 'profile' || action === 'save-profile') {
+      const writing = action === 'save-profile' || Object.hasOwn(body,'profile');
+      if (writing && (!isInteger(body.revision,0,2147483646) || !validPlayerProfile(body.profile))) {
+        return json({error:'invalid_profile'},400);
       }
+      Object.assign(args,{revision:writing?body.revision:null,profile:writing?body.profile:null});
     }
     const data = await backend.call(action,args);
     if (data.error === 'profile_changed') return json(data,409);

@@ -186,3 +186,40 @@ test('player profile reports revision conflicts and revoked devices without leak
     assert.deepEqual(await reply.json(),{error});
   }
 });
+
+test('a web profile can be saved only as the verified bearer account', async () => {
+  const {backend,calls} = service();
+  const profile = {...player, avatarDataUrl:avatarUrl(avatar())};
+  const body = {action:'save-profile',userId:'other',uid:'other',revision:0,profile};
+  backend.call = async (operation,args) => {
+    calls.push([operation,args]);
+    return {accountId:args.uid,profile:args.profile,revision:1};
+  };
+  for (const headers of [{},{'x-aim-device':device},{Authorization:'Bearer invalid'}]) {
+    const reply = await handleWindows(request(body,headers),backend);
+    assert.equal(reply.status,401);
+    assert.deepEqual(await reply.json(),{error:'authentication_required'});
+  }
+  assert.equal(calls.length,0);
+  const reply = await handleWindows(request(body,{Authorization:'Bearer valid','x-aim-device':device}),backend);
+  assert.equal(reply.status,200);
+  assert.equal(reply.headers.get('Cache-Control'),'no-store');
+  assert.deepEqual(await reply.json(),{accountId:id,profile,revision:1});
+  assert.deepEqual(calls,[['save-profile',{uid:id,revision:0,profile}]]);
+});
+
+test('web profile writes validate the desktop profile and never write stale data', async () => {
+  const {backend,calls} = service();
+  const headers = {Authorization:'Bearer valid'};
+  for (const body of [{revision:1},{revision:1,profile:null},{revision:1,profile:{...player,pollingRate:0}},
+    {revision:1,profile:{...player,userId:'other'}},{revision:0.5,profile:player}]) {
+    const reply = await handleWindows(request({action:'save-profile',...body},headers),backend);
+    assert.equal(reply.status,400);
+    assert.deepEqual(await reply.json(),{error:'invalid_profile'});
+  }
+  assert.equal(calls.length,0);
+  backend.call = async () => ({error:'profile_changed'});
+  const reply = await handleWindows(request({action:'save-profile',revision:1,profile:player},headers),backend);
+  assert.equal(reply.status,409);
+  assert.deepEqual(await reply.json(),{error:'profile_changed'});
+});

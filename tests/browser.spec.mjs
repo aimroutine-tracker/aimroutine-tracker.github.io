@@ -1,9 +1,9 @@
 import {test,expect} from '@playwright/test';
 
 /* Verified mocked account: no real Supabase requests or data mutations. */
-async function useVerifiedTestAccount(page){
+async function useVerifiedTestAccount(page,player=null){
  const uid='11111111-1111-4111-8111-111111111111';
- await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({status:200,contentType:'application/javascript',body:"const uid='11111111-1111-4111-8111-111111111111';\nconst rows={aim_sessions:[],aim_presets:[],aim_profiles:[],aim_preferences:[]};\nwindow.__testCloudWrites=[];\nexport const supabase={\n auth:{getSession:async()=>({data:{session:{user:{id:uid,email:'qa@example.test'}}},error:null}),getUser:async()=>({data:{user:{id:uid,email:'qa@example.test'}},error:null})},\n from(table){return {\n  select(){return {order(){return {range:async()=>({data:rows[table]||[],error:null})}},eq(){return {maybeSingle:async()=>({data:null,error:null})}}}},\n  upsert:async(input)=>{window.__testCloudWrites.push({table,items:input});return {error:null}},\n  update(){return {eq(){return {eq:async()=>({error:null})}}}}\n }}\n};"}));
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({status:200,contentType:'application/javascript',body:'window.__testSharedPlayer='+JSON.stringify(player)+';\n'+"const uid='11111111-1111-4111-8111-111111111111';\nconst rows={aim_sessions:[],aim_presets:[],aim_profiles:[],aim_preferences:[]};\nwindow.__testCloudWrites=[];\nexport const supabase={\n auth:{getSession:async()=>({data:{session:{user:{id:uid,email:'qa@example.test'}}},error:null}),getUser:async()=>({data:{user:{id:uid,email:'qa@example.test'}},error:null})},\n from(table){return {\n  select(){return {order(){return {range:async()=>({data:rows[table]||[],error:null})}},eq(column,id){return {maybeSingle:async()=>({data:table==='aim_account_player_profiles'&&column==='user_id'&&id===uid&&window.__testSharedPlayer?{profile:window.__testSharedPlayer}:null,error:null})}}}},\n  upsert:async(input)=>{window.__testCloudWrites.push({table,items:input});return {error:null}},\n  update(){return {eq(){return {eq:async()=>({error:null})}}}}\n }}\n};"}));
  await page.evaluate(()=>localStorage.setItem('sb-lmzswtzboobpokumxzhy-auth-token','test-token'));
  await page.reload({waitUntil:'domcontentloaded'});
  await expect.poll(()=>page.evaluate(()=>window.__aimCloudUserId),{timeout:15000}).toBe(uid);
@@ -42,14 +42,30 @@ test('Build, edit, run and save a player session',async ({page})=>{
  await expect(page.locator('#best-accuracy')).toContainText('80.5');
 });
 test('Profile, program and player achievements',async ({page})=>{
- await useVerifiedTestAccount(page);
+ await useVerifiedTestAccount(page,{
+  onboarded:true,name:'NovaFox',rank:'Diamant',division:2,owned:['Aim Lab'],
+  goals:['Smooth Tracking'],minutes:20,dpi:1600,sensitivity:.215
+ });
  await page.locator('#tab-profile').click();
- await page.locator('#player-name').fill('NovaFox');
- await page.locator('#player-dpi').fill('1600');
- await page.locator('#player-sens').fill('0.215');
- await expect(page.locator('#player-edpi')).toContainText('344.0');
+ await expect(page.locator('#player-display-name')).toHaveText('NovaFox');
+ await expect(page.locator('#player-edpi')).toContainText('Diamant 2 · eDPI 344');
+ await expect(page.locator('#panel-profile a.primary')).toHaveAttribute('href','account.html#account-player-edit');
+ await expect(page.locator('#player-name')).toHaveCount(0);
+ await page.locator('#player-mouse').fill('Souris de test');
  await page.locator('#player-form button[type="submit"]').click();
- await expect(page.locator('#profile-status')).toContainText('Profil enregistré');
+ await expect(page.locator('#profile-status')).toContainText('Préférences enregistrées');
+ await page.locator('#tab-builder').click();
+ await expect(page.locator('#rank')).toHaveValue('diamond');
+ await expect(page.locator('#focus')).toHaveValue('tracking');
+ await expect(page.locator('#tool')).toHaveValue('Aim Lab');
+ await expect(page.locator('#duration')).toHaveValue('20');
+ await page.locator('#focus').selectOption('control');
+ await page.evaluate(()=>{
+   window.__testSharedPlayer={...window.__testSharedPlayer,name:'NovaPlus',goals:['Micro Flicks']};
+   window.dispatchEvent(new Event('focus'));
+ });
+ await expect(page.locator('#player-display-name')).toHaveText('NovaPlus');
+ await expect(page.locator('#focus')).toHaveValue('control');
  await page.locator('#tab-program').click();
  await page.locator('#program-form button[type="submit"]').click();
  await expect(page.locator('#program-calendar > article')).toHaveCount(7);
@@ -779,4 +795,84 @@ test('navigation dropdown stays compact, unclipped and keyboard accessible', asy
   await expect(panel).toBeHidden();
   await expect(trigger).toBeFocused();
  }
+});
+
+test('Shared profile is editable on the website and merges another device’s updates',async ({page},testInfo)=>{
+ const actor={id:'11111111-1111-4111-8111-111111111111',email:'qa@example.test',user_metadata:{aim_username:'NovaQA'}};
+ const profile={
+  name:'Nova partagé',onboarded:true,avatarDataUrl:null,rank:'Diamant',division:2,owned:['Aim Lab'],
+  goals:['Precision'],weaknesses:[],mechanicalLevel:3,fatigue:2,dpi:800,sensitivity:.4,pollingRate:1000,minutes:30,trainingDays:[1,3]
+ };
+ await page.route('**/cloud-client-v7.mjs*',route=>route.fulfill({status:200,contentType:'application/javascript',body:
+  `const user=${JSON.stringify(actor)};
+  const session={user,access_token:'synthetic-session-token'};
+  window.__mockPlayer={profile:${JSON.stringify(profile)},revision:4};
+  window.__mockPlayerWrites=[];
+  export const SITE_URL='https://aimroutine-tracker.github.io/';
+  export const supabase={
+    auth:{
+      onAuthStateChange(callback){window.__mockAuth=callback;return {data:{subscription:{unsubscribe(){}}}}},
+      getUser:async()=>({data:{user},error:null}),
+      getSession:async()=>({data:{session},error:null})
+    },
+    from(table){return {
+      select(){return {
+        eq(column,id){return {maybeSingle:async()=>({data:table==='aim_account_player_profiles'&&column==='user_id'&&id===user.id?window.__mockPlayer:null,error:null})}},
+        order(){return {range:async()=>({data:[],error:null})}}
+      }},
+      upsert:async()=>({error:null})
+    }},
+    functions:{invoke:async(name,{body,headers})=>{
+      if(body.action==='devices')return {data:{devices:[]},error:null};
+      if(body.action==='results')return {data:{results:[],nextOffset:null},error:null};
+      if(name!=='aimroutine-windows'||body.action!=='save-profile'||headers?.Authorization!=='Bearer '+session.access_token) throw Error('Unexpected request');
+      window.__mockPlayerWrites.push(body);
+      const current=window.__mockPlayer;
+      if(body.revision!==(current?.revision??0))return {error:{context:{status:409}}};
+      window.__mockPlayer={profile:body.profile,revision:body.revision+1};
+      return {data:{accountId:user.id,...window.__mockPlayer},error:null};
+    }}
+  };`}));
+ await page.goto('/account.html#account-player-edit',{waitUntil:'domcontentloaded'});
+ const form=page.locator('#account-player-form');
+ await expect(form).toBeVisible();
+ await expect(form.locator('[name="name"]')).toHaveValue('Nova partagé');
+ const pixel=await page.evaluate(()=>{
+   const canvas=document.createElement('canvas');
+   canvas.width=256;canvas.height=192;
+   const context=canvas.getContext('2d');
+   context.fillStyle='#ff637c';context.fillRect(0,0,128,192);
+   context.fillStyle='#231e27';context.fillRect(128,0,128,192);
+   return canvas.toDataURL().split(',')[1];
+ });
+ await form.locator('[name="avatar"]').setInputFiles({name:'qa-avatar.png',mimeType:'image/png',buffer:Buffer.from(pixel,'base64')});
+ await expect(page.locator('#account-player-draft-avatar')).toBeVisible();
+ await expect.poll(()=>page.locator('#account-player-draft-avatar').evaluate(img=>[img.naturalWidth,img.naturalHeight])).toEqual([128,128]);
+ await form.locator('[name="name"]').fill('Modifié depuis le site');
+ await form.locator('[name="minutes"]').fill('45');
+ await form.locator('[name="trainingDays"][value="6"]').check();
+ await page.evaluate(()=>{
+  window.__mockPlayer={profile:{...window.__mockPlayer.profile,dpi:1600},revision:5};
+ });
+ await page.locator('#account-player-save').click();
+ await expect(page.locator('#account-player-feedback')).toHaveAttribute('data-state','conflict');
+ await expect(form.locator('[name="name"]')).toHaveValue('Modifié depuis le site');
+ await expect(form.locator('[name="dpi"]')).toHaveValue('1600');
+ const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+ expect(overflow).toBeLessThanOrEqual(2);
+ if(process.env.AIMROUTINE_PROFILE_QA_SCREENSHOT&&testInfo.project.name==='edge-mobile') {
+   await form.screenshot({path:process.env.AIMROUTINE_PROFILE_QA_SCREENSHOT});
+ }
+ await page.locator('#account-player-save').click();
+ await expect(page.locator('#account-player-feedback')).toHaveAttribute('data-state','saved');
+ await expect(form).toBeHidden();
+ await expect(page.locator('#account-player-name')).toHaveText('Modifié depuis le site');
+ await expect(page.locator('#account-player-edpi-fr')).toHaveText('640');
+ const saved=await page.evaluate(()=>window.__mockPlayer);
+ expect(saved.revision).toBe(6);
+ expect(saved.profile).toMatchObject({name:'Modifié depuis le site',dpi:1600,minutes:45,trainingDays:[1,3,6]});
+ expect(saved.profile.avatarDataUrl).toMatch(/^data:image\/png;base64,iVBORw0KGgo/);
+ await page.evaluate(()=>window.__mockAuth('SIGNED_OUT',null));
+ await expect(page.locator('#account-player')).toBeHidden();
+ await expect(page.locator('#account-player-name')).toBeEmpty();
 });

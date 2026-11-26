@@ -22,7 +22,7 @@ assert.notEqual(publicSettings.mailer_autoconfirm,true,'Email should require con
 // Read-only production regression: unauthenticated users must not be able to
 // enumerate even one row of player data. Never create, modify or delete data
 // in production from this smoke test.
-const privateTables=['aim_profiles','aim_preferences','aim_sessions','aim_presets'];
+const privateTables=['aim_profiles','aim_preferences','aim_sessions','aim_presets','aim_account_player_profiles'];
 for(const table of privateTables){
  const response=await fetch(origin+'/rest/v1/'+table+'?select=user_id&limit=1',{
   headers:{apikey:key,'Accept':'application/json'},redirect:'manual'
@@ -87,4 +87,15 @@ for(const [label,headers] of [
  assert.ok([401,403].includes(response.status),
   'Account progress reset must reject unauthorized requests');
 }
-console.log('Live authentication, account deletion and progress reset security smoke checks passed.');
+const webProfileUrl=origin+'/functions/v1/aimroutine-windows';
+for(const [label,headers] of [
+ ['anonymous',jsonHeaders],
+ ['forged JWT',{...jsonHeaders,'Authorization':'Bearer invalid-test-token'}]
+]){
+ // No real profile or revision is supplied, even if authentication regresses.
+ const response=await fetch(webProfileUrl,{method:'POST',headers,body:'{"action":"save-profile"}'});
+ assert.equal(response.status,401,'Web profile editing must require a valid account bearer');
+ assert.equal((await response.json()).error,'authentication_required');
+ console.log('Web profile write '+label+': rejected');
+}
+console.log('Live authentication, account deletion, progress reset and player profile security checks passed.');

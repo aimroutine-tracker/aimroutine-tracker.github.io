@@ -735,3 +735,16 @@ body.training26 #panel-dashboard .text-button {
     margin-inline: auto;
   }
 }
+
+.training26 .ar6-shared-player {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.training26 .ar6-shared-player .ar6-profile-summary { margin: 0; }
+.training26 .ar6-shared-player .ar6-avatar { overflow: hidden; }
+.training26 .ar6-shared-player .ar6-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.training26 .ar6-profile-form > h3 { grid-column: 1 / -1; margin: 0; }

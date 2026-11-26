@@ -7,6 +7,7 @@ import {validateUsername,usernameFromUser,saveUsername} from './username-v7.mjs'
 import {hasGoogleIdentity} from './google-delete-v7.mjs';
 import {signOutEverywhere} from './session-security-v7.mjs';
 import {TURNSTILE_SITE_KEY,createAuthCaptcha} from './turnstile-v7.mjs';
+import {attachAccountPlayer} from './account-player-editor.mjs?v=1';
 import {attachWindowsSync,discardWindowsSignup,rememberWindowsSignup,takeWindowsSignup} from './windows-sync-v1.mjs?v=3';
 const SIGNUPS_READY=true; // Email signups: Turnstile enforced by Supabase Auth, confirmation required, provider allowlisted by server hook.
 const GOOGLE_READY=true; // Provider enabled by project owner; live OAuth is in beta until end-to-end testing.
@@ -14,9 +15,7 @@ const RESET_LINKS_CONFIGURED=true; // Redirect allowlist was configured; real em
 const $=s=>document.querySelector(s);
 let user=null,working=false,recovery=false;
 let switchingWindowsAccount=false,passwordApproval=null;
-let playerOwner=null,playerRequest=null;
-const playerRankEn=new Map(Object.entries({Fer:'Iron',Bronze:'Bronze',Argent:'Silver',Or:'Gold',Platine:'Platinum',Diamant:'Diamond',Ascendant:'Ascendant',Immortel:'Immortal',Radiant:'Radiant'}));
-const edpiFormat={fr:new Intl.NumberFormat('fr-FR',{maximumFractionDigits:1}),en:new Intl.NumberFormat('en',{maximumFractionDigits:1})};
+const player=attachAccountPlayer(supabase,{readLocalProfile:id=>readUserLocal(id).ext.profile});
 const windows=attachWindowsSync(supabase,{onPairingChange:showWindowsMode,onSwitchAccount:switchWindowsAccount});
 const captcha=createAuthCaptcha(TURNSTILE_SITE_KEY);
 function showCaptcha(mode){
@@ -64,68 +63,8 @@ function offerWindowsSignup(validated){
   windows.adoptSignup(request);
  }
 }
-function showPlayerStatus(status){
- $('#account-player-status').hidden=!status;
- for(const state of ['loading','empty','error'])$('#account-player .ar7-player-'+state).hidden=state!==status;
-}
-function clearPlayerSummary(){
- $('#account-player-summary').hidden=true;
- const image=$('#account-player-avatar');
- image.hidden=true;
- image.removeAttribute('src');
- for(const id of ['initials','name','rank-fr','rank-en','edpi-fr','edpi-en'])$('#account-player-'+id).textContent='';
-}
-function renderPlayer(profile){
- if(!profile?.onboarded||typeof profile.name!=='string'||!profile.name.trim()){
-  clearPlayerSummary();
-  showPlayerStatus('empty');
-  return;
- }
- const name=profile.name.trim().slice(0,80);
- const division=[1,2,3].includes(profile.division)?' '+profile.division:'';
- const rank=playerRankEn.has(profile.rank)?profile.rank:'';
- const edpi=Number.isFinite(profile.dpi)&&Number.isFinite(profile.sensitivity)?profile.dpi*profile.sensitivity:NaN;
- $('#account-player-name').textContent=name;
- $('#account-player-initials').textContent=Array.from(name).slice(0,2).join('').toUpperCase();
- $('#account-player-rank-fr').textContent=rank?rank+division:'—';
- $('#account-player-rank-en').textContent=rank?playerRankEn.get(rank)+division:'—';
- for(const locale of ['fr','en'])$('#account-player-edpi-'+locale).textContent=Number.isFinite(edpi)?edpiFormat[locale].format(edpi):'—';
- const avatar=$('#account-player-avatar');
- const url=profile.avatarDataUrl;
- if(typeof url==='string'&&url.length<=100000&&/^data:image\/png;base64,iVBORw0KGgo[A-Za-z0-9+/]+={0,2}$/.test(url)){
-  if(avatar.getAttribute('src')!==url){avatar.src=url;avatar.hidden=false;}
- }else{
-  avatar.hidden=true;
-  avatar.removeAttribute('src');
- }
- showPlayerStatus(null);
- $('#account-player-summary').hidden=false;
-}
-$('#account-player-avatar').addEventListener('error',event=>{event.currentTarget.hidden=true});
 function showPlayerFor(id){
- if(playerOwner!==id){
-  playerOwner=id;
-  playerRequest=null;
-  clearPlayerSummary();
-  $('#account-player').hidden=!id;
-  if(id)showPlayerStatus('loading');
- }
- if(!id||playerRequest)return;
- const request={id};
- playerRequest=request;
- void (async()=>{
-  try{
-   const {data,error}=await supabase.from('aim_account_player_profiles').select('profile').eq('user_id',request.id).maybeSingle();
-   if(playerRequest!==request)return;
-   if(error)throw error;
-   renderPlayer(data?.profile);
-  }catch{
-   if(playerRequest!==request)return;
-   if($('#account-player-summary').hidden)showPlayerStatus('error');
-  }finally{
-   if(playerRequest===request)playerRequest=null;
-  }
- })();
+ player.setAccount(id,usernameFromUser(user));
 }
 function showUser(next,approval=null){
  user=next&&validUid(next.id)?next:null;

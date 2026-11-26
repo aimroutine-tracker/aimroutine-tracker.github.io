@@ -1,6 +1,6 @@
 import {FOCUS,TOOLS,createRoutine} from './training-core-v5.mjs';
 import {storageKey,activeUid} from './cloud-core-v7.mjs';
-import {EXT_KEY,cleanExtension,cleanProfile,startProgram,programCalendar,scenarioOptions,scenarioMetrics,calendarGrid,achievements,toInterchange,parseInterchange} from './training-v6-core.mjs';
+import {EXT_KEY,cleanExtension,cleanProfile,sharedTrainingPlayer,startProgram,programCalendar,scenarioOptions,scenarioMetrics,calendarGrid,achievements,toInterchange,parseInterchange} from './training-v6-core.mjs';
 (()=>{
 'use strict';
 const $=s=>document.querySelector(s);
@@ -8,7 +8,8 @@ const element=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==und
 const dateStr=iso=>new Date(iso).toLocaleDateString(document.documentElement.lang==='en'?'en-GB':'fr-FR',{day:'numeric',month:'short'});
 const getStore=()=>window.AIMWeb.getStore();
 const percentile=n=>n===null?'—':Number(n).toFixed(1)+' %';
-let extras;
+let extras,sharedPlayer=null;
+const manuallySelected=new Set();
 function load(){
  if(!activeUid()){extras=cleanExtension(null);return}
  try{extras=cleanExtension(JSON.parse(localStorage.getItem(storageKey(EXT_KEY))||'null'))}catch{extras=cleanExtension(null)}
@@ -20,31 +21,56 @@ function save(next){
 }
 function showProfile(){
  const p=extras.profile;
- const mapping={'player-name':p.nickname,'player-avatar':p.avatar,'player-rank':p.rank,'player-tool':p.tool,'player-dpi':p.dpi??'','player-sens':p.sensitivity??'','player-mouse':p.mouse,'player-goal':p.goal};
- Object.entries(mapping).forEach(([key,value])=>$('#'+key).value=value);
- $('#program-tool').value=p.tool;
- updateProfilePreview();
+ const mapping={'player-tool':p.tool,'player-mouse':p.mouse,'player-goal':p.goal};
+ for(const [key,value] of Object.entries(mapping))$('#'+key).value=value;
+ renderPlayer();
+ suggestTraining();
 }
-function profileFromForm(){
- return cleanProfile({nickname:$('#player-name').value,avatar:$('#player-avatar').value,rank:$('#player-rank').value,tool:$('#player-tool').value,dpi:$('#player-dpi').value,sensitivity:$('#player-sens').value,mouse:$('#player-mouse').value,goal:$('#player-goal').value});
+function renderPlayer(){
+ const legacy=extras.profile;
+ const name=sharedPlayer?.name||legacy.nickname||'—';
+ $('#player-display-name').textContent=name;
+ const avatar=$('#player-avatar-preview');
+ avatar.textContent=sharedPlayer?name.slice(0,2).toUpperCase():({crosshair:'⌖',bolt:'ϟ',shield:'◈',star:'✦'})[legacy.avatar];
+ if(sharedPlayer?.avatar){
+  const image=element('img');
+  image.alt='';
+  image.src=sharedPlayer.avatar;
+  avatar.replaceChildren(image);
+ }
+ const edpi=sharedPlayer?sharedPlayer.edpi:legacy.dpi&&legacy.sensitivity?legacy.dpi*legacy.sensitivity:null;
+ const rank=sharedPlayer?.rankLabel;
+ $('#player-edpi').textContent=[rank,edpi!==null?'eDPI '+new Intl.NumberFormat(document.documentElement.lang==='en'?'en-GB':'fr-FR',{maximumFractionDigits:1}).format(edpi):null].filter(Boolean).join(' · ');
 }
-function updateProfilePreview(){
- const p=profileFromForm();
- $('#player-display-name').textContent=p.nickname||'Joueur';
- $('#player-avatar-preview').textContent={crosshair:'⌖',bolt:'ϟ',shield:'◈',star:'✦'}[p.avatar];
- $('#player-edpi').textContent=p.dpi&&p.sensitivity?'eDPI : '+(p.dpi*p.sensitivity).toFixed(1):'eDPI : à renseigner';
+function suggestTraining(){
+ const profile=extras.profile;
+ const owned=sharedPlayer?.tools||[];
+ const tool=owned.length&&!owned.includes(profile.tool)?owned[0]:profile.tool;
+ if(!manuallySelected.has('program-tool'))$('#program-tool').value=tool;
+ if(!sharedPlayer||window.AIMWeb.getPlan())return;
+ const selection={rank:sharedPlayer.rank,focus:sharedPlayer.focus,tool};
+ if(sharedPlayer.minutes!==null){
+  // The web builder only offers these preset durations.
+  const durations=[...$('#duration').options].map(option=>Number(option.value));
+  const closest=durations.reduce((result,value)=>Math.abs(value-sharedPlayer.minutes)<Math.abs(result-sharedPlayer.minutes)?value:result);
+  selection.duration=String(closest);
+ }
+ for(const [id,value] of Object.entries(selection))if(value&&!manuallySelected.has(id))$('#'+id).value=value;
 }
 function setupProfile(){
- $('#player-form').addEventListener('input',updateProfilePreview);
- $('#player-form').addEventListener('change',updateProfilePreview);
+ for(const id of ['rank','focus','tool','program-tool','duration'])$('#'+id).addEventListener('change',()=>manuallySelected.add(id));
+ window.addEventListener('aim-player-profile-updated',event=>{
+  sharedPlayer=sharedTrainingPlayer(event.detail);
+  renderPlayer();
+  suggestTraining();
+ });
  $('#player-form').addEventListener('submit',event=>{
-  event.preventDefault();const draft=profileFromForm();
-  if(($('#player-dpi').value&&!draft.dpi)||($('#player-sens').value&&!draft.sensitivity)){
-   $('#profile-status').textContent='DPI ou sensibilité invalide.';return;
-  }
+  event.preventDefault();
+  const draft=cleanProfile({...extras.profile,tool:$('#player-tool').value,mouse:$('#player-mouse').value,goal:$('#player-goal').value});
   if(save({...extras,profile:draft})){
-   $('#profile-status').textContent='Profil enregistré sur ton compte · Synchronisation cloud automatique.';
-   $('#program-tool').value=draft.tool;$('#rank').value=draft.rank;renderProgram();
+   $('#profile-status').textContent=document.documentElement.lang==='en'?'Preferences saved.':'Préférences enregistrées.';
+   suggestTraining();
+   renderProgram();
   }
  });
  showProfile();
@@ -80,7 +106,7 @@ function setupProgram(){
  $('#program-form').addEventListener('submit',e=>{
   e.preventDefault();
   if(extras.program&&!confirm('Remplacer le programme actuel ?'))return;
-  if(save({...extras,program:startProgram(Number($('#program-length').value),extras.profile.rank,$('#program-tool').value)}))renderProgram();
+  if(save({...extras,program:startProgram(Number($('#program-length').value),(sharedPlayer?.rank??extras.profile.rank),$('#program-tool').value)}))renderProgram();
  });
  $('#program-reset').addEventListener('click',()=>{
   if(extras.program&&confirm('Terminer ce programme ? Les résultats enregistrés sont conservés.')&&save({...extras,program:null}))renderProgram();
@@ -184,7 +210,7 @@ function setupInterop(){
    if(file.size>3e6)throw Error('Fichier limité à 3 Mo.');
    const data=parseInterchange(JSON.parse(await file.text()));
    const added=window.AIMWeb.mergeData(data);
-   if(confirm('Importer également le profil et le calendrier du fichier ?')){
+   if(confirm('Importer également les préférences du site et le calendrier du fichier ?')){
     if(save(data.extension))showProfile();
    }
    renderAll();status.textContent=added+' nouvelle(s) séance(s) importée(s).';
