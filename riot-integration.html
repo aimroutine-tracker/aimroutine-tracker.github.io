@@ -4,58 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#111115">
-<meta name="description" content="AimRoutine Tracker planned VALORANT Riot Sign On player journey and API data usage — public mockup for Riot review.">
-<title>Riot API — Intégration prévue | AimRoutine Tracker 3.11.0</title>
+<meta name="description" content="Historique VALORANT dans AimRoutine Tracker 3.11.0, import JSON et parcours Riot Sign On envisagé.">
+<title>Riot API et historique VALORANT | AimRoutine Tracker</title>
 <link rel="canonical" href="https://aimroutine-tracker.github.io/riot-integration.html">
 <link rel="stylesheet" href="styles.css">
 <script src="site.js?v=9" defer></script>
-<style>
-.flow-hero{padding:64px 0 28px}
-.flow-hero h1{font-size:clamp(34px,5.6vw,58px);max-width:1050px}
-.flow-alert{border:1px solid #3d7f90;background:#0b3041;padding:17px 20px;border-radius:14px;color:#d6f6fb;margin-top:20px}
-.flow-alert strong{color:#7dfff2}
-.flow-chapters{display:flex;gap:12px;flex-wrap:wrap;margin:22px 0}
-.flow-chapters a{text-decoration:none;background:#18263a;border:1px solid #2b495a;padding:9px 13px;border-radius:9px;font-size:13px}
-.flow-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-.flow-node{background:linear-gradient(155deg,#152b43,#0e1a2d);border:1px solid #245166;border-radius:16px;padding:22px 16px;position:relative;min-height:196px}
-.flow-node strong{display:block;font-size:17px;margin:8px 0}
-.flow-node .n{font-weight:900;color:#49efe6;font-size:11px;letter-spacing:.1em}
-.flow-node p{font-size:13px;color:#aac6d6;margin:0}
-.flow-node:not(:last-child):after{content:"→";position:absolute;right:-12px;top:44%;font-size:20px;color:#53e9e4;z-index:1;background:#0e1b2d;padding:0 2px}
-.mockups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px;margin-top:24px}
-.mockup{background:#0d1c30;border:1px solid #34536b;border-radius:18px;overflow:hidden}
-.mockup-top{padding:14px 17px;border-bottom:1px solid #28485c;display:flex;gap:8px;align-items:center;color:#92b6cf;font-size:12px}
-.mockup-dot{border-radius:50%;width:8px;height:8px;background:#3b6278}
-.mockup-body{padding:23px 18px;min-height:310px}
-.mockup-body h3{font-size:20px;line-height:1.25;margin:10px 0}
-.mockup-body p{font-size:13px;color:#b4cfe0}
-.fake-button{background:#36dce1;color:#041a24;border-radius:10px;padding:11px;text-align:center;font-size:14px;font-weight:800;margin:16px 0 12px}
-.fake-button.disabled{background:#283b50;color:#aabaca}
-.fake-list{list-style:none;margin:10px 0;padding:0}
-.fake-list li{background:#152b41;border:1px solid #274659;padding:9px 10px;border-radius:10px;margin-top:7px;font-size:12px}
-.fake-check{border:1px solid #568797;padding:13px;border-radius:10px;background:#10283b;font-size:12px}
-.fake-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:16px}
-.fake-metrics div{border:1px solid #315569;border-radius:10px;padding:12px 5px;text-align:center}
-.fake-metrics b{display:block;font-size:20px;color:#d6ffff}
-.fake-metrics small{color:#a9bece;font-size:10px}
-.technical{display:grid;grid-template-columns:1fr 1fr;gap:15px}
-.technical .card{min-height:auto}
-.technical code{overflow-wrap:anywhere;color:#83f2e4}
-.timeline{border-left:2px solid #3abeca;padding-left:20px}
-.timeline>div{padding:7px 0 16px}
-.timeline strong{display:block;color:#e5faff}
-.timeline p{color:#b4cbd9;margin:4px 0}
-@media(max-width:940px){.flow-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.flow-node:after{display:none}.mockups{grid-template-columns:1fr}.mockup-body{min-height:auto}.technical{grid-template-columns:1fr}}
-@media(max-width:530px){.flow-grid{grid-template-columns:1fr}}
-</style>
 <link rel="stylesheet" href="design.css">
 <link rel="manifest" href="manifest.webmanifest?v=2">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Riot Sign On — Parcours envisagé pour AimRoutine Tracker">
+<meta property="og:title" content="Riot API et historique VALORANT — AimRoutine Tracker">
 <meta property="og:description" content="Présentation de l’intégration Riot Sign On envisagée. Demande API de production en attente, aucune authentification réelle disponible.">
 <meta property="og:url" content="https://aimroutine-tracker.github.io/riot-integration.html">
 <link rel="stylesheet" href="site-global-v31.css?v=4">
-<link rel="stylesheet" href="riot-presentation-v32.css?v=3">
+<link rel="stylesheet" href="riot-presentation-v32.css?v=4">
 <link rel="preconnect" href="https://cmsassets.rgpub.io" crossorigin>
 <link rel="stylesheet" href="site-shared-v5.css?v=3">
 <link rel="icon" type="image/png" sizes="128x128" href="aimroutine-logo.png?v=3">
@@ -125,137 +86,119 @@
   </div>
 </nav>
 </header>
-<main id="main">
-<div class="wrap flow-hero riot32-hero">
- <div class="riot32-hero-copy">
-  <div class="eyebrow">RIOT GAMES API / RIOT SIGN ON / <span class="fr">INTÉGRATION ENVISAGÉE</span><span class="en">PLANNED INTEGRATION</span></div>
-  <h1><span class="fr">Tes parties.<br>Tes données.<br><span class="accent">Ton choix.</span></span><span class="en">Your matches.<br>Your data.<br><span class="accent">Your choice.</span></span></h1>
-  <p class="lead"><span class="fr">Découvre comment AimRoutine Tracker prévoit de connecter ton compte Riot uniquement avec ton accord, puis d’analyser tes propres matchs après la partie. L’authentification officielle et la synchronisation ne sont pas encore disponibles.</span><span class="en">Explore how AimRoutine Tracker plans to link your Riot account only with your consent, then review your own matches after play. Official authentication and synchronization are not yet available.</span></p>
-  <div class="riot32-hero-actions">
-   <a class="riot32-primary" href="#flow"><span class="fr">Découvrir le parcours</span><span class="en">Explore the journey</span> <span aria-hidden="true">↘</span></a>
-   <a class="riot32-secondary" href="#screens"><span class="fr">Voir les maquettes</span><span class="en">See the mockups</span> <span aria-hidden="true">↗</span></a>
-  </div>
-  <div class="riot32-status"><i aria-hidden="true"></i><span class="fr">Intégration Riot en attente d’autorisation</span><span class="en">Riot integration pending approval</span></div>
- </div>
- <div class="riot32-hero-aside" aria-label="Signature visuelle AimRoutine Tracker, sans authentification Riot active">
-  <img class="riot32-aside-symbol ar-brand-visual" src="aimroutine-logo.png?v=3" width="98" height="98" alt="">
-  <p><span class="fr">TA PRATIQUE.<br>TES MATCHS.<br>TA PROGRESSION.</span><span class="en">YOUR PRACTICE.<br>YOUR MATCHES.<br>YOUR PROGRESS.</span></p>
-  <span class="riot32-aside-note"><span class="fr">Consentement · Confidentialité · Analyse après partie</span><span class="en">Consent · Privacy · Post-match analysis</span></span>
- </div>
-</div>
-<figure class="ar42-wide-visual wrap ar42-riot-visual"><img src="https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/77689751053a9cc507696fce850e345776667f0e-2560x1440.jpg" width="2560" height="1440" loading="lazy" decoding="async" alt="Capture promotionnelle de VALORANT avec des agents en situation de jeu"><figcaption><div><span class="ar42-eyebrow">MATCH CONTEXT / NOT LIVE DATA</span><strong><span class="fr">Des visuels du jeu, pas des données Riot connectées.</span><span class="en">Game artwork, not connected Riot data.</span></strong></div><small><span class="fr">Visuel du kit média de VALORANT © Riot Games · Projet indépendant non sponsorisé par Riot Games.</span><span class="en">VALORANT media kit artwork © Riot Games · Independent project, not endorsed by Riot Games.</span></small></figcaption></figure>
-<nav class="ar22-page-nav" aria-label="Dans cette page / On this page">
-  <a href="#flow"><span class="fr">Parcours de connexion</span><span class="en">Connection flow</span></a>
-  <a href="#screens"><span class="fr">Écrans</span><span class="en">Screens</span></a>
-  <a href="#api"><span class="fr">Données et API</span><span class="en">Data and API</span></a>
-  <a href="#status"><span class="fr">État du projet</span><span class="en">Project status</span></a>
-</nav>
-<section class="wrap riot32-real" aria-labelledby="riot32-real-title">
- <div class="riot32-real-heading">
-  <div><span class="riot32-real-kicker"><span class="fr">UN LOGICIEL WINDOWS BIEN RÉEL / VERSION 3.11.0</span><span class="en">A REAL WINDOWS APP / VERSION 3.11.0</span></span>
-  <h2 class="riot32-real-title" id="riot32-real-title"><span class="fr">Le logiciel aujourd’hui. L’intégration Riot, demain.</span><span class="en">The app today. Riot integration in the future.</span></h2></div>
-  <p class="riot32-real-desc"><span class="fr">Voici la page des parties VALORANT de la version 3.11.0, avec des matchs de démonstration.</span><span class="en">This is the VALORANT matches page in version 3.11.0, with demo matches.</span></p>
- </div>
- <div class="riot32-real-frame">
-  <img src="aimroutine-311-matches.webp" width="1440" height="960" loading="lazy" decoding="async" alt="Capture réelle de l’historique VALORANT dans AimRoutine Tracker 3.11.0 avec des matchs fictifs.">
- </div>
- <p class="riot32-real-caption"><span class="fr">Capture authentique du logiciel Windows 3.11.0 · Profil fictif · La connexion Riot et les données de matchs automatiques sont encore des fonctionnalités envisagées.</span><span class="en">Authentic Windows 3.11.0 screenshot · Fictional profile · Riot account linking and automatic match data remain planned features.</span></p>
-</section>
-<div class="wrap">
- <div class="riot32-state" role="note">
-  <div><p class="riot32-state-title"><span class="fr">Démonstration uniquement — aucune connexion Riot active.</span><span class="en">Demonstration only — Riot login is not live.</span></p>
-   <p class="riot32-state-desc"><span class="fr">Les trois écrans ci-dessous sont des maquettes non interactives et leurs chiffres sont fictifs. Aucun identifiant Riot n’est demandé, aucune connexion n’a lieu, et aucune donnée réelle n’est collectée.</span><span class="en">The three screens below are noninteractive mockups with fictional values. No Riot credentials are requested, no login takes place, and no real match data is collected.</span></p></div>
-  <span class="riot32-state-tag">RSO / <span class="fr">EN ATTENTE</span><span class="en">PENDING</span></span>
- </div>
- <nav class="riot32-chapters" aria-label="Sections de l’intégration Riot / Riot integration sections">
-  <a href="#flow"><span class="fr">01 Parcours utilisateur</span><span class="en">01 User journey</span></a>
-  <a href="#screens"><span class="fr">02 Maquettes</span><span class="en">02 Screen mockups</span></a>
-  <a href="#api"><span class="fr">03 API et sécurité</span><span class="en">03 API and security</span></a>
-  <a href="#status"><span class="fr">04 Avancement</span><span class="en">04 Project status</span></a>
- </nav>
-</div>
-<section class="wrap" id="flow">
-  <div class="section-label"><span class="en">01 — Account linking journey</span><span class="fr">01 — Connexion du compte</span></div>
-  <h2><span class="en">Four steps, with player opt-in.</span><span class="fr">Quatre étapes, avec consentement du joueur.</span></h2>
-  <div class="flow-grid">
-    <div class="flow-node"><span class="n">STEP 01</span><strong><span class="en">Open the app</span><span class="fr">Ouvrir l’application</span></strong><p class="en">Training features work locally without a Riot login. The player chooses the optional Match Stats page.</p><p class="fr">L'entraînement fonctionne sans compte Riot. Le joueur choisit d'accéder aux statistiques des matchs.</p></div>
-    <div class="flow-node"><span class="n">STEP 02</span><strong><span class="en">Read privacy notice</span><span class="fr">Lire les conditions</span></strong><p class="en">Clearly explain how match data is used, the player’s choice to opt in, and the visibility of data linked to an account.</p><p class="fr">Expliquer les usages des données, le consentement requis et leur visibilité après liaison du compte.</p></div>
-    <div class="flow-node"><span class="n">STEP 03</span><strong><span class="en">Log in via Riot</span><span class="fr">Connexion Riot</span></strong><p class="en">Redirect to Riot's official OAuth page. A secure backend handles the OAuth callback and credentials.</p><p class="fr">Redirection vers OAuth Riot. Un backend sécurisé gère le retour et les secrets.</p></div>
-    <div class="flow-node"><span class="n">STEP 04</span><strong><span class="en">View own history</span><span class="fr">Afficher les matchs</span></strong><p class="en">Use authorized match details for post-game analytics and comparisons with aim-training sessions.</p><p class="fr">Utiliser les matchs autorisés pour l'analyse après partie et la comparaison avec l'entraînement AIM.</p></div>
-  </div>
-</section>
-<section class="wrap" id="screens">
-<div class="section-label"><span class="en">02 — Screens for review</span><span class="fr">02 — Écrans de démonstration</span></div>
-<h2><span class="en">A visual preview of the intended experience.</span><span class="fr">Un aperçu visuel de l’expérience prévue.</span></h2>
-<p class="intro en">These are explanatory mockups, not interactive login forms. No hidden data, public opponent scouting or real-time tactical features are planned.</p>
-<p class="intro fr">Ces maquettes sont explicatives, pas des formulaires de connexion actifs. Aucun scouting d'adversaires ni assistance tactique en temps réel n’est prévu.</p>
-<div class="mockups">
- <article class="mockup"><div class="mockup-top"><span class="mockup-dot"></span><span class="mockup-dot"></span><span class="mockup-dot"></span> 01 / ACCOUNT</div>
- <div class="mockup-body"><div class="section-label">AIMROUTINE TRACKER</div><h3><span class="en">Match Statistics</span><span class="fr">Statistiques de matchs</span></h3>
- <p class="en">Account not connected. Aim training remains available offline. Connecting a Riot account is optional.</p><p class="fr">Compte non connecté. L'entraînement AIM reste accessible hors ligne. La liaison Riot est facultative.</p>
- <div class="fake-button disabled"><span class="en">Connect with Riot (planned)</span><span class="fr">Se connecter avec Riot (prévu)</span></div>
- <p class="small-note en">No active login in this visual mockup.</p><p class="small-note fr">Aucune connexion active dans cette maquette.</p>
- </div></article>
- <article class="mockup"><div class="mockup-top"><span class="mockup-dot"></span><span class="mockup-dot"></span><span class="mockup-dot"></span> 02 / CONSENT</div>
- <div class="mockup-body"><div class="section-label">PLAYER OPT-IN</div><h3><span class="en">Before you link your account</span><span class="fr">Avant de lier ton compte</span></h3>
- <p class="en">In the planned service, linking your account will make your authorized gameplay statistics visible as described in the app's privacy notice. Only opt-in players will have stats displayed through this integration.</p>
- <p class="fr">Dans le service prévu, la liaison rendra visibles les statistiques autorisées selon la politique de confidentialité. Seuls les joueurs ayant donné leur accord auront leurs statistiques affichées.</p>
- <div class="fake-check"><span class="en">□ I understand how my data will be used and agree to link my Riot account.</span><span class="fr">□ Je comprends l’usage des données et accepte de lier mon compte Riot.</span></div>
- <div class="fake-button disabled"><span class="en">Continue to Riot (planned)</span><span class="fr">Continuer vers Riot (prévu)</span></div>
- </div></article>
- <article class="mockup"><div class="mockup-top"><span class="mockup-dot"></span><span class="mockup-dot"></span><span class="mockup-dot"></span> 03 / MATCH REVIEW</div>
- <div class="mockup-body"><div class="section-label">SAMPLE DATA ONLY</div><h3><span class="en">Your match review</span><span class="fr">Analyse de tes parties</span></h3>
- <p class="en">Illustrative values, not actual Riot match data.</p><p class="fr">Valeurs fictives, pas des données Riot réelles.</p>
- <div class="fake-metrics"><div><b>22</b><small>KILLS</small></div><div><b>14</b><small>DEATHS</small></div><div><b>6</b><small>ASSISTS</small></div></div>
- <ul class="fake-list">
- <li><span class="en">Map: Sample map</span><span class="fr">Carte : carte fictive</span></li>
- <li><span class="en">Aim training: 25 min (local)</span><span class="fr">Entraînement AIM : 25 min (local)</span></li>
- <li><span class="en">Trend: illustrative example</span><span class="fr">Tendance : exemple fictif</span></li>
- </ul>
- </div></article>
-</div>
-</section>
-<section class="wrap" id="api">
- <div class="section-label"><span class="en">03 — Intended data handling</span><span class="fr">03 — Traitement prévu des données</span></div>
- <h2><span class="en">What the Riot API will be used for</span><span class="fr">Comment l'API Riot sera utilisée</span></h2>
- <div class="riot33-consent" aria-label="Résumé des engagements / Privacy commitments">
- <div><span class="riot33-num">01</span><h3><span class="fr">Consentement d'abord</span><span class="en">Opt-in comes first</span></h3><p><span class="fr">La liaison du compte serait toujours facultative, après explication de l’usage des données.</span><span class="en">Account linking would always be optional, after explaining the use of data.</span></p></div>
- <div><span class="riot33-num">02</span><h3><span class="fr">Tes propres parties</span><span class="en">Your own matches</span></h3><p><span class="fr">Seules les données autorisées du joueur consentant seraient consultées pour l’analyse après partie.</span><span class="en">Only the opted-in player’s permitted data would be used for post-match analysis.</span></p></div>
- <div><span class="riot33-num">03</span><h3><span class="fr">Aucun avantage en direct</span><span class="en">No live advantage</span></h3><p><span class="fr">Pas de scouting d’adversaires, d’informations privées sur des tiers ou d’assistance tactique en temps réel.</span><span class="en">No opponent scouting, private third-party information or real-time tactical coaching.</span></p></div>
- <div><span class="riot33-num">04</span><h3><span class="fr">Contrôles prévus</span><span class="en">Planned controls</span></h3><p><span class="fr">Déconnexion et suppression des données devront être prévues avant une éventuelle mise en service.</span><span class="en">Unlinking and data-deletion controls would be required before any future launch.</span></p></div>
-</div>
-<p class="riot33-api-note"><span class="fr">Tout ce parcours reste un projet soumis aux autorisations Riot. <a href="updates.html#planned">Consulter l'état actuel des fonctionnalités.</a></span><span class="en">This entire flow remains a proposal subject to Riot approval. <a href="updates.html#planned">Check the current feature status.</a></span></p>
-<div class="technical">
-  <article class="card"><h3><span class="en">Planned official endpoints</span><span class="fr">Endpoints officiels prévus</span></h3>
-  <p><code>GET /riot/account/v1/accounts/me</code><br><span class="en">Identify the player after successful approved RSO login.</span><span class="fr">Identifier le joueur après connexion RSO autorisée.</span></p>
-  <p><code>GET /val/match/v1/matchlists/by-puuid/{puuid}</code><br><span class="en">Retrieve available match IDs for the opted-in player.</span><span class="fr">Récupérer les identifiants des matchs du joueur consentant.</span></p>
-  <p><code>GET /val/match/v1/matches/{matchId}</code><br><span class="en">Obtain permitted match details for after-game analysis.</span><span class="fr">Obtenir les détails autorisés des matchs après la partie.</span></p>
-  </article>
-  <article class="card"><h3><span class="en">Security & fair-play safeguards</span><span class="fr">Sécurité et fair-play</span></h3>
-  <ul class="fake-list">
-  <li class="en">Explicit opt-in and data-visibility notice before linking</li><li class="fr">Consentement explicite et avertissement sur la visibilité des données</li>
-  <li class="en">Secure backend for RSO client secrets and authorized tokens</li><li class="fr">Backend sécurisé pour les secrets RSO et tokens autorisés</li>
-  <li class="en">No access to non-opted-in players' private stats</li><li class="fr">Aucun accès aux données privées des joueurs non consentants</li>
-  <li class="en">No live tactical coaching or pre-match opponent scouting</li><li class="fr">Aucun conseil tactique en direct ni scouting d'adversaires</li>
-  <li class="en">Account unlink and data deletion controls planned before launch</li><li class="fr">Déconnexion et suppression des données prévues avant publication</li>
-  </ul>
-  </article>
- </div>
-</section>
-<section class="wrap" id="status">
-<div class="panel">
-<div class="section-label"><span class="en">04 — Project status</span><span class="fr">04 — État du projet</span></div>
-<h2><span class="en">A public project under development</span><span class="fr">Un projet public en développement</span></h2>
-<div class="timeline">
- <div><strong><span class="en">Current: Public informational website and design mockups</span><span class="fr">Actuel : site vitrine public et maquettes</span></strong><p class="en">Training functionality is being developed separately in the Windows application. This page is available for review without any account or login.</p><p class="fr">Les fonctions d'entraînement sont développées séparément dans l'application Windows. Cette page de revue est publique et sans compte.</p></div>
- <div><strong><span class="en">Next: Riot production review and RSO application</span><span class="fr">Ensuite : examen Riot et demande RSO</span></strong><p class="en">Match synchronization and official Riot login are disabled until production and RSO approval.</p><p class="fr">La synchronisation et la connexion officielle sont désactivées avant l'approbation Riot.</p></div>
- <div><strong><span class="en">Future: Optional, authorized match-data synchronization</span><span class="fr">À terme : synchronisation facultative des matchs autorisés</span></strong><p class="en">After approval, authenticated players can review their own permitted match history and compare it with local aim-training results.</p><p class="fr">Après approbation, les joueurs connectés pourront consulter leurs matchs autorisés et comparer les résultats avec leurs entraînements locaux.</p></div>
-</div>
-<p class="small-note en">AimRoutine Tracker is independent and is not endorsed or sponsored by Riot Games. VALORANT and Riot Games are trademarks of Riot Games, Inc.</p>
-<p class="small-note fr">AimRoutine Tracker est indépendant et n'est ni approuvé ni sponsorisé par Riot Games. VALORANT et Riot Games sont des marques de Riot Games, Inc.</p>
-<a class="btn outline" href="index.html"><span class="en">Return to website</span><span class="fr">Retour au site</span></a>
-</div>
-</section>
+<main id="main" class="riot311">
+  <section class="riot311-hero" id="available" aria-labelledby="riot311-title">
+    <div class="valorant-shell riot311-hero-layout">
+      <div class="riot311-copy">
+        <p class="riot311-label">Riot API · VALORANT</p>
+        <h1 id="riot311-title"><span class="fr">Tes parties VALORANT <span class="riot311-accent">en détail</span></span><span class="en">A closer look at <span class="riot311-accent">your VALORANT matches</span></span></h1>
+        <p><span class="fr">Dans AimRoutine Tracker 3.11.0, l’import JSON permet déjà de consulter les cartes, les scores et les statistiques de tes parties dans le logiciel Windows.</span><span class="en">In AimRoutine Tracker 3.11.0, JSON imports already let you review maps, scores and stats for your matches in the Windows app.</span></p>
+        <p class="riot311-status"><span class="fr">Riot Sign On et l’import automatique restent indisponibles. L’intégration reste soumise à l’autorisation de Riot.</span><span class="en">Riot Sign On and automatic imports are currently unavailable. This integration requires Riot approval.</span></p>
+        <div class="riot311-actions">
+          <a class="riot311-action riot311-action-primary" href="#flow"><span class="fr">Voir le parcours envisagé</span><span class="en">See the proposed flow</span> <span aria-hidden="true">↓</span></a>
+          <a class="riot311-action" href="product.html#riot"><span class="fr">Voir le logiciel</span><span class="en">See the app</span></a>
+        </div>
+      </div>
+      <figure class="riot311-shot">
+        <a href="aimroutine-311-matches.webp"><img src="aimroutine-311-matches.webp" width="1440" height="960" fetchpriority="high" decoding="async" alt="Historique Windows des parties VALORANT. Résultats fictifs sur Ascent et Haven."></a>
+        <figcaption><span class="fr">Capture réelle de Windows 3.11.0 · Parties de démonstration</span><span class="en">Screenshot from Windows 3.11.0 · Demo matches</span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <nav class="valorant-shell riot311-nav" aria-label="Dans cette page / On this page">
+    <a href="#flow"><span class="fr">Parcours Riot</span><span class="en">Riot flow</span></a>
+    <a href="#screens"><span class="fr">Maquettes</span><span class="en">Mockups</span></a>
+    <a href="#api"><span class="fr">Données et API</span><span class="en">Data and API</span></a>
+    <a href="#status"><span class="fr">État de l’intégration</span><span class="en">Integration status</span></a>
+  </nav>
+
+  <section class="valorant-shell riot311-section" id="flow" aria-labelledby="riot311-flow-title">
+    <div class="riot311-copy">
+      <h2 id="riot311-flow-title"><span class="fr">Le parcours de connexion envisagé</span><span class="en">The proposed connection flow</span></h2>
+      <p><span class="fr">La liaison serait facultative. Le joueur choisirait de partager ses données Riot avant de retrouver ses parties terminées dans AimRoutine.</span><span class="en">Linking would be optional. Players would choose whether to share their Riot data before viewing completed matches in AimRoutine.</span></p>
+    </div>
+    <ol class="riot311-grid riot311-steps" role="list">
+      <li class="riot311-card"><h3><span class="fr">Ouvrir les parties VALORANT</span><span class="en">Open VALORANT matches</span></h3><p><span class="fr">Le joueur ouvre l’historique dans AimRoutine et choisit de lier son compte Riot.</span><span class="en">The player opens match history in AimRoutine and chooses to link their Riot account.</span></p></li>
+      <li class="riot311-card"><h3><span class="fr">Choisir les données à partager</span><span class="en">Choose what to share</span></h3><p><span class="fr">AimRoutine explique quelles données seraient utilisées, pour quel usage et qui pourrait les consulter.</span><span class="en">AimRoutine explains what would be used, why it is needed and who could view it.</span></p></li>
+      <li class="riot311-card"><h3><span class="fr">S’identifier auprès de Riot</span><span class="en">Sign in with Riot</span></h3><p><span class="fr">Après accord du joueur, la connexion se terminerait sur la page officielle Riot.</span><span class="en">After the player agrees, they would sign in on Riot’s official page.</span></p></li>
+      <li class="riot311-card"><h3><span class="fr">Consulter ses matchs terminés</span><span class="en">Review completed matches</span></h3><p><span class="fr">Une fois l’accès autorisé, le joueur retrouverait ses parties et leurs statistiques dans AimRoutine.</span><span class="en">Once access is authorized, the player would see their own matches and stats in AimRoutine.</span></p></li>
+    </ol>
+  </section>
+
+  <section class="valorant-shell riot311-section" id="screens" aria-labelledby="riot311-screens-title">
+    <div class="riot311-copy">
+      <h2 id="riot311-screens-title"><span class="fr">Les écrans envisagés</span><span class="en">Proposed screens</span></h2>
+      <p><span class="fr">Ces maquettes sont statiques. Les valeurs sont fictives et la page ne collecte aucun identifiant Riot.</span><span class="en">These mockups are static. Values are fictional and the page collects no Riot credentials.</span></p>
+    </div>
+    <div class="riot311-grid">
+      <article class="riot311-card">
+        <h3><span class="fr">Liaison du compte</span><span class="en">Account linking</span></h3>
+        <div class="riot311-example"><strong>Riot Sign On</strong><p><span class="fr">Connexion désactivée dans cette maquette.</span><span class="en">Sign-in is disabled in this mockup.</span></p></div>
+        <p><span class="fr">Les routines AIM restent disponibles dans le logiciel hors ligne.</span><span class="en">Aim routines remain available in the app offline.</span></p>
+      </article>
+      <article class="riot311-card">
+        <h3><span class="fr">Consentement</span><span class="en">Consent</span></h3>
+        <div class="riot311-example"><strong><span class="fr">Usage prévu des données</span><span class="en">Intended use of data</span></strong><p><span class="fr">Les données autorisées serviraient à consulter ses propres parties après le match.</span><span class="en">Permitted data would be used to review your own matches after play.</span></p></div>
+        <p><span class="fr">Le joueur pourrait choisir de lier ou de ne pas lier son compte.</span><span class="en">The player could choose whether to link the account.</span></p>
+      </article>
+      <article class="riot311-card">
+        <h3><span class="fr">Bilan après la partie</span><span class="en">Post-match review</span></h3>
+        <div class="riot311-example">
+          <dl class="riot311-metrics"><div><dt><span class="fr">Éliminations</span><span class="en">Kills</span></dt><dd>22</dd></div><div><dt><span class="fr">Morts</span><span class="en">Deaths</span></dt><dd>14</dd></div><div><dt><span class="fr">Assistances</span><span class="en">Assists</span></dt><dd>6</dd></div></dl>
+          <p><span class="fr">Exemple fictif · Ascent</span><span class="en">Fictional example · Ascent</span></p>
+        </div>
+        <p><span class="fr">Le bilan associerait carte, score et statistiques de la partie.</span><span class="en">The review would bring the map, score and match stats together.</span></p>
+      </article>
+    </div>
+  </section>
+
+  <section class="valorant-shell riot311-section" id="api" aria-labelledby="riot311-api-title">
+    <div class="riot311-copy">
+      <h2 id="riot311-api-title"><span class="fr">Données et sécurité</span><span class="en">Data and security</span></h2>
+    </div>
+    <div class="riot311-grid riot311-grid-two">
+      <article class="riot311-card">
+        <h3><span class="fr">Usage limité à l’après-match</span><span class="en">Post-match use only</span></h3>
+        <ul>
+          <li><span class="fr">Analyse des données autorisées du joueur consentant.</span><span class="en">Analysis of permitted data for opted-in players.</span></li>
+          <li><span class="fr">Aucun scouting des adversaires ni conseil tactique en direct.</span><span class="en">No opponent scouting or real-time tactical advice.</span></li>
+        </ul>
+      </article>
+      <article class="riot311-card">
+        <h3><span class="fr">Contrôle du compte et des accès</span><span class="en">Account and access controls</span></h3>
+        <ul>
+          <li><span class="fr">Secrets et jetons prévus côté serveur.</span><span class="en">Secrets and tokens would be kept on the server.</span></li>
+          <li><span class="fr">Dissociation et suppression des données prévues avant la mise en service.</span><span class="en">Unlinking and data deletion would be available before launch.</span></li>
+        </ul>
+      </article>
+    </div>
+    <details class="riot311-endpoints">
+      <summary><span class="fr">Voir les routes API envisagées</span><span class="en">View proposed API routes</span></summary>
+      <dl>
+        <div><dt><code>GET /riot/account/v1/accounts/me</code></dt><dd><span class="fr">Identifier le compte après une connexion RSO autorisée.</span><span class="en">Identify the account after an authorized RSO sign-in.</span></dd></div>
+        <div><dt><code>GET /val/match/v1/matchlists/by-puuid/{puuid}</code></dt><dd><span class="fr">Lister les parties du joueur consentant.</span><span class="en">List the opted-in player’s matches.</span></dd></div>
+        <div><dt><code>GET /val/match/v1/matches/{matchId}</code></dt><dd><span class="fr">Afficher les détails autorisés d’une partie terminée.</span><span class="en">Display permitted details for a completed match.</span></dd></div>
+      </dl>
+    </details>
+  </section>
+
+  <section class="valorant-shell riot311-section" id="status" aria-labelledby="riot311-status-title">
+    <div class="riot311-copy riot311-text-links">
+      <h2 id="riot311-status-title"><span class="fr">État de l’intégration</span><span class="en">Integration status</span></h2>
+      <p><span class="fr">L’accès API de production et l’approbation du client Riot Sign On sont requis avant d’activer la liaison Riot et la récupération automatique des parties.</span><span class="en">Production API access and approval of the Riot Sign On client are required before Riot linking and automatic match retrieval can be enabled.</span></p>
+      <p><span class="fr">Le compte AimRoutine sert à synchroniser l’historique d’entraînement entre Windows et le site.</span><span class="en">The AimRoutine account syncs training history between Windows and the website.</span></p>
+      <div class="riot311-actions">
+        <a class="riot311-action" href="updates.html#planned"><span class="fr">Voir l’avancement</span><span class="en">View project status</span></a>
+        <a class="riot311-action" href="https://developer.riotgames.com/docs/valorant"><span class="fr">Documentation Riot</span><span class="en">Riot documentation</span> <span aria-hidden="true">↗</span></a>
+      </div>
+      <p class="riot311-legal"><span class="fr">AimRoutine Tracker est un projet indépendant. VALORANT et Riot Games sont des marques de Riot Games, Inc.</span><span class="en">AimRoutine Tracker is an independent project. VALORANT and Riot Games are trademarks of Riot Games, Inc.</span></p>
+    </div>
+    <figure class="riot311-art">
+      <img src="https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/77689751053a9cc507696fce850e345776667f0e-2560x1440.jpg" width="2560" height="1440" loading="lazy" decoding="async" alt="">
+      <figcaption><span class="fr">Illustration du kit média VALORANT © Riot Games</span><span class="en">VALORANT media kit artwork © Riot Games</span></figcaption>
+    </figure>
+  </section>
 </main>
 <footer class="site31-footer ar22-footer">
   <div class="valorant-shell ar22-footer-layout">
