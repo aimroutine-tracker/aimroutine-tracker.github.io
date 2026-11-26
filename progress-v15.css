@@ -151,9 +151,15 @@ body.site31.site31-progress .progress-workspace .r17-progress-kpis .v14-kpi {
   background: var(--progress-surface) !important;
 }
 .progress-metric-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  inline-size: 34px;
+  block-size: 34px;
+  border: 1px solid var(--progress-rule);
+  border-radius: 5px;
+  background: var(--progress-page);
   color: var(--progress-soft);
-  font-size: 18px;
-  line-height: 1;
 }
 body.site31.site31-progress .progress-workspace .v14-kpi small {
   margin: 0;
@@ -251,7 +257,11 @@ body.site31.site31-progress .progress-workspace #v14-p-skills-panel .v14-chart-e
 .progress-benchmarks dt { color: var(--progress-muted); font-size: 13px; }
 .progress-benchmarks dd, .progress-goal-value strong { margin: 0; color: var(--progress-text); font: 800 27px/1 var(--ar-display); white-space: nowrap; }
 .progress-goal-value { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 9px; margin-bottom: 13px; color: var(--progress-muted); font-size: 13px; }
-.progress-workspace .progress-goal-meter { margin: 0 0 9px; }
+.progress-workspace .progress-goal-meter {
+  margin: 0 0 9px;
+  border-color: var(--progress-rule) !important;
+  background: var(--progress-page) !important;
+}
 .progress-note { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 18px; margin-top: var(--progress-gap); padding-top: 8px; border-top: 1px solid var(--progress-rule); color: var(--progress-muted); }
 .progress-note p { flex: 1 1 350px; margin: 0; font-size: 12px; line-height: 1.5; }
 .progress-workspace .ar20-progress-advanced { display: none !important; }
@@ -264,7 +274,8 @@ body.site31.site31-progress .progress-workspace #v14-p-skills-panel .v14-chart-e
   body.site31.site31-progress.site-valorant .progress-workspace .r17-progress-kpis,
   .progress-distribution ul { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
   body.site31.site31-progress .progress-workspace :is(.r17-chart-grid, .r17-secondary-grid) { grid-template-columns: minmax(0, 1fr) !important; }
-  .progress-workspace .v14-kpi .progress-metric-icon { display: none; }
+  body.site31.site31-progress .progress-workspace .r17-progress-kpis .v14-kpi { gap: 7px; }
+  .progress-metric-icon { inline-size: 24px; block-size: 24px; --ar-ui-icon-size: 1rem; }
 }
 @media (max-width: 440px) {
   .progress-intro-actions { width: 100%; }

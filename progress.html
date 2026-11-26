@@ -16,10 +16,10 @@
 <link rel="stylesheet" href="site-interface-v18.css?v=1">
 <link rel="stylesheet" href="site-interface-v19.css?v=1">
 <link rel="stylesheet" href="site-reference-v20.css?v=1">
-<link rel="stylesheet" href="site-valorant-ui.css?v=1">
+<link rel="stylesheet" href="site-valorant-ui.css?v=2">
 <link rel="stylesheet" href="site-valorant-theme.css?v=2">
 <link rel="stylesheet" href="site-v22.css?v=5">
-<link rel="stylesheet" href="progress-v15.css?v=1">
+<link rel="stylesheet" href="progress-v15.css?v=2">
 </head>
 <body class="site31 site31-progress site-valorant r17">
 <a class="site31-skip" href="#main"><span class="fr">Aller au contenu</span><span class="en">Skip to content</span></a>
@@ -72,13 +72,13 @@
     <p class="progress-intro-text"><span class="fr">Retrouve tes séances enregistrées sur le site et suis ton objectif hebdomadaire.</span><span class="en">Review sessions recorded on the site and track your weekly goal.</span></p>
   </div>
   <div class="progress-intro-actions">
-    <a href="training.html#training-guide" class="r17-button r17-button--hot"><span class="fr">Choisir une séance</span><span class="en">Choose a session</span><span class="ar-icon i-arrow" aria-hidden="true"></span></a>
-    <a href="account.html#windows-sync" class="r17-button r17-button--outline"><span class="fr">Historique Windows</span><span class="en">Windows history</span><span class="ar-icon i-arrow" aria-hidden="true"></span></a>
+    <a href="training.html#training-guide" class="r17-button r17-button--hot"><span class="fr">Choisir une séance</span><span class="en">Choose a session</span><span class="ar-ui-icon ar-ui-icon--arrow-right" aria-hidden="true"></span></a>
+    <a href="account.html#windows-sync" class="r17-button r17-button--outline"><span class="fr">Historique Windows</span><span class="en">Windows history</span><span class="ar-ui-icon ar-ui-icon--arrow-right" aria-hidden="true"></span></a>
   </div>
 </section>
 <div class="progress-source" id="v14-source-status" data-source="loading">
   <p><i aria-hidden="true"></i><span id="v14-source-message" role="status"><span class="fr">Lecture de tes données…</span><span class="en">Loading your data…</span></span></p>
-  <a href="account.html#auth-panel" id="v14-source-signin" hidden><span class="fr">Se connecter</span><span class="en">Sign in</span> <span aria-hidden="true">→</span></a>
+  <a href="account.html#auth-panel" id="v14-source-signin" hidden><span class="fr">Se connecter</span><span class="en">Sign in</span> <span class="ar-ui-icon ar-ui-icon--arrow-right" aria-hidden="true"></span></a>
 </div>
 <section class="progress-overview" aria-labelledby="progress-overview-title">
   <header class="progress-overview-head"><h2 id="progress-overview-title"><span class="fr">Vue d’ensemble</span><span class="en">Overview</span></h2>
@@ -93,10 +93,10 @@
     <label for="v14-progress-scenario"><span class="fr">Scénario de départ</span><span class="en">Starting scenario</span><select id="v14-progress-scenario"></select></label>
   </div>
   <div class="v14-progress-kpis r17-progress-kpis">
-    <article class="v14-kpi"><span class="progress-metric-icon" aria-hidden="true">▥</span><div><small><span class="fr">Séances terminées</span><span class="en">Completed sessions</span></small><strong id="v14-p-sessions" aria-live="polite">—</strong></div></article>
-    <article class="v14-kpi"><span class="progress-metric-icon" aria-hidden="true">◷</span><div><small><span class="fr">Minutes enregistrées</span><span class="en">Recorded minutes</span></small><strong id="v14-p-minutes">—</strong></div></article>
-    <article class="v14-kpi"><span class="progress-metric-icon" aria-hidden="true">⌖</span><div><small><span class="fr">Précision moyenne</span><span class="en">Average accuracy</span></small><strong id="v14-p-average">—</strong></div></article>
-    <article class="v14-kpi"><span class="progress-metric-icon" aria-hidden="true">↗</span><div><small><span class="fr">Jours consécutifs</span><span class="en">Consecutive days</span></small><strong id="v14-p-streak">—</strong></div></article>
+    <article class="v14-kpi"><span class="progress-metric-icon" aria-hidden="true"><span class="ar-ui-icon ar-ui-icon--sessions" aria-hidden="true"></span></span><div><small><span class="fr">Séances terminées</span><span class="en">Completed sessions</span></small><strong id="v14-p-sessions" aria-live="polite">—</strong></div></article>
+    <article class="v14-kpi"><span class="progress-metric-icon" aria-hidden="true"><span class="ar-ui-icon ar-ui-icon--clock" aria-hidden="true"></span></span><div><small><span class="fr">Minutes enregistrées</span><span class="en">Recorded minutes</span></small><strong id="v14-p-minutes">—</strong></div></article>
+    <article class="v14-kpi"><span class="progress-metric-icon" aria-hidden="true"><span class="ar-ui-icon ar-ui-icon--target" aria-hidden="true"></span></span><div><small><span class="fr">Précision moyenne</span><span class="en">Average accuracy</span></small><strong id="v14-p-average">—</strong></div></article>
+    <article class="v14-kpi"><span class="progress-metric-icon" aria-hidden="true"><span class="ar-ui-icon ar-ui-icon--trending" aria-hidden="true"></span></span><div><small><span class="fr">Jours consécutifs</span><span class="en">Consecutive days</span></small><strong id="v14-p-streak">—</strong></div></article>
   </div>
 </section>
 <div class="v14-progress-grid r17-chart-grid">
@@ -129,12 +129,12 @@
     <header class="progress-panel-head"><h2 id="progress-goal-title"><span class="fr">Objectif hebdomadaire</span><span class="en">Weekly goal</span></h2></header>
     <div class="progress-goal-value"><strong id="v14-p-goal">—</strong><span><span class="fr">séances sur les 7 derniers jours</span><span class="en">sessions in the last 7 days</span></span></div>
     <div class="v14-meter progress-goal-meter" aria-hidden="true"><span id="v14-p-goalbar"></span></div>
-    <a class="progress-text-action" href="training.html#panel-dashboard"><span class="fr">Modifier mon objectif</span><span class="en">Edit my goal</span> <span aria-hidden="true">→</span></a>
+    <a class="progress-text-action" href="training.html#panel-dashboard"><span class="fr">Modifier mon objectif</span><span class="en">Edit my goal</span> <span class="ar-ui-icon ar-ui-icon--arrow-right" aria-hidden="true"></span></a>
   </section>
 </div>
 <div class="progress-note">
   <p><span class="fr">La précision moyenne de scénarios différents ne mesure pas ton niveau VALORANT. Pour comparer tes résultats, rejoue le même scénario.</span><span class="en">Average accuracy across different scenarios does not measure your VALORANT rank. Repeat the same scenario to compare results.</span></p>
-  <a class="progress-text-action" href="training.html#panel-builder"><span class="fr">Lancer une routine ciblée</span><span class="en">Start a focused routine</span> <span aria-hidden="true">→</span></a>
+  <a class="progress-text-action" href="training.html#panel-builder"><span class="fr">Lancer une routine ciblée</span><span class="en">Start a focused routine</span> <span class="ar-ui-icon ar-ui-icon--arrow-right" aria-hidden="true"></span></a>
 </div>
 </main><footer class="site31-footer ar22-footer">
   <div class="valorant-shell ar22-footer-layout">

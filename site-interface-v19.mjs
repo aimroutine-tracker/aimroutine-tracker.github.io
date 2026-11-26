@@ -7,7 +7,9 @@ const $$=(selector,root=document)=>[...root.querySelectorAll(selector)];
 const en=()=>document.documentElement.lang==='en';
 const tr=(fr,english)=>en()?english:fr;
 const tag=(fr,english)=>'<span class="fr">'+fr+'</span><span class="en">'+english+'</span>';
+const icon=name=>'<span class="ar-ui-icon ar-ui-icon--'+name+'" aria-hidden="true"></span>';
 const route=location.pathname.split('/').pop()||'index.html';
+const focusIcons={flick:'crosshair',tracking:'activity',micro:'target',control:'control'};
 
 function installWorkspace(){
  const screen=$('.r17-training-wrap');
@@ -43,6 +45,9 @@ function installWorkspace(){
   }
   for(const [index,row] of rows.entries()){
    const exercise=currentPlan.exercises[index];
+   const skill=CATALOG.find(item=>item.tool===tool&&item.name===exercise.name)?.focus||focus;
+   const symbol=$('.r17-icon .ar-ui-icon',row);
+   if(symbol)symbol.className='ar-ui-icon ar-ui-icon--'+focusIcons[skill];
    $('strong',row).textContent=exercise.name;
    $('div small',row).textContent=exercise.tip;
    $('.r17-exercise-duration',row).textContent=exercise.minutes+' min';
@@ -68,11 +73,11 @@ function installWorkspace(){
  toolbar.className='r19-workspace-toolbar r17-panel';
  toolbar.innerHTML='<div class="r19-tools-heading"><div><span class="r17-section-label">/// TRAINING COMMAND CENTER</span><h2>'+tag('Tous tes outils AIM','Your complete AIM toolkit')+'</h2><p>'+tag('Tes vrais programmes, ton minuteur, tes données et tes sauvegardes.','Actual programs, timer, statistics and backups.')+'</p></div><span class="r19-tools-brand" aria-hidden="true">⌖</span></div>'+
  '<div class="r19-tool-grid">'+[
-  ['builder','⌖','Mes routines','My routines'],['program','▱','Programmes','Programs'],
-  ['dashboard','◷','Objectifs','Goals'],['insights','▥','Statistiques','Statistics'],
-  ['challenges','♛','Défis','Challenges'],['coach','◇','Coach AIM','AIM coach'],
-  ['profile','◉','Mon profil','My profile'],['data','☁','Sauvegardes','Backups']
- ].map(([key,icon,fr,english])=>'<button type="button" class="r19-tool-btn" data-r19-panel="'+key+'"><span aria-hidden="true">'+icon+'</span>'+tag(fr,english)+'<b aria-hidden="true">↗</b></button>').join('')+'</div>';
+  ['builder','crosshair','Mes routines','My routines'],['program','calendar','Programmes','Programs'],
+  ['dashboard','flag','Objectifs','Goals'],['insights','chart','Statistiques','Statistics'],
+  ['challenges','trophy','Défis','Challenges'],['coach','spark','Coach AIM','AIM coach'],
+  ['profile','user','Mon profil','My profile'],['data','cloud','Sauvegardes','Backups']
+ ].map(([key,name,fr,english])=>'<button type="button" class="r19-tool-btn" data-r19-panel="'+key+'">'+icon(name)+tag(fr,english)+'</button>').join('')+'</div>';
  const week=$('.r17-weekline',screen);
  if(week)week.before(toolbar);else screen.append(toolbar);
 
@@ -125,7 +130,7 @@ function installWorkspace(){
  // Keep the multi-day program available beside the guided session.
  const planButton=document.createElement('button');
  planButton.type='button';planButton.className='r19-plan-program';
- planButton.innerHTML='▱ '+tag('Planifier un programme','Plan a program')+' <span aria-hidden="true">↗</span>';
+ planButton.innerHTML=icon('calendar')+tag('Planifier un programme','Plan a program')+icon('arrow-out');
  const planFooter=$('.r17-plan-footer',screen);
  if(planFooter)planFooter.append(planButton);
  planButton.addEventListener('click',()=>openPanel('program'));

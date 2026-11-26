@@ -59,9 +59,9 @@
 <link rel="stylesheet" href="site-interface-v18.css?v=1">
 <link rel="stylesheet" href="site-interface-v19.css?v=1">
 <link rel="stylesheet" href="site-reference-v20.css?v=1">
-<link rel="stylesheet" href="site-valorant-ui.css?v=1">
+<link rel="stylesheet" href="site-valorant-ui.css?v=2">
 <link rel="stylesheet" href="site-valorant-theme.css?v=2">
-<link rel="stylesheet" href="site-home-v21.css?v=1">
+<link rel="stylesheet" href="site-home-v21.css?v=2">
 <link rel="stylesheet" href="site-v22.css?v=5">
 </head>
 <body class="v5-landing site31 site31-home site-valorant">
@@ -131,7 +131,7 @@
       <div class="valorant-routine-grid">
         <article class="ar-drill ar-drill--precision">
           <div class="ar-drill-visual">
-            <span class="ar-drill-symbol" aria-hidden="true"><span class="ar-icon i-target"></span></span>
+            <span class="ar-drill-symbol" aria-hidden="true"><span class="ar-ui-icon ar-ui-icon--target"></span></span>
             <span class="ar-tag ar-drill-time"><span class="ar-icon i-clock" aria-hidden="true"></span>10 min</span>
           </div>
           <div class="ar-drill-body">
@@ -146,7 +146,7 @@
         </article>
         <article class="ar-drill ar-drill--tracking">
           <div class="ar-drill-visual">
-            <span class="ar-drill-symbol" aria-hidden="true"><span class="ar-icon i-tracking"></span></span>
+            <span class="ar-drill-symbol" aria-hidden="true"><span class="ar-ui-icon ar-ui-icon--activity"></span></span>
             <span class="ar-tag ar-drill-time"><span class="ar-icon i-clock" aria-hidden="true"></span>15 min</span>
           </div>
           <div class="ar-drill-body">
@@ -161,7 +161,7 @@
         </article>
         <article class="ar-drill ar-drill--flicks">
           <div class="ar-drill-visual">
-            <span class="ar-drill-symbol" aria-hidden="true"><span class="ar-icon i-bolt"></span></span>
+            <span class="ar-drill-symbol" aria-hidden="true"><span class="ar-ui-icon ar-ui-icon--zap"></span></span>
             <span class="ar-tag ar-drill-time"><span class="ar-icon i-clock" aria-hidden="true"></span>20 min</span>
           </div>
           <div class="ar-drill-body">
@@ -182,14 +182,193 @@
 <div class="valorant-shell home-discovery">
   <nav class="home-destinations" aria-label="Autres activités / More to explore">
     <a href="progress.html"><span><strong><span class="fr">Ma progression</span><span class="en">My progress</span></strong><small><span class="fr">Historique et statistiques</span><span class="en">History and statistics</span></small></span><span class="ar-icon i-arrow" aria-hidden="true"></span></a>
-    <a href="#aim-challenge"><span><strong><span class="fr">Défi AIM</span><span class="en">Aim challenge</span></strong><small><span class="fr">Teste ta précision en 20 s</span><span class="en">Test your accuracy in 20 s</span></small></span><span class="ar-icon i-arrow" aria-hidden="true"></span></a>
+    <a href="#aim-challenge"><span><strong><span class="fr">Défi AIM</span><span class="en">Aim challenge</span></strong><small><span class="fr">Teste ta précision en 15 à 30 s</span><span class="en">Test your accuracy in 15–30 s</span></small></span><span class="ar-icon i-arrow" aria-hidden="true"></span></a>
     <a href="product.html"><span><strong><span class="fr">Logiciel Windows</span><span class="en">Windows app</span></strong><small><span class="fr">Captures et fonctionnalités</span><span class="en">Screenshots and features</span></small></span><span class="ar-icon i-arrow" aria-hidden="true"></span></a>
   </nav>
 </div>
 
 <details id="home-details">
-  <summary class="valorant-shell home-details-summary"><span class="fr">Démos et détails du projet</span><span class="en">Demos and project details</span><span class="ar-icon i-arrow" aria-hidden="true"></span></summary>
+  <summary class="valorant-shell home-details-summary">
+    <span class="home-demo-icon"><span class="ar-ui-icon ar-ui-icon--play" aria-hidden="true"></span></span>
+    <span class="home-details-heading"><strong><span class="fr">Démos et détails du projet</span><span class="en">Demos and project details</span></strong><small><span class="fr">Joue au défi, compose un exemple de routine et découvre le logiciel.</span><span class="en">Play the challenge, preview a routine, and explore the Windows app.</span></small></span>
+    <span class="home-details-chevron"><span class="ar-ui-icon ar-ui-icon--chevron" aria-hidden="true"></span></span>
+  </summary>
   <div class="home-details-content">
+    <nav class="valorant-shell home-demo-directory" aria-label="Démos et projet / Demos and project">
+      <a class="home-demo-entry" href="#aim-challenge">
+        <span class="home-demo-icon"><span class="ar-ui-icon ar-ui-icon--target" aria-hidden="true"></span></span>
+        <span><strong><span class="fr">Défi AIM</span><span class="en">AIM challenge</span></strong><small><span class="fr">Un défi de 15 à 30 secondes</span><span class="en">A 15–30 second challenge</span></small></span>
+        <span class="ar-ui-icon ar-ui-icon--arrow-right" aria-hidden="true"></span>
+      </a>
+      <a class="home-demo-entry" href="#routine">
+        <span class="home-demo-icon"><span class="ar-ui-icon ar-ui-icon--calendar" aria-hidden="true"></span></span>
+        <span><strong><span class="fr">Démo de routine</span><span class="en">Routine demo</span></strong><small><span class="fr">Configure les exercices et la durée</span><span class="en">Adjust the drills and duration</span></small></span>
+        <span class="ar-ui-icon ar-ui-icon--arrow-right" aria-hidden="true"></span>
+      </a>
+      <a class="home-demo-entry" href="#project-overview">
+        <span class="home-demo-icon"><span class="ar-ui-icon ar-ui-icon--desktop" aria-hidden="true"></span></span>
+        <span><strong><span class="fr">Le projet</span><span class="en">The project</span></strong><small><span class="fr">Captures du logiciel Windows</span><span class="en">Windows app screenshots</span></small></span>
+        <span class="ar-ui-icon ar-ui-icon--arrow-right" aria-hidden="true"></span>
+      </a>
+    </nav>
+<section class="ar11-challenge v5-container" id="aim-challenge" aria-labelledby="ar11-title" data-ar11-game data-state="idle" data-mode="precision">
+ <div class="ar11-head">
+  <div class="ar11-intro">
+   <h2 id="ar11-title"><span class="fr">Défi AIM</span><span class="en">AIM challenge</span></h2>
+   <p><span class="fr">Choisis une durée puis touche le plus de cibles possible. Tu peux jouer en invité.</span><span class="en">Choose a duration and hit as many targets as you can. You can play as a guest.</span></p>
+  </div>
+  <div class="ar11-mode-card">
+   <span class="ar11-mode-heading"><span class="fr">CHOISIS TON DÉFI</span><span class="en">CHOOSE YOUR MODE</span></span>
+   <div class="ar11-modes" role="group" aria-label="Mode du mini-jeu / Mini-game mode">
+    <button type="button" data-ar11-mode="precision" aria-pressed="true"><span class="fr">Précision</span><span class="en">Precision</span></button>
+    <button type="button" data-ar11-mode="reflex" aria-pressed="false"><span class="fr">Réflexes</span><span class="en">Reflexes</span></button>
+   </div>
+   <small><span class="fr">Précision : cible réduite. Réflexes : cible mobile toutes les secondes.</span><span class="en">Precision: smaller target. Reflexes: target moves every second.</span></small>
+   <div class="ar12-duration-picker" role="group" aria-label="Durée du défi / Challenge duration">
+    <span><span class="fr">DURÉE</span><span class="en">DURATION</span></span>
+    <div class="ar12-duration-buttons">
+     <button type="button" data-ar12-duration="15000" aria-pressed="false">15 s</button>
+     <button type="button" data-ar12-duration="20000" aria-pressed="true">20 s</button>
+     <button type="button" data-ar12-duration="30000" aria-pressed="false">30 s</button>
+    </div>
+   </div>
+   <div class="ar11-control-actions">
+    <button class="ar11-start" type="button" data-ar11-start><span class="fr">Démarrer le défi</span><span class="en">Start challenge</span></button>
+    <button class="ar11-pause" type="button" data-ar11-pause hidden><span class="fr">Pause</span><span class="en">Pause</span></button>
+    <button class="ar12-copy" type="button" data-ar12-copy hidden><span class="fr">Copier mon score</span><span class="en">Copy my score</span></button>
+   </div>
+  </div>
+ </div>
+ <div class="ar11-game-layout">
+  <div class="ar11-field-wrap">
+   <div class="ar11-field-top" aria-hidden="true"><span><span class="fr">Zone de jeu</span><span class="en">Practice area</span></span></div>
+   <div class="ar11-field" data-ar11-field>
+    <div class="ar11-cross ar11-cross--tl" aria-hidden="true"></div>
+    <div class="ar11-cross ar11-cross--tr" aria-hidden="true"></div>
+    <div class="ar11-cross ar11-cross--bl" aria-hidden="true"></div>
+    <div class="ar11-cross ar11-cross--br" aria-hidden="true"></div>
+    <button class="ar11-target" data-ar11-target type="button" aria-label="Toucher la cible / Hit target" hidden><span aria-hidden="true"></span></button>
+    <div class="ar11-overlay" data-ar11-overlay>
+     <div class="ar11-overlay-reticle" aria-hidden="true"><span></span></div>
+     <strong data-ar11-overlay-title><span class="fr">Prêt pour le défi ?</span><span class="en">Ready for the challenge?</span></strong>
+     <p data-ar11-overlay-copy><span class="fr">Sélectionne un mode, puis démarre pour faire apparaître les cibles.</span><span class="en">Choose a mode, then start to reveal the targets.</span></p>
+    </div>
+   </div>
+   <div class="ar11-field-foot"><span><span class="fr">SOURIS · TACTILE · CLAVIER</span><span class="en">MOUSE · TOUCH · KEYBOARD</span></span><span class="ar11-field-sign"><span class="fr">P / ÉCHAP = PAUSE</span><span class="en">P / ESC = PAUSE</span></span></div>
+  </div>
+  <div class="ar11-control-panel">
+   <div class="ar11-stat-grid">
+    <div class="ar11-stat ar11-stat--time"><span><span class="fr">TEMPS RESTANT</span><span class="en">TIME LEFT</span></span><strong><span data-ar11-time>20</span><small>s</small></strong></div>
+    <div class="ar11-stat"><span><span class="fr">CIBLES TOUCHÉES</span><span class="en">TARGETS HIT</span></span><strong data-ar11-hits>0</strong></div>
+    <div class="ar11-stat"><span><span class="fr">RATÉS</span><span class="en">MISSES</span></span><strong data-ar11-misses>0</strong></div>
+    <div class="ar11-stat"><span><span class="fr">PRÉCISION</span><span class="en">ACCURACY</span></span><strong data-ar11-accuracy>—</strong></div>
+   </div>
+   <div class="ar12-extra-stats" aria-label="Statistiques supplémentaires / Additional stats">
+    <div><span><span class="fr">COMBO ACTUEL</span><span class="en">CURRENT STREAK</span></span><strong data-ar12-combo>0</strong></div>
+    <div><span><span class="fr">MEILLEUR SCORE*</span><span class="en">BEST SCORE*</span></span><strong data-ar12-best>—</strong></div>
+    <div><span><span class="fr">RÉACTION MOY.</span><span class="en">AVG. REACTION</span></span><strong data-ar12-reaction>—</strong></div>
+   </div>
+   <p class="ar12-best-note"><span class="fr">* Cette visite seulement, pour le mode et la durée sélectionnés.</span><span class="en">* This visit only, for the selected mode and duration.</span></p>
+   <div class="ar11-time-track" role="progressbar" aria-label="Temps restant / Remaining time" aria-valuemin="0" aria-valuemax="20" aria-valuenow="20" data-ar11-progress><span data-ar11-progress-bar></span></div>
+   <p class="ar11-status" role="status" aria-live="polite" data-ar11-status><span class="fr">Tes résultats s'affichent ici après le défi.</span><span class="en">Your results will appear here after the challenge.</span></p>
+   <a class="ar11-more" href="training.html"><span class="fr">Créer une vraie routine AIM</span><span class="en">Build a real AIM routine</span><span class="ar-ui-icon ar-ui-icon--arrow-right" aria-hidden="true"></span></a>
+  </div>
+ </div>
+</section>
+<span id="product-tour" class="v33-legacy-anchor" aria-hidden="true"></span>
+<section class="v5-section v5-container" id="routine">
+  <div class="v5-routine-layout">
+   <div class="v5-routine-copy">
+    <h2><span class="fr">Simule une routine</span><span class="en">Preview a routine</span></h2>
+    <p><span class="fr">Choisis un rang, un objectif et un logiciel. Les trois exercices et leur durée se recalculent à chaque réglage.</span><span class="en">Choose a rank, focus, and tool. The three drills and their durations update as you adjust your settings.</span></p>
+    <a class="v5-btn secondary" href="training.html#panel-builder"><span class="fr">Créer ma routine</span><span class="en">Build my routine</span> <span class="ar-ui-icon ar-ui-icon--arrow-right" aria-hidden="true"></span></a>
+   </div>
+   <div class="v5-routine-card">
+    <div class="v5-card-top"><strong><span class="en">Example training routine</span><span class="fr">Exemple de routine AIM</span></strong><span class="home-demo-meta"><span class="ar-ui-icon ar-ui-icon--info" aria-hidden="true"></span><span class="fr">Exemple indicatif</span><span class="en">Illustrative example</span></span></div>
+    <div class="v5-ranks" role="group" aria-label="Select an example VALORANT rank">
+      <button type="button" data-demo-rank="iron" aria-pressed="false"><span class="en">Iron</span><span class="fr">Fer</span></button>
+      <button type="button" data-demo-rank="gold" aria-pressed="true"><span class="en">Gold</span><span class="fr">Or</span></button>
+      <button type="button" data-demo-rank="immortal" aria-pressed="false"><span class="en">Immortal</span><span class="fr">Immortel</span></button>
+    </div>
+    <div class="experience-trainer-inputs">
+ <label for="exp-goal"><span class="en">TRAINING FOCUS</span><span class="fr">OBJECTIF À TRAVAILLER</span>
+  <select id="exp-goal" data-exp-goal><option value="precision" data-en="Precision & clicking" data-fr="Précision et clicking">Precision & clicking</option><option value="tracking" data-en="Tracking & smoothness" data-fr="Tracking et fluidité">Tracking & smoothness</option><option value="switching" data-en="Target switching" data-fr="Transitions entre cibles">Target switching</option></select>
+ </label>
+ <label for="exp-duration"><span class="en">SESSION DURATION</span><span class="fr">TEMPS DISPONIBLE</span>
+  <select id="exp-duration" data-exp-duration><option value="15">15 min</option><option value="30" selected>30 min</option><option value="45">45 min</option></select>
+ </label>
+ <label for="exp-tool"><span class="en">AVAILABLE TOOL</span><span class="fr">LOGICIEL DISPONIBLE</span>
+  <select id="exp-tool" data-exp-tool><option value="valorant">VALORANT</option><option value="aimlab">Aim Lab</option><option value="kovaaks">KovaaK's</option><option value="oblivity">Oblivity</option></select>
+ </label>
+ <label for="exp-pace"><span class="en">TRAINING PACE</span><span class="fr">RYTHME DE SÉANCE</span>
+  <select id="exp-pace" data-exp-pace><option value="warmup" data-en="Quick warm-up" data-fr="Échauffement">Quick warm-up</option><option value="balanced" selected data-en="Balanced practice" data-fr="Entraînement équilibré">Balanced practice</option></select>
+ </label>
+</div>
+    <div class="v14-timeline"><div class="v14-timeline-meta"><span><span class="en">TIME ALLOCATION · EXAMPLE</span><span class="fr">RÉPARTITION DU TEMPS · EXEMPLE</span></span><strong data-v14-allocation>30 MIN</strong></div>
+<div class="v14-timeline-track" role="img" aria-label="Fictional 30-minute training split across three exercises">
+<span class="v14-part v14-part-one" data-v14-part="0" style="flex-grow:8"></span>
+<span class="v14-part v14-part-two" data-v14-part="1" style="flex-grow:10"></span>
+<span class="v14-part v14-part-three" data-v14-part="2" style="flex-grow:12"></span>
+</div><div class="v14-timeline-legend"><span><i></i><span class="en">Drill 1</span><span class="fr">Exercice 1</span></span><span><i></i><span class="en">Drill 2</span><span class="fr">Exercice 2</span></span><span><i></i><span class="en">Drill 3</span><span class="fr">Exercice 3</span></span></div></div>
+    <div class="v5-routine-summary" aria-live="polite"><b data-routine-title><span class="en">Precision and consistency</span><span class="fr">Précision et régularité</span></b><span data-routine-total>30 MIN</span></div>
+    <div class="v5-routine-lines" aria-live="polite">
+      <div class="v5-line"><span class="v5-line-index">01</span><span class="v5-line-title" data-exercise-title="0">Controlled flicks</span><span class="v5-line-time" data-exercise-time="0">08m</span></div>
+      <div class="v5-line"><span class="v5-line-index">02</span><span class="v5-line-title" data-exercise-title="1">Dynamic clicking</span><span class="v5-line-time" data-exercise-time="1">10m</span></div>
+      <div class="v5-line"><span class="v5-line-index">03</span><span class="v5-line-title" data-exercise-title="2">In-game transfer</span><span class="v5-line-time" data-exercise-time="2">12m</span></div>
+    </div>
+    <p class="v5-routine-note" data-routine-note aria-live="polite"><span class="en">Focus on controlled accuracy before adding speed. Exact scenarios depend on your available tools.</span><span class="fr">Privilégie la précision contrôlée avant d'augmenter la vitesse. Les scénarios dépendent des logiciels disponibles.</span></p>
+    <div class="experience-demo-action"><button type="button" class="experience-mini-btn" data-exp-reset><span class="en">Reset example</span><span class="fr">Réinitialiser l’exemple</span></button><a class="experience-text-link" href="#insights"><span class="en">See how progress could be tracked</span><span class="fr">Comprendre le suivi de progression</span> →</a></div>
+   </div>
+  </div>
+ </section>
+ <section class="valorant-shell home-project" id="project-overview" aria-labelledby="home-project-title">
+  <div><h2 id="home-project-title"><span class="fr">AimRoutine sur Windows</span><span class="en">AimRoutine on Windows</span></h2>
+  <p><span class="fr">Prépare tes séances, suis ton historique et retrouve tes données après connexion à ton compte AimRoutine.</span><span class="en">Plan sessions, follow your history, and access your data when you sign in to AimRoutine.</span></p></div>
+  <div class="home-project-links">
+    <a href="product.html"><span class="ar-ui-icon ar-ui-icon--desktop" aria-hidden="true"></span><span class="fr">Voir le logiciel</span><span class="en">Explore the app</span><span class="ar-ui-icon ar-ui-icon--arrow-right" aria-hidden="true"></span></a>
+    <a href="presentation.html"><span class="ar-ui-icon ar-ui-icon--info" aria-hidden="true"></span><span class="fr">Présentation du projet</span><span class="en">Project overview</span><span class="ar-ui-icon ar-ui-icon--arrow-right" aria-hidden="true"></span></a>
+  </div>
+</section>
+<section class="v16-gallery v5-container" id="app-gallery" aria-labelledby="v16-gallery-title">
+ <div class="v16-section-heading">
+  <div><span class="v5-kicker">WINDOWS 3.11.0</span>
+   <h2 id="v16-gallery-title"><span class="fr">Le logiciel en images</span><span class="en">The Windows app on screen</span></h2>
+   <p><span class="fr">Quatre captures réelles d’AimRoutine Tracker, avec un profil et des données de démonstration.</span><span class="en">Four real screenshots of AimRoutine Tracker with a demo profile and data.</span></p>
+  </div>
+  <a class="v16-text-link" href="product.html"><span class="fr">Découvrir le logiciel</span><span class="en">Explore the app</span> <span aria-hidden="true">↗</span></a>
+ </div>
+ <div class="v16-gallery-shell">
+  <div class="v16-gallery-tabs" role="tablist" aria-label="Vues du logiciel Windows / Windows app views">
+   <button type="button" class="v16-gallery-tab" role="tab" id="v16-gallery-tab-dashboard" aria-selected="true" aria-controls="v16-gallery-dashboard" tabindex="0" data-v16-gallery="dashboard"><span class="fr">Accueil</span><span class="en">Dashboard</span></button>
+   <button type="button" class="v16-gallery-tab" role="tab" id="v16-gallery-tab-startup" aria-selected="false" aria-controls="v16-gallery-startup" tabindex="-1" data-v16-gallery="startup"><span class="fr">Démarrage</span><span class="en">First launch</span></button>
+   <button type="button" class="v16-gallery-tab" role="tab" id="v16-gallery-tab-training" aria-selected="false" aria-controls="v16-gallery-training" tabindex="-1" data-v16-gallery="training"><span class="fr">Entraînement</span><span class="en">Training</span></button>
+   <button type="button" class="v16-gallery-tab" role="tab" id="v16-gallery-tab-matches" aria-selected="false" aria-controls="v16-gallery-matches" tabindex="-1" data-v16-gallery="matches"><span class="fr">Parties VALORANT</span><span class="en">VALORANT matches</span></button>
+  </div>
+  <div class="v16-gallery-stage">
+   <div class="v16-gallery-panel" role="tabpanel" id="v16-gallery-dashboard" aria-labelledby="v16-gallery-tab-dashboard"><img class="v16-real-shot" src="aimroutine-311-dashboard.webp" data-v16-full-src="aimroutine-311-dashboard.webp" width="1440" height="960" loading="lazy" decoding="async" alt="Accueil du logiciel Windows avec une routine, un profil fictif et ses statistiques d’entraînement"></div>
+   <div class="v16-gallery-panel" role="tabpanel" id="v16-gallery-startup" aria-labelledby="v16-gallery-tab-startup" hidden><img class="v16-real-shot" src="aimroutine-311-startup.webp" data-v16-full-src="aimroutine-311-startup.webp" width="1440" height="960" loading="lazy" decoding="async" alt="Écran de démarrage avec connexion, création de compte, Google et mode hors ligne"></div>
+   <div class="v16-gallery-panel" role="tabpanel" id="v16-gallery-training" aria-labelledby="v16-gallery-tab-training" hidden><img class="v16-real-shot" src="aimroutine-311-training.webp" data-v16-full-src="aimroutine-311-training.webp" width="1440" height="960" loading="lazy" decoding="async" alt="Page Entraînement d’AimRoutine Tracker avec une routine guidée"></div>
+   <div class="v16-gallery-panel" role="tabpanel" id="v16-gallery-matches" aria-labelledby="v16-gallery-tab-matches" hidden><img class="v16-real-shot" src="aimroutine-311-matches.webp" data-v16-full-src="aimroutine-311-matches.webp" width="1440" height="960" loading="lazy" decoding="async" alt="Historique VALORANT avec les cartes et scores des parties de démonstration"></div>
+  </div>
+  <div class="v33-gallery-captions" aria-live="polite">
+   <p class="v33-gallery-caption" data-v33-caption="dashboard"><span class="fr">La prochaine séance et les résultats récents.</span><span class="en">Your next session and recent results.</span></p>
+   <p class="v33-gallery-caption" data-v33-caption="startup" hidden><span class="fr">Les quatre choix pour accéder au logiciel.</span><span class="en">The four ways to get started.</span></p>
+   <p class="v33-gallery-caption" data-v33-caption="training" hidden><span class="fr">Les exercices, la durée et les pauses de la routine.</span><span class="en">Drills, timings and breaks for the routine.</span></p>
+   <p class="v33-gallery-caption" data-v33-caption="matches" hidden><span class="fr">Les cartes et scores de parties fictives dans le logiciel.</span><span class="en">Maps and scores for fictional matches in the app.</span></p>
+  </div>
+  <div class="v16-gallery-foot">
+   <div class="v16-gallery-dots" aria-hidden="true"><span class="active"></span><span></span><span></span><span></span></div>
+   <button class="v16-expand" type="button" data-v16-expand><span class="fr">Agrandir la capture</span><span class="en">Enlarge screenshot</span> <span aria-hidden="true">↗</span></button>
+  </div>
+ </div>
+ <dialog class="v16-lightbox" id="v16-real-shot-dialog" aria-label="Capture agrandie / Enlarged screenshot">
+  <div class="v16-lightbox-inner"><button type="button" class="v16-close" data-v16-close aria-label="Fermer la capture">×</button><img src="aimroutine-311-dashboard.webp" loading="lazy" decoding="async" alt="Accueil du logiciel Windows avec une routine, un profil fictif et ses statistiques d’entraînement" width="1440" height="960"></div>
+ </dialog>
+</section>
+
+ <details class="home-detail-group">
+  <summary class="valorant-shell"><span class="fr">Autres parcours et exemples</span><span class="en">More training paths and examples</span><span class="ar-ui-icon ar-ui-icon--chevron" aria-hidden="true"></span></summary>
+  <div class="home-detail-group-content">
 <section class="v14-signal-strip v5-container" aria-label="Statistiques AIM réelles / Actual AIM metrics">
 <div><span class="v14-strip-icon">▦</span><strong data-v15-stat="sessions">—</strong><small><span class="fr">SÉANCES</span><span class="en">SESSIONS</span> · <span class="fr">historique personnel</span><span class="en">your history</span></small></div>
 <div><span class="v14-strip-icon">⌖</span><strong data-v15-stat="accuracy">—</strong><small><span class="fr">PRÉCISION</span><span class="en">ACCURACY</span> · <span class="fr">résultats saisis</span><span class="en">reported scores</span></small></div>
@@ -266,121 +445,6 @@
 </div>
 </section>
 
-<section class="ar11-challenge v5-container" id="aim-challenge" aria-labelledby="ar11-title" data-ar11-game data-state="idle" data-mode="precision">
- <div class="ar11-head">
-  <div class="ar11-intro">
-   <span class="ar11-eyebrow"><span class="ar11-live-dot" aria-hidden="true"></span>AIM LAB / MINI CHALLENGE</span>
-   <h2 id="ar11-title"><span class="fr">Et si tu testais tes réflexes <em>maintenant ?</em></span><span class="en">Why not test your reflexes <em>right now?</em></span></h2>
-   <p><span class="fr">Un mini-jeu original de 20 secondes pour découvrir l'univers AIM : clique ou touche les cibles. Aucun compte nécessaire.</span><span class="en">An original 20-second mini-game to explore AIM: click or tap targets. No account required.</span></p>
-  </div>
-  <div class="ar11-mode-card">
-   <span class="ar11-mode-heading"><span class="fr">CHOISIS TON DÉFI</span><span class="en">CHOOSE YOUR MODE</span></span>
-   <div class="ar11-modes" role="group" aria-label="Mode du mini-jeu / Mini-game mode">
-    <button type="button" data-ar11-mode="precision" aria-pressed="true"><span class="fr">Précision</span><span class="en">Precision</span></button>
-    <button type="button" data-ar11-mode="reflex" aria-pressed="false"><span class="fr">Réflexes</span><span class="en">Reflexes</span></button>
-   </div>
-   <small><span class="fr">Précision : cible réduite. Réflexes : cible mobile toutes les secondes.</span><span class="en">Precision: smaller target. Reflexes: target moves every second.</span></small>
-   <div class="ar12-duration-picker" role="group" aria-label="Durée du défi / Challenge duration">
-    <span><span class="fr">DURÉE</span><span class="en">DURATION</span></span>
-    <div class="ar12-duration-buttons">
-     <button type="button" data-ar12-duration="15000" aria-pressed="false">15 s</button>
-     <button type="button" data-ar12-duration="20000" aria-pressed="true">20 s</button>
-     <button type="button" data-ar12-duration="30000" aria-pressed="false">30 s</button>
-    </div>
-   </div>
-  </div>
- </div>
- <div class="ar11-game-layout">
-  <div class="ar11-field-wrap">
-   <div class="ar11-field-top" aria-hidden="true"><span>AR // REACTION ARENA</span><span data-ar12-field-duration>20 SEC / NO RANKING</span></div>
-   <div class="ar11-field" data-ar11-field>
-    <div class="ar11-cross ar11-cross--tl" aria-hidden="true"></div>
-    <div class="ar11-cross ar11-cross--tr" aria-hidden="true"></div>
-    <div class="ar11-cross ar11-cross--bl" aria-hidden="true"></div>
-    <div class="ar11-cross ar11-cross--br" aria-hidden="true"></div>
-    <button class="ar11-target" data-ar11-target type="button" aria-label="Toucher la cible / Hit target" hidden><span aria-hidden="true"></span></button>
-    <div class="ar11-overlay" data-ar11-overlay>
-     <div class="ar11-overlay-reticle" aria-hidden="true"><span></span></div>
-     <strong data-ar11-overlay-title><span class="fr">Prêt pour le défi ?</span><span class="en">Ready for the challenge?</span></strong>
-     <p data-ar11-overlay-copy><span class="fr">Sélectionne un mode, puis démarre pour faire apparaître les cibles.</span><span class="en">Choose a mode, then start to reveal the targets.</span></p>
-    </div>
-   </div>
-   <div class="ar11-field-foot"><span><span class="fr">SOURIS · TACTILE · CLAVIER</span><span class="en">MOUSE · TOUCH · KEYBOARD</span></span><span class="ar11-field-sign"><span class="fr">P / ÉCHAP = PAUSE</span><span class="en">P / ESC = PAUSE</span></span></div>
-  </div>
-  <div class="ar11-control-panel">
-   <div class="ar11-stat-grid">
-    <div class="ar11-stat ar11-stat--time"><span><span class="fr">TEMPS RESTANT</span><span class="en">TIME LEFT</span></span><strong><span data-ar11-time>20</span><small>s</small></strong></div>
-    <div class="ar11-stat"><span><span class="fr">CIBLES TOUCHÉES</span><span class="en">TARGETS HIT</span></span><strong data-ar11-hits>0</strong></div>
-    <div class="ar11-stat"><span><span class="fr">RATÉS</span><span class="en">MISSES</span></span><strong data-ar11-misses>0</strong></div>
-    <div class="ar11-stat"><span><span class="fr">PRÉCISION</span><span class="en">ACCURACY</span></span><strong data-ar11-accuracy>—</strong></div>
-   </div>
-   <div class="ar12-extra-stats" aria-label="Statistiques supplémentaires / Additional stats">
-    <div><span><span class="fr">COMBO ACTUEL</span><span class="en">CURRENT STREAK</span></span><strong data-ar12-combo>0</strong></div>
-    <div><span><span class="fr">MEILLEUR SCORE*</span><span class="en">BEST SCORE*</span></span><strong data-ar12-best>—</strong></div>
-    <div><span><span class="fr">RÉACTION MOY.</span><span class="en">AVG. REACTION</span></span><strong data-ar12-reaction>—</strong></div>
-   </div>
-   <p class="ar12-best-note"><span class="fr">* Cette visite seulement, pour le mode et la durée sélectionnés.</span><span class="en">* This visit only, for the selected mode and duration.</span></p>
-   <div class="ar11-time-track" role="progressbar" aria-label="Temps restant / Remaining time" aria-valuemin="0" aria-valuemax="20" aria-valuenow="20" data-ar11-progress><span data-ar11-progress-bar></span></div>
-   <div class="ar11-control-actions">
-    <button class="ar11-start" type="button" data-ar11-start><span class="fr">Démarrer le défi</span><span class="en">Start challenge</span> <span aria-hidden="true">↗</span></button>
-    <button class="ar11-pause" type="button" data-ar11-pause hidden><span class="fr">Pause</span><span class="en">Pause</span></button>
-    <button class="ar12-copy" type="button" data-ar12-copy hidden><span class="fr">Copier mon score</span><span class="en">Copy my score</span></button>
-   </div>
-   <p class="ar11-status" role="status" aria-live="polite" data-ar11-status><span class="fr">Tes résultats s'affichent ici après le défi.</span><span class="en">Your results will appear here after the challenge.</span></p>
-   <div class="ar11-disclaimer"><span aria-hidden="true">ⓘ</span><span><span class="fr">Défi ludique indépendant : le score n'est pas sauvegardé et ne mesure pas ton niveau sur VALORANT.</span><span class="en">Independent casual challenge: scores aren't saved and don't measure your VALORANT skill.</span></span></div>
-   <a class="ar11-more" href="training.html"><span class="fr">Créer une vraie routine AIM</span><span class="en">Build a real AIM routine</span><span aria-hidden="true">↗</span></a>
-  </div>
- </div>
-</section>
-<section id="windows-notes" class="v5-container ar-notes-home" aria-label="Nouveautés Windows 3.11.0 / Windows 3.11.0 release notes">
- <div><span class="ar-notes-recent">WINDOWS 3.11.0</span>
-  <h2><span class="fr">Retrouve ton historique dès la connexion</span><span class="en">Find your training history when you sign in</span></h2>
-  <p><span class="fr">Connecte-toi, crée un compte ou utilise Google au démarrage. La synchronisation de l’entraînement se lance après validation du compte. Le mode hors ligne reste disponible.</span><span class="en">Sign in, create an account or use Google on first launch. Training history starts syncing after account verification. Offline mode is still available.</span></p>
-  <a href="changelog.html#version-3-11-0"><span class="fr">Ce qui change dans la version 3.11.0</span><span class="en">What’s new in 3.11.0</span> <span aria-hidden="true">↗</span></a>
- </div>
- <div class="ar-notes-home-logo"><img src="aimroutine-logo.png?v=3" alt="" width="128" height="128" loading="lazy" decoding="async"></div>
-</section>
-<section class="v16-gallery v5-container" id="app-gallery" aria-labelledby="v16-gallery-title">
- <div class="v16-section-heading">
-  <div><span class="v5-kicker">WINDOWS 3.11.0</span>
-   <h2 id="v16-gallery-title"><span class="fr">Le logiciel en images</span><span class="en">The Windows app on screen</span></h2>
-   <p><span class="fr">Quatre captures réelles d’AimRoutine Tracker, avec un profil et des données de démonstration.</span><span class="en">Four real screenshots of AimRoutine Tracker with a demo profile and data.</span></p>
-  </div>
-  <a class="v16-text-link" href="product.html"><span class="fr">Découvrir le logiciel</span><span class="en">Explore the app</span> <span aria-hidden="true">↗</span></a>
- </div>
- <div class="v16-gallery-shell">
-  <div class="v16-gallery-tabs" role="tablist" aria-label="Vues du logiciel Windows / Windows app views">
-   <button type="button" class="v16-gallery-tab" role="tab" id="v16-gallery-tab-dashboard" aria-selected="true" aria-controls="v16-gallery-dashboard" tabindex="0" data-v16-gallery="dashboard"><span class="fr">Accueil</span><span class="en">Dashboard</span></button>
-   <button type="button" class="v16-gallery-tab" role="tab" id="v16-gallery-tab-startup" aria-selected="false" aria-controls="v16-gallery-startup" tabindex="-1" data-v16-gallery="startup"><span class="fr">Démarrage</span><span class="en">First launch</span></button>
-   <button type="button" class="v16-gallery-tab" role="tab" id="v16-gallery-tab-training" aria-selected="false" aria-controls="v16-gallery-training" tabindex="-1" data-v16-gallery="training"><span class="fr">Entraînement</span><span class="en">Training</span></button>
-   <button type="button" class="v16-gallery-tab" role="tab" id="v16-gallery-tab-matches" aria-selected="false" aria-controls="v16-gallery-matches" tabindex="-1" data-v16-gallery="matches"><span class="fr">Parties VALORANT</span><span class="en">VALORANT matches</span></button>
-  </div>
-  <div class="v16-gallery-stage">
-   <div class="v16-gallery-panel" role="tabpanel" id="v16-gallery-dashboard" aria-labelledby="v16-gallery-tab-dashboard"><img class="v16-real-shot" src="aimroutine-311-dashboard.webp" data-v16-full-src="aimroutine-311-dashboard.webp" width="1440" height="960" loading="lazy" decoding="async" alt="Accueil du logiciel Windows avec une routine, un profil fictif et ses statistiques d’entraînement"></div>
-   <div class="v16-gallery-panel" role="tabpanel" id="v16-gallery-startup" aria-labelledby="v16-gallery-tab-startup" hidden><img class="v16-real-shot" src="aimroutine-311-startup.webp" data-v16-full-src="aimroutine-311-startup.webp" width="1440" height="960" loading="lazy" decoding="async" alt="Écran de démarrage avec connexion, création de compte, Google et mode hors ligne"></div>
-   <div class="v16-gallery-panel" role="tabpanel" id="v16-gallery-training" aria-labelledby="v16-gallery-tab-training" hidden><img class="v16-real-shot" src="aimroutine-311-training.webp" data-v16-full-src="aimroutine-311-training.webp" width="1440" height="960" loading="lazy" decoding="async" alt="Page Entraînement d’AimRoutine Tracker avec une routine guidée"></div>
-   <div class="v16-gallery-panel" role="tabpanel" id="v16-gallery-matches" aria-labelledby="v16-gallery-tab-matches" hidden><img class="v16-real-shot" src="aimroutine-311-matches.webp" data-v16-full-src="aimroutine-311-matches.webp" width="1440" height="960" loading="lazy" decoding="async" alt="Historique VALORANT avec les cartes et scores des parties de démonstration"></div>
-  </div>
-  <div class="v33-gallery-captions" aria-live="polite">
-   <p class="v33-gallery-caption" data-v33-caption="dashboard"><span class="fr">La prochaine séance et les résultats récents.</span><span class="en">Your next session and recent results.</span></p>
-   <p class="v33-gallery-caption" data-v33-caption="startup" hidden><span class="fr">Les quatre choix pour accéder au logiciel.</span><span class="en">The four ways to get started.</span></p>
-   <p class="v33-gallery-caption" data-v33-caption="training" hidden><span class="fr">Les exercices, la durée et les pauses de la routine.</span><span class="en">Drills, timings and breaks for the routine.</span></p>
-   <p class="v33-gallery-caption" data-v33-caption="matches" hidden><span class="fr">Les cartes et scores de parties fictives dans le logiciel.</span><span class="en">Maps and scores for fictional matches in the app.</span></p>
-  </div>
-  <div class="v16-gallery-foot">
-   <div class="v16-gallery-dots" aria-hidden="true"><span class="active"></span><span></span><span></span><span></span></div>
-   <button class="v16-expand" type="button" data-v16-expand><span class="fr">Agrandir la capture</span><span class="en">Enlarge screenshot</span> <span aria-hidden="true">↗</span></button>
-  </div>
- </div>
- <dialog class="v16-lightbox" id="v16-real-shot-dialog" aria-label="Capture agrandie / Enlarged screenshot">
-  <div class="v16-lightbox-inner"><button type="button" class="v16-close" data-v16-close aria-label="Fermer la capture">×</button><img src="aimroutine-311-dashboard.webp" loading="lazy" decoding="async" alt="Accueil du logiciel Windows avec une routine, un profil fictif et ses statistiques d’entraînement" width="1440" height="960"></div>
- </dialog>
-</section>
-
- <aside class="v33-quick-status v5-container" aria-label="État du projet / Project status">
- <div><span class="v33-label"><span class="fr">VERSION WINDOWS PRÉSENTÉE</span><span class="en">WINDOWS VERSION SHOWN</span></span><strong>3.11.0</strong><span class="v33-dot" aria-hidden="true"></span><span class="fr">Captures réelles, profils fictifs</span><span class="en">Real screenshots, fictional profiles</span></div>
- <a href="updates.html"><span class="fr">Voir l’avancement et les versions</span><span class="en">See progress and version history</span><span aria-hidden="true">↗</span></a>
-</aside>
 <nav class="v14-chapters v5-container" aria-label="Sections du site / Website sections"><div class="v14-chapters-title"><img class="v14-chapters-mark ar-brand-mark" src="aimroutine-logo.png?v=3" width="30" height="30" alt=""><span><span class="fr">DÉCOUVRE AIMROUTINE</span><span class="en">EXPLORE AIMROUTINE</span></span></div><div class="v14-chapters-links">
 <a href="#choose-focus" data-v14-section="choose-focus"><small>01</small><span class="fr">Objectif</span><span class="en">Focus</span></a>
 <a href="#routine" data-v14-section="routine"><small>02</small><span class="fr">Démo</span><span class="en">Demo</span></a>
@@ -420,56 +484,7 @@
 <div class="v15-focus-footer"><span class="v15-focus-pulse" aria-hidden="true"></span><span class="en">Interactive web demonstration only · exercise examples are fictional</span><span class="fr">Démonstration web uniquement · exemples d’exercices fictifs</span></div>
 </section>
  
-<span id="product-tour" class="v33-legacy-anchor" aria-hidden="true"></span>
-<section class="v5-section v5-container" id="routine">
-  <div class="v5-routine-layout">
-   <div class="v5-routine-copy">
-    <span class="v5-kicker"><span class="en">MADE FOR EVERY SKILL LEVEL</span><span class="fr">POUR CHAQUE NIVEAU</span></span>
-    <h2><span class="en">One goal.<br><span class='v5-gradient-text'>Your own path.</span></span><span class="fr">Le même objectif.<br><span class='v5-gradient-text'>Ton propre parcours.</span></span></h2>
-    <p><span class="en">Someone learning basic crosshair control should not train like an Immortal player refining advanced precision. Explore how the training focus can adapt to different ranks.</span><span class="fr">Un joueur qui apprend à bien placer son viseur ne doit pas s'entraîner exactement comme un Immortel qui perfectionne ses micro-ajustements. Découvre comment les priorités peuvent évoluer selon le rang.</span></p>
-    <p><span class="en">These examples are educational concepts, not proven plans or actual data from Riot.</span><span class="fr">Ces exemples sont des maquettes pédagogiques, pas des programmes validés par Riot ni des statistiques réelles.</span></p>
-    <a class="v5-btn secondary" href="product.html#ranks"><span class="en">See all ranks</span><span class="fr">Voir tous les rangs</span> <span aria-hidden="true">↗</span></a>
-   </div>
-   <div class="v5-routine-card">
-    <div class="v5-card-top"><strong><span class="en">Example training routine</span><span class="fr">Exemple de routine AIM</span></strong><span class="v5-demo-badge"><span class="en">INTERACTIVE DEMO</span><span class="fr">DÉMO INTERACTIVE</span></span></div>
-    <div class="v5-ranks" role="group" aria-label="Select an example VALORANT rank">
-      <button type="button" data-demo-rank="iron" aria-pressed="false"><span class="en">Iron</span><span class="fr">Fer</span></button>
-      <button type="button" data-demo-rank="gold" aria-pressed="true"><span class="en">Gold</span><span class="fr">Or</span></button>
-      <button type="button" data-demo-rank="immortal" aria-pressed="false"><span class="en">Immortal</span><span class="fr">Immortel</span></button>
-    </div>
-    <div class="experience-trainer-inputs">
- <label for="exp-goal"><span class="en">TRAINING FOCUS</span><span class="fr">OBJECTIF À TRAVAILLER</span>
-  <select id="exp-goal" data-exp-goal><option value="precision" data-en="Precision & clicking" data-fr="Précision et clicking">Precision & clicking</option><option value="tracking" data-en="Tracking & smoothness" data-fr="Tracking et fluidité">Tracking & smoothness</option><option value="switching" data-en="Target switching" data-fr="Transitions entre cibles">Target switching</option></select>
- </label>
- <label for="exp-duration"><span class="en">SESSION DURATION</span><span class="fr">TEMPS DISPONIBLE</span>
-  <select id="exp-duration" data-exp-duration><option value="15">15 min</option><option value="30" selected>30 min</option><option value="45">45 min</option></select>
- </label>
- <label for="exp-tool"><span class="en">AVAILABLE TOOL</span><span class="fr">LOGICIEL DISPONIBLE</span>
-  <select id="exp-tool" data-exp-tool><option value="valorant">VALORANT</option><option value="aimlab">Aim Lab</option><option value="kovaaks">KovaaK's</option><option value="oblivity">Oblivity</option></select>
- </label>
- <label for="exp-pace"><span class="en">TRAINING PACE</span><span class="fr">RYTHME DE SÉANCE</span>
-  <select id="exp-pace" data-exp-pace><option value="warmup" data-en="Quick warm-up" data-fr="Échauffement">Quick warm-up</option><option value="balanced" selected data-en="Balanced practice" data-fr="Entraînement équilibré">Balanced practice</option></select>
- </label>
-</div>
-<div class="experience-how"><span class="en">Pick a rank, focus, time and trainer: the three exercises and their duration update instantly. This is an illustrative routine, not verified training advice.</span><span class="fr">Choisis un rang, un objectif, une durée et un logiciel : les trois exercices s’adaptent instantanément. C’est un exemple pédagogique, pas un programme validé scientifiquement.</span></div>
-    <div class="v14-timeline"><div class="v14-timeline-meta"><span><span class="en">TIME ALLOCATION · EXAMPLE</span><span class="fr">RÉPARTITION DU TEMPS · EXEMPLE</span></span><strong data-v14-allocation>30 MIN</strong></div>
-<div class="v14-timeline-track" role="img" aria-label="Fictional 30-minute training split across three exercises">
-<span class="v14-part v14-part-one" data-v14-part="0" style="flex-grow:8"></span>
-<span class="v14-part v14-part-two" data-v14-part="1" style="flex-grow:10"></span>
-<span class="v14-part v14-part-three" data-v14-part="2" style="flex-grow:12"></span>
-</div><div class="v14-timeline-legend"><span><i></i><span class="en">Drill 1</span><span class="fr">Exercice 1</span></span><span><i></i><span class="en">Drill 2</span><span class="fr">Exercice 2</span></span><span><i></i><span class="en">Drill 3</span><span class="fr">Exercice 3</span></span></div></div>
-    <div class="v5-routine-summary" aria-live="polite"><b data-routine-title><span class="en">Precision and consistency</span><span class="fr">Précision et régularité</span></b><span data-routine-total>30 MIN</span></div>
-    <div class="v5-routine-lines" aria-live="polite">
-      <div class="v5-line"><span class="v5-line-index">01</span><span class="v5-line-title" data-exercise-title="0">Controlled flicks</span><span class="v5-line-time" data-exercise-time="0">08m</span></div>
-      <div class="v5-line"><span class="v5-line-index">02</span><span class="v5-line-title" data-exercise-title="1">Dynamic clicking</span><span class="v5-line-time" data-exercise-time="1">10m</span></div>
-      <div class="v5-line"><span class="v5-line-index">03</span><span class="v5-line-title" data-exercise-title="2">In-game transfer</span><span class="v5-line-time" data-exercise-time="2">12m</span></div>
-    </div>
-    <p class="v5-routine-note" data-routine-note aria-live="polite"><span class="en">Focus on controlled accuracy before adding speed. Exact scenarios depend on your available tools.</span><span class="fr">Privilégie la précision contrôlée avant d'augmenter la vitesse. Les scénarios dépendent des logiciels disponibles.</span></p>
-    <div class="experience-demo-action"><button type="button" class="experience-mini-btn" data-exp-reset><span class="en">Reset example</span><span class="fr">Réinitialiser l’exemple</span></button><a class="experience-text-link" href="#insights"><span class="en">See how progress could be tracked</span><span class="fr">Comprendre le suivi de progression</span> →</a></div>
-   </div>
-  </div>
- </section>
- <span id="tools" class="v33-legacy-anchor" aria-hidden="true"></span>
+<span id="tools" class="v33-legacy-anchor" aria-hidden="true"></span>
 <section class="v5-section v5-container" id="features">
   <div class="v5-section-head">
    <span class="v5-kicker"><span class="en">BUILT AROUND YOUR PROGRESSION</span><span class="fr">PENSÉ POUR TA PROGRESSION</span></span>
@@ -583,6 +598,23 @@
 </div>
 <p class="ti-outro"><span class="en">Inspired by the clarity of modern gaming analytics — designed specifically for aim training.</span><span class="fr">La lisibilité des dashboards gaming modernes, pensée ici spécialement pour l'entraînement AIM.</span></p>
 </section>
+  </div>
+</details>
+<details class="home-detail-group">
+  <summary class="valorant-shell"><span class="fr">Avancement, versions et communauté</span><span class="en">Development, releases and community</span><span class="ar-ui-icon ar-ui-icon--chevron" aria-hidden="true"></span></summary>
+  <div class="home-detail-group-content">
+<section id="windows-notes" class="v5-container ar-notes-home" aria-label="Nouveautés Windows 3.11.0 / Windows 3.11.0 release notes">
+ <div><span class="ar-notes-recent">WINDOWS 3.11.0</span>
+  <h2><span class="fr">Retrouve ton historique dès la connexion</span><span class="en">Find your training history when you sign in</span></h2>
+  <p><span class="fr">Connecte-toi, crée un compte ou utilise Google au démarrage. La synchronisation de l’entraînement se lance après validation du compte. Le mode hors ligne reste disponible.</span><span class="en">Sign in, create an account or use Google on first launch. Training history starts syncing after account verification. Offline mode is still available.</span></p>
+  <a href="changelog.html#version-3-11-0"><span class="fr">Ce qui change dans la version 3.11.0</span><span class="en">What’s new in 3.11.0</span> <span aria-hidden="true">↗</span></a>
+ </div>
+ <div class="ar-notes-home-logo"><img src="aimroutine-logo.png?v=3" alt="" width="128" height="128" loading="lazy" decoding="async"></div>
+</section>
+<aside class="v33-quick-status v5-container" aria-label="État du projet / Project status">
+ <div><span class="v33-label"><span class="fr">VERSION WINDOWS PRÉSENTÉE</span><span class="en">WINDOWS VERSION SHOWN</span></span><strong>3.11.0</strong><span class="v33-dot" aria-hidden="true"></span><span class="fr">Captures réelles, profils fictifs</span><span class="en">Real screenshots, fictional profiles</span></div>
+ <a href="updates.html"><span class="fr">Voir l’avancement et les versions</span><span class="en">See progress and version history</span><span aria-hidden="true">↗</span></a>
+</aside>
 <section class="v5-section v5-container" id="riot">
   <div class="v5-riot-layout">
    <div>
@@ -628,6 +660,8 @@
 </section>
   </div>
 </details>
+  </div>
+</details>
 </main>
 <footer class="site31-footer ar22-footer">
   <div class="valorant-shell ar22-footer-layout">
@@ -664,6 +698,6 @@
 <script defer src="site-interface-v18.js?v=2"></script>
 <script type="module" src="site-interface-v19.mjs?v=1"></script>
 <script type="module" src="site-reference-v20.mjs?v=1"></script>
-<script src="site-home-v21.js?v=1" defer></script>
+<script src="site-home-v21.js?v=2" defer></script>
 </body>
 </html>
