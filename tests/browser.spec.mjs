@@ -520,6 +520,21 @@ test('Valorant landing prioritizes routines and opens secondary content on deman
  await expect(page.locator('#home-details')).toHaveAttribute('open','');
  await expect(page.locator('.v14-signal-strip [data-v15-stat="sessions"]')).toHaveText('—');
  await expect(page.locator('.site31-nav a.valorant-account')).toHaveAttribute('href','account.html');
+
+ await page.locator('#home-details > summary').click();
+ await expect(page.locator('#aim-challenge')).not.toBeVisible();
+ await page.locator('.home-destinations a[href="#aim-challenge"]').click();
+ await expect(page.locator('#aim-challenge')).toBeVisible();
+
+ await page.locator('.home-demo-directory a[href="#routine"]').click();
+ await page.locator('#exp-duration').selectOption('15');
+ await expect(page.locator('[data-routine-total]')).toHaveText(/15/);
+ await page.locator('.home-demo-directory a[href="#project-overview"]').click();
+ await expect(page.locator('#app-gallery [role="tabpanel"]:visible img')).toBeVisible();
+
+ await page.goto('/index.html#community',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#community')).toBeVisible();
+ await expect(page.locator('.home-detail-group').filter({has:page.locator('#community')})).toHaveAttribute('open','');
 });
 test('Home routine opens a real plan with the advertised duration',async ({page})=>{
  await page.goto('/index.html',{waitUntil:'domcontentloaded'});

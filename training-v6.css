@@ -262,8 +262,21 @@ body.training26.site31 .r17-training-wrap .r19-workspace-toolbar { margin-block:
 .training26 .r19-tools-heading { justify-content: space-between; flex-wrap: wrap; margin-bottom: 8px; }
 .training26 .r19-favorites-count { border-color: var(--training-line); background: var(--training-raised); color: var(--training-muted); }
 body.training26.site31 .r19-tool-grid .r19-tool-btn { min-height: 48px; flex-direction: row; gap: 6px; padding: 7px 9px; }
-.training26 .r19-tool-grid .r19-tool-btn > span:first-child { font-size: 15px; color: var(--training-soft); }
-.training26 .r19-tool-grid .r19-tool-btn > b { display: none; }
+.training26 .r19-tool-grid .r19-tool-btn > .ar-ui-icon { color: var(--training-soft); }
+.training26 .r19-plan-program > .ar-ui-icon { --ar-ui-icon-size: 1rem; }
+.training26 .r19-plan-program > .ar-ui-icon:first-child { color: var(--training-soft); }
+.training26 .r17-level .r17-level-symbol { display: grid; place-items: center; flex: none; color: var(--training-soft); }
+.training26 .r17-level .r17-level-symbol .ar-ui-icon { --ar-ui-icon-size: 1.25rem; }
+body.training26.site31.site31-training #guided-plan .r17-exercise > .r17-icon {
+  display: grid;
+  place-items: center;
+  color: var(--training-soft);
+  border-color: var(--training-line) !important;
+  border-radius: 5px;
+  background: var(--training-field) !important;
+  clip-path: none !important;
+}
+.training26 .r17-day-duration .ar-ui-icon { --ar-ui-icon-size: .85rem; color: var(--training-soft); }
 .training26 .r17-weekline .r17-section-label { display: none; }
 .training26 .r17-weekline h2 { margin: 0; }
 
@@ -303,7 +316,8 @@ body.training26.site31.site-valorant :is(.r18-dialog-content, .r19-dialog-host) 
   }
   body.training26.site31 .r17-training-wrap .r17-level-options { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 6px; }
   body.training26.site31 .r17-training-wrap .r17-level { grid-column: auto; gap: 5px; padding: 7px !important; }
-  .training26 .r17-level-symbol { display: none; }
+  .training26 .r17-level { flex-direction: column; align-items: flex-start; }
+  .training26 .r17-level .r17-level-symbol .ar-ui-icon { --ar-ui-icon-size: .9rem; }
   .training26 .r17-level > span:last-child { min-width: 0; overflow-wrap: anywhere; }
   body.training26.site31 .r17-training-wrap .r17-level strong { font-size: 12px !important; }
   body.training26.site31.site-valorant #guided-plan .r17-plan-content { grid-template-columns: minmax(0, 1fr) !important; }
