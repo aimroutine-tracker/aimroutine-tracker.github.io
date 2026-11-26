@@ -651,6 +651,38 @@ test('V19 training preview uses the actual generator and every tool is reachable
  await page.locator('[data-r19-panel="insights"]').click();
  await expect(page.locator('#analysis-range')).toBeVisible();
 });
+
+test('Training dashboard matches the site and its shortcuts leave the goals dialog',async ({page})=>{
+ const dashboard=page.locator('#panel-dashboard');
+ const dashboardTab=page.locator('#tab-dashboard');
+ const dialog=page.locator('.r19-workspace-dialog');
+ await expect(page.locator('.ar5-tab-wrap')).toHaveCSS('background-color','rgb(25, 24, 30)');
+ await expect(dashboard.locator('.ar5-goal')).toHaveCSS('background-color','rgb(34, 31, 40)');
+ await expect(dashboardTab).toHaveCSS('color','rgb(244, 240, 233)');
+
+ await page.goto('/training.html#panel-dashboard');
+ await expect(dialog.locator('#panel-dashboard')).toBeVisible();
+ await dialog.locator('[data-go="coach"]').click();
+ await expect(dialog).not.toBeVisible();
+ await expect(page.locator('#tab-coach')).toBeFocused();
+ await expect(page.locator('#panel-coach')).toBeVisible();
+
+ await dashboardTab.click();
+ await dashboard.locator('[data-go="insights"]').click();
+ await expect(page.locator('#panel-insights')).toBeVisible();
+ await page.locator('[data-r19-panel="dashboard"]').click();
+ await dialog.locator('[data-go="builder"]').click();
+ await expect(dialog).not.toBeVisible();
+ await expect(page.locator('#tab-builder')).toBeFocused();
+ await expect(page.locator('#panel-builder')).toBeVisible();
+
+ await page.locator('[data-r19-panel="coach"]').click();
+ await dialog.locator('#coach-build').click();
+ await expect(dialog).not.toBeVisible();
+ await expect(page.locator('#tab-builder')).toBeFocused();
+ await expect(page.locator('#start-plan')).toBeEnabled();
+});
+
 test('V19 cloud screen is guest-safe and progress buttons drive real range',async ({page})=>{
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
  await expect(page.locator('.r19-cloud-actions')).toBeVisible();

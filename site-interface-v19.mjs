@@ -96,7 +96,13 @@ function installWorkspace(){
  const closePanel=()=>{if(dialog.open)dialog.close();restore();};
  dialog.addEventListener('close',()=>{if(!dialog.open)restore();});
  $('.r19-close',dialog)?.addEventListener('click',closePanel);
- dialog.addEventListener('click',event=>{if(event.target===dialog)closePanel()});
+ dialog.addEventListener('click',event=>{
+  if(event.target===dialog){closePanel();return;}
+  // The workspace hides the current panel when an action selects another tab.
+  if(!activePanel?.hidden)return;
+  closePanel();
+  $('[data-tab][aria-selected="true"]')?.focus();
+ });
  function openPanel(key){
   if(key==='builder'){
    window.dispatchEvent(new Event('aim-open-session-editor'));
