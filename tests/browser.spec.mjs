@@ -362,16 +362,22 @@ test('Password reset UI submits recovery request and reports generic success (mo
 
 test('Windows 3.11 gallery tabs open the matching real screenshot',async({page})=>{
  await page.goto('/index.html#app-gallery',{waitUntil:'domcontentloaded'});
+ const gallery=page.locator('#app-gallery');
  const lightbox=page.locator('#v16-real-shot-dialog');
+ for(const selector of ['.v16-gallery-tabs','.v33-gallery-captions','.v16-gallery-foot']){
+  await expect(gallery.locator(selector)).toHaveCSS('background-color','rgb(21, 19, 24)');
+ }
  for(const view of ['dashboard','startup','training','matches']){
   await page.locator(`[data-v16-gallery="${view}"]`).click();
   const shot=page.locator(`#v16-gallery-${view} img.v16-real-shot`);
   const source=`aimroutine-311-${view}.webp`;
   await expect(shot).toBeVisible();
+  await expect(shot).toHaveCSS('background-color','rgb(17, 17, 21)');
   await expect(shot).toHaveAttribute('src',source);
   await expect.poll(()=>shot.evaluate(img=>img.naturalWidth)).toBe(1440);
   await page.locator('.v16-expand[data-v16-expand]').click();
   await expect(lightbox).toBeVisible();
+  await expect(lightbox).toHaveCSS('background-color','rgb(21, 19, 24)');
   await expect(lightbox.locator('img')).toHaveAttribute('src',source);
   await lightbox.locator('[data-v16-close]').click();
   await expect(lightbox).toBeHidden();
