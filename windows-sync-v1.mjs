@@ -6,24 +6,24 @@ const challengePattern=/^[a-f0-9]{64}$/;
 const desktopModes=['login','signup','google'];
 const pairingLifetime=10*60*1000;
 const translations={
-  guest:['Connecte-toi pour consulter ou lier un profil Windows.','Sign in to view or connect a Windows profile.'],
+  guest:['Connecte-toi pour consulter ton historique Windows.','Sign in to view your Windows history.'],
   pending:['Connecte-toi et termine la configuration de ton compte pour autoriser cette liaison.','Sign in and finish setting up your account to approve this connection.'],
   approval:['Confirme la liaison Windows pour le compte indiqué.','Approve the Windows connection for the account shown.'],
-  desktopApproval:['Vérifie le compte qui recevra les résultats de ce profil Windows.','Check which account will receive this Windows profile’s results.'],
-  connecting:['Association du profil Windows…','Connecting the Windows profile…'],
+  desktopApproval:['Vérifie quel compte ouvrir sur cet appareil Windows.','Check which account to open on this Windows device.'],
+  connecting:['Connexion de l’appareil Windows…','Connecting the Windows device…'],
   desktopApproved:['Ton compte est associé. Retourne dans AimRoutine Tracker pour retrouver ta progression.','Your account is connected. Return to AimRoutine Tracker to see your progress.'],
-  embedded:['Ouvre cette page directement dans ton navigateur pour associer ton profil.','Open this page directly in your browser to connect your profile.'],
+  embedded:['Ouvre cette page directement dans ton navigateur pour associer ton appareil.','Open this page directly in your browser to connect your device.'],
   expired:['Cette demande a expiré ou a déjà été utilisée. Relance la liaison depuis le logiciel Windows.','This request expired or was already used. Start a new connection in the Windows app.'],
-  deviceLimit:['Nombre maximal de profils liés atteint. Délie un ancien profil puis réessaie.','The maximum number of connected profiles was reached. Disconnect an old profile and try again.'],
+  deviceLimit:['Tu as atteint le nombre maximal d’appareils. Dissocie un ancien appareil, puis réessaie.','You have reached the device limit. Disconnect an older device and try again.'],
   approved:['Liaison autorisée. Retourne dans AimRoutine Tracker pour envoyer les résultats.','Connection approved. Return to AimRoutine Tracker to upload your results.'],
   canceled:['Demande écartée sur cette page.','The request was dismissed on this page.'],
   loading:['Chargement de l’historique Windows…','Loading Windows history…'],
-  unlinked:['Aucun profil Windows lié. Ouvre les paramètres de synchronisation dans AimRoutine Tracker pour commencer.','No Windows profiles are connected. Open the sync settings in AimRoutine Tracker to get started.'],
-  empty:['Le profil est lié. Aucun résultat Windows n’a encore été envoyé.','The profile is connected. No Windows results have been uploaded yet.'],
+  unlinked:['Connecte-toi à ton compte dans AimRoutine Tracker pour retrouver tes résultats ici.','Sign in to your account in AimRoutine Tracker to see your results here.'],
+  empty:['L’appareil est connecté. L’historique apparaîtra après ta première séance.','The device is connected. Your history will appear after your first session.'],
   loaded:['Historique Windows actualisé.','Windows history updated.'],
   error:['La requête n’a pas abouti. Vérifie ta connexion et réessaie.','The request failed. Check your connection and try again.'],
-  revoked:['Profil délié. Sa copie cloud Windows a été supprimée. Les résultats restent sur le PC.','Profile disconnected. Its Windows cloud copy was deleted. The results remain on the PC.'],
-  revokeConfirm:['Délier ce profil et supprimer sa copie cloud Windows ? Les résultats locaux resteront sur le PC.','Disconnect this profile and delete its Windows cloud copy? Local results will remain on the PC.']
+  revoked:['Appareil dissocié. Ses résultats restent sur l’appareil et ton profil reste dans ton compte.','Device disconnected. Its results remain on the device and your profile stays in your account.'],
+  revokeConfirm:['Dissocier cet appareil et retirer ses résultats de l’historique du site ? Les résultats restent sur l’appareil.','Disconnect this device and remove its results from website history? The results remain on the device.']
 };
 
 export function readWindowsPairingFragment(hash,now=Date.now()) {

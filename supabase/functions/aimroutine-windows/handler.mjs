@@ -6,7 +6,16 @@ const resultKeys = [
 ];
 const software = new Set(["Kovaak's", 'Aim Lab', 'Valorant', 'Oblivity']);
 const siteActions = new Set(['approve', 'devices', 'results', 'revoke']);
-const deviceActions = new Set(['status', 'sync', 'disconnect']);
+const deviceActions = new Set(['status', 'sync', 'disconnect', 'profile']);
+const playerRanks = ['Fer','Bronze','Argent','Or','Platine','Diamant','Ascendant','Immortel','Radiant'];
+const playerSkills = ['Static Clicking','Dynamic Clicking','Micro Flicks','Wide Flicks','Precision','Smooth Tracking','Reactive Tracking','Target Switching','Click Timing','Crosshair Placement','Movement + Shooting','Peek Training'];
+const playerFields = ['onboarded','name','rank','division','owned','avatarDataUrl','goals','weaknesses','mechanicalLevel','fatigue','dpi','sensitivity','pollingRate','minutes','trainingDays'];
+const avatarPrefix = 'data:image/png;base64,';
+const avatarChunks = new Map([['sRGB',1],['gAMA',4],['cHRM',32],['pHYs',9]]);
+const avatarCrcTable = Array.from({length:256}, (_, byte) => {
+  for (let bit = 0; bit < 8; bit++) byte = (byte & 1) ? 0xedb88320 ^ (byte >>> 1) : byte >>> 1;
+  return byte >>> 0;
+});
 const uuid = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
 const digestPattern = /^[0-9a-f]{64}$/;
 
@@ -52,6 +61,62 @@ function isInteger(value, min, max) {
 
 function nullableNumber(value, max) {
   return value === null || (Number.isFinite(value) && value >= 0 && value <= max);
+}
+
+// Match the desktop's fixed-size, static avatar format before saving it for other devices.
+function validPlayerAvatar(avatar) {
+  if (avatar === null) return true;
+  if (typeof avatar !== 'string' || avatar.length > 100000 || !avatar.startsWith(avatarPrefix)) return false;
+  const encoded = avatar.slice(avatarPrefix.length);
+  if (!/^[A-Za-z0-9+/]+={0,2}$/.test(encoded) || encoded.length % 4 !== 0) return false;
+  const decoded = atob(encoded);
+  if (btoa(decoded) !== encoded || decoded.length < 57 || !decoded.startsWith('\x89PNG\r\n\x1a\n')) return false;
+  const bytes = Uint8Array.from(decoded, char => char.charCodeAt(0));
+  const view = new DataView(bytes.buffer);
+  if (view.getUint32(8) !== 13 || decoded.slice(12,16) !== 'IHDR' ||
+      view.getUint32(16) !== 128 || view.getUint32(20) !== 128 ||
+      bytes[24] !== 8 || ![2,6].includes(bytes[25]) || bytes[26] || bytes[27] || bytes[28]) return false;
+  let sawImageData = false;
+  const seenMetadata = new Set();
+  let offset = 8;
+  for (let chunks = 0; chunks < 64 && offset + 12 <= bytes.length; chunks++) {
+    const length = view.getUint32(offset);
+    const type = decoded.slice(offset + 4, offset + 8);
+    const end = offset + 12 + length;
+    if (end > bytes.length) return false;
+    let crc = 0xffffffff;
+    for (let index = offset + 4; index < end - 4; index++) {
+      crc = avatarCrcTable[(crc ^ bytes[index]) & 255] ^ (crc >>> 8);
+    }
+    if (((crc ^ 0xffffffff) >>> 0) !== view.getUint32(end - 4)) return false;
+    if (type === 'IEND') return sawImageData && length === 0 && end === bytes.length;
+    if (type === 'IDAT') {
+      if (length === 0) return false;
+      sawImageData = true;
+    } else if (offset !== 8) {
+      if (sawImageData || seenMetadata.has(type) || avatarChunks.get(type) !== length) return false;
+      seenMetadata.add(type);
+    }
+    offset = end;
+  }
+  return false;
+}
+
+function validPlayerProfile(profile) {
+  if (!profile || typeof profile !== 'object' || Object.keys(profile).length !== playerFields.length ||
+      !playerFields.every(field => Object.hasOwn(profile,field))) return false;
+  const list = (values, max, valid) => Array.isArray(values) && values.length <= max && values.every(valid);
+  const number = (value,min,max) => Number.isFinite(value) && value>=min && value<=max;
+  return typeof profile.onboarded === 'boolean' && isText(profile.name,80) && playerRanks.includes(profile.rank) &&
+    (profile.rank === 'Radiant' ? profile.division === null : isInteger(profile.division,1,3)) &&
+    list(profile.owned,4,value=>software.has(value)) && new Set(profile.owned).size === profile.owned.length &&
+    validPlayerAvatar(profile.avatarDataUrl) &&
+    list(profile.goals,12,value=>playerSkills.includes(value)) &&
+    list(profile.weaknesses,4,value=>['overshoot','mobile','slow','consistency'].includes(value)) &&
+    isInteger(profile.mechanicalLevel,1,6) && isInteger(profile.fatigue,1,5) &&
+    isInteger(profile.dpi,50,50000) && number(profile.sensitivity,.001,20) &&
+    isInteger(profile.pollingRate,125,8000) && number(profile.minutes,1,60) &&
+    list(profile.trainingDays,7,value=>isInteger(value,0,6));
 }
 
 function isTimestamp(value) {
@@ -162,8 +227,17 @@ export async function handleWindows(request, backend) {
         }
         Object.assign(args,{offset,results:body.results ?? null});
       }
+      if (action === 'profile') {
+        const writing = Object.hasOwn(body,'profile');
+        if (writing && (!isInteger(body.revision,0,2147483646) || !validPlayerProfile(body.profile))) {
+          return json({error:'invalid_profile'},400);
+        }
+        Object.assign(args,{revision:writing?body.revision:null,profile:writing?body.profile:null});
+      }
     }
     const data = await backend.call(action,args);
+    if (data.error === 'profile_changed') return json(data,409);
+    if (data.error === 'device_not_linked' || data.error === 'device_revoked') return json(data,403);
     if (data.error === 'challenge_already_used' || data.error === 'device_limit') return json(data,409);
     if (data.error === 'device_not_found') return json(data,404);
     if (action === 'sync' && data.state === 'linked') {

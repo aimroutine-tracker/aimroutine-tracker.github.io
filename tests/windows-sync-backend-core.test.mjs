@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { crc32, deflateSync } from 'node:zlib';
 import { handleWindows } from '../supabase/functions/aimroutine-windows/handler.mjs';
 
 const origin = 'https://aimroutine-tracker.github.io';
@@ -100,4 +101,88 @@ test('revoked device response carries no session or account data', async () => {
   const reply = await handleWindows(request({action:'sync',results:[result]},{'x-aim-device':device},''),backend);
   assert.equal(reply.status,200);
   assert.deepEqual(await reply.json(),{state:'revoked'});
+});
+
+const player = {
+  onboarded:true, name:'Joueur Démo', rank:'Immortel', division:1,
+  owned:['Valorant'], avatarDataUrl:null, goals:['Precision'], weaknesses:['overshoot'],
+  mechanicalLevel:4, fatigue:1, dpi:800, sensitivity:0.42, pollingRate:1000, minutes:25,
+  trainingDays:[1,3,5]
+};
+
+function avatar(size = 128) {
+  function chunk(type, contents) {
+    const body = Buffer.concat([Buffer.from(type), contents]);
+    const length = Buffer.alloc(4);
+    length.writeUInt32BE(contents.length);
+    const crc = Buffer.alloc(4);
+    crc.writeUInt32BE(crc32(body));
+    return Buffer.concat([length, body, crc]);
+  }
+  const header = Buffer.alloc(13);
+  header.writeUInt32BE(size);
+  header.writeUInt32BE(size,4);
+  header[8] = 8;
+  header[9] = 6;
+  return Buffer.concat([
+    Buffer.from([137,80,78,71,13,10,26,10]), chunk('IHDR',header),
+    chunk('IDAT',deflateSync(Buffer.alloc(size * (size * 4 + 1)))), chunk('IEND',Buffer.alloc(0))
+  ]);
+}
+const avatarUrl = bytes => 'data:image/png;base64,' + bytes.toString('base64');
+
+test('private player profile requires the device secret and scopes the request to its digest', async () => {
+  const headers = {'x-aim-device':device};
+  const {backend,calls} = service();
+  backend.call = async (op,args) => {
+    calls.push([op,args]);
+    return {accountId:id,profile:args.profile,revision:args.profile ? 1 : 0};
+  };
+  const read = {action:'profile', userId:'another', digest:'f'.repeat(64)};
+  assert.equal((await handleWindows(request(read,{Authorization:'Bearer valid'}),backend)).status,401);
+  const readReply = await handleWindows(request(read,headers),backend);
+  assert.deepEqual(await readReply.json(),{accountId:id,profile:null,revision:0});
+  assert.match(calls[0][1].digest,/^[a-f0-9]{64}$/);
+  assert.notEqual(calls[0][1].digest,read.digest);
+  assert.deepEqual(Object.keys(calls[0][1]).sort(),['digest','profile','revision']);
+
+  const profile = {...player,avatarDataUrl:avatarUrl(avatar())};
+  const reply = await handleWindows(request({...read, revision:0, profile},headers),backend);
+  assert.equal(reply.status,200);
+  assert.equal(reply.headers.get('Cache-Control'),'no-store');
+  assert.deepEqual(await reply.json(),{accountId:id,profile,revision:1});
+  assert.deepEqual(calls[1],['profile',{digest:calls[0][1].digest,revision:0,profile}]);
+});
+
+test('player profile rejects unsafe fields, malformed avatars and invalid revisions', async () => {
+  const {backend,calls} = service();
+  const headers = {'x-aim-device':device};
+  const damaged = avatar();
+  damaged[damaged.length - 1] ^= 1;
+  const malformed = [
+    {...player, backupPath:'C:/Private'}, {...player, division:null},
+    {...player,avatarDataUrl:'https://example.com/image.png'},
+    {...player,avatarDataUrl:avatarUrl(avatar(1))}, {...player,avatarDataUrl:avatarUrl(damaged)},
+    {...player,avatarDataUrl:'data:image/png;base64,iVBORw0KGgoAAAA='}
+  ];
+  for (const profile of malformed) {
+    const reply = await handleWindows(request({action:'profile',revision:0,profile},headers),backend);
+    assert.equal(reply.status,400);
+    assert.deepEqual(await reply.json(),{error:'invalid_profile'});
+  }
+  for (const revision of [undefined,-1,0.5,2 ** 31 - 1]) {
+    assert.equal((await handleWindows(request({action:'profile',revision,profile:player},headers),backend)).status,400);
+  }
+  assert.equal(calls.length,0);
+});
+
+test('player profile reports revision conflicts and revoked devices without leaking account data', async () => {
+  const {backend} = service();
+  const headers = {'x-aim-device':device};
+  for (const [error,status] of [['profile_changed',409],['device_not_linked',403],['device_revoked',403]]) {
+    backend.call = async () => ({error});
+    const reply = await handleWindows(request({action:'profile',revision:1,profile:player},headers),backend);
+    assert.equal(reply.status,status);
+    assert.deepEqual(await reply.json(),{error});
+  }
 });
