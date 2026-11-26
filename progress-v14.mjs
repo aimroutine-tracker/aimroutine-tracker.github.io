@@ -8,11 +8,14 @@ const en=()=>document.documentElement.lang==='en';
 const tr=(fr,english)=>en()?english:fr;
 const fmt=n=>Number(n).toLocaleString(en()?'en-GB':'fr-FR',{maximumFractionDigits:1});
 const source=document.getElementById('v14-source-message');
+const sourceStatus=document.getElementById('v14-source-status');
 const signIn=document.getElementById('v14-source-signin');
 const filterPanel=$('#v14-progress-filters');
 const toolFilter=$('#v14-progress-tool');
 const scenarioFilter=$('#v14-progress-scenario');
-let sessions=[],goal=3,readable=false,syncPending=false,loadVersion=0;
+const rangeFilter=$('#v14-progress-range');
+const authStorageKey='sb-lmzswtzboobpokumxzhy-auth-token';
+let sessions=[],goal=3,readable=false,syncPending=false,loadVersion=0,loaded=false;
 const locale=()=>en()?'en-GB':'fr-FR';
 const toolLabel=tool=>tool==='Non précisé'?tr('Non renseigné','Not specified'):tool;
 const focusLabels={
@@ -59,25 +62,44 @@ function lineChart(items){
  const a=scored.slice(-25);
  if(!a.length)return blank(root,'Aucune précision enregistrée pour cette sélection.','No accuracy scores for this selection.');
  root.replaceChildren();
- const width=620,height=235;
- const x=i=>34+(a.length===1?0.5:i/(a.length-1))*560;
- const y=n=>18+(100-n)/100*181;
- const svg=svgEl('svg',{viewBox:'0 0 '+width+' '+height,'aria-hidden':'true'});
+ const left=48,right=486,baseline=174;
+ const x=i=>left+(a.length===1?0.5:i/(a.length-1))*(right-left);
+ const y=n=>18+(100-n)/100*(baseline-18);
+ const svg=svgEl('svg',{viewBox:'0 0 500 206',role:'img','aria-labelledby':'progress-accuracy-title progress-line-caption'});
+ const dates=new Intl.DateTimeFormat(locale(),{day:'numeric',month:'short'});
  for(const tick of [0,25,50,75,100]){
   const ty=y(tick);
-  svg.append(svgEl('line',{x1:34,x2:602,y1:ty,y2:ty,stroke:'#385364','stroke-dasharray':'3 6'}));
-  const label=svgEl('text',{x:0,y:ty+4,fill:'#a7bdca','font-size':11});label.textContent=tick+'%';svg.append(label);
+  svg.append(svgEl('line',{x1:left,x2:right,y1:ty,y2:ty,class:'progress-svg-grid'}));
+  const label=svgEl('text',{x:0,y:ty+5,class:'progress-svg-tick'});label.textContent=tick+'%';svg.append(label);
  }
  const d=a.map((p,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(p.accuracy).toFixed(1)).join(' ');
- svg.append(svgEl('path',{d,stroke:'#85e9dc','stroke-width':3,fill:'none','stroke-linejoin':'round','stroke-linecap':'round'}));
- a.forEach((p,i)=>svg.append(svgEl('circle',{cx:x(i),cy:y(p.accuracy),r:i===a.length-1?6:3,fill:'#ff748d',stroke:'#ffced8','stroke-width':1})));
- const first=svgEl('text',{x:34,y:224,'font-size':11,fill:'#b5ced8'});first.textContent=new Date(a[0].date).toLocaleDateString(en()?'en-GB':'fr-FR',{day:'numeric',month:'short'});svg.append(first);
- const last=svgEl('text',{x:603,y:224,'font-size':11,fill:'#b5ced8','text-anchor':'end'});last.textContent=new Date(a[a.length-1].date).toLocaleDateString(en()?'en-GB':'fr-FR',{day:'numeric',month:'short'});svg.append(last);
+ if(a.length>1)svg.append(svgEl('path',{d:d+' L'+right+' '+baseline+' L'+left+' '+baseline+' Z',class:'progress-svg-area'}));
+ svg.append(svgEl('path',{d,class:'progress-svg-line','stroke-width':3,fill:'none','stroke-linejoin':'round','stroke-linecap':'round'}));
+ a.forEach((p,i)=>svg.append(svgEl('circle',{cx:x(i),cy:y(p.accuracy),r:i===a.length-1?6:3.5,class:'progress-svg-point'})));
+ const first=dates.format(new Date(a[0].date)),last=dates.format(new Date(a.at(-1).date));
+ const endpoints=first===last?[[first,(left+right)/2,'middle']]:[[first,left,'start'],[last,right,'end']];
+ for(const [value,x,anchor] of endpoints){
+  const label=svgEl('text',{x,y:198,class:'progress-svg-tick','text-anchor':anchor});
+  label.textContent=value;svg.append(label);
+ }
  root.append(svg);
- const caption=document.createElement('small');caption.className='v14-chart-caption';caption.textContent=scored.length>a.length
+ const caption=document.createElement('p');caption.id='progress-line-caption';caption.className='v14-chart-caption';caption.textContent=scored.length>a.length
   ? tr(`${a.length} derniers résultats sur ${fmt(scored.length)}`,`Latest ${a.length} of ${fmt(scored.length)} scores`)
-  : a.length+' '+tr('résultats saisis','reported scores');
+  : a.length+' '+(a.length===1?tr('résultat saisi','reported score'):tr('résultats saisis','reported scores'));
  root.append(caption);
+ const details=document.createElement('details');
+ details.className='progress-chart-data';
+ const summary=document.createElement('summary');
+ summary.textContent=tr('Voir les valeurs','Show values');
+ const values=document.createElement('ol');
+ for(const session of a){
+  const row=document.createElement('li'),date=document.createElement('time'),score=document.createElement('strong');
+  date.dateTime=session.date;
+  date.textContent=dates.format(new Date(session.date));
+  score.textContent=fmt(session.accuracy)+' %';
+  row.append(date,score);values.append(row);
+ }
+ details.append(summary,values);root.append(details);
 }
 function barChart(buckets,now){
  const root=$('#v14-p-bars');
@@ -139,47 +161,28 @@ function recentSessions(items){
  root.replaceChildren(list);
 }
 function distribution(items){
- const root=$('#v14-p-distribution');root.replaceChildren();
- const keys=['flick','tracking','micro','control'];
- const labels=['Flick','Tracking',tr('Micro-correction','Micro-adjust'),tr('Contrôle','Control')];
- const counts=keys.map(k=>items.filter(s=>s.focus===k).length);
+ const root=$('#v14-p-distribution');
  const total=items.length;
- if(!total){
-  const empty=document.createElement('p');empty.className='v14-chart-empty';
-  empty.textContent=tr('Enregistre tes séances pour afficher la répartition.','Record sessions to see the distribution.');
-  root.append(empty);return;
+ if(!total)return blank(root,'Aucune séance à répartir pour cette sélection.','No sessions to group for this selection.');
+ const list=document.createElement('ul');
+ for(const [focus,labels] of Object.entries(focusLabels)){
+  const count=items.filter(item=>item.focus===focus).length,share=100*count/total;
+  const row=document.createElement('li'),label=document.createElement('div');
+  const name=document.createElement('span'),value=document.createElement('strong');
+  label.className='progress-distribution-label';
+  name.textContent=tr(...labels);
+  value.textContent=fmt(count);
+  label.append(name,value);
+  const track=document.createElement('span'),fill=document.createElement('span');
+  track.className='progress-distribution-track';
+  track.setAttribute('aria-hidden','true');
+  fill.style.width=share+'%';
+  track.append(fill);row.append(label,track);list.append(row);
  }
- const chart=document.createElement('div');chart.className='v15-radar';
- const svg=svgEl('svg',{viewBox:'0 0 320 255','aria-hidden':'true'});
- const cx=160,cy=120,r=79;
- const pts=(fraction)=>keys.map((k,i)=>{
-  const angle=-Math.PI/2+i*2*Math.PI/keys.length;
-  return [cx+Math.cos(angle)*r*fraction,cy+Math.sin(angle)*r*fraction];
- });
- const string=(points)=>points.map(p=>p.map(x=>x.toFixed(1)).join(',')).join(' ');
- for(const amount of [.25,.5,.75,1]){
-  svg.append(svgEl('polygon',{points:string(pts(amount)),fill:'none',stroke:amount===1?'#ff617c':'#3d5d6b','stroke-width':amount===1?1.5:1}));
- }
- pts(1).forEach(([x,y])=>svg.append(svgEl('line',{x1:cx,y1:cy,x2:x,y2:y,stroke:'#476575','stroke-dasharray':'3 5'})));
- const actual=keys.map((_,i)=>{
-  const angle=-Math.PI/2+i*2*Math.PI/keys.length;
-  const value=counts[i]/total;
-  return [cx+Math.cos(angle)*r*value,cy+Math.sin(angle)*r*value];
- });
- svg.append(svgEl('polygon',{points:string(actual),fill:'#52eddc59',stroke:'#5cf6e6','stroke-width':2.3,'stroke-linejoin':'round'}));
- actual.forEach(([x,y])=>svg.append(svgEl('circle',{cx:x,cy:y,r:3.5,fill:'#90fff2'})));
- const labelPos=pts(1.3);
- labelPos.forEach(([x,y],i)=>{
-  const node=svgEl('text',{x,y,'text-anchor':'middle','font-size':11,fill:'#dcf8f7'});
-  node.textContent=labels[i]+' '+Math.round(counts[i]/total*100)+'%';svg.append(node);
- });
- chart.append(svg);root.append(chart);
- const description=document.createElement('p');description.className='v14-chart-caption';
- description.textContent=tr('Part des '+total+' séances selon la compétence travaillée.','Share of '+total+' sessions by training focus.');
- root.append(description);
+ root.replaceChildren(list);
 }
 function render(){
- const period=Number($('#v14-progress-range').value)||0;
+ const period=Number(rangeFilter.value)||0;
  const now=new Date();
  const selected=filterProgressSessions(sessions,toolFilter.value,scenarioFilter.value);
  const {sessions:subset,buckets}=progressPeriod(selected,period,now);
@@ -191,7 +194,6 @@ function render(){
  $('#v14-p-streak').textContent=String(all.streak);
  $('#v14-p-best').textContent=percent(stats.best);
  $('#v14-p-week').textContent=String(all.week);
- $('#v14-p-streak-detail').textContent=String(all.streak);
  $('#v14-p-goal').textContent=all.week+' / '+all.goal;
  $('#v14-p-goalbar').style.width=Math.min(100,Math.round(all.week/all.goal*100))+'%';
  lineChart(subset);barChart(buckets,now);distribution(subset);recentSessions(subset);
@@ -200,7 +202,7 @@ async function load(){
  const version=++loadVersion;
  let key=null,pending=false;
  try{
-  if(localStorage.getItem('sb-lmzswtzboobpokumxzhy-auth-token')){
+  if(localStorage.getItem(authStorageKey)){
    const {supabase}=await import('./cloud-client-v7.mjs');
    const {data,error}=await supabase.auth.getSession();
    const uid=data?.session?.user?.id;
@@ -214,7 +216,7 @@ async function load(){
   }
  }catch{key=null;}
  if(version!==loadVersion)return;
- readable=key!==null;syncPending=pending;sessions=[];goal=3;
+ loaded=true;readable=key!==null;syncPending=pending;sessions=[];goal=3;
  if(readable){
   try{const raw=JSON.parse(localStorage.getItem(key)||'null');const clean=normalizeStore(raw,null);sessions=clean.sessions;goal=clean.weeklyGoal;}catch{}
  }
@@ -223,16 +225,29 @@ async function load(){
  render();
 }
 function renderSource(){
+ sourceStatus.dataset.source=readable?(syncPending?'pending':'current'):'guest';
  source.textContent=readable?
-  (syncPending?tr('Compte connecté · Synchronisation cloud en attente ; affichage du cache de ton compte','Signed in · Cloud sync pending; showing account cache'):tr('Compte connecté · Statistiques automatiquement synchronisées','Signed in · Statistics automatically synchronized')):
-  tr('Connecte-toi pour consulter tes statistiques.','Sign in to see your statistics.');
+  (syncPending?tr('Synchronisation en attente · Dernières données disponibles de ton compte','Cloud sync pending · Showing your latest available account data'):tr('Compte connecté · Séances web synchronisées','Signed in · Web sessions synced')):
+  tr('Connecte-toi pour retrouver tes séances et tes statistiques.','Sign in to see your sessions and statistics.');
  signIn.hidden=readable;
 }
-$('#v14-progress-range').addEventListener('change',render);
+function renderLanguage(){
+ const captions=[tr('7 jours','7 days'),tr('30 jours','30 days'),tr('90 jours','90 days'),tr('Tout','All')];
+ [...rangeFilter.options].forEach((option,index)=>{option.textContent=captions[index]});
+ $('.r19-range-buttons')?.setAttribute('aria-label',tr('Période des statistiques','Statistics period'));
+ if(loaded){renderSource();refreshFilters();render();}
+}
+rangeFilter.addEventListener('change',render);
 toolFilter.addEventListener('change',()=>{refreshFilters();render()});
 scenarioFilter.addEventListener('change',render);
-document.querySelectorAll('[data-switch-lang]').forEach(b=>b.addEventListener('click',()=>queueMicrotask(()=>{if(loadVersion)renderSource();refreshFilters();render()})));
-window.addEventListener('storage',event=>{if(event.key?.includes(STORAGE_KEY))void load();});
+new MutationObserver(renderLanguage).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+window.addEventListener('storage',event=>{
+ if(event.key===authStorageKey||event.key===null){
+  if(readable){readable=false;syncPending=false;sessions=[];goal=3;renderSource();refreshFilters();render();}
+  void load();
+ }else if(event.key?.includes(STORAGE_KEY))void load();
+});
 window.addEventListener('focus',()=>void load());
 window.addEventListener('online',()=>void load());
+renderLanguage();
 void load();

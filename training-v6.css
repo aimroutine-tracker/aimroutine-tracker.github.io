@@ -95,3 +95,226 @@ body.site31.site31-training .ar7-account-line{display:flex;align-items:center;ju
 body.site31.site31-training .ar7-account-link{display:inline-flex;align-items:center;gap:9px;border-radius:5px;padding:8px 10px;text-decoration:none;background:#ff586f;color:#0b1620;font-weight:850;font-size:12px}
 body.site31.site31-training #cloud-training-status{font-size:12px;color:#b9d0df;line-height:1.6}
 body.site31.site31-training .ar7-account-dot{font-size:9px;color:#123b36}
+
+/* The Windows and web workspaces share the graphite and coral palette. */
+.training26 {
+  --training-panel: #19181e;
+  --training-raised: #221f28;
+  --training-field: #151318;
+  --training-line: #423c47;
+  --training-text: #f4f0e9;
+  --training-muted: #c0b9c1;
+  --training-coral: #ff4e60;
+  --training-soft: #ff95a1;
+}
+
+body.training26.site31.site-valorant .r17-screen .training26-intro {
+  margin-bottom: 14px !important;
+  padding: clamp(17px, 3vw, 32px) !important;
+  border-radius: 6px;
+}
+
+body.training26.site31.site-valorant .training26-intro .r17-hero-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 18px;
+  max-width: none !important;
+}
+
+body.training26.site31.site-valorant .training26-intro h1 {
+  grid-column: 1;
+  margin: 0 0 7px !important;
+  font-size: clamp(37px, 4vw, 59px) !important;
+}
+
+.training26-intro .r17-hero-desc { grid-column: 1; margin: 0; }
+body.training26.site31.site-valorant .training26-intro .r17-hero-actions {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  justify-content: flex-end;
+  margin: 0 !important;
+}
+
+body.training26.site31.site-valorant :is(.training26-intro, #guided-plan) .r17-button {
+  border-radius: 4px !important;
+  clip-path: none !important;
+}
+
+body.training26.site31.site-valorant #ar-account-required,
+body.training26.site31.site-valorant .ar7-account-line {
+  margin: 0 0 14px !important;
+  padding: 9px 13px !important;
+  border: 1px solid var(--training-line) !important;
+  border-radius: 5px !important;
+  background: var(--training-panel) !important;
+}
+body.training26.ar-guest-preview .ar7-account-line { display: none; }
+.training26 #ar-account-required p { margin: 2px 0 0; }
+.training26 .ar7-account-link { border: 1px solid var(--training-line); background: var(--training-raised) !important; color: var(--training-text) !important; }
+body.training26.site31.site31-training #cloud-training-status { color: var(--training-muted); overflow-wrap: anywhere; }
+
+body.training26.site31.site-valorant .r17-training-wrap .r17-training-grid {
+  grid-template-columns: minmax(0, 2.6fr) minmax(218px, 1fr) !important;
+  align-items: start;
+  gap: 13px !important;
+}
+
+body.training26.site31 .r17-training-grid .training26-stats { display: block !important; min-width: 0; }
+body.training26.site31 .training26-stats .r17-train-summary { margin: 0; }
+body.training26.site31.site-valorant .r17-training-wrap .r17-panel {
+  min-width: 0;
+  border-color: var(--training-line) !important;
+  border-radius: 6px !important;
+  background: var(--training-panel) !important;
+  box-shadow: none !important;
+}
+
+body.training26.site31 .r17-training-wrap .r17-panel-title h2 {
+  color: var(--training-text) !important;
+  font-size: clamp(20px, 2vw, 27px) !important;
+  line-height: 1.05;
+}
+.training26-stats h2 {
+  margin: 0;
+  padding-bottom: 11px;
+  border-bottom: 1px solid var(--training-line);
+  font-size: 27px;
+  line-height: 1.05;
+}
+.training26-metrics { margin: 0; }
+.training26-metrics :is(dt, dd) { margin: 0; }
+.training26-metrics dt { color: var(--training-muted); font-size: .77rem; }
+.training26-metrics dt small { font-size: inherit; }
+.training26-metrics dd { white-space: nowrap; }
+body.training26.site31 .r17-training-plan .r17-panel-title { flex-wrap: wrap; gap: 8px 13px; border-bottom-color: var(--training-line) !important; }
+body.training26.site31 .r17-training-plan .r17-panel-title > .r17-icon { display: none; }
+.training26 .r17-training-plan .r17-panel-title > b {
+  border-color: var(--training-line) !important;
+  background: var(--training-raised);
+  color: var(--training-soft);
+  white-space: nowrap;
+}
+.training26 .r19-tool-picker { color: var(--training-muted); }
+
+body.training26.site31.site-valorant .r19-tool-picker select {
+  min-height: 42px;
+  border-color: var(--training-line) !important;
+  border-radius: 4px !important;
+  background: var(--training-field) !important;
+  color: var(--training-text) !important;
+}
+
+body.training26.site31.site-valorant .r17-training-wrap :is(.r17-level, .r17-day, .r17-weekday, .r19-tool-btn) {
+  min-width: 0;
+  border: 1px solid var(--training-line) !important;
+  border-radius: 5px !important;
+  background: var(--training-panel) !important;
+  color: var(--training-text) !important;
+  box-shadow: none !important;
+}
+
+body.training26.site31.site-valorant .r17-training-wrap :is(.r17-level, .r17-day, .r17-weekday, .r19-tool-btn):hover,
+body.training26.site31.site-valorant .r17-training-wrap :is(.r17-level, .r17-day, .r17-weekday)[aria-pressed="true"] {
+  border-color: var(--training-soft) !important;
+  background: var(--training-raised) !important;
+}
+
+body.training26.site31.site-valorant .r17-training-wrap :is(.r17-level, .r17-day, .r17-weekday)[aria-pressed="true"] {
+  box-shadow: inset 0 -2px var(--training-coral) !important;
+}
+
+body.training26.site31 .r17-training-wrap :is(.r17-level, .r17-day, .r17-weekday) small { color: var(--training-muted) !important; }
+body.training26.site31 .r17-training-wrap .r17-level { min-height: 54px !important; }
+body.training26.site31 .r17-training-wrap :is(.r17-day, .r17-weekday) { min-height: 46px !important; }
+
+body.training26.site31.site-valorant .r17-training-wrap .r17-day-card {
+  padding: 14px;
+  border-color: var(--training-line) !important;
+  border-inline-start: 2px solid var(--training-coral) !important;
+  border-radius: 5px !important;
+  background: linear-gradient(135deg, #2b212b, var(--training-raised)) !important;
+}
+
+body.training26.site31 .r17-day-card :is(h3, p) { margin-block: 5px 7px; }
+body.training26.site31 .r17-day-card h3 { font-size: clamp(20px, 2vw, 28px); line-height: 1.05; }
+.training26 .r17-day-card .r17-reticle { display: none; }
+.training26 .r17-day-card > small { display: block; }
+body.training26.site31.site-valorant #guided-plan .r17-exercise {
+  min-height: 51px !important;
+  border-color: var(--training-line) !important;
+  border-radius: 5px !important;
+  background: var(--training-raised) !important;
+}
+
+body.training26.site31 .r17-training-wrap .r17-metric {
+  gap: 8px;
+  border-bottom-color: var(--training-line) !important;
+}
+.training26 :is(.r17-train-summary, .r17-weekprogress) .r17-meter {
+  border-color: var(--training-line) !important;
+  background: var(--training-field) !important;
+}
+.training26 .r17-train-summary .r17-meter > span,
+.training26 .r17-weekprogress .r17-meter > span { background: var(--training-coral) !important; }
+body.training26.site31 .r17-training-wrap .r19-workspace-toolbar { margin-block: 14px !important; }
+.training26 .r19-tools-heading :is(.r17-section-label, .r19-tools-brand, p) { display: none; }
+.training26 .r19-tools-heading { justify-content: space-between; flex-wrap: wrap; margin-bottom: 8px; }
+.training26 .r19-favorites-count { border-color: var(--training-line); background: var(--training-raised); color: var(--training-muted); }
+body.training26.site31 .r19-tool-grid .r19-tool-btn { min-height: 48px; flex-direction: row; gap: 6px; padding: 7px 9px; }
+.training26 .r19-tool-grid .r19-tool-btn > span:first-child { font-size: 15px; color: var(--training-soft); }
+.training26 .r19-tool-grid .r19-tool-btn > b { display: none; }
+.training26 .r17-weekline .r17-section-label { display: none; }
+.training26 .r17-weekline h2 { margin: 0; }
+
+body.training26.site31.site-valorant :is(.r18-training-dialog, .r19-workspace-dialog) {
+  border: 1px solid var(--training-line) !important;
+  border-radius: 8px !important;
+  background: var(--training-panel) !important;
+  color: var(--training-text);
+}
+body.training26.site31.site-valorant :is(.r18-dialog-content, .r19-dialog-host) :is(.surface, .metric) {
+  border-color: var(--training-line) !important;
+  background: var(--training-raised) !important;
+  color: var(--training-text) !important;
+}
+.training26 :is(.r17-training-wrap, .ar5-tab-wrap, .r18-training-dialog, .r19-workspace-dialog) :is(button, a, select, summary):focus-visible {
+  outline: 2px solid var(--training-soft) !important;
+  outline-offset: 3px;
+}
+
+@media (max-width: 930px) {
+  body.training26.site31.site-valorant .r17-training-wrap .r17-training-grid { grid-template-columns: minmax(0, 1fr) !important; }
+}
+
+@media (max-width: 680px) {
+  body.training26.site31.site-valorant .training26-intro .r17-hero-content { grid-template-columns: minmax(0, 1fr); row-gap: 5px; }
+  body.training26.site31.site-valorant .training26-intro .r17-hero-actions {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-column: 1;
+    grid-row: auto;
+    justify-content: flex-start;
+    margin-top: 7px !important;
+  }
+  body.training26.site31.site-valorant .training26-intro .r17-hero-actions .r17-button {
+    min-width: 0;
+    padding-inline: 9px;
+  }
+  body.training26.site31 .r17-training-wrap .r17-level-options { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 6px; }
+  body.training26.site31 .r17-training-wrap .r17-level { grid-column: auto; gap: 5px; padding: 7px !important; }
+  .training26 .r17-level-symbol { display: none; }
+  .training26 .r17-level > span:last-child { min-width: 0; overflow-wrap: anywhere; }
+  body.training26.site31 .r17-training-wrap .r17-level strong { font-size: 12px !important; }
+  body.training26.site31.site-valorant #guided-plan .r17-plan-content { grid-template-columns: minmax(0, 1fr) !important; }
+  body.training26.site31.site-valorant #guided-plan .r17-days { grid-template-columns: repeat(5, minmax(0, 1fr)) !important; gap: 4px; }
+  body.training26.site31.site-valorant #guided-plan .r17-day { grid-column: auto; min-width: 0; padding-inline: 4px; }
+  body.training26.site31.site-valorant #guided-plan .r17-day > small {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .training26 .r19-tool-picker { margin-left: 0; }
+}

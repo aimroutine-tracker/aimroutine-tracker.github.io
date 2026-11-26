@@ -1,0 +1,274 @@
+/* Progress page layout. Shared navigation and behavior are supplied by the site. */
+.site31.site31-progress .progress-workspace {
+  --progress-surface: var(--valorant-panel, #19181e);
+  --progress-page: var(--valorant-bg, #111115);
+  --progress-rule: var(--valorant-line, #3d3943);
+  --progress-text: var(--valorant-text, #f4f0e9);
+  --progress-muted: var(--valorant-muted, #c2b9c0);
+  --progress-hot: var(--valorant-accent, #ff4e60);
+  --progress-soft: var(--valorant-accent-soft, #ff8995);
+  --progress-gap: clamp(12px, 2vw, 20px);
+  padding-block: clamp(18px, 3vw, 34px) clamp(28px, 5vw, 56px);
+  color: var(--progress-text);
+}
+
+.site31.site31-progress .progress-workspace [hidden] { display: none !important; }
+.site31.site31-progress .progress-workspace :is(a, button, select, summary):focus-visible {
+  outline: 2px solid var(--progress-soft);
+  outline-offset: 3px;
+}
+
+body.site31.site31-progress.site-valorant .progress-workspace > .progress-intro.r17-hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px clamp(24px, 4vw, 50px);
+  padding: clamp(17px, 2.7vw, 34px) clamp(17px, 3vw, 36px);
+  min-height: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  background: #19171e !important;
+  border: 1px solid var(--progress-rule) !important;
+  border-left: 3px solid var(--progress-hot) !important;
+  box-shadow: none !important;
+}
+
+body.site31.site31-progress .progress-workspace > .progress-intro.r17-hero::before,
+body.site31.site31-progress .progress-workspace > .progress-intro.r17-hero::after { content: none !important; }
+.progress-intro-copy { flex: 1 1 330px; min-width: 0; }
+.progress-kicker { color: var(--progress-soft); margin: 0 0 9px; font-size: 11px; font-weight: 800; letter-spacing: .11em; }
+body.site31.site31-progress .progress-workspace .progress-intro h1 {
+  margin: 0 0 10px !important;
+  color: var(--progress-text) !important;
+  font: 800 clamp(2.6rem, 6.3vw, 5.4rem)/.95 var(--ar-display) !important;
+  text-transform: uppercase;
+}
+.progress-intro h1 em { color: var(--progress-hot); font-style: normal; }
+.progress-intro-text { color: var(--progress-muted); max-width: 52ch; margin: 0; font-size: clamp(13px, 1.2vw, 15px); line-height: 1.55; }
+.progress-intro-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; min-width: 0; }
+.progress-intro-actions .r17-button { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 44px; text-align: center; white-space: normal; clip-path: none !important; }
+
+.progress-source {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 16px;
+  margin: 12px 0 clamp(22px, 3vw, 34px);
+  padding: 7px 14px;
+  min-height: 44px;
+  border: 1px solid var(--progress-rule);
+  background: var(--progress-surface);
+  color: var(--progress-muted);
+  font-size: 13px;
+}
+.progress-source p { display: flex; align-items: center; gap: 8px; line-height: 1.45; margin: 0; }
+.progress-source i { width: 7px; height: 7px; flex: 0 0 7px; border-radius: 50%; background: var(--progress-muted); }
+.progress-source[data-source="current"] i { background: #83dfb2; }
+.progress-source[data-source="pending"] i { background: #efc274; }
+.progress-source[data-source="guest"] i { background: var(--progress-soft); }
+.progress-source a, .progress-text-action {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  gap: 7px;
+  color: var(--progress-soft) !important;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none !important;
+}
+.progress-source a:hover, .progress-text-action:hover { text-decoration: underline !important; }
+
+.progress-overview-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 20px;
+  margin-bottom: 11px;
+}
+.progress-overview-head h2, .progress-panel-head h2 {
+  margin: 0;
+  color: var(--progress-text);
+  font: 800 clamp(24px, 2.25vw, 30px)/1 var(--ar-display);
+}
+body.site31.site31-progress .progress-workspace .progress-overview-head .r17-toolbar {
+  display: block !important;
+  min-width: 0;
+  margin: 0 !important;
+}
+.progress-workspace .v14-progress-toolbar > label {
+  min-height: 44px;
+  color: var(--progress-muted) !important;
+}
+.progress-workspace .r19-range-buttons {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: stretch !important;
+  width: auto !important;
+  gap: 3px;
+  padding: 3px;
+  margin: 0;
+  border: 1px solid var(--progress-rule);
+  border-radius: 0;
+  background: var(--progress-page);
+}
+.progress-workspace .r19-range-buttons button {
+  flex: 1 0 auto;
+  min-height: 44px;
+  padding: 6px clamp(8px, 1.5vw, 17px);
+  color: var(--progress-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.progress-workspace .r19-range-buttons button:hover { color: var(--progress-text); border-color: var(--progress-soft) !important; }
+.progress-workspace .ar-progress-filters:not([hidden]) {
+  grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+  gap: 10px 16px;
+  margin-bottom: 12px;
+  padding: 12px;
+  border-color: var(--progress-rule);
+  background: var(--progress-surface);
+}
+.progress-workspace .ar-progress-filters label { color: var(--progress-muted); }
+.progress-workspace .ar-progress-filters select { min-height: 44px; max-width: 100%; font-size: 14px; }
+.progress-workspace .ar-progress-filters select:disabled { opacity: .68; }
+
+body.site31.site31-progress.site-valorant .progress-workspace .r17-progress-kpis {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: var(--progress-gap) !important;
+  margin: 0 0 var(--progress-gap) !important;
+}
+body.site31.site31-progress .progress-workspace .r17-progress-kpis .v14-kpi {
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+  min-height: 76px !important;
+  padding: clamp(12px, 1.6vw, 18px) !important;
+  border: 1px solid var(--progress-rule) !important;
+  background: var(--progress-surface) !important;
+}
+.progress-metric-icon {
+  color: var(--progress-soft);
+  font-size: 18px;
+  line-height: 1;
+}
+body.site31.site31-progress .progress-workspace .v14-kpi small {
+  margin: 0;
+  color: var(--progress-muted);
+  font-size: 12px !important;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.3;
+}
+body.site31.site31-progress .progress-workspace .v14-kpi strong {
+  margin-top: 4px;
+  color: var(--progress-text) !important;
+  font: 800 clamp(27px, 3vw, 42px)/1 var(--ar-display) !important;
+}
+
+body.site31.site31-progress .progress-workspace .r17-chart-grid {
+  grid-template-columns: minmax(0, 1.43fr) minmax(0, 1fr) !important;
+  gap: var(--progress-gap) !important;
+}
+body.site31.site31-progress .progress-workspace .r17-secondary-grid {
+  grid-template-columns: minmax(0, 1.22fr) minmax(0, 1fr) minmax(0, .85fr) !important;
+  gap: var(--progress-gap) !important;
+  margin-top: var(--progress-gap);
+}
+body.site31.site31-progress .progress-workspace :is(.r17-chart-grid, .r17-secondary-grid) > .v14-panel {
+  min-width: 0;
+  min-height: 0 !important;
+  padding: clamp(14px, 2.1vw, 24px) !important;
+  border: 1px solid var(--progress-rule) !important;
+  background: var(--progress-surface) !important;
+}
+body.site31.site31-progress.site-valorant .progress-workspace :is(.v14-kpi, .v14-panel)::before,
+body.site31.site31-progress.site-valorant .progress-workspace :is(.v14-kpi, .v14-panel)::after { content: none !important; }
+body.site31.site31-progress .progress-workspace #v14-p-skills-panel { grid-column: 1 / -1 !important; }
+.progress-panel-head {
+  margin-bottom: 15px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid var(--progress-rule);
+}
+body.site31.site31-progress .progress-workspace .progress-panel-head h2 {
+  font: 800 clamp(22px, 2.1vw, 29px)/1.05 var(--ar-display) !important;
+}
+.progress-panel-head p { margin: 5px 0 0; color: var(--progress-muted); font-size: 13px; line-height: 1.4; }
+
+body.site31.site31-progress.site-valorant .r17-progress-wrap.progress-workspace .v14-progress-svgbox {
+  display: block;
+  height: auto !important;
+  margin: 0;
+}
+body.site31.site31-progress .progress-workspace .v14-progress-svgbox svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 230px;
+  filter: none !important;
+}
+.progress-svg-grid { stroke: var(--progress-rule); stroke-dasharray: 4 5; }
+.progress-svg-tick { fill: var(--progress-muted); font-size: 14px; }
+body.site31.site31-progress .progress-workspace .v14-progress-svgbox svg .progress-svg-line { stroke: var(--progress-hot) !important; }
+.progress-svg-area { fill: var(--progress-hot); opacity: .1; stroke: none !important; }
+.progress-svg-point { fill: var(--progress-soft); stroke: var(--progress-surface); stroke-width: 1.8; }
+body.site31.site31-progress .progress-workspace .v14-chart-caption { margin: 8px 0 0; color: var(--progress-muted); font-size: 12px; text-align: start; }
+.progress-chart-data { margin-top: 7px; }
+.progress-chart-data summary { min-height: 44px; padding-block: 12px; width: fit-content; cursor: pointer; color: var(--progress-soft); font-size: 13px; }
+.progress-chart-data ol { display: grid; grid-template-columns: repeat(auto-fit, minmax(115px, 1fr)); gap: 7px 12px; margin: 5px 0; padding: 0; list-style: none; }
+.progress-chart-data li { display: flex; justify-content: space-between; gap: 6px; color: var(--progress-muted); font-size: 12px; }
+.progress-chart-data li strong { color: var(--progress-text); }
+body.site31.site31-progress .progress-workspace .v14-chart-empty {
+  display: grid;
+  min-height: 115px;
+  place-items: center;
+  margin: 0;
+  padding: 18px;
+  border: 1px dashed var(--progress-rule);
+  color: var(--progress-muted);
+  font-size: 13px;
+  text-align: center;
+}
+body.site31.site31-progress .progress-workspace #v14-p-skills-panel .v14-chart-empty { min-height: 64px; }
+
+.progress-workspace :is(.ar-progress-frequency, .ar-progress-sessions) { margin: 0; }
+.progress-workspace .ar-progress-frequency li { min-height: 34px; font-size: 12px; }
+.progress-workspace .ar-progress-frequency-track,
+.progress-distribution-track,
+.progress-workspace .progress-goal-meter { display: block; height: 6px; border-radius: 0; background: var(--progress-rule); }
+.progress-distribution-track > span { display: block; height: 100%; background: var(--progress-hot); }
+.progress-distribution ul { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--progress-gap); list-style: none; margin: 0; padding: 0; }
+.progress-distribution-label { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin: 0 0 9px; color: var(--progress-muted); font-size: 13px; }
+.progress-distribution-label strong { color: var(--progress-text); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.progress-workspace .ar-progress-sessions li:first-child { border-top: 0; padding-top: 0; }
+.progress-workspace .ar-progress-sessions li:last-child { padding-bottom: 0; }
+.progress-benchmarks { display: grid; gap: 9px; margin: 0; }
+.progress-benchmarks div { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 7px 0; }
+.progress-benchmarks div + div { border-top: 1px solid var(--progress-rule); }
+.progress-benchmarks dt { color: var(--progress-muted); font-size: 13px; }
+.progress-benchmarks dd, .progress-goal-value strong { margin: 0; color: var(--progress-text); font: 800 27px/1 var(--ar-display); white-space: nowrap; }
+.progress-goal-value { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 9px; margin-bottom: 13px; color: var(--progress-muted); font-size: 13px; }
+.progress-workspace .progress-goal-meter { margin: 0 0 9px; }
+.progress-note { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 18px; margin-top: var(--progress-gap); padding-top: 8px; border-top: 1px solid var(--progress-rule); color: var(--progress-muted); }
+.progress-note p { flex: 1 1 350px; margin: 0; font-size: 12px; line-height: 1.5; }
+.progress-workspace .ar20-progress-advanced { display: none !important; }
+
+@media (max-width: 920px) {
+  body.site31.site31-progress .progress-workspace .r17-secondary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .progress-workspace #v14-p-recent-panel { grid-column: 1 / -1; }
+}
+@media (max-width: 680px) {
+  body.site31.site31-progress.site-valorant .progress-workspace .r17-progress-kpis,
+  .progress-distribution ul { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  body.site31.site31-progress .progress-workspace :is(.r17-chart-grid, .r17-secondary-grid) { grid-template-columns: minmax(0, 1fr) !important; }
+  .progress-workspace .v14-kpi .progress-metric-icon { display: none; }
+}
+@media (max-width: 440px) {
+  .progress-intro-actions { width: 100%; }
+  .progress-intro-actions .r17-button { width: 100%; }
+  .progress-workspace .progress-overview-head .r17-toolbar { width: 100%; }
+  .progress-workspace .ar-progress-filters:not([hidden]) { grid-template-columns: minmax(0, 1fr); }
+}
