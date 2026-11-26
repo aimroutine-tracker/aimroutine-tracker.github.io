@@ -166,13 +166,14 @@ test('All public pages render without overflow or script errors',async({page,isM
   await expect(page.locator('main'),path).toHaveCount(1);
   await expect(page.locator('footer.ar22-footer'),path).toBeVisible();
   await expect(page.locator('nav.site31-nav[data-site-navigation="valorant"]'),path).toHaveCount(1);
-  await expect(page.locator('link[href="site-valorant-theme.css?v=2"]'),path).toHaveCount(1);
+  await expect(page.locator('link[href="site-valorant-theme.css?v=3"]'),path).toHaveCount(1);
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
   expect(overflow,path+' causes horizontal scrolling').toBeLessThanOrEqual(2);
   if(isMobile)await expect(page.locator('details.site31-mobile-nav > summary'),path).toBeVisible();
   if(isMobile&&path==='index.html'){
    await page.locator('#home-details > summary').click();
    const carousel=page.locator('.v15-focus-grid');
+   await page.locator('.home-detail-group').filter({has:carousel}).locator(':scope > summary').click();
    await expect(carousel).toBeVisible();
    const scroll=await carousel.evaluate(el=>{
     const available=el.scrollWidth-el.clientWidth;
@@ -751,7 +752,15 @@ test('navigation dropdown stays compact, unclipped and keyboard accessible', asy
  const row=panel.locator(isMobile?'a[href="progress.html"]':'a[href="index.html#aim-challenge"]');
  await expect(panel).toBeHidden();
  if(isMobile)await trigger.click();
- else await trigger.press('Enter');
+ else{
+  await trigger.hover();
+  await expect(trigger).toHaveCSS('background-color','rgb(35, 33, 41)');
+  await expect(trigger).toHaveCSS('border-top-color','rgb(255, 137, 149)');
+  await expect(panel).toBeHidden();
+  await page.mouse.move(1,1);
+  await trigger.press('Enter');
+  await expect(trigger).toHaveCSS('background-color','rgb(35, 33, 41)');
+ }
  await expect(panel).toBeVisible();
  await expect(panel.getByRole('link')).toHaveCount(isMobile?14:9);
  await expect(row).toHaveCSS('background-color','rgba(0, 0, 0, 0)');
