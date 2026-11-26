@@ -15,9 +15,11 @@ const backend = {
     return {id:data.user.id, label:data.user.email || 'Compte AimRoutine'};
   },
   async call(action: string, args: Record<string, unknown>) {
-    const {data, error} = await client.rpc('aim_windows_operation', {
-      operation:action, args,
-    });
+    const {data, error} = action === 'profile'
+      ? await client.rpc('aim_windows_player_profile', {
+        device_digest:args.digest, expected_revision:args.revision, replacement:args.profile,
+      })
+      : await client.rpc('aim_windows_operation', {operation:action, args});
     if (error || !data) throw new Error('Windows database operation failed');
     return data;
   }

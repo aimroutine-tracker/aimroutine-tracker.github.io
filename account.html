@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" sizes="128x128" href="aimroutine-logo.png?v=3">
 <link rel="manifest" href="manifest.webmanifest?v=2">
 <link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="site-global-v31.css?v=4"><link rel="stylesheet" href="site-shared-v5.css?v=3">
-<link rel="stylesheet" href="account-v7.css?v=6">
+<link rel="stylesheet" href="account-v7.css?v=7">
 <script>
 /* Force-check the PWA cache repair even if a former service worker is serving old JS. */
 if('serviceWorker' in navigator&&window.isSecureContext){
@@ -33,7 +33,7 @@ if('serviceWorker' in navigator&&window.isSecureContext){
    if(authReturn.has('access_token')&&['signup','email'].includes(authReturn.get('type')))
      document.documentElement.dataset.windowsSignupReturn='true'; }
 </script>
-<script type="module" src="account-v7.mjs?v=18"></script>
+<script type="module" src="account-v7.mjs?v=19"></script>
 <style id="account-critical-style">
 /* Critical visible layout: independent of older PWA-cached CSS versions. */
 body.site31.site31-account .ar7-account-highlights{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:20px 0}
@@ -186,6 +186,22 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
 <section class="ar7-account-panel" id="dashboard-panel" aria-labelledby="ar7-dash-title" hidden>
  <div class="ar7-account-heading"><div><span class="ar7-eyebrow">02 / PLAYER CLOUD</span><h2 id="ar7-dash-title"><span class="fr">Mon espace cloud</span><span class="en">My cloud workspace</span></h2></div><button type="button" class="ar7-secondary" id="logout" title="Déconnecte ton compte de tous les appareils"><span class="fr">Déconnexion</span><span class="en">Sign out</span></button></div>
  <div class="ar7-email"><span class="fr">Pseudo :</span><span class="en">Username:</span> <strong id="user-username">—</strong> · <span class="fr">Compte connecté :</span><span class="en">Signed-in account:</span> <strong id="user-email">—</strong></div>
+ <section class="ar7-player" id="account-player" aria-labelledby="account-player-title" hidden>
+  <h3 id="account-player-title"><span class="fr">Mon profil AimRoutine</span><span class="en">My AimRoutine profile</span></h3>
+  <p class="ar7-player-status" id="account-player-status" role="status">
+   <span class="ar7-player-loading"><span class="fr">Récupération du profil…</span><span class="en">Loading your profile…</span></span>
+   <span class="ar7-player-empty" hidden><span class="fr">Configure ton profil dans AimRoutine Tracker sur Windows pour le retrouver ici.</span><span class="en">Set up your profile in AimRoutine Tracker on Windows to see it here.</span></span>
+   <span class="ar7-player-error" hidden><span class="fr">Ton profil est temporairement indisponible.</span><span class="en">Your profile is temporarily unavailable.</span></span>
+  </p>
+  <div class="ar7-player-summary" id="account-player-summary" hidden>
+   <div class="ar7-player-avatar" aria-hidden="true"><span id="account-player-initials"></span><img id="account-player-avatar" alt="" width="52" height="52" hidden></div>
+   <div class="ar7-player-name"><small><span class="fr">Nom dans le logiciel</span><span class="en">In-app name</span></small><strong id="account-player-name"></strong></div>
+   <dl class="ar7-player-details">
+    <div><dt><span class="fr">Rang VALORANT</span><span class="en">VALORANT rank</span></dt><dd><span id="account-player-rank-fr" class="fr"></span><span id="account-player-rank-en" class="en"></span></dd></div>
+    <div><dt>eDPI</dt><dd><span id="account-player-edpi-fr" class="fr"></span><span id="account-player-edpi-en" class="en"></span></dd></div>
+   </dl>
+  </div>
+ </section>
  <div class="ar7-service-grid">
   <div><small><span class="fr">ÉTAT DE LA SAUVEGARDE</span><span class="en">BACKUP STATUS</span></small><strong id="cloud-enabled-status">Désactivée</strong></div>
   <div><small><span class="fr">MES SÉANCES LOCALES</span><span class="en">LOCAL SESSIONS</span></small><strong id="cloud-sessions-count">0</strong></div>
@@ -234,18 +250,18 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
  <p><span class="fr">Retrouve les résultats envoyés depuis AimRoutine Tracker sur Windows. Ils sont consultables ici et restent séparés des statistiques d’entraînement du site.</span><span class="en">View results uploaded by AimRoutine Tracker for Windows. They are available here and stay separate from website training statistics.</span></p>
  <div class="ar7-windows-pairing" id="windows-pairing" hidden>
   <h3><span class="fr">Autoriser la liaison Windows</span><span class="en">Approve the Windows connection</span></h3>
-  <p><span class="fr">Vérifie que tu as lancé cette liaison dans le logiciel Windows. L’autorisation associe ce profil au compte affiché ci-dessous.</span><span class="en">Make sure you started this connection in the Windows app. Approval links that profile to the account shown below.</span></p>
+  <p><span class="fr">Vérifie que tu as lancé cette connexion depuis AimRoutine Tracker. Elle ouvrira le compte ci-dessous dans le logiciel.</span><span class="en">Make sure you started this connection in AimRoutine Tracker. It will open the account below in the app.</span></p>
   <p id="windows-pairing-account"></p>
   <div class="ar7-windows-actions">
-   <button type="button" class="ar7-primary" id="windows-approve" disabled><span class="fr">Autoriser ce profil</span><span class="en">Approve this profile</span></button>
+   <button type="button" class="ar7-primary" id="windows-approve" disabled><span class="fr">Autoriser cet appareil</span><span class="en">Approve this device</span></button>
    <button type="button" class="ar7-secondary" id="windows-cancel"><span class="fr">Annuler la liaison</span><span class="en">Cancel connection</span></button>
   </div>
  </div>
- <p class="ar7-windows-status" id="windows-status" role="status" aria-live="polite"><span class="fr">Connecte-toi pour consulter ou lier un profil Windows.</span><span class="en">Sign in to view or connect a Windows profile.</span></p>
+ <p class="ar7-windows-status" id="windows-status" role="status" aria-live="polite"><span class="fr">Connecte-toi pour consulter ton historique Windows.</span><span class="en">Sign in to view your Windows history.</span></p>
  <div id="windows-linked" hidden>
   <div class="ar7-windows-toolbar">
-   <label for="windows-device"><span class="fr">Profil Windows lié</span><span class="en">Connected Windows profile</span><select id="windows-device"></select></label>
-   <button id="windows-revoke" type="button" class="ar7-danger"><span class="fr">Délier ce profil</span><span class="en">Disconnect this profile</span></button>
+   <label for="windows-device"><span class="fr">Appareil Windows connecté</span><span class="en">Connected Windows device</span><select id="windows-device"></select></label>
+   <button id="windows-revoke" type="button" class="ar7-danger"><span class="fr">Dissocier cet appareil</span><span class="en">Disconnect this device</span></button>
   </div>
   <p id="windows-device-summary"></p>
   <div class="ar7-windows-table" id="windows-table" role="region" aria-labelledby="windows-sync-title" tabindex="0" hidden>

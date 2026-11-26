@@ -85,3 +85,43 @@ body.site31.site31-account{background:#091620;color:#e8f2f7}
 /* Turnstile renders only after a public site key is configured; no empty space in beta. */
 .site31-account .ar7-captcha:empty{display:none}
 .site31-account .ar7-captcha{max-width:100%;min-height:0;overflow-x:auto;margin:4px 0 10px}
+
+.site31-account .ar7-player {
+  margin: 18px 0 22px;
+  padding: 16px 18px;
+  border: 1px solid #413943;
+  border-radius: 8px;
+  background: #1d1b22;
+  color: #f4f0e9;
+}
+.site31-account .ar7-player [hidden], .site31-account .ar7-player[hidden] { display: none !important; }
+.site31-account .ar7-player h3 { margin: 0 0 12px; font-size: 1.125rem; }
+.site31-account .ar7-player-status { margin: 0; color: #c8c0c5; font-size: .875rem; }
+.site31-account .ar7-player-summary {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+.site31-account .ar7-player-avatar {
+  position: relative;
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid #704653;
+  border-radius: 8px;
+  background: #35232b;
+  color: #ff97a6;
+  font-weight: 800;
+}
+.site31-account .ar7-player-avatar img { position: absolute; inset: 0; object-fit: cover; }
+.site31-account .ar7-player-name { display: grid; gap: 2px; overflow-wrap: anywhere; }
+.site31-account .ar7-player-name small, .site31-account .ar7-player-details dt { color: #c8c0c5; font-size: .78rem; }
+.site31-account .ar7-player-details { display: flex; flex-wrap: wrap; gap: 5px 20px; margin: 0; }
+.site31-account .ar7-player-details dd { margin: 2px 0 0; color: #f4f0e9; font-weight: 750; }
+@media(max-width: 570px) {
+  .site31-account .ar7-player-summary { grid-template-columns: auto minmax(0, 1fr); }
+  .site31-account .ar7-player-details { grid-column: 1 / -1; }
+}
