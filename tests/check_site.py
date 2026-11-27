@@ -29,9 +29,14 @@ class PageParser(HTMLParser):
             if value in self.ids:
                 self.duplicates.append(value)
             self.ids.add(value)
-        attr = "href" if tag in ("a","link") else "src" if tag in ("script","img","source") else None
-        if attr and data.get(attr):
-            self.refs.append((tag, data[attr]))
+        attributes = ("href",) if tag in ("a", "link") else ()
+        if tag in ("script", "img", "source", "track"):
+            attributes = ("src",)
+        if tag == "video":
+            attributes = ("src", "poster")
+        for attr in attributes:
+            if data.get(attr):
+                self.refs.append((tag, data[attr]))
 
 issues = []
 for page in PAGES:

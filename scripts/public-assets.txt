@@ -16,6 +16,8 @@ aimroutine-311-dashboard.webp
 aimroutine-311-matches.webp
 aimroutine-311-startup.webp
 aimroutine-311-training.webp
+aimroutine-3122-poster.webp
+aimroutine-3122-presentation.mp4
 aimroutine-arena.svg
 aimroutine-logo.png
 aimroutine-theme-v12.css

@@ -891,3 +891,19 @@ test('Shared profile is editable on the website and merges another device’s up
  await expect(page.locator('#account-player')).toBeHidden();
  await expect(page.locator('#account-player-name')).toBeEmpty();
 });
+
+test('Current Windows presentation uses native video controls on both public pages',async ({page})=>{
+ for(const route of ['product.html','presentation.html']){
+  await page.goto('/'+route+'#video',{waitUntil:'domcontentloaded'});
+  const film=page.locator('#video video');
+  await expect(film).toBeVisible();
+  await expect(film).toHaveAttribute('controls','');
+  await expect(film).toHaveAttribute('playsinline','');
+  await expect(film).toHaveAttribute('preload','metadata');
+  await expect(film).toHaveAttribute('poster','aimroutine-3122-poster.webp');
+  await expect(film.locator('source[type="video/mp4"]')).toHaveAttribute('src','aimroutine-3122-presentation.mp4');
+  expect(await film.evaluate(video=>video.paused&&!video.autoplay)).toBe(true);
+  const caption=await film.getAttribute('aria-describedby');
+  await expect(page.locator('#'+caption)).toContainText('3.12.2');
+ }
+});
