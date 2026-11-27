@@ -1,90 +1,409 @@
-/* AimRoutine 7 Account. Compact gaming identity, focus-visible controls and mobile-first forms. */
-body.site31.site31-account{background:#091620;color:#e8f2f7}
-.site31-account .ar7-account-main{width:min(1170px,calc(100% - 36px));margin:auto;padding:40px 0 90px}
-.site31-account .ar7-account-hero{display:grid;grid-template-columns:1.3fr .7fr;gap:32px;align-items:center;padding:clamp(24px,4vw,52px);background:linear-gradient(130deg,#192f42,#101e2d);border:1px solid #385265;border-top:2px solid #ff586f;border-radius:13px}
-.site31-account .ar7-eyebrow{color:#91e2d9;letter-spacing:.15em;font-weight:850;font-size:11px}
-.site31-account .ar7-account-hero h1{color:white;line-height:1.03;letter-spacing:-.05em;font-size:clamp(37px,5vw,66px);margin:17px 0 23px}
-.site31-account .ar7-account-hero h1 em{font-style:normal;color:#ff8190}
-.site31-account .ar7-account-hero p{color:#c4d5df;max-width:54ch;font-size:15px;line-height:1.75}
-.site31-account .ar7-account-highlights{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:20px 0}
-.site31-account .ar7-account-highlights>.ar7-account-chip{display:inline-flex;align-items:center;justify-content:center;border:1px solid #416175;background:#122a3a;color:#bfece5;padding:8px 12px;border-radius:6px;font-size:12px;font-weight:650;line-height:1.4;min-height:36px;max-width:100%;box-sizing:border-box}
-.site31-account .ar7-account-highlights>.ar7-account-chip>span{border:0!important;outline:0!important;background:transparent!important;padding:0!important;margin:0!important;border-radius:0!important;box-shadow:none!important;font:inherit;color:inherit;line-height:inherit}
-.site31-account .ar7-guest-link{display:inline-flex;align-items:center;justify-content:center;gap:8px;max-width:100%;min-height:44px;box-sizing:border-box;background:#ff586f;padding:12px 18px;color:#0c1824;font-weight:850;font-size:13px;line-height:1.35;text-decoration:none;border-radius:7px}
-.site31-account .ar7-account-hero figure{display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0;min-height:245px;border:1px solid #466071;border-radius:12px;padding:30px;background:radial-gradient(circle,#24445a,#091724)}
-.site31-account .ar7-account-hero img{object-fit:contain;width:136px;height:136px}
-.site31-account .ar7-account-hero figcaption{letter-spacing:.15em;font-size:11px;color:#c8d7e0;margin-top:18px;font-weight:850}
-.site31-account .ar7-legal-line{border:1px solid #456478;border-left:3px solid #8bded3;background:#122c3b;margin:17px 0 26px;border-radius:7px;padding:16px 18px;color:#c5d7e2;font-size:12px;line-height:1.72}
-.site31-account .ar7-legal-line a{color:#ffb5be;white-space:nowrap}
-.site31-account .ar7-account-layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,.85fr);gap:18px;align-items:start}
-.site31-account .ar7-account-panel{background:linear-gradient(155deg,#142c3e,#0d1f2e);border:1px solid #3a5668;border-radius:11px;padding:clamp(23px,3vw,34px);min-width:0}
-.site31-account .ar7-account-panel h2{color:#fff;font-size:clamp(25px,3vw,36px);letter-spacing:-.04em;line-height:1.2;margin:13px 0 20px}
-.site31-account .ar7-form-switch{display:flex;gap:6px;background:#0c1e2d;border:1px solid #385369;border-radius:8px;padding:6px;margin:20px 0}
-.site31-account .ar7-form-switch button{flex:1;background:transparent;border:0;border-radius:6px;color:#b9ccda;padding:12px;font-weight:800;cursor:pointer}
-.site31-account .ar7-form-switch button[aria-pressed="true"]{background:#ff586f;color:#091824}
-.site31-account .ar7-auth-form{display:grid;gap:17px}
-.site31-account .ar7-auth-form[hidden],.site31-account .ar7-account-panel[hidden]{display:none!important}
-.site31-account .ar7-auth-form label{display:grid;gap:8px;color:#d8e5eb;font-size:13px;font-weight:750}
-.site31-account .ar7-auth-form input{background:#0a1c2a;border:1px solid #4a6475;border-radius:7px;min-height:46px;padding:12px;color:white;font:inherit}
-.site31-account .ar7-auth-form input:focus-visible{outline:2px solid #8bded3;outline-offset:2px}
-.site31-account .ar7-primary,.site31-account .ar7-secondary,.site31-account .ar7-danger{display:inline-flex;align-items:center;justify-content:center;min-height:43px;border-radius:7px;padding:11px 17px;font-size:12px;font-weight:850;text-decoration:none;cursor:pointer}
-.site31-account .ar7-primary{background:#ff586f;color:#091723;border:1px solid #ff586f}
-.site31-account .ar7-secondary{background:#183245;border:1px solid #527085;color:#d9e9f2}
-.site31-account .ar7-danger{background:#442733;color:#ffc3c9;border:1px solid #a55264}
-.site31-account button:disabled{opacity:.4;cursor:not-allowed}
-.site31-account .ar7-warn{border:1px solid #9b7e44;color:#f8d9a9;padding:14px;border-radius:7px;background:#372e21;font-size:12px;line-height:1.7}
-.site31-account .ar7-link{background:none;border:0;color:#ffbdc7;text-decoration:underline;justify-self:start;cursor:pointer;font-size:12px}
-.site31-account .ar7-account-help{padding:25px;background:#122637;border:1px solid #3c5767;border-radius:10px}
-.site31-account .ar7-account-help h3{margin:15px 0;font-size:22px;line-height:1.28;color:#fff}
-.site31-account .ar7-account-help p{font-size:12px;line-height:1.85;color:#bdced9}
-.site31-account .ar7-account-help a{color:#ffb8c2}
-.site31-account .ar7-status{margin:22px 0;border:1px solid #47657a;border-left:3px solid #8bded3;border-radius:8px;padding:17px 20px;color:#e1edf4;font-size:13px;background:#122d3c;line-height:1.7}
-.site31-account .ar7-account-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;flex-wrap:wrap}
-.site31-account .ar7-account-heading h2{margin-bottom:5px}
-.site31-account .ar7-email{color:#b9d2de;font-size:13px;margin:17px 0 23px;overflow-wrap:anywhere}
-.site31-account .ar7-email strong{color:#fff}
-.site31-account .ar7-service-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin-bottom:24px}
-.site31-account .ar7-service-grid>div{padding:15px 12px;background:#0c2030;border:1px solid #3e5b6c;border-radius:7px;display:grid;gap:8px}
-.site31-account .ar7-service-grid small{font-size:9px;letter-spacing:.07em;color:#a9c4d2}
-.site31-account .ar7-service-grid strong{font-size:19px;line-height:1.2;color:#fff}
-.site31-account .ar7-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.site31-account .ar7-import-guest{padding-top:23px;margin-top:24px;border-top:1px solid #385668}
-.site31-account .ar7-import-guest h3{font-size:18px;color:#fff}
-.site31-account .ar7-import-guest p{font-size:12px;line-height:1.8;color:#c6d5df}
-.site31-account .ar7-delete-cloud{margin-top:23px;border-top:1px solid #385668;padding-top:20px}
-.site31-account .ar7-delete-cloud summary{cursor:pointer;font-weight:750;color:#f7b0be}
-.site31-account .ar7-delete-cloud p{font-size:12px;color:#bdcbd4;line-height:1.7}
-@media(max-width:850px){.site31-account .ar7-account-layout,.site31-account .ar7-account-hero{grid-template-columns:1fr}}
-@media(max-width:520px){.site31-account .ar7-account-main{width:calc(100% - 24px);padding:18px 0 65px}.site31-account .ar7-account-hero,.site31-account .ar7-account-panel{padding:24px 17px}.site31-account .ar7-account-hero h1{font-size:39px}.site31-account .ar7-service-grid{grid-template-columns:1fr 1fr}.site31-account .ar7-controls>*{width:100%}}
+/* AimRoutine account */
+body.site31.site31-account {
+  --account-bg: #111115;
+  --account-panel: #1b1920;
+  --account-raised: #24212a;
+  --account-field: #15141a;
+  --account-border: #3d3845;
+  --account-control: #665b69;
+  --account-text: #f4f0ed;
+  --account-muted: #c3bac4;
+  --account-coral: #ff6377;
+  --account-soft-coral: #ffa1ae;
+  --account-radius: 9px;
+  color: var(--account-text);
+  background: var(--account-bg);
+}
 
-/* Permanent account deletion confirmation form */
-.site31-account .ar7-delete-account{border-top-color:#a34b5a}
-.site31-account .ar7-delete-account summary{color:#ffc0c8}
-.site31-account .ar7-delete-account form{padding:17px;margin-top:10px;border:1px solid #925260;border-radius:9px;background:#271d29}
-.site31-account .ar7-delete-account form label{font-weight:750}
-.site31-account .ar7-delete-account form input{max-width:100%}
-.site31-account .ar7-delete-account .ar7-danger{justify-self:start;min-height:44px}
+body.site31.site31-account .ar7-account-main {
+  width: min(1136px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: clamp(22px, 4vw, 56px) 0 clamp(40px, 7vw, 92px);
+}
+body.site31.site31-account .r17-account-wrap.r17-screen {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+body.site31.site-valorant.site31-account .r17-screen .ar7-account-intro {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 24px;
+  padding: clamp(24px, 4vw, 43px) !important;
+  margin-block-end: 18px !important;
+  border-left-color: var(--account-coral) !important;
+  border-radius: var(--account-radius);
+  background:
+    linear-gradient(132deg, transparent 76%, #fd617a1c 76% 83%, transparent 83%),
+    linear-gradient(108deg, #2d232d, var(--account-panel) 67%) !important;
+}
+body.site31.site-valorant.site31-account .r17-screen .ar7-account-intro h1 {
+  font-size: clamp(46px, 6vw, 72px) !important;
+}
+.site31-account .ar7-account-intro p {
+  margin: 0;
+  color: var(--account-muted);
+  font-size: .96rem;
+  line-height: 1.55;
+}
+.site31-account .ar7-guest-link {
+  display: inline-flex;
+  gap: 12px;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--account-control);
+  border-radius: 6px;
+  background: var(--account-field);
+  color: var(--account-text);
+  font-size: .87rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.site31-account .ar7-guest-link:hover {
+  color: var(--account-soft-coral);
+  border-color: var(--account-soft-coral);
+}
+body.site31.site-valorant.site31-account .r17-account-wrap .r17-account-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(242px, .85fr) !important;
+  gap: 18px !important;
+  align-items: start;
+  margin: 0 !important;
+}
+body.site31.site-valorant.site31-account .r17-account-wrap .r17-account-cols:has(#dashboard-panel:not([hidden])) {
+  grid-template-columns: minmax(0, 2fr) minmax(226px, .8fr) !important;
+}
+body.site31.site31-account .r17-account-auth { min-width: 0; }
+body.site31.site-valorant.site31-account .ar7-account-main .ar7-account-panel,
+body.site31.site31-account .ar7-account-main :is(.ar7-account-rail,.ar7-account-window) {
+  min-width: 0;
+  background: var(--account-panel) !important;
+  border: 1px solid var(--account-border) !important;
+  border-radius: var(--account-radius) !important;
+  box-shadow: none !important;
+}
+.site31-account .ar7-account-panel { padding: clamp(19px, 4vw, 33px); }
+.site31-account .ar7-account-main :is(#auth-panel,#username-panel,#account-data,#account-player-edit,#windows-sync) {
+  scroll-margin-top: 96px;
+}
+body.site31.site31-account .ar7-account-panel h2,
+body.site31.site31-account .ar7-account-rail h2,
+body.site31.site31-account .ar7-account-window h2 {
+  color: var(--account-text);
+  font: 800 clamp(25px, 3vw, 34px)/1.02 var(--ar-display, sans-serif);
+  letter-spacing: -.02em;
+  margin: 0 0 14px;
+}
+.site31-account .ar7-account-rail { padding: 20px; }
+body.site31.site31-account .ar7-account-rail h2 { font-size: 24px; }
+body.site31.site-valorant.site31-account .r17-account-wrap .ar7-account-rail .r17-cloud-split {
+  display: block;
+  margin: 0;
+}
+.site31-account .ar7-sync-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  margin: 0 0 12px;
+  color: var(--account-muted);
+  font-size: .83rem;
+}
+.site31-account .ar7-sync-indicator::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.site31-account .r17-account-cols:has(#dashboard-panel:not([hidden])) .ar7-sync-indicator::before {
+  background: #7ed8ba;
+}
+.site31-account .ar7-account-links { display: grid; }
+.site31-account .ar7-account-links > a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  padding: 6px 0;
+  border-top: 1px solid var(--account-border);
+  color: var(--account-text);
+  font-size: .86rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.site31-account .ar7-account-links a > [aria-hidden="true"],
+.site31-account .ar7-account-links a:hover,
+.site31-account .ar7-link { color: var(--account-soft-coral); }
+.site31-account .r17-account-cols:has(#dashboard-panel[hidden]) .ar7-member-link { display: none; }
 
-/* Cloud V7 optional Google OAuth login; disabled until owner-provided OAuth credentials are set. */
-.site31-account .ar7-social-login{display:grid;gap:12px;margin:14px 0 20px}
-.site31-account .ar7-social-login[hidden]{display:none!important}
-.site31-account .ar7-google-btn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:48px;padding:11px 17px;color:#fff;background:#193647;border:1px solid #617f92;border-radius:8px;font-size:14px;font-weight:800;cursor:pointer}
-.site31-account .ar7-google-btn:disabled{cursor:not-allowed;opacity:.65}
-.site31-account .ar7-google-icon{display:grid;place-items:center;flex:none;font-size:20px;font-weight:900;color:#f5f8fb;width:24px;height:24px}
-.site31-account .ar7-social-note{margin:0;font-size:12px;line-height:1.6;color:#b4ccd9}
-.site31-account .ar7-divider{display:flex;align-items:center;gap:15px;color:#9cbbc9;font-size:10px;font-weight:850;letter-spacing:.12em}
-.site31-account .ar7-divider::before,.site31-account .ar7-divider::after{content:"";height:1px;flex:1;background:#38576a}
+body.site31.site31-account .ar7-form-switch {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  margin: 16px 0 19px;
+  padding: 4px;
+  background: var(--account-field) !important;
+  border: 1px solid var(--account-border) !important;
+  border-radius: 7px !important;
+}
+body.site31.site31-account .ar7-form-switch button {
+  min-height: 42px;
+  padding: 8px 6px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--account-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: .86rem;
+  font-weight: 750;
+}
+body.site31.site31-account .ar7-form-switch button[aria-pressed="true"] {
+  border-color: #8e4c5c !important;
+  background: #422832 !important;
+  color: #ffb4bf !important;
+  box-shadow: none !important;
+}
+.site31-account .ar7-auth-form { display: grid; gap: 14px; }
+.site31-account :is(.ar7-auth-form,.ar7-account-panel,.ar7-social-login)[hidden] { display: none !important; }
+.site31-account :is(.ar7-auth-form,.ar7-player-edit-grid,.ar7-player-edit-avatar) label {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+  color: var(--account-text);
+  font-size: .86rem;
+  font-weight: 700;
+}
+body.site31.site31-account .ar7-account-main :is(.ar7-auth-form input,.ar7-player-form select,.ar7-player-form input[type="number"],.ar7-player-form input[type="text"],#windows-device) {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 9px 11px;
+  border: 1px solid var(--account-control) !important;
+  border-radius: 5px !important;
+  background: var(--account-field) !important;
+  color: var(--account-text) !important;
+  font: inherit;
+}
 
-/* Google OAuth account deletion confirmation */
-.site31-account .ar7-delete-google[hidden],.site31-account #delete-password-row[hidden]{display:none!important}
-.site31-account .ar7-delete-google{display:grid;gap:12px;margin:13px 0 18px;padding:16px;background:#142f3b;border:1px solid #567e8e;border-radius:8px}
-.site31-account .ar7-delete-google p{margin:0;font-size:12px;line-height:1.7;color:#d5e5ee}
-.site31-account #google-delete-status{font-size:12px;color:#b5e7dc}
-.site31-account .ar7-delete-google button{justify-self:start}
-.site31-account #delete-account-final:disabled{opacity:.45;cursor:not-allowed}
+body.site31.site-valorant.site31-account .ar7-account-main :is(.ar7-primary,.ar7-secondary,.ar7-danger,.ar7-google-btn) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 44px;
+  max-width: 100%;
+  padding: 9px 14px;
+  border: 1px solid var(--account-control);
+  border-radius: 5px !important;
+  font: inherit;
+  font-size: .84rem;
+  font-weight: 750;
+  line-height: 1.35;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+body.site31.site-valorant.site31-account .ar7-account-main .ar7-primary {
+  background: var(--account-coral) !important;
+  border-color: var(--account-coral) !important;
+  color: #180b11 !important;
+}
+body.site31.site-valorant.site31-account .ar7-account-main :is(.ar7-secondary,.ar7-google-btn) {
+  background: var(--account-raised) !important;
+  border-color: var(--account-control) !important;
+  color: var(--account-text) !important;
+}
+body.site31.site-valorant.site31-account .ar7-account-main .ar7-danger {
+  background: #3c2630 !important;
+  border-color: #935865 !important;
+  color: #ffd0d5 !important;
+}
+body.site31.site-valorant.site31-account .ar7-account-main .ar7-primary:hover:not(:disabled) {
+  background: var(--account-soft-coral) !important;
+  border-color: var(--account-soft-coral) !important;
+}
+body.site31.site-valorant.site31-account .ar7-account-main :is(.ar7-secondary,.ar7-danger,.ar7-google-btn):hover:not(:disabled) {
+  border-color: var(--account-soft-coral) !important;
+}
+.site31-account .ar7-account-main button:disabled { opacity: .55; cursor: not-allowed; }
+.site31-account .ar7-account-main :is(a,button,summary,input,select,[tabindex]):focus-visible {
+  outline: 2px solid var(--account-soft-coral) !important;
+  outline-offset: 3px !important;
+}
+.site31-account .ar7-link {
+  justify-self: start;
+  min-height: 32px;
+  padding: 3px 0;
+  background: transparent;
+  border: 0;
+  font: inherit;
+  font-size: .83rem;
+  font-weight: 650;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.site31-account .ar7-social-login { display: grid; gap: 9px; margin: 0 0 14px; }
+.site31-account .ar7-social-note { margin: 0; font-size: .79rem; color: var(--account-muted); line-height: 1.55; }
+.site31-account .ar7-google-icon {
+  color: var(--account-text);
+  font-size: 1.04rem;
+  font-weight: 800;
+  margin-inline-end: 3px;
+}
+.site31-account .ar7-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+  color: var(--account-muted);
+  font-size: .67rem;
+  font-weight: 750;
+  letter-spacing: .08em;
+}
+.site31-account .ar7-divider::before,.site31-account .ar7-divider::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: var(--account-border);
+}
+.site31-account .ar7-captcha:empty { display: none; }
+.site31-account .ar7-captcha { max-width: 100%; min-height: 0; overflow-x: auto; padding-block: 2px; }
+.site31-account .ar7-status {
+  margin: 10px 0 0;
+  padding: 10px 13px;
+  border-left: 2px solid var(--account-coral);
+  border-radius: 4px;
+  background: var(--account-panel);
+  color: var(--account-muted);
+  font-size: .81rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.site31-account .ar7-status:empty { display: none; }
 
-/* Turnstile renders only after a public site key is configured; no empty space in beta. */
-.site31-account .ar7-captcha:empty{display:none}
-.site31-account .ar7-captcha{max-width:100%;min-height:0;overflow-x:auto;margin:4px 0 10px}
+body.site31.site31-account .ar7-account-main header:is(.ar7-account-heading,.ar7-windows-heading) {
+  position: static;
+  z-index: auto;
+  background: none;
+  border: 0;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+.site31-account .ar7-account-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 11px 15px;
+}
+body.site31.site31-account .ar7-account-heading h2 { margin-bottom: 8px; }
+.site31-account .ar7-email {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px 8px;
+  margin: 0;
+  color: var(--account-muted);
+  font-size: .84rem;
+  overflow-wrap: anywhere;
+}
+.site31-account .ar7-email strong { color: var(--account-text); }
+.site31-account .ar7-email-separator { width: 4px; height: 4px; border-radius: 50%; background: var(--account-muted); }
+.site31-account .ar7-data-title,.site31-account #account-data-title {
+  margin: 0 0 10px;
+  color: var(--account-text);
+  font-size: 1rem;
+}
+.site31-account .ar7-service-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; margin: 0 0 14px; }
+body.site31.site31-account .ar7-account-main .ar7-service-grid > div {
+  display: grid;
+  align-content: space-between;
+  gap: 4px;
+  padding: 12px 10px;
+  border: 1px solid var(--account-border) !important;
+  border-radius: 5px !important;
+  background: var(--account-field) !important;
+  box-shadow: none !important;
+  transform: none;
+  overflow-wrap: anywhere;
+}
+.site31-account .ar7-service-grid small { color: var(--account-muted); font-size: .75rem; }
+.site31-account .ar7-service-grid strong { color: var(--account-text); font-size: 1.08rem; }
+.site31-account .ar7-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.site31-account .ar7-account-main #account-data { margin: 18px 0 0; padding: 0; }
+.site31-account .ar7-account-data details { margin: 0; border-top: 1px solid var(--account-border); }
+.site31-account .ar7-account-data summary {
+  min-height: 44px;
+  padding: 12px 0;
+  color: var(--account-text);
+  font-size: .86rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.site31-account .ar7-account-data .ar7-delete-cloud summary { color: var(--account-soft-coral); }
+.site31-account .ar7-account-data p { margin: 0 0 10px; color: var(--account-muted); font-size: .83rem; line-height: 1.62; }
+.site31-account .ar7-account-data details[open] { padding-bottom: 12px; }
+.site31-account .ar7-delete-account form,
+.site31-account .ar7-delete-google {
+  padding: 13px;
+  margin: 10px 0;
+  border: 1px solid var(--account-border);
+  border-radius: 5px;
+  background: var(--account-field);
+}
+.site31-account .ar7-delete-google[hidden],.site31-account #delete-password-row[hidden] { display: none !important; }
+.site31-account .ar7-delete-google { display: grid; gap: 8px; }
+.site31-account :is(.ar7-delete-google,.ar7-delete-account) button { justify-self: start; }
+
+body.site31.site31-account .ar7-account-main .ar7-account-window {
+  margin: 18px 0 0;
+  padding: clamp(18px, 4vw, 28px);
+}
+body.site31.site31-account .ar7-account-window h2 { margin: 0; }
+.site31-account .ar7-account-window :is(.ar7-windows-description,.ar7-windows-status) {
+  margin: 8px 0 0;
+  color: var(--account-muted);
+  font-size: .85rem;
+  line-height: 1.55;
+}
+.site31-account .ar7-account-window:has(#windows-linked[hidden]) .ar7-windows-description { display: none; }
+.site31-account .ar7-account-window #windows-linked { margin-top: 14px; }
+.site31-account .ar7-account-window .ar7-windows-table { border-color: var(--account-border); }
+.site31-account .ar7-account-window .ar7-windows-table thead { background: var(--account-raised); }
+.site31-account .ar7-account-window .ar7-windows-table td { border-color: var(--account-border); }
+.site31-account .ar7-account-window .ar7-windows-pairing {
+  background: var(--account-field);
+  border-color: var(--account-border);
+  border-inline-start-color: var(--account-coral);
+}
+body.site31.site-valorant.site31-account .ar7-account-main .ar7-windows-auth {
+  background: var(--account-panel) !important;
+  border: 1px solid var(--account-border);
+  border-inline-start: 3px solid var(--account-coral);
+  border-radius: var(--account-radius) !important;
+}
+@media (max-width: 760px) {
+  body.site31.site-valorant.site31-account .r17-account-wrap .r17-account-cols,
+  body.site31.site-valorant.site31-account .r17-account-wrap .r17-account-cols:has(#dashboard-panel:not([hidden])) {
+    grid-template-columns: minmax(0,1fr) !important;
+    gap: 12px !important;
+  }
+  .site31-account .ar7-account-rail { padding: 16px; }
+}
+@media (max-width: 420px) {
+  body.site31.site31-account .ar7-account-main { width: calc(100% - 24px); }
+  .site31-account .ar7-service-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .site31-account .ar7-account-intro p { max-width: 32ch; }
+}
 
 .site31-account .ar7-player {
   margin: 18px 0 22px;
