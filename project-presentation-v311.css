@@ -76,12 +76,23 @@
 .project-shot a { display: block; }
 .project-shot a:focus-visible { outline-offset: -4px !important; }
 .project-shot img { display: block; width: 100%; height: auto; }
+.project-film video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  background: #111115;
+}
+.project-film video:focus-visible { outline: 2px solid var(--project-accent); outline-offset: -4px; }
 .project-shot figcaption {
   padding: 8px 12px;
   border-top: 1px solid var(--project-border);
   color: var(--project-muted);
   font-size: .75rem;
 }
+.project-film figcaption { display: grid; gap: 4px; padding: 12px 15px; font-size: .82rem; line-height: 1.55; }
+.project-film figcaption strong { color: var(--project-text); }
 .project-jump {
   display: flex;
   flex-wrap: wrap;

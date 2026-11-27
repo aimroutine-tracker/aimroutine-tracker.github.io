@@ -39,6 +39,8 @@ self.addEventListener('fetch',event=>{
  const url=new URL(request.url);
  if(url.origin!==self.location.origin||!url.pathname.startsWith(BASE.pathname))return;
  if(url.pathname.endsWith('/riot.txt'))return;
+ // Let the browser fetch and seek in the presentation without caching media ranges.
+ if(request.destination==='video'||url.pathname.endsWith('.mp4'))return;
  event.respondWith((async()=>{
   // Network-first on all HTML, CSS, JS and asset requests to honor new version URLs.
   try{

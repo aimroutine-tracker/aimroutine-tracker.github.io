@@ -526,3 +526,197 @@ body.site31.site31-home .site34-top:hover { border-color: var(--valorant-accent-
   #home-details .home-section-summary { gap: 9px; padding-inline: 10px; }
   #home-details .home-section-summary > .home-demo-icon { inline-size: 32px; block-size: 32px; }
 }
+
+/* Match the homepage demos to the site's graphite and coral palette. */
+body.site31.site31-home .v14-signal-strip {
+  background: linear-gradient(105deg, #272029, var(--valorant-panel) 70%) !important;
+  border-color: #754655 !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .2) !important;
+}
+body.site31.site31-home .v14-signal-strip > div { border-color: var(--valorant-line); }
+body.site31.site31-home .v14-signal-strip small,
+body.site31.site31-home .v14-chapters :is(.v14-chapters-title, a small) { color: var(--valorant-muted) !important; }
+body.site31.site31-home .v14-signal-strip .v14-strip-icon { color: var(--valorant-accent-soft) !important; }
+body.site31.site31-home .v14-chapters {
+  background: var(--valorant-panel) !important;
+  border-color: var(--valorant-line) !important;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, .22);
+}
+
+#workspace.ar5-home-workspace {
+  padding-inline: clamp(16px, 3vw, 38px);
+  background: linear-gradient(120deg, var(--valorant-raised), var(--valorant-panel) 72%) !important;
+  border-color: var(--valorant-line) !important;
+  border-top-color: var(--valorant-accent) !important;
+}
+#workspace .ar5-home-preview {
+  background: var(--valorant-panel) !important;
+  border-color: var(--valorant-line) !important;
+  box-shadow: 0 14px 26px rgba(0, 0, 0, .2);
+}
+#workspace :is(.ar5-kicker, .ar10-flow__head strong span) { color: var(--valorant-accent-soft) !important; }
+#workspace .ar10-flow__timer svg { stroke: var(--valorant-accent-soft); }
+#workspace [data-ar10-count] { white-space: nowrap; }
+#workspace :is(p, small, .ar10-flow__footer span, [data-ar10-count]) { color: var(--valorant-muted) !important; }
+#workspace :is(h2, h3, .ar5-home-features > span, .ar10-flow__tag, .ar10-flow__timer) { color: var(--valorant-text) !important; }
+#workspace :is(.ar5-home-features > span, .ar10-flow__tag, .ar10-flow__timer) {
+  background: var(--valorant-raised) !important;
+  border-color: var(--valorant-line) !important;
+}
+#workspace .ar10-flow__steps {
+  background: var(--valorant-bg) !important;
+  border-color: var(--valorant-line) !important;
+}
+#workspace .ar10-flow__step[aria-selected="false"] { color: var(--valorant-muted) !important; }
+#workspace .ar10-flow__step[aria-selected="false"]:hover {
+  background: var(--valorant-raised) !important;
+  color: var(--valorant-text) !important;
+}
+#workspace .ar10-flow__tag::before { background: var(--valorant-accent-soft); }
+#workspace .ar10-flow__footer { border-color: var(--valorant-line); }
+#workspace .ar10-flow__dots i { background: #625762; }
+#workspace .ar10-flow__dots .ar10-active { background: var(--valorant-accent-soft); }
+#workspace .ar10-flow__bars i {
+  background: linear-gradient(0deg, #824454, var(--valorant-accent-soft));
+  border-color: #a66476;
+}
+
+#choose-focus .v15-focus-card {
+  background: linear-gradient(155deg, var(--valorant-raised), var(--valorant-panel) 64%) !important;
+  border-color: var(--valorant-line) !important;
+  box-shadow: 0 12px 22px rgba(0, 0, 0, .18);
+}
+#choose-focus .v15-focus-card::before {
+  background: linear-gradient(90deg, var(--valorant-accent), transparent 82%) !important;
+}
+#choose-focus .v15-focus-card:is(:hover, [aria-pressed="true"]) {
+  border-color: var(--valorant-accent-soft) !important;
+}
+#choose-focus .v15-focus-card[aria-pressed="true"] {
+  background: linear-gradient(155deg, #30212b, var(--valorant-panel) 60%) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 137, 149, .24);
+}
+#choose-focus .v15-focus-figure {
+  background: repeating-linear-gradient(90deg, transparent 0 32px, rgba(194, 185, 192, .08) 32px 33px), var(--valorant-bg) !important;
+  border-color: var(--valorant-line) !important;
+}
+#choose-focus .v15-focus-icon,
+#choose-focus .v15-focus-confirm {
+  background: #30212b !important;
+  border-color: #754655 !important;
+}
+#choose-focus .v15-focus-confirm { color: var(--valorant-text) !important; }
+#choose-focus :is(.v15-focus-heading p, .v15-focus-kicker, .v15-focus-description, .v15-focus-footer) {
+  color: var(--valorant-muted);
+}
+#choose-focus .v15-focus-icon,
+#choose-focus .v15-focus-cta { color: var(--valorant-accent-soft) !important; }
+#choose-focus .v15-focus-cta { border-color: var(--valorant-line) !important; }
+
+#features::before {
+  background: linear-gradient(180deg, var(--valorant-panel), transparent) !important;
+  border-color: var(--valorant-line) !important;
+}
+#features .v5-feature {
+  background: linear-gradient(155deg, var(--valorant-raised), var(--valorant-panel) 65%) !important;
+  border-color: var(--valorant-line) !important;
+}
+#features .v5-feature-icon {
+  background: #30212b !important;
+  color: var(--valorant-accent-soft) !important;
+}
+#features :is(p, .v5-feature-num) { color: var(--valorant-muted) !important; }
+
+#questions .experience-faq {
+  padding: clamp(16px, 3vw, 32px);
+  border: 1px solid var(--valorant-line);
+  border-radius: 8px;
+  background: var(--valorant-panel) !important;
+  border-color: var(--valorant-line) !important;
+}
+#questions .experience-faq-intro { color: var(--valorant-muted) !important; }
+#home-details #questions .experience-accordion details { background: var(--valorant-bg) !important; }
+#home-details #questions .experience-accordion details[open] { border-color: #754655 !important; }
+
+#insights::before {
+  background: radial-gradient(ellipse at top, rgba(255, 78, 96, .06), transparent 65%) !important;
+}
+#insights :is(.ti-dashboard, .ti-titlebar, .ti-aside, .ti-workspace) {
+  background: var(--valorant-bg) !important;
+  border-color: var(--valorant-line) !important;
+}
+#insights .ti-dashboard { box-shadow: 0 22px 56px rgba(0, 0, 0, .25); }
+#insights .ti-dashboard::before {
+  background: linear-gradient(90deg, transparent, rgba(255, 137, 149, .3), transparent);
+}
+#insights :is(.ti-learn-top, .ti-learning-guide, .ti-v2-chrome, .ti-v2-stat, .ti-v2-card, .ti-metric, .ti-card, .ti-footnote) {
+  background: var(--valorant-panel) !important;
+  border-color: var(--valorant-line) !important;
+}
+#insights .ti-v2-stat:first-child { border-top-color: var(--valorant-accent) !important; }
+#insights .ti-v2-card:first-child { border-left-color: var(--valorant-accent) !important; }
+#insights :is(.ti-top-pill, .ti-profile, .ti-item-icon, .ti-glossary-item, .ti-graph-point-btn, .ti-v2-light-btn, .ti-learn-select, .ti-learn-btn:not(.primary), .ti-close, .ti-v2-context-close) {
+  background: var(--valorant-raised) !important;
+  border-color: var(--valorant-line) !important;
+  color: var(--valorant-text) !important;
+}
+#insights :is(.ti-side-divider, .ti-tour-progress, .ti-progress-track) { background: var(--valorant-line) !important; }
+#insights :is(.ti-v2-aside-footer, .ti-toolbar, .ti-v2-analytics-heading, .ti-item.ti-learning-hotspot) { border-color: var(--valorant-line); }
+#insights :is(.ti-navitem:hover, .ti-item.ti-learning-hotspot:hover) { background: var(--valorant-raised); }
+#insights :is(.ti-learn-symbol, .ti-v2-context, .ti-explainer, .ti-navitem.is-current, .ti-graph-point-btn.is-picked, .ti-tip) {
+  background: #30212b !important;
+  border-color: #754655 !important;
+}
+#insights .ti-learning-guide summary::before {
+  background: #30212b;
+  color: var(--valorant-accent-soft);
+}
+#insights :is(.ti-v2-action-link, .ti-v2-card a, .ti-v2-card button, .ti-learn-symbol, .ti-explainer-flag, .ti-tour-counter strong, .ti-learning-hint strong, .ti-v2-kicker, .ti-navitem.is-current, .ti-tab[aria-selected="true"]) {
+  color: var(--valorant-accent-soft) !important;
+}
+#insights :is(.ti-titlebar small, .ti-v2-brand small, .ti-aside-label, .ti-v2-aside-footer, .ti-navitem:not(.is-current), .ti-tab[aria-selected="false"], .ti-v2-stat small, .ti-v2-stat em, .ti-v2-card small, .ti-v2-card p, .ti-v2-dashboard-intro p, .ti-v2-analytics-heading p, .ti-v2-hero-label, .ti-v2-hero p, .ti-tip, .ti-legend, .ti-learning-hint, .ti-learn-intro p, .ti-learn-label, .ti-help-key, .ti-tour-counter, .ti-explainer p, .ti-plot-sampleline, .ti-glossary-item p, .ti-toolbar-meta) {
+  color: var(--valorant-muted) !important;
+}
+#insights .ti-navitem:not(.is-current) > span:first-child { color: inherit; }
+#insights :is(.ti-dashboard, .ti-titlebar strong, .ti-learn-intro strong, .ti-v2-context, .ti-learning-guide summary) { color: var(--valorant-text); }
+#insights :is(.ti-graph-point-btn, .ti-v2-light-btn, .ti-learn-select, .ti-learn-btn:not(.primary), .ti-close, .ti-v2-context-close):enabled:hover {
+  border-color: var(--valorant-accent-soft) !important;
+}
+#insights :is(.ti-learn-btn.primary, .ti-v2-red-btn) {
+  background: var(--valorant-accent) !important;
+  border-color: var(--valorant-accent) !important;
+  color: var(--valorant-bg) !important;
+}
+#insights :is(.ti-learn-btn.primary, .ti-v2-red-btn):enabled:hover { background: var(--valorant-accent-soft) !important; }
+#insights :is(.ti-learning-hotspot:focus-visible, .ti-learning-active, .ti-heatmap-day:focus-visible) {
+  outline-color: var(--valorant-accent-soft) !important;
+}
+#insights .ti-learning-active { box-shadow: 0 0 0 6px rgba(255, 137, 149, .13) !important; }
+#insights .ti-learning-hotspot:hover {
+  border-color: var(--valorant-accent-soft) !important;
+  box-shadow: 0 0 0 2px rgba(255, 137, 149, .14);
+}
+#insights :is(.ti-metric.ti-learning-hotspot, .ti-breakdown-item, .ti-item.ti-learning-hotspot)::after {
+  color: var(--valorant-accent-soft);
+}
+#insights .ti-v2-hero {
+  background-color: var(--valorant-bg);
+  border-color: var(--valorant-line);
+}
+#insights .ti-v2-hero::before {
+  background: linear-gradient(90deg, rgba(17, 17, 21, .99), rgba(17, 17, 21, .93) 34%, rgba(17, 17, 21, .32) 77%, rgba(17, 17, 21, .15));
+}
+#insights .ti-v2-hero-foot {
+  background: rgba(25, 24, 30, .9);
+  border-color: var(--valorant-line);
+  color: var(--valorant-muted);
+}
+#insights .ti-plot {
+  background: repeating-linear-gradient(to top, transparent 0 calc(25% - 1px), var(--valorant-line) calc(25% - 1px) 25%);
+}
+#insights .ti-tour-progress i { background: var(--valorant-accent); }
+#insights .ti-progress-track.blue i { background: linear-gradient(90deg, #775c88, #c4a4d0); }
+#insights :is(.ti-heatmap-day:not(.active-low, .active-mid, .active-high), .ti-mini-heatmap i:not(.active-low, .active-mid, .active-high)) {
+  background: var(--valorant-raised);
+  border-color: var(--valorant-line);
+}
