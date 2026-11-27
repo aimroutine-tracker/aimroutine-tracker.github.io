@@ -2,7 +2,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#111115">
 <title>Mon compte et sauvegarde cloud — AimRoutine Tracker</title>
-<meta name="description" content="AimRoutine Tracker Cloud : compte personnel, connexion et sauvegarde de progression AIM. Service en préparation.">
+<meta name="description" content="Connecte-toi à ton compte AimRoutine pour retrouver ton profil, tes séances et ta progression sur le site et dans le logiciel Windows.">
 <link rel="canonical" href="https://aimroutine-tracker.github.io/account.html">
 <meta property="og:type" content="website"><meta property="og:title" content="AimRoutine Tracker — Mon compte cloud">
 <meta property="og:description" content="Retrouve tes routines et ta progression AIM sur tes appareils, en toute confidentialité.">
@@ -12,7 +12,6 @@
 <link rel="apple-touch-icon" sizes="128x128" href="aimroutine-logo.png?v=3">
 <link rel="manifest" href="manifest.webmanifest?v=2">
 <link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="site-global-v31.css?v=4"><link rel="stylesheet" href="site-shared-v5.css?v=3">
-<link rel="stylesheet" href="account-v7.css?v=9">
 <script>
 /* Force-check the PWA cache repair even if a former service worker is serving old JS. */
 if('serviceWorker' in navigator&&window.isSecureContext){
@@ -34,13 +33,6 @@ if('serviceWorker' in navigator&&window.isSecureContext){
      document.documentElement.dataset.windowsSignupReturn='true'; }
 </script>
 <script type="module" src="account-v7.mjs?v=20"></script>
-<style id="account-critical-style">
-/* Critical visible layout: independent of older PWA-cached CSS versions. */
-body.site31.site31-account .ar7-account-highlights{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:20px 0}
-body.site31.site31-account .ar7-account-highlights>.ar7-account-chip{box-sizing:border-box;display:inline-flex;align-items:center;min-height:36px;max-width:100%;padding:8px 12px;background:#122a3a;border:1px solid #416175;border-radius:6px;color:#bfece5;font-size:12px;font-weight:650;line-height:1.4}
-body.site31.site31-account .ar7-account-highlights>.ar7-account-chip>span{all:unset;display:inline;font:inherit;color:inherit;border:none!important;box-shadow:none!important;padding:0!important;margin:0!important;background:transparent!important}
-body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;max-width:100%;min-height:44px;padding:12px 18px;background:#ff586f;border-radius:7px;color:#0c1824;font-size:13px;font-weight:850;line-height:1.35;text-decoration:none}
-</style>
 <link rel="stylesheet" href="visual-v8.css?v=2">
 <link rel="stylesheet" href="site-motion-v10.css?v=1">
 <link rel="stylesheet" href="site-arcade-v11.css?v=1">
@@ -58,6 +50,7 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
 <link rel="stylesheet" href="site-valorant-ui.css?v=1">
 <link rel="stylesheet" href="site-valorant-theme.css?v=3">
 <link rel="stylesheet" href="site-v22.css?v=5">
+<link rel="stylesheet" href="account-v7.css?v=10">
 </head><body class="site31 site31-account site-valorant r17">
 <a class="site31-skip" href="#main"><span class="fr">Aller au contenu</span><span class="en">Skip to content</span></a>
 <header class="site31-header">
@@ -103,15 +96,13 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
 </header>
 <main id="main" class="ar7-account-main">
 <div class="r17-account-wrap r17-screen">
- <section class="r17-hero ar22-intro" aria-labelledby="page-title">
-  <div class="r17-hero-content">
-    <p class="r17-overline"><span class="fr">AIMROUTINE CLOUD</span><span class="en">AIMROUTINE CLOUD</span></p>
+ <section class="ar7-account-intro ar22-intro" aria-labelledby="page-title">
+   <div>
     <h1 id="page-title"><span class="fr">Mon compte</span><span class="en">My account</span></h1>
-    <p class="r17-hero-desc"><span class="fr">Connecte-toi pour retrouver tes routines et ta progression sur tes appareils.</span><span class="en">Sign in to keep your routines and progress in sync across devices.</span></p>
-    <div class="r17-hero-actions"><a class="ar7-guest-link" href="training.html"><span class="fr">Découvrir sans sauvegarder</span><span class="en">Explore without saving</span> ↗</a></div>
-  </div>
-</section>
- <section class="r17-account-profile r17-panel" aria-label="Profil utilisateur"><div class="r17-avatar"><img src="aimroutine-brand-a-v2.svg?v=1" alt=""></div><div><span class="r17-section-label">PLAYER PROFILE</span><h2 data-r17-username><span class="fr">Ton compte AIM</span><span class="en">Your AIM account</span></h2><p data-r17-email><span class="fr">Connexion facultative</span><span class="en">Optional sign-in</span></p></div><div class="r17-profile-stat"><small><span class="fr">SÉANCES</span><span class="en">SESSIONS</span></small><strong data-r17-account-sessions>—</strong></div><div class="r17-profile-stat"><small><span class="fr">ROUTINES</span><span class="en">ROUTINES</span></small><strong data-r17-account-routines>—</strong></div><div class="r17-profile-cloud"><span>☁</span><div><strong data-r17-cloud-label><span class="fr">Cloud non connecté</span><span class="en">Cloud not signed in</span></strong><small><span class="fr">État réel du compte</span><span class="en">Actual account state</span></small></div><a href="#dashboard-panel"><span class="fr">Gérer</span><span class="en">Manage</span> ↗</a></div></section>
+    <p><span class="fr">Ton profil et ta progression AIM te suivent entre le site et le logiciel Windows.</span><span class="en">Take your profile and AIM progress with you across the site and Windows app.</span></p>
+   </div>
+   <a class="ar7-guest-link" href="training.html"><span class="fr">Découvrir l’entraînement</span><span class="en">Explore training</span><span aria-hidden="true">↗</span></a>
+ </section>
  <section class="ar7-windows-auth r17-panel" id="windows-auth-context" aria-labelledby="windows-auth-title" hidden>
   <p class="ar7-windows-label">AIMROUTINE TRACKER · WINDOWS</p>
   <h2 id="windows-auth-title"><span class="fr">Associer ton compte à AimRoutine Tracker</span><span class="en">Connect your account to AimRoutine Tracker</span></h2>
@@ -126,8 +117,7 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
  </section>
  <div class="r17-account-cols"><div class="r17-account-auth" data-r17-auth-slot>
 <section class="ar7-account-panel" id="auth-panel" aria-labelledby="ar7-auth-title">
- <span class="ar7-eyebrow">01 / AUTHENTICATION</span>
- <h2 id="ar7-auth-title"><span class="fr">Connecte-toi à ton espace.</span><span class="en">Sign in to your workspace.</span></h2>
+ <h2 id="ar7-auth-title"><span class="fr">Accéder à ton compte</span><span class="en">Access your account</span></h2>
  <div class="ar7-form-switch" role="group" aria-label="Mode de connexion">
  <button type="button" id="login-mode" aria-pressed="true"><span class="fr">Connexion</span><span class="en">Log in</span></button>
  <button type="button" id="signup-mode" aria-pressed="false"><span class="fr">Inscription</span><span class="en">Sign up</span></button></div>
@@ -137,7 +127,7 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
     <span class="ar7-google-icon" aria-hidden="true">G</span>
     <span class="fr">Continuer avec Google</span><span class="en">Continue with Google</span>
   </button>
-  <p id="google-login-note" class="ar7-social-note"><span class="fr">Connexion Google disponible en bêta. Premier test : connecte-toi avec un compte Google autorisé dans Google Auth Platform.</span><span class="en">Google sign-in is available in beta. For the first test, use a Google account allowed in Google Auth Platform.</span></p>
+  <p id="google-login-note" class="ar7-social-note"><span class="fr">La connexion Google est en bêta. Utilise un compte Google autorisé.</span><span class="en">Google sign-in is in beta. Use an authorized Google account.</span></p>
   <div class="ar7-divider"><span class="fr">OU PAR E-MAIL</span><span class="en">OR WITH EMAIL</span></div>
 </div>
 <form id="login-form" class="ar7-auth-form">
@@ -172,7 +162,6 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
  </form>
 </section>
 <section class="ar7-account-panel" id="username-panel" aria-labelledby="username-title" hidden>
- <span class="ar7-eyebrow">PLAYER PROFILE / USERNAME</span>
  <h2 id="username-title"><span class="fr">Choisis ton pseudo.</span><span class="en">Choose your username.</span></h2>
  <p class="ar7-social-note"><span class="fr">Pour terminer la création de ton compte, choisis un pseudo. Il reste enregistré sur tous tes appareils, avec la sauvegarde cloud automatique. Cette étape est aussi proposée aux comptes Google et aux anciens comptes.</span><span class="en">Complete your account by choosing a username. It stays saved across devices with automatic cloud backup. This step also applies to Google and existing accounts.</span></p>
  <p class="ar7-social-note"><span class="fr">Compte : </span><span class="en">Account: </span><strong id="username-email">—</strong></p>
@@ -184,14 +173,19 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
  </form>
 </section>
 <section class="ar7-account-panel" id="dashboard-panel" aria-labelledby="ar7-dash-title" hidden>
- <div class="ar7-account-heading"><div><span class="ar7-eyebrow">02 / PLAYER CLOUD</span><h2 id="ar7-dash-title"><span class="fr">Mon espace cloud</span><span class="en">My cloud workspace</span></h2></div><button type="button" class="ar7-secondary" id="logout" title="Déconnecte ton compte de tous les appareils"><span class="fr">Déconnexion</span><span class="en">Sign out</span></button></div>
- <div class="ar7-email"><span class="fr">Pseudo :</span><span class="en">Username:</span> <strong id="user-username">—</strong> · <span class="fr">Compte connecté :</span><span class="en">Signed-in account:</span> <strong id="user-email">—</strong></div>
+ <header class="ar7-account-heading">
+  <div>
+   <h2 id="ar7-dash-title"><span class="fr">Mon espace</span><span class="en">My workspace</span></h2>
+   <p class="ar7-email"><strong id="user-username">—</strong><span class="ar7-email-separator" aria-hidden="true"></span><span id="user-email">—</span></p>
+  </div>
+  <button type="button" class="ar7-secondary" id="logout" title="Déconnecte ton compte de tous les appareils"><span class="fr">Déconnexion</span><span class="en">Sign out</span></button>
+ </header>
  <section class="ar7-player" id="account-player" aria-labelledby="account-player-title" hidden>
   <div class="ar7-player-heading">
    <div><h3 id="account-player-title"><span class="fr">Mon profil AimRoutine</span><span class="en">My AimRoutine profile</span></h3>
     <p class="ar7-player-hint"><span class="fr">Synchronisé avec le logiciel Windows.</span><span class="en">Synced with the Windows app.</span></p>
    </div>
-   <button id="account-player-edit" type="button" class="ar7-secondary" hidden><span class="fr">Modifier mon profil</span><span class="en">Edit my profile</span></button>
+   <button id="account-player-edit" type="button" class="ar7-primary" hidden><span class="fr">Modifier mon profil</span><span class="en">Edit my profile</span></button>
   </div>
   <p class="ar7-player-status" id="account-player-status" role="status">
    <span class="ar7-player-loading"><span class="fr">Récupération du profil…</span><span class="en">Loading your profile…</span></span>
@@ -254,17 +248,20 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
   </form>
   <p id="account-player-feedback" class="ar7-player-feedback" role="status" aria-live="polite"></p>
  </section>
+ <h3 class="ar7-data-title"><span class="fr">Progression sur le site</span><span class="en">Website progress</span></h3>
  <div class="ar7-service-grid">
-  <div><small><span class="fr">ÉTAT DE LA SAUVEGARDE</span><span class="en">BACKUP STATUS</span></small><strong id="cloud-enabled-status">Désactivée</strong></div>
-  <div><small><span class="fr">MES SÉANCES LOCALES</span><span class="en">LOCAL SESSIONS</span></small><strong id="cloud-sessions-count">0</strong></div>
-  <div><small><span class="fr">MES ROUTINES LOCALES</span><span class="en">LOCAL ROUTINES</span></small><strong id="cloud-routines-count">0</strong></div>
+  <div><small><span class="fr">Sauvegarde cloud</span><span class="en">Cloud backup</span></small><strong id="cloud-enabled-status">Désactivée</strong></div>
+  <div><small><span class="fr">Séances sur cet appareil</span><span class="en">Sessions on this device</span></small><strong id="cloud-sessions-count">0</strong></div>
+  <div><small><span class="fr">Routines sur cet appareil</span><span class="en">Routines on this device</span></small><strong id="cloud-routines-count">0</strong></div>
  </div>
  <div class="ar7-controls">
   <button id="cloud-enable" type="button" hidden class="ar7-primary"><span class="fr">Synchronisation automatique</span><span class="en">Enable cloud backup</span></button>
   <button id="cloud-sync" type="button" hidden class="ar7-secondary"><span class="fr">Synchronisation automatique</span><span class="en">Sync now</span></button>
   <a href="training.html" class="ar7-secondary"><span class="fr">Accéder à mon espace AIM</span><span class="en">Open AIM workspace</span></a>
  </div>
- <div class="ar7-import-guest"><h3><span class="fr">Importer ma progression invitée</span><span class="en">Import my guest progress</span></h3><p><span class="fr">Si tu utilisais AimRoutine sans compte sur cet appareil, copie tes anciennes séances et routines vers ton compte cloud. Les données invitées seront conservées, sans suppression.</span><span class="en">If you trained as a guest on this device, copy your old training history and routines to your account. Original guest data is not deleted.</span></p><button id="cloud-import-guest" type="button" class="ar7-secondary"><span class="fr">Importer mes données invitées</span><span class="en">Import guest data</span></button></div>
+ <section id="account-data" class="ar7-account-data" aria-labelledby="account-data-title">
+ <h3 id="account-data-title"><span class="fr">Mes données</span><span class="en">My data</span></h3>
+ <details class="ar7-import-guest"><summary><span class="fr">Importer ma progression invitée</span><span class="en">Import my guest progress</span></summary><p><span class="fr">Si tu utilisais AimRoutine sans compte sur cet appareil, copie tes anciennes séances et routines vers ton compte cloud. Les données invitées seront conservées, sans suppression.</span><span class="en">If you trained as a guest on this device, copy your old training history and routines to your account. Original guest data is not deleted.</span></p><button id="cloud-import-guest" type="button" class="ar7-secondary"><span class="fr">Importer mes données invitées</span><span class="en">Import guest data</span></button></details>
  <details class="ar7-delete-cloud">
 <summary><span class="fr">Supprimer ma progression cloud</span><span class="en">Delete my cloud progress</span></summary>
 <p><span class="fr">Supprime les séances, routines, préférences et profil enregistrés dans le cloud. Ton compte reste actif, et les copies locales des autres appareils peuvent restaurer ces données si tu les synchronises à nouveau.</span><span class="en">Deletes cloud sessions, routines, preferences and profile. Your account remains active; stale local copies on other devices could upload them again.</span></p>
@@ -286,20 +283,29 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
 <input id="delete-account-confirmation" type="text" required autocomplete="off" spellcheck="false" maxlength="9" pattern="SUPPRIMER" placeholder="SUPPRIMER"></label>
 <button type="submit" id="delete-account-final" class="ar7-danger"><span class="fr">Supprimer définitivement mon compte</span><span class="en">Permanently delete my account</span></button>
 </form>
-</details>
+ </details>
+ </section>
 </section>
-</div><div class="r17-account-right"><section class="r17-panel"><div class="r17-panel-title"><span class="r17-icon r17-cyan">☁</span><div><h2><span class="fr">Synchronisation cloud</span><span class="en">Cloud synchronization</span></h2><small><span class="fr">Garde tes routines et séances à jour</span><span class="en">Keep your training backed up</span></small></div></div><div class="r17-cloud-split"><div class="r17-cloud-status"><span>☁</span><div><h3 data-r17-sync-head><span class="fr">Connexion nécessaire</span><span class="en">Sign-in required</span></h3><p data-r17-sync-copy><span class="fr">Connecte-toi pour utiliser le Cloud.</span><span class="en">Sign in to use cloud backup.</span></p></div></div><div class="r17-cloud-devices"><h3><span class="fr">Compte & appareils</span><span class="en">Account & devices</span></h3><a href="#windows-sync"><span class="fr">Gérer les liaisons Windows</span><span class="en">Manage Windows connections</span> ↗</a><a href="privacy.html"><span class="fr">Confidentialité</span><span class="en">Privacy</span> ↗</a></div></div></section>
- <section class="r17-panel"><div class="r17-panel-title"><span class="r17-icon">⚙</span><div><h2><span class="fr">Préférences du compte</span><span class="en">Account preferences</span></h2><small><span class="fr">Personnalise ton entraînement</span><span class="en">Personalize training</span></small></div></div><div class="r17-settings-grid"><div><h3>◉ <span class="fr">Langue</span><span class="en">Language</span></h3><label><span class="fr">Interface</span><span class="en">Interface</span><select data-r17-language><option value="fr">Français (FR)</option><option value="en">English (EN)</option></select></label></div><div><h3>⬡ <span class="fr">Confidentialité</span><span class="en">Privacy</span></h3><p><span class="fr">Sécurité et protection des données de ton compte.</span><span class="en">Account security and data protection.</span></p><a href="privacy.html"><span class="fr">Consulter</span><span class="en">View</span> ↗</a></div><div><h3>⌖ <span class="fr">Préférences d’entraînement</span><span class="en">Training preferences</span></h3><p><span class="fr">Réglages partagés avec le logiciel Windows.</span><span class="en">Settings shared with the Windows app.</span></p><a href="#account-player-edit"><span class="fr">Mes réglages</span><span class="en">My settings</span> ↗</a></div></div></section></div></div></div>
-<p class="ar7-legal-line"><strong><span class="fr">Protection des données :</span><span class="en">Data privacy:</span></strong>
-<span class="fr">Avec un compte, Supabase traite ton e-mail, les données d'authentification et tes routines et ta progression synchronisées automatiquement. Les données restent privées à ton compte ; aucun résultat invité n'est enregistré. Ne partage jamais ton mot de passe.</span><span class="en">With an account, Supabase processes your email, authentication information and your automatically synced progress. Training data remains private to your account; guest results are not saved. Never share passwords.</span>
-<a href="privacy.html"><span class="fr">Politique de confidentialité</span><span class="en">Privacy policy</span></a></p>
 <div class="ar7-status" id="account-status" role="status" aria-live="polite"><span class="fr">Connexion au service de comptes…</span><span class="en">Connecting to account service…</span></div>
-<section class="ar7-windows r17-panel" id="windows-sync" aria-labelledby="windows-sync-title">
+</div>
+<aside class="ar7-account-rail" aria-labelledby="account-links-heading">
+ <h2 id="account-links-heading"><span class="fr">Compte et appareils</span><span class="en">Account and devices</span></h2>
+ <div class="r17-cloud-split">
+  <p class="ar7-sync-indicator" data-r17-cloud-label><span class="fr">Cloud non connecté</span><span class="en">Cloud not signed in</span></p>
+  <nav class="ar7-account-links" aria-label="Accès rapides / Quick links">
+   <a class="ar7-member-link" href="#account-player-edit"><span class="fr">Modifier mon profil</span><span class="en">Edit my profile</span><span aria-hidden="true">↗</span></a>
+   <a href="#windows-sync"><span class="fr">Historique et appareils Windows</span><span class="en">Windows history and devices</span><span aria-hidden="true">↓</span></a>
+   <a href="privacy.html"><span class="fr">Confidentialité</span><span class="en">Privacy</span><span aria-hidden="true">↗</span></a>
+  </nav>
+ </div>
+</aside>
+</div>
+<section class="ar7-windows ar7-account-window" id="windows-sync" aria-labelledby="windows-sync-title">
  <header class="ar7-windows-heading">
-  <div><p class="ar7-windows-label">AIMROUTINE TRACKER · WINDOWS</p><h2 id="windows-sync-title"><span class="fr">Historique Windows</span><span class="en">Windows history</span></h2></div>
+  <div><h2 id="windows-sync-title"><span class="fr">Historique Windows</span><span class="en">Windows history</span></h2></div>
   <button id="windows-refresh" type="button" class="ar7-secondary" hidden><span class="fr">Actualiser</span><span class="en">Refresh</span></button>
  </header>
- <p><span class="fr">Retrouve les résultats envoyés depuis AimRoutine Tracker sur Windows. Ils sont consultables ici et restent séparés des statistiques d’entraînement du site.</span><span class="en">View results uploaded by AimRoutine Tracker for Windows. They are available here and stay separate from website training statistics.</span></p>
+ <p class="ar7-windows-description"><span class="fr">Consulte les résultats synchronisés et gère les appareils associés à ton compte.</span><span class="en">View synced results and manage the devices connected to your account.</span></p>
  <div class="ar7-windows-pairing" id="windows-pairing" hidden>
   <h3><span class="fr">Autoriser la liaison Windows</span><span class="en">Approve the Windows connection</span></h3>
   <p><span class="fr">Vérifie que tu as lancé cette connexion depuis AimRoutine Tracker. Elle ouvrira le compte ci-dessous dans le logiciel.</span><span class="en">Make sure you started this connection in AimRoutine Tracker. It will open the account below in the app.</span></p>
@@ -329,6 +335,7 @@ body.site31.site31-account .ar7-guest-link{box-sizing:border-box;display:inline-
   <button id="windows-more" type="button" class="ar7-secondary" hidden><span class="fr">Voir plus de résultats</span><span class="en">Show more results</span></button>
  </div>
 </section>
+</div>
 </main>
 <footer class="site31-footer ar22-footer">
   <div class="valorant-shell ar22-footer-layout">

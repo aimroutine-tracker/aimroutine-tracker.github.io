@@ -187,7 +187,8 @@ test('All public pages render without overflow or script errors',async({page,isM
   expect(overflow,path+' causes horizontal scrolling').toBeLessThanOrEqual(2);
   if(isMobile)await expect(page.locator('details.site31-mobile-nav > summary'),path).toBeVisible();
   if(isMobile&&path==='index.html'){
-   await page.locator('#home-details > summary').click();
+   await page.locator('#home-details > summary').focus();
+ await page.keyboard.press('Enter');
    const carousel=page.locator('.v15-focus-grid');
    await page.locator('.home-detail-group').filter({has:carousel}).locator(':scope > summary').click();
    await expect(carousel).toBeVisible();
@@ -555,9 +556,21 @@ test('Valorant landing prioritizes routines and opens secondary content on deman
  await page.locator('.home-demo-directory a[href="#project-overview"]').click();
  await expect(page.locator('#app-gallery [role="tabpanel"]:visible img')).toBeVisible();
 
+ await page.goto('/index.html#more-paths',{waitUntil:'domcontentloaded'});
+ const paths=page.locator('#choose-path');
+ await expect(paths).toBeVisible();
+ await expect(paths.locator('a[data-v14-ranklink]')).toHaveCount(3);
+ await expect(page.locator('.home-detail-group').filter({has:paths})).toHaveAttribute('open','');
+
  await page.goto('/index.html#community',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#community')).toBeVisible();
  await expect(page.locator('.home-detail-group').filter({has:page.locator('#community')})).toHaveAttribute('open','');
+
+ await page.goto('/index.html#roadmap',{waitUntil:'domcontentloaded'});
+ const roadmap=page.locator('#roadmap');
+ await expect(roadmap).toBeVisible();
+ await expect(page.locator('.home-detail-group').filter({has:roadmap})).toHaveAttribute('open','');
+ await expect(roadmap.locator('a[href="updates.html"]').first()).toBeVisible();
 });
 test('Home routine opens a real plan with the advertised duration',async ({page})=>{
  await page.goto('/index.html',{waitUntil:'domcontentloaded'});
@@ -723,9 +736,11 @@ test('Training dashboard matches the site and its shortcuts leave the goals dial
 
 test('V19 cloud screen is guest-safe and progress buttons drive real range',async ({page})=>{
  await page.goto('/account.html',{waitUntil:'domcontentloaded'});
- await expect(page.locator('.r19-cloud-actions')).toBeVisible();
- await expect(page.locator('.r19-cloud-login')).toBeVisible();
- await expect(page.locator('[data-r19-cloud="cloud-sync"]')).toBeHidden();
+ await expect(page.locator('.ar7-account-rail')).toBeVisible();
+ await expect(page.locator('#login-form')).toBeVisible();
+ await expect(page.locator('#cloud-sync')).toBeHidden();
+ await expect(page.locator('.ar7-member-link')).toBeHidden();
+ await expect(page.locator('.ar7-account-rail a[href="#windows-sync"]')).toBeVisible();
  await page.goto('/progress.html',{waitUntil:'domcontentloaded'});
  await page.locator('[data-r19-range="7"]').click();
  await expect(page.locator('#v14-progress-range')).toHaveValue('7');
