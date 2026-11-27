@@ -892,7 +892,25 @@ test('Shared profile is editable on the website and merges another device’s up
  await expect(page.locator('#account-player-name')).toBeEmpty();
 });
 
-test('Current Windows presentation uses native video controls on both public pages',async ({page})=>{
+test('Current Windows presentation follows the saved and selected site language',async ({page})=>{
+ await page.addInitScript(()=>{
+  if(!localStorage.getItem('aimroutine_site_lang')) localStorage.setItem('aimroutine_site_lang','fr');
+ });
+ const films={
+  fr:{movie:'aimroutine-3122-presentation.mp4?v=2',poster:'aimroutine-3122-poster.webp?v=2',captions:'aimroutine-3122-captions-fr.vtt'},
+  en:{movie:'aimroutine-3122-presentation-en.mp4',poster:'aimroutine-3122-poster-en.webp',captions:'aimroutine-3122-captions-en.vtt'},
+ };
+ const expectLanguage=async code=>{
+  const assets=films[code];
+  const film=page.locator('#video video');
+  await expect(page.locator('html')).toHaveAttribute('lang',code);
+  await expect(film).toHaveAttribute('poster',assets.poster);
+  await expect(film.locator('source[type="video/mp4"]')).toHaveAttribute('src',assets.movie);
+  const track=film.locator('track[kind="captions"]');
+  await expect(track).toHaveAttribute('src',assets.captions);
+  await expect(track).toHaveAttribute('srclang',code);
+  await expect(page.locator('#video [data-presentation-download]')).toHaveAttribute('href',assets.movie);
+ };
  for(const route of ['product.html','presentation.html']){
   await page.goto('/'+route+'#video',{waitUntil:'domcontentloaded'});
   const film=page.locator('#video video');
@@ -900,10 +918,15 @@ test('Current Windows presentation uses native video controls on both public pag
   await expect(film).toHaveAttribute('controls','');
   await expect(film).toHaveAttribute('playsinline','');
   await expect(film).toHaveAttribute('preload','metadata');
-  await expect(film).toHaveAttribute('poster','aimroutine-3122-poster.webp');
-  await expect(film.locator('source[type="video/mp4"]')).toHaveAttribute('src','aimroutine-3122-presentation.mp4');
-  expect(await film.evaluate(video=>video.paused&&!video.autoplay)).toBe(true);
   const caption=await film.getAttribute('aria-describedby');
   await expect(page.locator('#'+caption)).toContainText('3.12.2');
+  await expectLanguage('fr');
+  await page.locator('[data-switch-lang]').click();
+  await expectLanguage('en');
+  await page.reload({waitUntil:'domcontentloaded'});
+  await expectLanguage('en');
+  expect(await film.evaluate(video=>video.paused&&!video.autoplay)).toBe(true);
+  await page.locator('[data-switch-lang]').click();
+  await expectLanguage('fr');
  }
 });

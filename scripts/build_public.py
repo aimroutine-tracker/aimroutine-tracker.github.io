@@ -12,7 +12,7 @@ DEST = ROOT / ".public-site"
 MANIFEST = ROOT / "scripts" / "public-assets.txt"
 PUBLIC_SUFFIXES = frozenset({
     ".html", ".css", ".js", ".mjs", ".png", ".svg", ".webp",
-    ".jpg", ".jpeg", ".ico", ".xml", ".txt", ".webmanifest", ".woff2", ".mp4",
+    ".jpg", ".jpeg", ".ico", ".xml", ".txt", ".webmanifest", ".woff2", ".mp4", ".vtt",
 })
 REQUIRED = frozenset({
     "index.html", "account.html", "training.html", "privacy.html",
