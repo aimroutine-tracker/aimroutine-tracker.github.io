@@ -897,7 +897,7 @@ test('Current Windows presentation follows the saved and selected site language'
   if(!localStorage.getItem('aimroutine_site_lang')) localStorage.setItem('aimroutine_site_lang','fr');
  });
  const films={
-  fr:{movie:'aimroutine-3122-presentation.mp4?v=2',poster:'aimroutine-3122-poster.webp?v=2',captions:'aimroutine-3122-captions-fr.vtt'},
+  fr:{movie:'aimroutine-3122-presentation.mp4?v=3',poster:'aimroutine-3122-poster.webp?v=2',captions:'aimroutine-3122-captions-fr.vtt?v=3'},
   en:{movie:'aimroutine-3122-presentation-en.mp4',poster:'aimroutine-3122-poster-en.webp',captions:'aimroutine-3122-captions-en.vtt'},
  };
  const expectLanguage=async code=>{

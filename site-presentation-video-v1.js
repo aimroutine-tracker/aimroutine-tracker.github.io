@@ -5,9 +5,9 @@
 
   const media = {
     fr: {
-      video: 'aimroutine-3122-presentation.mp4?v=2',
+      video: 'aimroutine-3122-presentation.mp4?v=3',
       poster: 'aimroutine-3122-poster.webp?v=2',
-      captions: 'aimroutine-3122-captions-fr.vtt',
+      captions: 'aimroutine-3122-captions-fr.vtt?v=3',
       label: 'Français'
     },
     en: {
